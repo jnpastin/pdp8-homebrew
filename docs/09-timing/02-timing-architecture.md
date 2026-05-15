@@ -15,7 +15,7 @@ It describes:
 
 The CPU timing model is illustrated in the following diagram:
 
-../../diagrams/timing/cpu-timing/export/cpu-timing-overview.png
+![alt text](../../diagrams/timing/cpu-timing/export/cpu-timing-overview.png "CPU Timing Diagram")
 
 This diagram represents the canonical timing structure:
 - Time States (TS) define phase windows
