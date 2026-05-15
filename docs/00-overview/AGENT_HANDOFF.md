@@ -1,7 +1,7 @@
-# PDP-8/e Compatible Discrete Logic Computer
+\# PDP-8/e Compatible Discrete Logic Computer
 ## Agent Handoff Document
 
-Status: work in progress (updated)
+Status: active development (timing architecture defined)
 
 ---
 
@@ -29,17 +29,20 @@ Primary goal:
 # 2. Repository Structure (Implemented)
 
 Top-level directories now exist:
+
 - /docs - Design documentation (authoritative)
 - /hardware - KiCad schematics and PCB designs
 - /firmware - Microcode / ROM content
 - /sim - Simulation and validation
 - /tools - Supporting utilities
-- /diagrams - Visual documentation
+- /diagrams - Visual documentation (domain-organized, source/export per topic)
 - /specs - Machine-readable definitions
 - /notes - Working exploration
 - /build - Generated artifacts
 
-Each directory includes README stubs.
+Diagrams are organized by domain (e.g., timing/cpu-timing) with:
+- source/ (editable)
+- export/ (rendered)
 
 ---
 
@@ -68,12 +71,13 @@ Field registers:
 - IF, DF
 
 Control state:
-- Major State (FETCH/DEFER/EXECUTE/INTERRUPT)
-- Timing state (not finalized)
+- Major State (FETCH, DEFER, EXECUTE, INTERRUPT)
+- Timing defined as TS/TP model (see Section 6)
 - IE, INT_REQ, INT_DELAY
 - SKIP_PENDING
 
 ## Memory Data Flow
+
 Memory → MR → MB → internal data bus
 
 ---
@@ -83,7 +87,10 @@ Memory → MR → MB → internal data bus
 ## Instruction Set
 - MRI, OPR groups, IOT
 - Exact bit encoding required
-- Correct handling of indirect, auto-index, and page addressing
+- Correct handling of:
+  - indirect addressing
+  - auto-index
+  - page addressing
 
 ## Interrupts
 - Recognized at instruction boundaries
@@ -100,134 +107,85 @@ Memory → MR → MB → internal data bus
 
 # 5. Bus Model (Preliminary)
 
-- AB[0:11] - Address bus
-- DB[0:11] - Internal data bus
-- MDB - Memory data bus
-- DEV[0:5] - I/O device select
+- AB[0:11] - Address bus  
+- DB[0:11] - Internal data bus  
+- MDB - Memory data bus  
+- DEV[0:5] - I/O device select  
 
-I/O data path is not finalized.
-
----
-
-# 6. Timing Model (Concept Only)
-
-- High-frequency master clock (experimental upper bound ~20 MHz)
-- Timing pulses (TP) derived from clock
-- Major states built from multiple TP steps (~28)
-
-Not yet defined:
-- Exact TP count
-- State transitions
-- Control timing relationships
+I/O data path not finalized.
 
 ---
 
-# 7. Front Panel
+# 6. Timing Model (Defined)
 
-Target: PDP-8/I style
+## Overview
 
-Features:
-- Examine/Deposit
-- Load Address
-- Run/Stop
-- Multi-level single-step (cycle, timing, major, instruction)
+The system now uses a formal timing architecture:
 
-Implementation deferred.
+TCLK → TSTEP → TP → TS  
++ MS (Major State control)
 
----
+Where:
 
-# 8. I/O Plan
-
-Initial:
-- UART console (KL8E-like)
-- Paper tape (PTR/PTP)
-
-Future:
-- Disk
-- Printer
-- Modem
-- Video (possible)
-
-IOT behavior not fully specified.
+- TCLK: timing clock  
+- TSTEP: discrete timing position (one-hot)  
+- TP: event trigger (derived from TSTEP)  
+- TS: phase window (range of TSTEP)  
+- MS: instruction-level control state  
 
 ---
 
-# 9. Physical Design
+## Key Semantics
 
-- Backplane-based architecture
-- Multi-board CPU expected
-- Per-module debug LEDs
+### TS (Time State)
+- Represents execution phase (window)
+- Multi-cycle duration
+- Defines when operations are allowed
+- Does NOT trigger state changes
 
-Electrical details not defined.
-
----
-
-# 10. Completed Work
-
-- Repository structure created
-- High-level architecture defined
-- Register set established
-- Interrupt model outlined
-- Skip model defined
-- Documentation framework written
+### TP (Timing Pulse)
+- Represents execution event (instant)
+- One TSTEP wide
+- Aligned to rising edge of TCLK
+- All state changes occur on TP
 
 ---
 
-# 11. Work in Progress
+## Execution Model
 
-- Control signal definitions
-- Bus refinement
-- Timing model definition
+TSn:
+  data stabilizes
 
----
+TPn:
+  state changes occur
 
-# 12. Not Yet Defined (Critical)
-
-- Microarchitecture (cycle-level execution)
-- Control implementation (hardwired vs microcoded)
-- Full timing specification
-- I/O device behavior
-- Fielding instruction details (CIF/CDF timing and edge cases)
+TS(n+1):
+  results are consumed
 
 ---
 
-# 13. Key Risks
+## Critical Rules
 
-- Control logic complexity
-- Incorrect skip or interrupt edge behavior
-- Timing interactions between MR/MB and execution
-- IOT semantics mismatch with OS/8 expectations
-
----
-
-# 14. Immediate Next Steps
-
-1. Define register model formally
-2. Define instruction encoding document
-3. Complete interrupt + skip specs
-4. Define execution (microoperations)
-5. Define timing model
+- All state changes occur on TP (event-driven)
+- TS provides setup/stability window
+- TS transitions occur after TP
+- No falling-edge dependence
+- No level-driven state mutation
 
 ---
 
-# 15. Guidance for Next Contributor
+## Major State Integration
 
-Do not:
-- Begin schematic capture
-- Define control signals prematurely
-- Mix ISA and implementation
+Major States:
 
-Do:
-- Formalize behavior first
-- Define cycle-level execution
-- Resolve all edge cases
+- FETCH
+- DEFER
+- EXECUTE
+- INTERRUPT
 
----
+Model:
 
-# 16. Status Summary
+MS → TS → TP
 
-The project has transitioned from conceptual planning to structured specification development.
+- MS defines "what"
 
-The foundation is in place, but the design is not yet ready for hardware implementation.
-
-Primary focus now: complete behavioral and microarchitectural specifications.
