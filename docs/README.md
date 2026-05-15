@@ -31,6 +31,22 @@ It serves as the authoritative source for:
 ---
 
 ## Rules
-- Documents here define behavior, not implementation details
-- Do not embed schematic-specific assumptions
-- Changes should maintain consistency across sections
+
+### 1. Separation of Concerns
+Each section represents a distinct abstraction layer:
+
+- ISA defines observable behavior
+- Architecture defines the machine model
+- Microarchitecture defines execution structure
+- Control defines signal behavior
+- Timing defines ordering of events
+- Physical documents define implementation
+
+Layers must not be conflated.
+
+---
+
+### 2. Single Source of Truth
+Each concept is defined in exactly one location.
+
+- Definitions must not be duplicated
