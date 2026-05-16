@@ -1,39 +1,32 @@
 ﻿# Hardware
 
 ## Purpose
-This directory contains all hardware design artifacts, including schematics and PCB layouts.
-
----
-
-## Structure
-
-- `backplane` - System backplane design
-- `cpu` - CPU subsystem
-  - `alu` - Arithmetic and logic unit
-  - `control` - Control logic
-  - `registers` - Register implementation
-- `memory` - Memory subsystem
-- `io` - I/O devices
-  - `serial` - Console interface
-  - `ptr_ptp` - Paper tape devices
-- `front_panel` - Operator interface hardware
-- `common` - Shared components and libraries
-
----
-
-## Guidelines
-- Each module should include:
-  - Schematic
-  - PCB layout (if applicable)
-  - Local README describing function and interfaces
-- Do not place generated files (gerbers, exports) here
-
----
-
-## Tooling
-- KiCad (version to be defined)
+This directory will contain all hardware design artifacts, including schematics and PCB layouts.
 
 ---
 
 ## Status
-Design in early stages; no finalized boards
+Not yet started. Directory structure will be defined when hardware design begins.
+
+Top-level module directories are placeholders:
+
+- `backplane/` - System backplane
+- `cpu/` - CPU subsystem
+- `memory/` - Memory subsystem
+- `io/` - I/O devices
+- `front_panel/` - Operator interface
+- `common/` - Shared components and footprint libraries
+
+Internal structure for each module is TBD.
+
+---
+
+## Guidelines (when work begins)
+- Each module should include a schematic and a local README describing function and interfaces
+- PCB layouts go in the relevant module directory
+- Generated files (gerbers, exports) go in `/build/gerbers`, not here
+
+---
+
+## Tooling
+- KiCad (version to be confirmed before design begins)

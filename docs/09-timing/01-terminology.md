@@ -26,6 +26,8 @@ Clock that drives the CPU timing sequence.
 - Derived from MCLK
 - All timing progression occurs on TCLK
 
+Note: Multiple TCLK generation options are planned (MCLK source selection, counter division ratios). The specific options and configuration are not yet defined.
+
 ---
 
 ## 1.3 Clock Edge
@@ -57,6 +59,8 @@ TSTEP0 → TSTEP1 → … → TSTEPN → repeat
 
 TSEQ is the fundamental timebase of the system.
 
+Note: TSEQ wrap and reset behavior (end-of-sequence handling, power-on state) is not yet defined.
+
 ---
 
 # 3) Timing Pulses (TP)
@@ -71,6 +75,7 @@ TPn = (TSTEP == n)
 
 ## 3.2 Properties
 
+- Active-high (following DEC convention)
 - Active for exactly one TCLK cycle
 - Mutually exclusive
 - Represents a discrete execution event
@@ -101,11 +106,14 @@ Each TS is defined as a group of timing steps:
 
 TSn = decode(TSTEP range)
 
+TS ranges are based on DEC timing reference diagrams. See [cpu-timing-overview](../../diagrams/timing/cpu-timing/export/cpu-timing-overview.png) for the current TSTEP assignments. TS2 is intentionally the long cycle to accommodate memory access timing, following DEC's slow-cycle design. Short-cycle support is planned for a future implementation phase.
+
 ---
 
 ## 4.3 Properties
 
-- One active at a time (one-cold)
+- Active-low signals (following DEC convention)
+- Exactly one TS asserted (active-low) at a time
 - Span multiple TCLK cycles
 - Derived from TSTEP
 
@@ -142,12 +150,12 @@ MS is independent of timing structure.
 
 # 6) Summary
 
-| Term  | Meaning |
-|------|--------|
-| MCLK | System clock |
-| TCLK | CPU timing clock |
-| TSTEP | Single timing position |
-| TSEQ | Full timing sequence |
-| TP | Event trigger |
-| TS | Execution phase |
-| MS | Instruction control state |
+| Term  | Meaning | Polarity |
+|-------|---------|----------|
+| MCLK  | System clock | — |
+| TCLK  | CPU timing clock | — |
+| TSTEP | Single timing position | — |
+| TSEQ  | Full timing sequence | — |
+| TP    | Event trigger | Active-high |
+| TS    | Execution phase window | Active-low |
+| MS    | Instruction control state | — |

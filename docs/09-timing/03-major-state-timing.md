@@ -109,35 +109,40 @@ Resolve indirect addressing by accessing memory at the effective address.
 
 ## Behavior
 
-- Uses address in MA
-- Reads indirect word
-- Replaces MA with fetched address
+- MA is valid on entry (loaded at TP1 of FETCH)
+- Reads indirect word from memory[MA]
+- Auto-increments memory content if MA is in auto-index range (0010–0017 octal), per DEC PDP-8/e
+- Loads effective address into MA
 
 ---
 
 ## Timing
 
-### TS1 — Address Setup
-- MA drives address path
+Note: MA is already valid on entry to DEFER (set during FETCH TP1). Following DEC's approach, TS1 is the memory read settling period rather than an address setup phase, since the address is already driven.
+
+### TS1 — Memory Read Settling
+- MA valid (carried from FETCH)
+- Memory read cycle in progress
 
 ### TP1
-MA source is already valid  
-(no change)
-
----
-
-### TS2 — Memory Access
-- memory read in progress
-
-### TP2
 MR ← memory data
 
 ---
 
-### TS3 — Load Effective Address
+### TS2 — Auto-Index Processing
+- Determine if MA is in auto-index range (0010–0017 octal)
+- If auto-index: compute MR + 1
+
+### TP2
+If auto-index (MA ∈ 0010–0017 octal): M[MA] ← MR + 1; effective address ← MR + 1  
+Else: effective address ← MR
+
+---
+
+### TS3 — Effective Address Load
 
 ### TP3
-MA ← MR
+MA ← effective address
 
 ---
 
@@ -152,10 +157,9 @@ MA ← MR
 
 At TP4:
 
-if indirect bit still set:
-  MS ← DEFER  
-else:
-  MS ← EXECUTE  
+MS ← EXECUTE
+
+Note: The PDP-8/e does not support chained indirection. DEFER always transitions to EXECUTE regardless of the content of the fetched indirect word. Auto-index locations (0010–0017) auto-increment the memory content but do not cause re-indirection.
 
 ---
 
@@ -222,6 +226,8 @@ if interrupt pending and enabled:
 else:
   MS ← FETCH  
 
+Note: Instruction-specific EXECUTE timing is not yet defined. The 4-TP structure follows DEC's approach and is expected to be sufficient for MRI instructions. Instruction-level timing will be specified in `04-instruction-timing.md`. IOT and memory timing details remain outstanding (`05-memory-timing.md`, `06-io-timing.md`).
+
 ---
 
 # 6) INTERRUPT
@@ -244,7 +250,7 @@ Handle interrupt request.
 ### TS1 — Prepare Save
 
 ### TP1
-(save address setup)
+IE ← 0
 
 ---
 
@@ -258,7 +264,7 @@ M[0] ← PC
 ### TS3 — Vector Load
 
 ### TP3
-PC ← interrupt vector (usually address 1)
+PC ← 0001 (always location 0001 in current Instruction Field)
 
 ---
 
@@ -274,6 +280,8 @@ PC ← interrupt vector (usually address 1)
 At TP4:
 
 MS ← FETCH  
+
+Note: Interrupt handling is still under development. Outstanding areas include: interrupt re-enable policy, CIF-induced interrupt delay (INT_DELAY), and interaction with extended memory fields. See `08-interrupts-and-skip` for full interrupt model.
 
 ---
 

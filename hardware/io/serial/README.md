@@ -1,3 +1,0 @@
-﻿# serial
-
-Status: draft

@@ -19,5 +19,10 @@ Machine-readable specifications used to support tooling and validation.
 
 ---
 
+## Relationship to `/sim`
+`/sim` uses these specifications as the expected-behavior oracle. When a specification changes, corresponding simulations should be updated and re-validated.
+
+---
+
 ## Notes
 This directory supplements `/docs` but does not replace it

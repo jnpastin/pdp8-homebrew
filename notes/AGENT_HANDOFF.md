@@ -32,7 +32,7 @@ Top-level directories now exist:
 
 - /docs - Design documentation (authoritative)
 - /hardware - KiCad schematics and PCB designs
-- /firmware - Microcode / ROM content
+- /rom - Microcode / ROM content
 - /sim - Simulation and validation
 - /tools - Supporting utilities
 - /diagrams - Visual documentation (domain-organized, source/export per topic)

@@ -14,6 +14,11 @@ Contains simulation models, test programs, and validation tools.
 
 ---
 
+## Relationship to `/specs`
+`/specs` contains the machine-readable definitions that simulation validates against (instruction encodings, control signal tables, timing state definitions). Simulation results provide evidence that those specifications are correct and complete.
+
+---
+
 ## Goals
 - Validate instruction behavior
 - Verify edge cases (skip, interrupt, indirect)

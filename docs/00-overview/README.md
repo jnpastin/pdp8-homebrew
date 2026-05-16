@@ -14,9 +14,8 @@ It is intended as the entry point for understanding:
 
 ## Contents
 
-- `00-system-overview.md` - System goals, scope, and high-level description
-- `00-design-principles.md` - Design philosophy and guiding principles
-- `AGENT_HANDOFF.md` - Summary of project status for continuation by other contributors
+- `system-overview.md` - System goals, scope, and high-level description
+- `design-principles.md` - Design philosophy and guiding principles
 
 ---
 
@@ -27,5 +26,4 @@ This section is incomplete and will evolve as the architecture and design mature
 Key areas still under development:
 - Microarchitecture definition
 - Control model (hardwired vs microcoded)
-- Detailed timing behavior
 - I/O behavioral specifications

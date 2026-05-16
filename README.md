@@ -20,7 +20,7 @@ The primary goal is to achieve software compatibility sufficient to run OS/8 and
 
 - `/docs` - Design documentation and specifications
 - `/hardware` - KiCad schematics and PCB designs
-- `/firmware` - Microcode / ROM contents (if used)
+- `/rom` - ROM and microcode content
 - `/sim` - Simulation models and test programs
 - `/tools` - Supporting utilities and scripts
 - `/diagrams` - Block diagrams and timing diagrams
@@ -31,10 +31,18 @@ The primary goal is to achieve software compatibility sufficient to run OS/8 and
 ---
 
 ## Current Status
-Early design phase:
-- Architecture defined
+Active design phase:
+- Architecture and register model defined
+- Timing architecture defined (TS/TP/TCLK model)
+- Major state model defined (FETCH, DEFER, EXECUTE, INTERRUPT)
 - Documentation structure in place
-- Microarchitecture and control logic in progress
+- Control signal definition in progress
+- Interrupt and skip models in progress
+
+Not yet started:
+- Microarchitecture specification
+- I/O behavioral model
+- Hardware design
 
 ---
 
@@ -48,4 +56,3 @@ Early design phase:
 ## Getting Started
 Start with:
 - `/docs/00-overview`
-- `/docs/01-architecture`

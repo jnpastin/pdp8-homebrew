@@ -55,6 +55,8 @@ Completed:
 - Initial architecture definition
 - Register set identified
 - High-level bus structure outlined
+- Timing architecture defined (TCLK / TSTEP / TP / TS model)
+- Major state model defined (FETCH, DEFER, EXECUTE, INTERRUPT)
 
 In progress:
 - Control signal definition
@@ -64,7 +66,6 @@ In progress:
 Not yet defined:
 - Microarchitecture (cycle-by-cycle behavior)
 - Control implementation
-- Detailed timing model
 - I/O device behavior
 
 ---

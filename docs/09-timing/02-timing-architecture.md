@@ -34,6 +34,15 @@ with a separate control layer:
 
 MS (Major State)
 
+## Signal Polarity Convention
+
+Following DEC PDP-8/e convention:
+
+- TP signals are **active-high** (positive pulses)
+- TS signals are **active-low** (asserted low when active)
+
+The timing diagram reflects electrical states: TS signals are drawn LOW when active, TP signals are drawn HIGH when active.
+
 ---
 
 # 2) Timing Sequence
@@ -70,6 +79,10 @@ TS1 = TSTEP range
 TS2 = TSTEP range  
 TS3 = TSTEP range  
 TS4 = TSTEP range  
+
+TS ranges are based on DEC timing reference diagrams. TS2 is intentionally the long cycle to accommodate memory access timing, following DEC's slow-cycle design. Short-cycle support is planned for a future implementation phase.
+
+See: [cpu-timing-overview](../../diagrams/timing/cpu-timing/export/cpu-timing-overview.png)
 
 ---
 
@@ -184,6 +197,8 @@ Timing speed is controlled by modifying TSTEP progression.
 
 - Slow: all steps executed
 - Fast: some steps skipped
+
+The fast/slow mechanism will be modeled after DEC's timing design. The specific implementation (which steps are eligible for skipping, control mechanism, static vs dynamic selection) is not yet defined.
 
 ---
 
