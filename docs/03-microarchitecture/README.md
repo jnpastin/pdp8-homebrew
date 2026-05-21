@@ -1,7 +1,7 @@
 # Microarchitecture Overview
 
 Reference Diagram:
-![alt text](../../diagrams/architecture/High Level Architecture/export/High-Level-Architecture.png "Microarchitecture Block Diagram")
+![alt text](../../diagrams/architecture/High-Level-Architecture/export/High-Level-Architecture.png "Microarchitecture Block Diagram")
 
 This section defines the high-level structure of the microarchitecture.
 
