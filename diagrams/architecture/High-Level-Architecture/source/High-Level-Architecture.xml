@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net">
   <diagram name="PDP-8 Control Architecture" id="0">
-    <mxGraphModel dx="1949" dy="1053" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+    <mxGraphModel dx="262" dy="142" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -34,7 +34,7 @@
         <mxCell id="DS0GhLU17FeUGPfrgXUr-9" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;span style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;System Buses&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;&lt;hr&gt;&lt;blockquote style=&quot;margin: 0px 0px 0px 40px; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; padding: 0px;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;Responsibilities&lt;/p&gt;&lt;/blockquote&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;&lt;/p&gt;&lt;ul&gt;&lt;ul&gt;&lt;li&gt;Communicate data between CPU, Memory, and I/O devices&lt;/li&gt;&lt;/ul&gt;&lt;/ul&gt;&lt;div&gt;&lt;hr&gt;&lt;/div&gt;&lt;blockquote style=&quot;margin: 0px 0px 0px 40px; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; padding: 0px;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;Inputs&lt;/p&gt;&lt;/blockquote&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;&lt;/p&gt;&lt;ul&gt;&lt;ul&gt;&lt;li&gt;Data &amp;amp; addresses&lt;/li&gt;&lt;/ul&gt;&lt;/ul&gt;&lt;hr&gt;&lt;blockquote style=&quot;margin: 0px 0px 0px 40px; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; padding: 0px;&quot;&gt;Outputs&lt;/blockquote&gt;&lt;div&gt;&lt;ul&gt;&lt;ul&gt;&lt;li&gt;Data &amp;amp; addresses&lt;/li&gt;&lt;/ul&gt;&lt;/ul&gt;&lt;/div&gt;" vertex="1">
           <mxGeometry height="240" width="270" x="790" y="510" as="geometry" />
         </mxCell>
-        <mxCell id="DS0GhLU17FeUGPfrgXUr-10" edge="1" parent="1" source="DS0GhLU17FeUGPfrgXUr-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=-0.011;entryY=0.607;entryDx=0;entryDy=0;entryPerimeter=0;" target="DS0GhLU17FeUGPfrgXUr-7">
+        <mxCell id="DS0GhLU17FeUGPfrgXUr-10" edge="1" parent="1" source="DS0GhLU17FeUGPfrgXUr-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="310" y="290" />
@@ -42,6 +42,7 @@
               <mxPoint x="365" y="234" />
               <mxPoint x="417" y="234" />
             </Array>
+            <mxPoint x="420" y="234" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="DS0GhLU17FeUGPfrgXUr-11" edge="1" parent="1" source="DS0GhLU17FeUGPfrgXUr-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0.011;entryY=0.548;entryDx=0;entryDy=0;entryPerimeter=0;" target="DS0GhLU17FeUGPfrgXUr-8">
