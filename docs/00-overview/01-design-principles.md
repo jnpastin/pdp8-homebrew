@@ -98,10 +98,21 @@ Examples:
 
 The following architectural decisions remain unresolved:
 
-- Control strategy (hardwired vs microcoded)
-- Timing model implementation
 - I/O bus structure
 - Backplane electrical characteristics
+
+---
+
+### Resolved Decisions
+
+The following architectural decisions are fixed:
+
+- Control strategy: **ROM-based microcoded control**
+  - Control is implemented as a ROM lookup:
+    CONTROL = ROM[MS, TS, IR, FLAGS]
+  - No hardwired control logic is used for instruction sequencing
+
+- Timing model: TS/TP event-driven model (defined in 09-timing)
 
 ---
 
