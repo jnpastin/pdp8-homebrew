@@ -8,17 +8,6 @@ Defines how IR bits map directly into control behavior for a ROM-based microarch
 
 ---
 
-## IR Structure
-
-IR[11:0]
-
-- IR[11:9] → class (MRI/IOT/OPR)
-- IR[8] → indirect (MRI)
-- IR[7] → page (MRI)
-- IR[6:0] → address / function bits
-
----
-
 ## Control Interpretation
 
 IR must be interpreted strictly as a bitfield.
@@ -30,13 +19,80 @@ No instruction decoding into symbolic instructions is permitted.
 
 ---
 
+## IR Structure
+
+The contents of the instruction register are interpreted differently based on the opcode. The opcode is contained in the three MSBs (IR[11:9])
+
+- 0-5 → Memory Reference Instruction (MRI)
+- 6   → I/O Transfer Instruction (IOT)
+- 7   → Operate Instruction (OPR)
+
+---
+
+## MRI Model
+
+```
+┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┐
+│ 11 │ 10 │ 9  │ 8  │ 7  │ 6  │ 5  │ 4  │ 3  │ 2  │ 1  │ 0  │
+├────┴────┴────┼────┼────┼────┴────┴────┴────┴────┴────┴────┤
+│    Opcode    │ I  │ ZP │     Address (in current page)    │
+└──────────────┴────┴────┴──────────────────────────────────┘
+```
+
+### Opcodes
+
+- 0 - AND Y - AND AC with contents of address Y
+- 1 - TAD Y - Twos Complement Add AC with contents of address Y
+- 2 - ISZ Y - Increment contents of address Y, skip next instruction if result is zero
+- 3 - DCA Y - Deposit AC contents into address Y, clear AC
+- 4 - JMS Y - Jump to subroutine at address Y, store PC+1 in address Y for return
+- 5 - JMP Y - Jump to address Y
+
+### Flag bits
+
+- I  - Indirect addressing required
+- ZP - Zero Page addressing required
+
+---
+
+## IOT Model
+
+```
+┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┐
+│ 11 │ 10 │ 9  │ 8  │ 7  │ 6  │ 5  │ 4  │ 3  │ 2  │ 1  │ 0  │
+├────┼────┼────┼────┼────┼────┼────┼────┼────┼────┼────┼────┤
+│ 1  │ 1  │ 0  │ x  │ x  │ x  │ x  │ x  │ x  │ y  │ y  │ y  │
+├────┴────┴────┼────┴────┴────┴────┴────┴────┼────┴────┴────┤
+│      IOT     │        Device Address       │  Operation   │
+└──────────────┴─────────────────────────────┴──────────────┘
+```
+
+- All IOT instructions have an opcode of 6
+- Each I/O device has a unique 5 bit address that it responds to, all IOT instructions for other addresses are ignored
+- Each device supports 8 unique instructions, these are custom to the device and are defined in the logic of the device's controller
+
+
 ## OPR Model
 
-Each bit represents an independent operation.
+There are three groups of OPR instructions, they are distinguished by sentinel bits.  Group two is further divided into an AND group and an OR Group
 
-Execution model:
-For TS = 1..4:
-  apply all operations whose bits are set for that TS
+```
+┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┐
+│ 11 │ 10 │ 9  │ 8  │ 7  │ 6  │ 5  │ 4  │ 3  │ 2  │ 1  │ 0  │
+├────┼────┼────┼────┼────┼────┼────┼────┼────┼────┼────┼────┤
+│ 1  │ 1  │ 1  │ x  │    │    │    │    │ y  │    │    │ z  │
+├────┴────┴────┼────┼────┴────┴────┴────┼────┼────┴────┼────┤
+│      OPR     │ A  │                   │ B  │         │ C  │
+└──────────────┴────┴───────────────────┴────┴─────────┴────┘
+```
+
+See the pages linked below for full context on each group
+- A=0 - Group 1
+- A=1 & B=0 & C=0 - Group 2 (OR)
+- A=1 & B=1 & C=0 - Group 2 (AND)
+- A=1 & C=1 - Group 3
+
+Each remaining bit represents an independent operation, these operations may be combined in various ways depending on the rules imposed at the group level
 
 ---
 
