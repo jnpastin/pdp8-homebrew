@@ -16,12 +16,12 @@ These rules apply to all signal classes and must be followed by all system modul
 - Used for:
   - data buses
   - addresses
-  - single-driver control signals
 
 ### Active-Low Signals
 
 - Asserted when logic level is LOW (0)
 - Used for:
+  - single-driver control signals
   - multi-source request signals (wired-OR)
 
 ---
@@ -39,7 +39,7 @@ These rules apply to all signal classes and must be followed by all system modul
 ### Schematics
 
 - Active-low signals:
-  SIGNAL_NAME̅ (overbar)
+  S̅̅I̅̅G̅̅N̅̅A̅̅L̅̅_̅̅N̅̅A̅̅M̅̅E̅̅ (overbar)
 
 ---
 
@@ -49,6 +49,9 @@ These rules apply to all signal classes and must be followed by all system modul
 
 - AB, DB, MDB
 - IOA[5:0]
+
+### Active-Low
+
 - RD, WR
 - RESET
 - HALT
@@ -56,9 +59,6 @@ These rules apply to all signal classes and must be followed by all system modul
 - DB_GRANT_IN / OUT
 - DB_ADDR_EN, DB_DATA_EN
 - DB_READ, DB_WRITE
-
-### Active-Low
-
 - /INT_REQ
 - /DB_REQ
 

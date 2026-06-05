@@ -132,11 +132,17 @@ IOA[5:0] = I/O Device Address Bus
 
 
 DS   = Deposit Switch
+
 ES   = Examine Switch
+
 GS   = Go / Continue Switch
+
 LAS  = Load Address Switch
+
 SIS  = Single Instruction Switch
+
 SSC  = Single Cycle Switch
+
 SS   = Stop Switch
 
 
