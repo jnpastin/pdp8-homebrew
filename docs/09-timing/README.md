@@ -46,3 +46,21 @@ Timing is responsible for defining **when operations occur**, but not:
 - All state changes are event-driven
 - All behavior must be deterministic
 - Timing must be independent of implementation details
+---
+
+## Relationships
+
+- Timing defines **when** operations occur
+- Execution is defined in ../03-microarchitecture/README.md
+- Instruction meaning is defined in ../02-isa/README.md
+- Control signals are defined in ../04-control/README.md
+
+---
+
+## Constraint
+
+Timing must not define behavior.
+
+It only defines:
+- ordering
+- event boundaries
