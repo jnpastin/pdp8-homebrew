@@ -2,7 +2,7 @@
 
 The microarchitecture is defined by:
 
-(MS, TS, IR, FLAGS) -> CONTROL + MS_next
+(MS, TS, IR, FLAGS, EXT) -> CONTROL + MS_next
 
 TP commits all state changes.
 

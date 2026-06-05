@@ -7,6 +7,7 @@ ROM address is constructed from:
 - TS bits
 - Instruction fields (opcode, indirect)
 - Flags
+- External system inputs
 
 ## Design Principle
 

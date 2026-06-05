@@ -1,101 +1,92 @@
-## Microarchitecture Overview
+
+## Microarchitecture
 
 Reference Diagram:
-![High-Level Architecture Diagram](../../diagrams/architecture/High-Level-Architecture/export/High-Level-Architecture.png)
+[High-Level Architecture Diagram](../../diagrams/architecture/High-Level-Architecture/export/High-Level-Architecture.png)
+
+### Purpose
+
+Defines how ISA behavior is executed over time using the system’s timing and control model.
+
+This layer specifies:
+- Execution ordering
+- Operation composition
+- Mapping from ISA semantics to control behavior
+
+It describes how behavior occurs, not what the behavior is.
 
 ---
 
-## Purpose
-
-Defines how ISA behavior is **executed over time**.
-
-This includes:
-- execution ordering
-- operation composition
-- control evaluation model
-
-This section defines **how behavior occurs**, not what the behavior is.
-
----
-
-## Scope
+### Scope
 
 Includes:
-- mapping of execution onto the timing model
-- operation ordering within EXECUTE
-- composition rules for OPR instructions
-- ROM-based control model
+- Execution over microstates (MS, TS)
+- Ordering of operations within an instruction
+- Composition rules for OPR instructions
+- Interaction between control outputs and datapath behavior
 
 Excludes:
-- instruction semantics (see ../02-isa/README.md)
-- control signal definitions (see ../04-control/README.md)
-- timing signal definitions (see ../09-timing/README.md)
+- Instruction semantics ([../02-isa/README.md](../02-isa/README.md))
+- Control signal definitions ([../04-control/README.md](../04-control/README.md))
+- Timing signal definitions ([../09-timing/README.md](../09-timing/README.md))
 
 ---
 
-## Execution Model
+### Execution Model
 
-Execution is defined over:
+ustate = (MS, TS)
 
-(MS, TS)
+- MS: Major State
+- TS: Time State
 
-- MS defines instruction phase
-- TS defines ordering within the phase
-
-All state changes occur at TP (see ../09-timing/README.md).
+Behavior is evaluated during TS and committed at TP.
+All state changes occur only at TP.
 
 ---
 
-## OPR Execution
+### Relationship to Control
 
-OPR instructions are **bitwise-composed operations**:
+Control defines the mechanism that produces behavior.
 
-- Each active bit enables an operation
+See:
+- [../04-control/00-control-model.md](../04-control/00-control-model.md)
+
+Microarchitecture defines how ISA behavior maps to sequences of control actions.
+
+---
+
+### Relationship to Timing
+
+Timing defines when events occur.
+
+See:
+- [../09-timing/README.md](../09-timing/README.md)
+
+Microarchitecture binds control behavior to timing structure.
+
+---
+
+### OPR Execution Model
+
+OPR instructions are composable bitfields.
+
+- Each bit represents an operation
 - Each operation is assigned to a TS
-- Execution order is determined strictly by TS
+- Enabled operations in a TS execute in parallel
 
-No instruction normalization or decode layer exists.
-
----
-
-## Control Model
- 
-Status: normative
-
-### Definition
- 
-Control is implemented **exclusively** as a ROM-based mapping:  
-There is no hardwired instruction sequencing logic.
-
-### Inputs
-- MS (Major State)
-- TS (Time State)
-- IR fields
-- FLAGS
-
-### Outputs
-- Datapath control signals
-- MS\_next (next major state)
-
-### Semantics
- 
-During TS:
-- CONTROL outputs are stable 
-
-At TP:
-- All state changes occur
-- Registers latch
-- MS ← MS\_next
-
-### Constraints
-- All instruction behavior must be representable as ROM entries
-- No control behavior may exist outside the ROM mapping
-- Timing (TS/TP) and control (ROM) are strictly separated
+Ordering is determined only by TS.
 
 ---
 
-## Relationship to Other Sections
+### Design Constraints
 
-- Uses timing definitions from ../09-timing/README.md
-- Executes semantics defined in ../02-isa/README.md
-- Drives signals defined in ../04-control/README.md
+- Behavior must be expressible as:
+  (MS, TS, IR, FLAGS, EXT) → CONTROL
+- No implicit sequencing logic
+- No hidden state
+
+---
+
+### Summary
+
+Microarchitecture defines structured execution as microstate sequences driven by control.

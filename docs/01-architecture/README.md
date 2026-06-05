@@ -1,45 +1,25 @@
-﻿## 01 Architecture
- 
-Status: not started
+
+## Architecture
 
 ### Purpose
- 
-Defines the programmer-visible machine model — what software observes.
+Defines the programmer-visible machine model. This includes what software can observe and rely on.
 
+### Scope
 Includes:
-- register set
-- memory model
-- addressing behavior
-
-Does not describe execution (see ../03-microarchitecture/README.md).
-
----
-
-## Scope
-
-Includes:
-- registers (PC, AC, MQ, Link, SR)
-- memory organization
-- field registers (IF, DF)
+- Architectural registers (PC, AC, L, MQ, IF, DF, IE)
+- Memory model and addressing (fields, 12-bit addressing)
+- Interrupt visibility (IE and /INT_REQ interaction)
 
 Excludes:
-- instruction semantics (see ../02-isa/README.md)
-- execution behavior (see ../03-microarchitecture/README.md)
-- control signals (see ../04-control/README.md)
+- Execution behavior ([../03-microarchitecture/README.md](../03-microarchitecture/README.md))
+- Instruction semantics ([../02-isa/README.md](../02-isa/README.md))
+- Control signals ([../04-control/README.md](../04-control/README.md))
 
----
+### Model Summary
+- All state visible to software is represented as registers.
+- Memory is addressed via fielded 12-bit addressing.
+- Interrupts occur when IE is enabled and /INT_REQ is asserted.
 
-## Dependencies
-
-- Informed by: ../00-overview/README.md
-- Constrains:
-  - ../02-isa/README.md
-  - ../03-microarchitecture/README.md
-
----
-
-## Notes
- 
-This section will be written once the register model and memory architecture are stable.
-Current working state is in `/notes`.
-
+### Related Documents
+- [01-registers.md](01-registers.md)
+- [02-dataflow-and-bus-model.md](02-dataflow-and-bus-model.md)
