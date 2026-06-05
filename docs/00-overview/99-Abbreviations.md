@@ -28,7 +28,9 @@ All documents must reference these abbreviations to prevent ambiguity or collisi
 
 
 AB   = [Address Bus](https://github.com/jnpastin/pdp8-homebrew/blob/arch/docs/05-buses-and-signals/01-class-a-buses.md#address-bus-ab) (A[11:0])
+
 DB   = [System Data Bus](https://github.com/jnpastin/pdp8-homebrew/blob/arch/docs/05-buses-and-signals/01-class-a-buses.md#system-data-bus-db) (D[11:0])
+
 MDB  = [Memory Data Bus](https://github.com/jnpastin/pdp8-homebrew/blob/arch/docs/05-buses-and-signals/01-class-a-buses.md#memory-data-bus-mdb) (MDB[11:0])
 
 
@@ -37,18 +39,30 @@ MDB  = [Memory Data Bus](https://github.com/jnpastin/pdp8-homebrew/blob/arch/doc
 ## Registers
 
 
-AC   = [Accumulator](](https://github.com/jnpastin/pdp8-homebrew/blob/arch/docs/01-architecture/01-registers.md#ac--accumulator)
+AC   = [Accumulator](https://github.com/jnpastin/pdp8-homebrew/blob/arch/docs/01-architecture/01-registers.md#ac--accumulator)
+
 DF   = [Data Field](https://github.com/jnpastin/pdp8-homebrew/blob/arch/docs/01-architecture/01-registers.md#df--data-field)
+
 EA   = [Effective Address](https://github.com/jnpastin/pdp8-homebrew/blob/arch/docs/01-architecture/01-registers.md#ea--effective-address)
+
 IE   = [Interrupt Enable](https://github.com/jnpastin/pdp8-homebrew/blob/arch/docs/01-architecture/01-registers.md#ie--interrupt-enable)
+
 IF   = [Instruction Field](https://github.com/jnpastin/pdp8-homebrew/blob/arch/docs/01-architecture/01-registers.md#if--instruction-field)
+
 IR   = [Instruction Register](https://github.com/jnpastin/pdp8-homebrew/blob/arch/docs/01-architecture/01-registers.md#ir--instruction-register)
+
 L    = [Link](https://github.com/jnpastin/pdp8-homebrew/blob/arch/docs/01-architecture/01-registers.md#l--link)
+
 MA   = [Memory Address](https://github.com/jnpastin/pdp8-homebrew/blob/arch/docs/01-architecture/01-registers.md#ma--memory-address)
+
 MB   = [Memory Buffer](https://github.com/jnpastin/pdp8-homebrew/blob/arch/docs/01-architecture/01-registers.md#mb--memory-buffer)
+
 MS   = [Major State](https://github.com/jnpastin/pdp8-homebrew/blob/arch/docs/01-architecture/01-registers.md#ms--major-state)
+
 MQ   = [Multiplier Quotient](https://github.com/jnpastin/pdp8-homebrew/blob/arch/docs/01-architecture/01-registers.md#mq--multiplier-quotient)
+
 PC   = [Program Counter](https://github.com/jnpastin/pdp8-homebrew/blob/arch/docs/01-architecture/01-registers.md#pc--program-counter)
+
 SR   = [Switch Register](https://github.com/jnpastin/pdp8-homebrew/blob/arch/docs/01-architecture/01-registers.md#sr--switch-register)
 
 
@@ -58,9 +72,13 @@ SR   = [Switch Register](https://github.com/jnpastin/pdp8-homebrew/blob/arch/doc
 
 
 RD      = [Memory Read](https://github.com/jnpastin/pdp8-homebrew/blob/arch/docs/04-control/01-architectural-signals.md#rd)
+
 WR      = [Memory Write](https://github.com/jnpastin/pdp8-homebrew/blob/arch/docs/04-control/01-architectural-signals.md#wr)
+
 RESET   = System Reset
+
 INT_REQ = Interrupt Request (wired-OR)
+
 INT_ACK = Interrupt Acknowledge
 
 
@@ -70,10 +88,15 @@ INT_ACK = Interrupt Acknowledge
 
 
 MCLK  = [Master Clock](https://github.com/jnpastin/pdp8-homebrew/blob/main/docs/09-timing/01-terminology.md#11-master-clock-mclk)
+
 TCLK  = [Timing Clock](https://github.com/jnpastin/pdp8-homebrew/blob/main/docs/09-timing/01-terminology.md#12-timing-clock-tclk)
+
 TSTEP = [Timing Step](https://github.com/jnpastin/pdp8-homebrew/blob/main/docs/09-timing/01-terminology.md#21-timing-step-tstep)
+
 TSEQ  = [Timing Sequence](https://github.com/jnpastin/pdp8-homebrew/blob/main/docs/09-timing/01-terminology.md#22-timing-sequence-tseq)
+
 TPn   = [Timing Pulse n](https://github.com/jnpastin/pdp8-homebrew/blob/main/docs/09-timing/01-terminology.md#3-timing-pulses-tp)
+
 TSn   = [Timing State n](https://github.com/jnpastin/pdp8-homebrew/blob/main/docs/09-timing/01-terminology.md#4-time-states-ts)
 
 
@@ -83,10 +106,15 @@ TSn   = [Timing State n](https://github.com/jnpastin/pdp8-homebrew/blob/main/doc
 
 
 DB_REQ     = Data Break Request
+
 DB_GRANT   = Data Break Grant
+
 DB_ADDR_EN = Data Break Address Enable
+
 DB_DATA_EN = Data Break Data Enable
+
 DB_READ    = Data Break Read
+
 DB_WRITE   = Data Break Write
 
 
