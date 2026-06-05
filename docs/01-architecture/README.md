@@ -11,9 +11,9 @@ Includes:
 - Interrupt visibility (IE and /INT_REQ interaction)
 
 Excludes:
-- Execution behavior ([../03-microarchitecture/README.md](../03-microarchitecture/README.md))
-- Instruction semantics ([../02-isa/README.md](../02-isa/README.md))
-- Control signals ([../04-control/README.md](../04-control/README.md))
+- Execution behavior ([Microarchitecture/README.md](../03-microarchitecture/README.md))
+- Instruction semantics ([ISA/README.md](../02-isa/README.md))
+- Control signals ([Control/README.md](../04-control/README.md))
 
 ### Model Summary
 - All state visible to software is represented as registers.
