@@ -52,13 +52,13 @@ These rules apply to all signal classes and must be followed by all system modul
 
 ### Active-Low
 
-- RD, WR
-- RESET
-- HALT
-- INT_ACK_IN / OUT
-- DB_GRANT_IN / OUT
-- DB_ADDR_EN, DB_DATA_EN
-- DB_READ, DB_WRITE
+- /RD, /WR
+- /RST
+- /HLT
+- /INT_ACK_IN / OUT
+- /DB_GRANT_IN / OUT
+- /DB_ADDR_EN, /DB_DATA_EN
+- /DB_READ, DB_WRITE
 - /INT_REQ
 - /DB_REQ
 
