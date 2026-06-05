@@ -9,28 +9,28 @@ All stable values in the system must reside in registers.
 ---
 
 ### Architectural Registers
-- AC: [Accumulator](#AC---Accumulator)
-- DF: [Data Field](#DF---Data-Field)
-- IE: [Interrupt Enable](#IE---Interrupt-Enable)
-- IF: [Instruction Field](#IF---Instruction-Field)
-- L:  [Link](#L---Link)
-- MQ: [Multiplier Quotient](#MQ---Multiplier-Quotient)
-- PC: [Program Counter](#PC---Program-Counter)
-- SR: [Switch Register](#SR---Switch-Register)
+- AC: [Accumulator](#AC--Accumulator)
+- DF: [Data Field](#DF--Data-Field)
+- IE: [Interrupt Enable](#IE--Interrupt-Enable)
+- IF: [Instruction Field](#IF--Instruction-Field)
+- L:  [Link](#L--Link)
+- MQ: [Multiplier Quotient](#MQ--Multiplier-Quotient)
+- PC: [Program Counter](#PC--Program-Counter)
+- SR: [Switch Register](#SR--Switch-Register)
 
 
 ---
 
 ### Control-Visible State
-- IR: [Instruction Register](#IR---Instruction-Register
-- MS: [Major State](#MS---Major-State)
+- IR: [Instruction Register](#IR--Instruction-Register)
+- MS: [Major State](#MS--Major-State)
 
 ---
 
 ### Internal Registers
-- EA: [Effective Address](#EA---Effective-Address)
-- MA: [Memory Address](#MA---Memory-Address)
-- MB: [Memory Buffer](#MB---Memory-Buffer)
+- EA: [Effective Address](#EA--Effective-Address)
+- MA: [Memory Address](#MA--Memory-Address)
+- MB: [Memory Buffer](#MB--Memory-Buffer)
 
 ---
 
