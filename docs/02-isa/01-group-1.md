@@ -35,4 +35,4 @@ Each flag performs a single operation, these actions will occur at a defined TP 
 
 All Group 1 operations can be combined with others into a single instruction.  This allows significant speedup by combining multiple operations, skipping additional FETCH and EXECUTE states.  For example, `CLA` and `CLL` can be combined to clear both AC and L, or `CLA` and `IAC` can be combined to clear then increment the AC, setting it to `0001`.
 
-However, it is critical to understand the timing.  For example, if AC is `1354`, a `CMA IAC` will happen with the CMA at TP2 and the IAC at TP3.  This will complement first (AC = `6423`) then increment (AC = `6424`).  It will NOT happen in the opposite order, incrementing and then complementing (AC = `6422`)
+However, it is critical to understand the timing.  For example, if AC is `1354`, a `CMA IAC` will happen with the `CMA` at TP2 and the `IAC` at TP3.  This will complement first (AC = `6423`) then increment (AC = `6424`).  It will **NOT** happen in the opposite order, incrementing and then complementing (AC = `6422`)

@@ -1,38 +1,59 @@
-## Group 1 OPR Encoding Model
+## Group 2 OPR Encoding Model
 
-Each of the lower 8 bits of the instruction are flags for a specific operation.  If multiple flags are selected, they will all be executed.  Each operation occurs at a specific time during EXECUTE, this is fixed and must be taken into consideration when combining instructions.
+Group 2 is divided into two sub-groups, the AND sub-group and the OR sub-group.  When combining operations into a single instruction, the AND sub-group treats all conditions for operations that happen in the same TP as a logical AND.  The same is true of the OR sub-group, they are all treated as a logical OR.  The sub-group flag is bit 3, bit 0 is always `0`.  Note that `CLA`, `OSR` and `HLT` are evaluated in order based off of their specific timing regardless of the state of bit 3.
 
+---
+
+### AND Sub-Group Definition and Timing
 ```
 ┌────┬────┬─────┬────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
 │ 11 │ 10 │  9  │ 8  │  7  │  6  │  5  │  4  │  3  │  2  │  1  │  0  │
 ├────┼────┼─────┼────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┤
-│  1 │  1 │  1  │ 1  │     │     │     │     │     │     │     │     │
+│  1 │  1 │  1  │ 0  │     │     │     │     │     │     │     │     │
 ├────┴────┴─────┼────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┤
-│      OPR      │ G1 │ CLA │ CLL │ CMA │ CML │ RAR │ RAL │ BSW │ IAC │
+│      OPR      │ G2 │ CLA │ SPA │ SNA │ SZL │  1  │ OSR │ HLT │  0  │
 └───────────────┴────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
 ```
 
 ### Flag Definition and Timing
 
-Each flag performs a single operation, these actions will occur at a defined TP during EXECUTE.
+| Mnemonic | TP | Operation |
+|---|---|---|
+| CLA | 2 | Clear AC |
+| SPA | 1 | Skip on positive AC (`0000` is positive) |
+| SNA | 1 | Skip on non-zero AC |
+| SZL | 1 | Skip on zero L |
+| OSR | 3 | Logical OR SR with AC |
+| HLT | 3 | Halt |
+
+### Combining AND Sub-Group operations
+
+All operations that happen at TP1 are evaluated as if the conditions are a logical AND.  For example, `SPA SNA` will skip if the AC is non-negative AND non-zero.  Similar to Group 1, combined operations that happen at different TPs will happen in that order (`SNA HLT` will skip if AC is non-zero, updating the PC then halting).
+
+---
+
+### OR Sub-Group Definition and Timing
+```
+┌────┬────┬─────┬────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
+│ 11 │ 10 │  9  │ 8  │  7  │  6  │  5  │  4  │  3  │  2  │  1  │  0  │
+├────┼────┼─────┼────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┤
+│  1 │  1 │  1  │ 0  │     │     │     │     │     │     │     │     │
+├────┴────┴─────┼────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┤
+│      OPR      │ G2 │ CLA │ SMA │ SZA │ SNL │  0  │ OSR │ HLT │  0  │
+└───────────────┴────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
+```
+
+### Flag Definition and Timing
 
 | Mnemonic | TP | Operation |
 |---|---|---|
-| CLA | 1 | Clear AC
-| CLL | 1 | Clear L
-| CMA | 2 | One's complement AC
-| CML | 2 | Complement L
-| RAR | 4<sup>(1)</sup> | Rotate AC & L right
-| RAL | 4<sup>(2)</sup> | Rotate AC & L left
-| BSW | 4<sup>(3)</sup> | Swap 6 high bits of AC with 6 low bits of AC
-| IAC | 3 | Increment AC
+| CLA | 2 | Clear AC |
+| SMA | 1 | Skip on negative AC |
+| SZA | 1 | Skip on zero AC |
+| SNL | 1 | Skip on non-zero L |
+| OSR | 3 | Logical OR SR with AC |
+| HLT | 3 | Halt |
 
-1. If `RAR` is combined with `BSW`, the effect will be to rotate right twice
-2. If `RAL` is combined with `BSW`, the effect will be to rotate left twice
-3. In order for `BSW` to actually swap, `RAR` and `RAL` must both be `0`
+### Combining AND Sub-Group operations
 
-### Combining Operations
-
-All Group 1 operations can be combined with others into a single instruction.  This allows significant speedup by combining multiple operations, skipping additional FETCH and EXECUTE states.  For example, `CLA` and `CLL` can be combined to clear both AC and L, or `CLA` and `IAC` can be combined to clear then increment the AC, setting it to `0001`.
-
-However, it is critical to understand the timing.  For example, if AC is `1354`, a `CMA IAC` will happen with the CMA at TP2 and the IAC at TP3.  This will complement first (AC = `6423`) then increment (AC = `6424`).  It will NOT happen in the opposite order, incrementing and then complementing (AC = `6422`)
+All operations that happen at TP1 are evaluated as if the conditions are a logical OR.  For example, `SMA SZA` will skip if the AC is negative OR zero.  Similar to Group 1, combined operations that happen at different TPs will happen in that order (`SZA HLT` will skip if AC is zero, updating the PC then halting).
