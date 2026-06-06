@@ -20,7 +20,9 @@ Excludes:
 - Behavior is determined without decoding into symbolic instructions.
 - Skip behavior sets a pending control condition that affects PC update.
 
-General information about the structure of the instructions and detailed information about MRI and IOT instructions can be found at [00-encoding-model.md](./00-encoding-model.md)
+General information about the structure of the instructions and detailed information about MRI and IOT instructions can be found at:
+[00-encoding-model.md](./00-encoding-model.md)
+
 Detailed information about the OPR instructions can be found at:
 - [01-group-1.md](./01-group-1.md)
 - [02-group-2.md](./02-group-2.md)
