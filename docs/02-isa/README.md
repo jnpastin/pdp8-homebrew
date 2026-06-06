@@ -21,6 +21,7 @@ Excludes:
 - Skip behavior sets a pending control condition that affects PC update.
 
 General information about the structure of the instructions and detailed information about MRI and IOT instructions can be found at:
+
 [00-encoding-model.md](./00-encoding-model.md)
 
 Detailed information about the OPR instructions can be found at:
