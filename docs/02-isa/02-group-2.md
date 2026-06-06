@@ -9,9 +9,9 @@ Group 2 is divided into two sub-groups, the AND sub-group and the OR sub-group. 
 ┌────┬────┬─────┬────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
 │ 11 │ 10 │  9  │ 8  │  7  │  6  │  5  │  4  │  3  │  2  │  1  │  0  │
 ├────┼────┼─────┼────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┤
-│  1 │  1 │  1  │ 0  │     │     │     │     │     │     │     │     │
+│  1 │  1 │  1  │ 1  │     │     │     │     │  1  │     │     │  0  │
 ├────┴────┴─────┼────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┤
-│      OPR      │ G2 │ CLA │ SPA │ SNA │ SZL │  1  │ OSR │ HLT │  0  │
+│      OPR      │    │ CLA │ SPA │ SNA │ SZL │     │ OSR │ HLT │     │
 └───────────────┴────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
 ```
 
@@ -37,9 +37,9 @@ All operations that happen at TP1 are evaluated as if the conditions are a logic
 ┌────┬────┬─────┬────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
 │ 11 │ 10 │  9  │ 8  │  7  │  6  │  5  │  4  │  3  │  2  │  1  │  0  │
 ├────┼────┼─────┼────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┤
-│  1 │  1 │  1  │ 0  │     │     │     │     │     │     │     │     │
+│  1 │  1 │  1  │ 1  │     │     │     │     │  0  │     │     │  0  │
 ├────┴────┴─────┼────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┤
-│      OPR      │ G2 │ CLA │ SMA │ SZA │ SNL │  0  │ OSR │ HLT │  0  │
+│      OPR      │    │ CLA │ SMA │ SZA │ SNL │     │ OSR │ HLT │     │
 └───────────────┴────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
 ```
 
@@ -54,6 +54,6 @@ All operations that happen at TP1 are evaluated as if the conditions are a logic
 | OSR | 3 | Logical OR SR with AC |
 | HLT | 3 | Halt |
 
-### Combining AND Sub-Group operations
+### Combining OR Sub-Group operations
 
 All operations that happen at TP1 are evaluated as if the conditions are a logical OR.  For example, `SMA SZA` will skip if the AC is negative OR zero.  Similar to Group 1, combined operations that happen at different TPs will happen in that order (`SZA HLT` will skip if AC is zero, updating the PC then halting).
