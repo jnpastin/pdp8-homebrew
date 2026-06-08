@@ -58,6 +58,11 @@ Valid states:
 
 ### MS Update Rule
 
+
+MS_next is determined by control logic during TS4 and is not represented as a μop.
+
+MS updates are not produced by datapath operations.
+
 MS is stored in a register and updated only at TP4:
 
     MS <- MS_next   (only at TP4)

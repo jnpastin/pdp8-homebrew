@@ -44,8 +44,13 @@ No intermediate state or flag storage is created.
 
 ## Index
 
+
+### Address Formation
+- #ir_addr_to_ea
+
 ### Arithmetic / Logical
 - #add_ac_mb
+- #mb_inc
 
 ### Control Flow
 - #pc_inc
@@ -57,6 +62,7 @@ No intermediate state or flag storage is created.
 
 ### Register Transfer
 - #ea_to_ma
+- #mb_to_ea
 - #mb_to_ir
 - #pc_to_ma
 
@@ -163,6 +169,69 @@ MA ← EA
 
 **Sources:**  
 EA
+
+---
+
+### IR_ADDR_TO_EA
+
+**Category:**  
+Address Formation
+
+**Description:**  
+Constructs the base effective address from the instruction address field using page selection rules.
+
+**Target:**  
+EA
+
+**Expression:**
+
+    if P == 0:
+        EA ← (0…0 || IR[6:0])
+    else:
+        EA ← (PC[11:7] || IR[6:0])
+
+**Sources:**  
+IR, PC
+
+---
+
+### MB_INC
+
+**Category:**  
+Arithmetic / Logical
+
+**Description:**  
+Increments the value stored in MB, producing a new value for subsequent use.
+
+**Target:**  
+MB
+
+**Expression:**
+
+    MB ← MB + 1
+
+**Sources:**  
+MB
+
+---
+
+### MB_TO_EA
+
+**Category:**  
+Register Transfer
+
+**Description:**  
+Transfers the value currently held in MB into EA as the resolved effective address.
+
+**Target:**  
+EA
+
+**Expression:**
+
+    EA ← MB
+
+**Sources:**  
+MB
 
 ---
 
