@@ -2,7 +2,7 @@
 ## Microarchitecture
 
 Reference Diagram:
-[High-Level Architecture Diagram](../../diagrams/architecture/High-Level-Architecture/export/High-Level-Architecture.png)
+![High-Level Architecture Diagram](../../diagrams/architecture/High-Level-Architecture/export/High-Level-Architecture.png)
 
 ### Purpose
 
@@ -26,9 +26,9 @@ Includes:
 - Interaction between control outputs and datapath behavior
 
 Excludes:
-- Instruction semantics ([../02-isa/README.md](../02-isa/README.md))
-- Control signal definitions ([../04-control/README.md](../04-control/README.md))
-- Timing signal definitions ([../09-timing/README.md](../09-timing/README.md))
+- Instruction semantics ([02-isa/README.md](../02-isa/README.md))
+- Control signal definitions ([04-control/README.md](../04-control/README.md))
+- Timing signal definitions ([09-timing/README.md](../09-timing/README.md))
 
 ---
 
@@ -44,12 +44,23 @@ All state changes occur only at TP.
 
 ---
 
+### Relationship to ISA
+
+ISA defines the interface that the programmer uses to produce behavior.
+
+See:
+- [02-isa/README.md](../02-isa/README.md)
+
+Microarchitecture defines how ISA is translated into control mechanisms
+
+---
+
 ### Relationship to Control
 
 Control defines the mechanism that produces behavior.
 
 See:
-- [../04-control/00-control-model.md](../04-control/00-control-model.md)
+- [04-control/README.md](../04-control/README.md)
 
 Microarchitecture defines how ISA behavior maps to sequences of control actions.
 
@@ -63,18 +74,6 @@ See:
 - [../09-timing/README.md](../09-timing/README.md)
 
 Microarchitecture binds control behavior to timing structure.
-
----
-
-### OPR Execution Model
-
-OPR instructions are composable bitfields.
-
-- Each bit represents an operation
-- Each operation is assigned to a TS
-- Enabled operations in a TS execute in parallel
-
-Ordering is determined only by TS.
 
 ---
 
