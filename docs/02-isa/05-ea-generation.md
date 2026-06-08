@@ -34,7 +34,7 @@ The EA is formed by:
 3. Applying field selection (IF or DF)
 
 
-![A visual representation of the EA generation flowchart](../diagrams/isa/addressing-model/export/addressing-model.png)
+![A visual representation of the EA generation flowchart](../../diagrams/isa/addressing-model/export/addressing-model.png)
 
 ---
 
