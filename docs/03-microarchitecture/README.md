@@ -71,7 +71,7 @@ Microarchitecture defines how ISA behavior maps to sequences of control actions.
 Timing defines when events occur.
 
 See:
-- [../09-timing/README.md](../09-timing/README.md)
+- [09-timing/README.md](../09-timing/README.md)
 
 Microarchitecture binds control behavior to timing structure.
 
