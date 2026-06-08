@@ -156,6 +156,8 @@ The following invariants must always hold:
 
 ## State Transition Constraints
 
+### Execution
+
 Execution decisions must depend only on stable state.
 
 Allowed inputs:
@@ -170,6 +172,11 @@ Disallowed inputs:
 
 Requirement:
 - Any datapath result must be captured into a register before it can influence future execution
+
+### Control
+
+Control decisions (including MS_next) are evaluated during TS and committed at TP, subject to the same stability and input constraints as μops.
+
 
 ---
 
