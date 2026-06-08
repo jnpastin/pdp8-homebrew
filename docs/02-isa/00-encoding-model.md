@@ -35,7 +35,7 @@ The contents of the instruction register are interpreted differently based on th
 ┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┐
 │ 11 │ 10 │ 9  │ 8  │ 7  │ 6  │ 5  │ 4  │ 3  │ 2  │ 1  │ 0  │
 ├────┴────┴────┼────┼────┼────┴────┴────┴────┴────┴────┴────┤
-│    Opcode    │ I  │ ZP │     Address (in current page)    │
+│    Opcode    │ I  │ P  │          Address offset          │
 └──────────────┴────┴────┴──────────────────────────────────┘
 ```
 
@@ -50,8 +50,9 @@ The contents of the instruction register are interpreted differently based on th
 
 ### Flag bits
 
-- I  - Indirect addressing required
-- ZP - Zero Page addressing required
+- I - Indirect addressing required
+- P - Page bit (0=page 0, 1=current page)
+See the [addressing model](.04-addressing-model.md) doc for more details on address resolution
 
 ---
 
