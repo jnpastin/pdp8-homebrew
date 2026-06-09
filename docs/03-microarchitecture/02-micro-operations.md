@@ -51,6 +51,8 @@ No intermediate state or flag storage is created.
 ### Arithmetic / Logical
 - [AC_AND_MB](#ac_and_mb)
 - [AC_COMP](#ac_comp)
+- [AC_OR_MQ](#ac_or_mq)
+- [AC_OR_SR](#ac_or_sr)
 - [ADD_AC_MB](#add_ac_mb)
 - [L_COMP](#l_comp)
 - [MB_INC](#mb_inc)
@@ -73,6 +75,7 @@ No intermediate state or flag storage is created.
 
 ### Register Transfer
 - [AC_TO_MB](#ac_to_mb)
+- [AC_TO_MQ_AND_CLEAR_AC](#ac_to_mq_and_clear_ac)
 - [EA_TO_MA](#ea_to_ma)
 - [L_CLEAR](#l_clear)
 - [MB_TO_EA](#mb_to_ea)
@@ -184,22 +187,41 @@ AC
 
 ---
 
-#### AC_TO_MB
+### AC_OR_MQ
   
 **Category:** 
-Register Transfer  
+Arithmetic / Logical  
 
 **Description:** 
-Transfers the value of the accumulator into the memory buffer for subsequent use in memory write operations.  
+Performs a bitwise OR between the accumulator and the multiplier quotient register, storing the result in the accumulator.  
 
 **Target:** 
-MB  
+AC  
 
 **Expression:** 
-MB ← AC  
+AC ← AC OR MQ  
 
 **Sources:** 
+AC, MQ
+
+---
+
+### AC_OR_SR
+  
+**Category:** 
+Arithmetic / Logical  
+
+**Description:** 
+Performs a bitwise OR between the accumulator and the switch register, storing the result in the accumulator.  
+
+**Target:** 
 AC  
+
+**Expression:** 
+AC ← AC OR SR  
+
+**Sources:** 
+AC, SR
 
 ---
 
@@ -279,6 +301,43 @@ AC, L
 
 ---
 
+#### AC_TO_MB
+  
+**Category:** 
+Register Transfer  
+
+**Description:** 
+Transfers the value of the accumulator into the memory buffer for subsequent use in memory write operations.  
+
+**Target:** 
+MB  
+
+**Expression:** 
+MB ← AC  
+
+**Sources:** 
+AC  
+
+---
+
+### AC_TO_MQ_AND_CLEAR_AC
+  
+**Category:** 
+Register Transfer  
+
+**Description:** 
+Transfers the value of the accumulator into the multiplier quotient register and clears the accumulator. Both results are committed simultaneously as a single atomic transformation.  
+
+**Target:** 
+MQ, AC  
+
+**Expression:**  
+MQ ← AC  
+AC ← 0  
+
+**Sources:**
+AC
+---
 
 ### ADD_AC_MB
 
