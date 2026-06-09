@@ -84,13 +84,13 @@ Writers:
 ### EA – Effective Address
 Width: 12 bits
 
-Role: Fully resolved operand address
+Role: Fully resolved operand address, exclusive of field information (EA_addr)
 
 Visibility: Internal
 
 Invariants:
 - Fully resolved before operand access
-- Stable after DEFER phase completes
+- Stable prior to EXECUTE
 
 Constraints:
 - Computed during FETCH/DEFER only

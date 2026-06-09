@@ -6,7 +6,7 @@ Defines the execution behavior of the FETCH and DEFER major states.
 
 This includes:
 - instruction fetch
-- base effective address (EA) formation
+- base effective address (EA_addr) formation
 - indirect address resolution
 - determination of next major state
 
@@ -27,13 +27,13 @@ Responsibilities:
 - FETCH:
   - load IR
   - increment PC
-  - form base EA
+  - form EA_addr
   - determine next MS
 
 - DEFER:
   - resolve indirect addressing
   - handle autoindex
-  - finalize EA
+  - finalize EA_addr
 
 ---
 
@@ -73,7 +73,7 @@ Description:
 
 μops:
 - PC_INC
-- IR_ADDR_TO_EA
+- IR_ADDR_TO_EA_ADDR
 
 Control Decisions:
 
@@ -126,7 +126,7 @@ Description:
 
 Condition:
 
-    if EA is within autoindex range
+    if EA_addr is within autoindex range
 
 Description:
 - Increments the value at the indirect address and writes it back to memory.
@@ -143,7 +143,7 @@ Control Decisions:
     MS_next ← EXECUTE
 
 Description:
-- Updates EA with final resolved address
+- Updates EA register with final resolved address
 - Transitions to EXECUTE
 
 ---
@@ -155,6 +155,15 @@ Description:
 - EA is fully resolved before EXECUTE
 - All state changes occur at TP
 - Control decisions are based only on stable register values
+
+---
+
+## Execution Boundary Guarantee
+
+All address resolution is completed before entering EXECUTE.
+
+Instructions in EXECUTE must treat EA as final and must not
+perform any indirect or autoindex handling.
 
 ---
 

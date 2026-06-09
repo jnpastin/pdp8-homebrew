@@ -46,7 +46,7 @@ No intermediate state or flag storage is created.
 
 
 ### Address Formation
-- #ir_addr_to_ea
+- #ir_addr_to_ea_addr
 
 ### Arithmetic / Logical
 - #add_ac_mb
@@ -54,7 +54,7 @@ No intermediate state or flag storage is created.
 
 ### Control Flow
 - #pc_inc
-- #pc_load_ea
+- #pc_load_ea_addr
 
 ### Memory Operations
 - #mem_read_to_mb
@@ -172,7 +172,7 @@ EA
 
 ---
 
-### IR_ADDR_TO_EA
+### IR_ADDR_TO_EA_ADDR
 
 **Category:**  
 Address Formation
@@ -311,13 +311,13 @@ PC
 
 ---
 
-### PC_LOAD_EA
+### PC_LOAD_EA_ADDR
 
 **Category:**  
 Control Flow
 
 **Description:**  
-Replaces the program counter with the effective address.
+Replaces the program counter with the contents of the EA register.
 
 **Target:**  
 PC

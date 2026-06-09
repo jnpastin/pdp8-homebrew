@@ -12,7 +12,7 @@ This model provides the only mechanism by which execution progresses.
 
 Execution state is defined as:
 
-    ustate = (MS, TS)
+    μstate = (MS, TS)
 
 Where:
 - MS: Major State (instruction-level phase)
@@ -187,14 +187,14 @@ Control decisions (including MS_next) are evaluated during TS and committed at T
 
 ## Relationship to Other Models
 
-Timing (09):
+[Timing (09)](../09-timing/README.md):
 - Defines TS and TP generation
 - Does not define behavior
 
 Microarchitecture (this section):
 - Defines execution ordering using MS and TS
 
-Control (04):
+[Control (04)](../04-control/README.md):
 - Implements behavior as a function of (MS, TS, IR, FLAGS, EXT)
 
 ---

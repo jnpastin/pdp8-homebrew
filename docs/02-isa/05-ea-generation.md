@@ -27,14 +27,32 @@ Where:
 
 ## Overview
 
-The EA is formed by:
+The EA as a logical construct is formed by:
 
-1. Selecting a base address using the page bit (P)
+1. Selecting a EA_addr address using the page bit (P)
 2. Resolving direct or indirect addressing (mutually exclusive)
 3. Applying field selection (IF or DF)
 
+EA_logical = (EA_fld, EA_addr)
 
 ![A visual representation of the EA generation flowchart](../../diagrams/isa/addressing-model/export/addressing-model.png)
+
+---
+
+## EA_addr Usage by Phase
+
+EA_addr is a phase-dependent working value:
+
+- During FETCH:
+  EA_addr holds the current page or zero page address derived from IR and PC
+
+- During DEFER (if indirect):
+  EA_addr is updated with the resolved pointer value
+
+- At entry to EXECUTE:
+  EA_addr contains the final operand address
+
+EA_addr must not be assumed to be final prior to EXECUTE
 
 ---
 
@@ -48,20 +66,20 @@ The EA is formed by:
 
 ---
 
-## Step 1: Base Address Formation (IF domain)
+## Step 1: EA_addr Address Formation (IF domain)
 
-The base address is always formed in the IF domain, regardless of addressing mode.
+The EA_addr address is always initially formed in the IF domain, regardless of addressing mode.
 
 If P = 0:
 
 ```
-BASE = 0000 || offset
+EA_addr = 0000 || offset
 ```
 
 If P = 1:
 
 ```
-BASE = PC[11:7] || offset
+EA_addr = PC[11:7] || offset
 ```
 
 ---
@@ -72,7 +90,7 @@ Direct addressing does not involve indirection.
 
 ```
 EA_field = IF
-EA_addr  = BASE
+EA_addr  = EA_addr
 
 EA = (EA_field, EA_addr)
 STOP
@@ -80,7 +98,7 @@ STOP
 
 Properties:
 
-- Uses IF for both base formation and final access  
+- Uses IF for both EA_addr formation and final access  
 - No interaction with DF  
 
 ---
@@ -91,13 +109,13 @@ Indirect addressing resolves a pointer stored in memory.
 
 ### Step 2B.1: Pointer Location (IF domain)
 
-The pointer location is defined by BASE in the IF domain.
+The pointer location is defined by EA_addr in the IF domain.
 
 ---
 
 ### Step 2B.2: Auto-Index Handling
 
-If BASE is in the auto-index range:
+If EA_addr is in the auto-index range:
 
 ```
 0010–0017 (octal)
@@ -106,14 +124,14 @@ If BASE is in the auto-index range:
 Then:
 
 ```
-M[(IF, BASE)] = M[(IF, BASE)] + 1
-PTR_value     = M[(IF, BASE)]
+M[(IF, EA_addr)] = M[(IF, EA_addr)] + 1
+PTR_value     = M[(IF, EA_addr)]
 ```
 
 Else:
 
 ```
-PTR_value = M[(IF, BASE)]
+PTR_value = M[(IF, EA_addr)]
 ```
 
 ---
@@ -132,10 +150,10 @@ STOP
 
 ## Invariants
 
-- BASE is always formed using IF  
+- EA_addr is always formed using IF  
 - Direct (I = 0) uses IF for final memory access  
 - Indirect (I = 1):
-  - Pointer location is (IF, BASE)  
+  - Pointer location is (IF, EA_addr)  
   - Final EA is (DF, PTR_value)  
 - Auto-index:
   - Applies only when I = 1  

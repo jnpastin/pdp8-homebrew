@@ -88,10 +88,10 @@ There are three groups of OPR instructions, they are distinguished by sentinel b
 ```
 
 See the pages linked below for full context on each group
-- A=0 - Group 1
-- A=1 & B=0 & C=0 - Group 2 (OR)
-- A=1 & B=1 & C=0 - Group 2 (AND)
-- A=1 & C=1 - Group 3
+- A=0 - [Group 1](./01-group-1.md)
+- A=1 & B=1 & C=0 - [Group 2 (AND)](./02-group-2.md#and-sub-group-definition-and-timing)
+- A=1 & B=0 & C=0 - [Group 2 (OR)](./02-group-2.md#or-sub-group-definition-and-timing)
+- A=1 & C=1 - [Group 3](./03-group-3.md)
 
 Each remaining bit represents an independent operation, these operations may be combined in various ways depending on the rules imposed at the group level
 
