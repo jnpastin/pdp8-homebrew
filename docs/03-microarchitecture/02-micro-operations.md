@@ -46,34 +46,84 @@ No intermediate state or flag storage is created.
 
 
 ### Address Formation
-- #ir_addr_to_ea_addr
+- [IR_ADDR_TO_EA_ADDR](#ir_addr_to_ea_addr)
 
 ### Arithmetic / Logical
-- #add_ac_mb
-- #mb_inc
+- [AC_AND_MB](#ac_and_mb)
+- [AC_COMP](#ac_comp)
+- [ADD_AC_MB](#add_ac_mb)
+- [L_COMP](#l_comp)
+- [MB_INC](#mb_inc)
+
+#### Bit Operations
+
+- [AC_ROR](#ac_ror)
+- [AC_ROL](#ac_rol)
+- [AC_RTR](#ac_rtr)
+- [AC_RTL](#ac_rtl)
+- [AC_BSW](#ac_bsw)
 
 ### Control Flow
-- #pc_inc
-- #pc_load_ea_addr
+- [PC_INC](#pc_inc)
+- [PC_LOAD_EA_ADDR](#pc_load_ea_addr)
 
 ### Memory Operations
-- #mem_read_to_mb
-- #mem_write_from_mb
+- [MEM_READ_TO_MB](#mem_read_to_mb)
+- [MEM_WRITE_FROM_MB](#mem_write_from_mb)
 
 ### Register Transfer
-- #ea_to_ma
-- #mb_to_ea
-- #mb_to_ir
-- #pc_to_ma
+- [AC_TO_MB](#ac_to_mb)
+- [EA_TO_MA](#ea_to_ma)
+- [L_CLEAR](#l_clear)
+- [MB_TO_EA](#mb_to_ea)
+- [MB_TO_IR](#mb_to_ir)
+- [PC_TO_MA](#pc_to_ma)
+- [PC_TO_MB](#pc_to_mb)
 
 ### State Manipulation
-- #ac_clear
-- #ac_complement
-- #ac_inc
+- [AC_CLEAR](#ac_clear)
+- [AC_COMPLEMENT](#ac_complement)
+- [AC_INC](#ac_inc)
 
 ---
 
 ## μop Definitions (Alphabetical)
+
+---
+
+#### AC_AND_MB
+  
+**Category:** 
+Arithmetic / Logical  
+
+**Description:** 
+Performs a bitwise AND between the accumulator and the memory buffer, storing the result in the accumulator.  
+
+**Target:** AC  
+
+**Expression:** 
+AC ← AC AND MB  
+
+**Sources:** 
+AC, MB  
+
+---
+
+### AC_BSW
+  
+**Category:** Bit Operations  
+
+**Description:**  
+Swaps the high and low 6-bit halves of the accumulator.  
+
+**Target:**  
+AC  
+
+**Expression:**  
+AC ← swap_halves(AC)  
+
+**Sources:**  
+AC 
 
 ---
 
@@ -133,6 +183,102 @@ AC, L
 AC
 
 ---
+
+#### AC_TO_MB
+  
+**Category:** 
+Register Transfer  
+
+**Description:** 
+Transfers the value of the accumulator into the memory buffer for subsequent use in memory write operations.  
+
+**Target:** 
+MB  
+
+**Expression:** 
+MB ← AC  
+
+**Sources:** 
+AC  
+
+---
+
+### AC_ROR
+  
+**Category:** 
+Bit Operations  
+
+**Description:**  
+Rotates the combined L and AC register right by one bit.  
+
+**Target:**  
+AC, L  
+
+**Expression:**  
+(L, AC) ← rotate_right(L, AC, 1)  
+
+**Sources:**  
+AC, L  
+
+---
+
+### AC_ROL
+  
+**Category:** 
+Bit Operations  
+
+**Description:**  
+Rotates the combined L and AC register left by one bit.  
+
+**Target:**  
+AC, L  
+
+**Expression:**  
+(L, AC) ← rotate_left(L, AC, 1)  
+
+**Sources:**  
+AC, L  
+
+---
+
+### AC_RTR
+  
+**Category:** 
+Bit Operations  
+
+**Description:**  
+Rotates the combined L and AC register right by two bits.  
+
+**Target:**  
+AC, L  
+
+**Expression:**  
+(L, AC) ← rotate_right(L, AC, 2)  
+
+**Sources:**  
+AC, L  
+
+---
+
+### AC_RTL
+  
+**Category:** 
+Bit Operations  
+
+**Description:**  
+Rotates the combined L and AC register left by two bits.  
+
+**Target:**  
+AC, L  
+
+**Expression:**  
+(L, AC) ← rotate_left(L, AC, 2)  
+
+**Sources:**  
+AC, L  
+
+---
+
 
 ### ADD_AC_MB
 
@@ -194,6 +340,26 @@ EA
 IR, PC
 
 ---
+
+### L_COMP
+  
+**Category:**
+Arithmetic / Logical
+
+**Description:**  
+Computes the complement of the link register.  
+
+**Target:**  
+L  
+
+**Expression:**  
+L ← NOT L  
+
+**Sources:**  
+L  
+
+---
+
 
 ### MB_INC
 
@@ -345,6 +511,26 @@ MA
 MA ← PC
 
 **Sources:**  
+PC
+
+---
+
+
+#### PC_TO_MB
+  
+**Category:** 
+Register Transfer  
+
+**Description:** 
+Transfers the program counter into the memory buffer, typically used to stage a return address for storage in memory.  
+
+**Target:** 
+MB  
+
+**Expression:** 
+MB ← PC  
+
+**Sources:** 
 PC
 
 ---

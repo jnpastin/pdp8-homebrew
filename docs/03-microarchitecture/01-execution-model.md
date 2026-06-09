@@ -197,6 +197,89 @@ Constraints:
 
 ---
 
+## Instruction Identification and Execution Conventions
+
+### Purpose
+  
+Defines how instructions are identified and how instruction-specific execution
+documents relate to the execution model.
+
+This section supplements the execution model by establishing:
+- how instructions are selected (IR-based)
+- constraints on instruction specification
+- responsibilities of instruction-class documents
+
+---
+
+### Instruction Identification
+  
+Instruction behavior is identified strictly by **IR bit fields**.
+
+Control operates directly on:
+
+(MS, TS, IR, FLAGS, EXT)
+
+No symbolic or mnemonic-based decoding is permitted.
+
+---
+
+### Reference Model
+  
+The authoritative definition of instruction encoding is provided in:
+
+[Instruction Encoding Model](../02-isa/00-encoding-model.md)
+
+This includes:
+- IR structure
+- opcode definitions
+- instruction classes
+- field interpretation rules
+
+This document must not redefine encoding semantics.
+
+---
+
+### Identification Rules
+
+- Instruction behavior must be defined using IR bit patterns
+- All execution behavior must be expressible as IR masks
+- Mnemonics are non-normative and for readability only
+- Control logic must not depend on symbolic instruction names
+
+---
+
+### Instruction-Class Documents
+
+Execution for each instruction class is defined in separate documents:
+
+- MRI Execution
+- IOT Execution
+- OPR Execution
+
+These documents define:
+
+- μop sequences per TS
+- instruction-specific behavior
+- class-specific constraints
+
+---
+
+### Constraints on Instruction Definitions
+
+Instruction-class documents must:
+
+- Use μops exclusively to define behavior
+- Assign μops to TS without introducing implicit ordering
+- Use conditions only to control μop selection
+- Avoid redefining:
+  - TS/TP semantics
+  - μop behavior
+  - state model rules
+
+All shared execution behavior is defined in this document.
+
+---
+
 ## Summary
 
 Execution is defined as:
@@ -209,3 +292,12 @@ Execution is defined as:
 
 Micro-operations define behavior.
 Control signals implement that behavior.
+
+Instruction execution is defined as:
+
+- IR bit patterns select behavior
+- μops express all state transitions
+- TS defines ordering
+- TP commits results
+
+Instruction-class documents specialize this model without modifying it.
