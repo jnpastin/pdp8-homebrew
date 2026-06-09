@@ -23,6 +23,11 @@ All MRI addressing operates on a 12-bit logical address within a field.
 
 EA_addr is a phase-dependent working value that becomes the final operand address before EXECUTE.  It contains all of the information that the system requires in order to address the entire memory system.
 
+
+Final effective address is defined as:
+
+    EA_logical = (EA_fld, EA_addr)
+
 For clarity across fields, this specification uses a 5-digit octal notation:
 
 FXXXX

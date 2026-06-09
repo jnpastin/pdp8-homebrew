@@ -128,6 +128,16 @@ Constraint:
 - MS updates are not μops
 - μops must not directly modify MS
 
+
+### EXECUTE Phase Invariants
+
+All instruction execution definitions assume:
+
+- MS = EXECUTE
+- EA_addr is the fully resolved effective address and is stored in the EA register
+- All indirect addressing and autoindex effects have completed
+- IR is stable and valid for the duration of execution
+
 ---
 
 

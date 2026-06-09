@@ -42,6 +42,12 @@ ustate = (MS, TS)
 Behavior is evaluated during TS and committed at TP.
 All state changes occur only at TP.
 
+Effective addresses are implemented as:
+
+    EA_logical = (EA_fld, EA_addr)
+
+Microarchitecture operates directly on EA_addr and selects EA_fld via IF/DF control.
+
 ---
 
 ### Relationship to ISA

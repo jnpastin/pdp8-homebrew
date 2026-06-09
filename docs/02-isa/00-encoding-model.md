@@ -54,6 +54,16 @@ The contents of the instruction register are interpreted differently based on th
 - P - Page bit (0=page 0, 1=current page)
 See the [addressing model](.04-addressing-model.md) doc for more details on address resolution
 
+### Effective Address
+
+The final effective address is represented as:
+
+    EA_logical = (EA_fld, EA_addr)
+
+Where:
+- EA_addr is derived from offset and page selection
+- EA_fld is determined by IF or DF depending on addressing mode
+
 ---
 
 ## IOT Model

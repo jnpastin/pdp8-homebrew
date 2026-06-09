@@ -84,7 +84,18 @@ Writers:
 ### EA – Effective Address
 Width: 12 bits
 
-Role: Fully resolved operand address, exclusive of field information (EA_addr)
+Role:
+Holds the 12-bit address portion of the effective address.
+
+The full logical effective address is represented as:
+
+    EA_logical = (EA_fld, EA_addr)
+
+Where:
+- EA_addr is stored in EA
+- EA_fld is provided by IF or DF
+
+No register stores the combined value.
 
 Visibility: Internal
 
