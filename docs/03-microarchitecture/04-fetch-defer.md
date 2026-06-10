@@ -43,9 +43,11 @@ Responsibilities:
 
 μops:
 - PC_TO_MA
+- II_CLEAR
 
 Description:
 - Places the instruction address in MA for memory access.
+- Clears the Interrupt Inhibit register
 
 ---
 

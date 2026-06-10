@@ -54,8 +54,6 @@ No intermediate state or flag storage is created.
 - [AC_OR_MQ](#ac_or_mq)
 - [AC_OR_SR](#ac_or_sr)
 - [ADD_AC_MB](#add_ac_mb)
-- [L_COMP](#l_comp)
-- [MB_INC](#mb_inc)
 
 #### Bit Operations
 
@@ -77,7 +75,6 @@ No intermediate state or flag storage is created.
 - [AC_TO_MB](#ac_to_mb)
 - [AC_TO_MQ_AND_CLEAR_AC](#ac_to_mq_and_clear_ac)
 - [EA_TO_MA](#ea_to_ma)
-- [L_CLEAR](#l_clear)
 - [MB_TO_EA](#mb_to_ea)
 - [MB_TO_IR](#mb_to_ir)
 - [PC_TO_MA](#pc_to_ma)
@@ -87,6 +84,17 @@ No intermediate state or flag storage is created.
 - [AC_CLEAR](#ac_clear)
 - [AC_COMPLEMENT](#ac_complement)
 - [AC_INC](#ac_inc)
+- [DF_CLEAR](#df_clear)
+- [IE_CLEAR](#ie_clear)
+- [IF_CLEAR](#if_clear)
+- [II_CLEAR](#ii_clear)
+- [II_SET](#ii_set)
+- [L_CLEAR](#l_clear)
+- [L_COMP](#l_comp)
+- [MA_CLEAR](#ma_clear)
+- [MB_INC](#mb_inc)
+- [PC_SET_1](#pc_set_1)
+
 
 ---
 
@@ -94,7 +102,7 @@ No intermediate state or flag storage is created.
 
 ---
 
-#### AC_AND_MB
+### AC_AND_MB
   
 **Category:** 
 Arithmetic / Logical  
@@ -337,6 +345,7 @@ AC ← 0
 
 **Sources:**
 AC
+
 ---
 
 ### ADD_AC_MB
@@ -356,6 +365,26 @@ AC, L
 **Sources:**  
 AC, MB
 
+
+---
+
+### DF_CLEAR
+
+**Category:**  
+State Manipulation
+
+**Description:**  
+Clears the data field register.
+
+**Target:**  
+DF
+
+**Expression:**  
+DF ← 0
+
+**Sources:**  
+(none)
+
 ---
 
 ### EA_TO_MA
@@ -374,6 +403,80 @@ MA ← EA
 
 **Sources:**  
 EA
+
+---
+
+### IE_CLEAR
+
+**Category:**  
+State Manipulation
+
+**Description:**  
+Clears the interrupt enable register.
+
+**Target:**  
+IE
+
+**Expression:**  
+IE ← 0
+
+**Sources:**  
+(none)
+
+---
+
+### IF_CLEAR
+
+**Category:**  
+State Manipulation
+
+**Description:**  
+Clears the instruction field register.
+
+**Target:**  
+IF
+
+**Expression:**  
+IF ← 0
+
+**Sources:**  
+(none)
+
+---
+
+### II_CLEAR
+
+**Category:**  
+State Manipulation
+
+**Description:**  
+Clears the interrupt inhibit register, allowing interrupt recognition.
+
+**Target:**  
+II
+
+**Expression:**  
+II ← 0
+
+**Sources:**  
+(none)
+
+---### II_SET
+
+**Category:**  
+State Manipulation
+
+**Description:**  
+Sets the interrupt inhibit register, preventing interrupt recognition until it is cleared.
+
+**Target:**  
+II
+
+**Expression:**  
+II ← 1
+
+**Sources:**  
+(none)
 
 ---
 
@@ -400,10 +503,29 @@ IR, PC
 
 ---
 
+### L_CLEAR
+
+**Category:**  
+State Manipulation
+
+**Description:**  
+Sets the Link to zero, discarding any previous value.
+
+**Target:**  
+L
+
+**Expression:**  
+L ← 0
+
+**Sources:**  
+none
+
+---
+
 ### L_COMP
   
 **Category:**
-Arithmetic / Logical
+State Manipulation
 
 **Description:**  
 Computes the complement of the link register.  
@@ -419,11 +541,29 @@ L
 
 ---
 
+### MA_CLEAR
+
+**Category:**  
+State Manipulation
+
+**Description:**  
+Clears the memory address register.
+
+**Target:**  
+MA
+
+**Expression:**  
+MA ← 0
+
+**Sources:**  
+(none)
+
+---
 
 ### MB_INC
 
 **Category:**  
-Arithmetic / Logical
+State Manipulation
 
 **Description:**  
 Increments the value stored in MB, producing a new value for subsequent use.
@@ -552,6 +692,25 @@ PC ← EA
 
 **Sources:**  
 EA
+
+---
+
+### PC_SET_1
+
+**Category:**  
+State Manipulation
+
+**Description:**  
+Sets the program counter to address 0001.
+
+**Target:**  
+PC
+
+**Expression:**  
+PC ← 0001
+
+**Sources:**  
+(none)
 
 ---
 

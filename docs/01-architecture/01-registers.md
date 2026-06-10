@@ -24,6 +24,7 @@ All stable values in the system must reside in registers.
 ### Control-Visible State
 - IR: [Instruction Register](#IR--Instruction-Register)
 - MS: [Major State](#MS--Major-State)
+- II: [Interrupt Inhibit](#II--Interrupt-Inhibit)
 
 ---
 
@@ -152,6 +153,29 @@ Constraints:
 
 Writers:
 - Field instruction control logic
+
+---
+
+### II – Interrupt Inhibit
+Width: 1 bit
+
+Role: Interrupt recognition gating flag
+
+Visibility: Control-visible
+
+Invariants:  
+- Prevents interrupt recognition when set  
+- Used in conjunction with IE to determine interrupt eligibility  
+- Stable during instruction execution  
+
+Constraints:  
+- Set only by ION instruction  
+- Cleared only during FETCH
+- Must not be directly modified by control logic  
+
+Writers:  
+- IOT execution (ION)  
+- FETCH execution (II_CLEAR μop)
 
 ---
 

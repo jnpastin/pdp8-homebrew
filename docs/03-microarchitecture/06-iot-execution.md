@@ -60,7 +60,7 @@ Constraints:
 
 ---
 
-### Instruction Definition
+### Instruction Definition (General)
 
 ---
 
@@ -81,6 +81,48 @@ TS4:
 - (no μops)  
 
 ---
+
+### Instruction Definitions (CPU Control - Device 0)
+
+---
+
+### IR[11:9] = 110 AND IOA = 000 AND IR[2:0] = 000
+
+**Mnemonic (non-normative):** IOF
+
+TS1:
+- (no μops)
+
+TS2:
+- IE_CLEAR
+
+TS3:
+- (no μops)
+
+TS4:
+- (no μops)
+
+---
+
+### IR[11:9] = 110 AND IOA = 000 AND IR[2:0] = 001
+
+**Mnemonic (non-normative):** ION
+
+TS1:
+- (no μops)
+
+TS2:
+- IE_SET
+- II_SET
+
+TS3:
+- (no μops)
+
+TS4:
+- (no μops)
+
+---
+
 
 ### Notes
   
