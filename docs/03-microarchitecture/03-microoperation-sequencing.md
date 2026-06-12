@@ -1,0 +1,204 @@
+## Microoperation Sequencing
+
+### Purpose
+
+Defines how μops are selected, evaluated, and committed over time.
+
+This document establishes the rules governing:
+- assignment of μops to TS
+- conditional execution
+- visibility of register state
+- interaction with control decisions
+
+This document does not define individual instructions or μops.
+
+---
+
+## Execution Cycle Model
+
+Execution proceeds in discrete steps defined by TS and TP.
+
+For each TSn:
+
+    During TSn:
+        - control evaluates conditions using stable state
+        - control selects a set of active μops
+
+    At TPn:
+        - all selected μops commit simultaneously
+
+---
+
+## μop Selection
+
+For each TSn:
+
+    Active_μops(TSn) = f(MS, TS, IR, FLAGS, EXT)
+
+Where:
+- MS defines the major state (FETCH, DEFER, EXECUTE, INTERRUPT)
+- TS defines the current time step
+- IR provides instruction encoding
+- FLAGS are derived from register state
+- EXT represents external inputs
+
+Constraints:
+- selection must be deterministic
+- selection must depend only on stable inputs
+
+---
+
+## Conditional Execution
+
+Conditions are not μops.
+
+Rules:
+- conditions are evaluated during TSn using register state
+- conditions do not produce stored values
+- conditions are used only to select μops
+
+Example form:
+
+    if (condition):
+        include μop in Active_μops(TSn)
+
+Else:
+    μop is not executed
+
+---
+
+## Concurrency Model
+
+Within a single TSn:
+
+- all μops are evaluated concurrently
+- all μops observe the same input state
+- no μop may depend on another μop in the same TSn
+
+Constraint:
+
+    No ordering exists within a TSn
+
+---
+
+## Register Visibility
+
+Register values follow strict timing rules.
+
+For any TSn:
+
+- reads observe values committed at TP(n-1)
+- writes become visible only after TPn
+
+Implications:
+
+- all μops in TSn operate on the same stable inputs
+- results of TSn are not visible until TPn completes
+
+---
+
+## State Update Rules
+
+At TPn:
+
+- all active μops commit simultaneously
+- no partial updates occur
+- all target registers update atomically
+
+Constraint:
+
+    Each register may be targeted by at most one μop per TSn
+
+If violated:
+- behavior is undefined (design error)
+
+---
+
+## Major State Interaction
+
+MS is updated separately from μops.
+
+Rules:
+
+- MS_next is determined during TS4 by control logic
+- MS is updated at TP4
+
+Constraint:
+
+- MS updates are not μops
+- μops must not directly modify MS
+
+
+### EXECUTE Phase Invariants
+
+All instruction execution definitions assume:
+
+- MS = EXECUTE
+- EA_addr is the fully resolved effective address and is stored in the EA register
+- All indirect addressing and autoindex effects have completed
+- IR is stable and valid for the duration of execution
+
+---
+
+
+## External Inputs (EXT)
+
+External inputs influence execution only through control decisions.
+
+Rules:
+
+- EXT may be used during TS to evaluate conditions and determine μop selection
+- EXT must not directly update or modify registers
+- EXT does not trigger or initiate state changes at TP
+- any effect of EXT must be realized only through control-selected μops
+
+Constraints:
+
+- EXT must be stable for the duration of the TS in which it is evaluated
+- EXT must not introduce implicit or asynchronous state changes
+
+
+---
+
+## Determinism Requirement
+
+Execution must satisfy:
+
+    Given identical:
+        MS, TS, register state, IR, FLAGS, EXT
+
+    Active_μops(TSn) is identical
+    Resulting state at TPn is identical
+
+Implications:
+
+- behavior is fully deterministic
+- no hidden or implicit inputs exist
+
+---
+
+## Prohibited Behavior
+
+The following are explicitly disallowed:
+
+- μop-to-μop dependency within a TSn
+- multiple μops writing the same register in a TSn
+- use of transient datapath signals as inputs
+- storing intermediate condition results in registers
+- modifying MS via μops
+
+---
+
+## Summary
+
+Execution is defined as:
+
+- control selects μops each TSn
+- μops execute concurrently
+- results commit at TPn
+- conditions influence selection, not state
+
+This model ensures:
+- deterministic behavior
+- strict separation of control and datapath
+- absence of implicit ordering or hidden state

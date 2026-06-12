@@ -1,66 +1,27 @@
-﻿## 04 Control
 
-Status: draft
+## Control
 
 ### Purpose
+Defines how system behavior is generated from machine state.
 
-Defines the **control signal space** and control word structure.
+### Model
+Control is defined as:
 
-Control bridges:
-- microarchitecture execution (see ../03-microarchitecture/README.md)
-- datapath behavior
+CONTROL = f(MS, TS, IR, FLAGS, EXT)
 
----
+See full definition:
+- [00-control-model.md](00-control-model.md)
 
-## Scope
+### Responsibilities
+- Generate datapath control signals
+- Define memory and I/O operations
+- Determine next major state
 
-Includes:
-- control signal definitions
-- control word composition
-- mapping from control outputs to datapath effects
+### Relationships
+- Uses state from [../01-architecture/README.md](../01-architecture/README.md)
+- Drives execution in [../03-microarchitecture/README.md](../03-microarchitecture/README.md)
+- Evaluated within timing defined in [../09-timing/README.md](../09-timing/README.md)
 
-Excludes:
-- instruction semantics (see ../02-isa/README.md)
-- execution timing (see ../09-timing/README.md)
-
----
-
-## Control Model
-
-Control is a function of:
-
-MS, TS, IR bits, FLAGS
-
-See:
-- ../03-microarchitecture/README.md
-
----
-
-## Outputs
-
-Control signals include:
-- register load enables
-- ALU operations
-- bus selection
-- memory control
-- MS\_next
-
----
-
-## Control Word
-
-Each control word defines:
-
-- operations enabled during TS
-- state changes committed at TP
-- next major state
-
----
-
-## Constraint
-
-All control must be representable as:
-
-CONTROL = f(MS, TS, IR bits, FLAGS)
-
-No external sequencing logic is permitted.
+### Constraints
+- All behavior must be represented in ROM
+- No external sequencing logic
