@@ -81,6 +81,20 @@ Constraint:
 
 ---
 
+### Bus Domain Exclusivity
+
+μops that consume external bus domains must not conflict.
+
+Specifically:
+- MEM_READ_TO_MB (MDB domain) and DB_READ_TO_MB (DB domain)
+  must not be active in the same TS
+
+Rationale:
+- Each requires exclusive validity assumptions about its source bus
+- Simultaneous use would violate determinism and bus isolation
+
+---
+
 ## Register Visibility
 
 Register values follow strict timing rules.

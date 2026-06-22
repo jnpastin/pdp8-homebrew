@@ -256,8 +256,8 @@ Constraint:
 ### 4.1 Enable Signals
 
 - [AC_LOAD](#ac_load)
-- [DB_DRIVE](#db_drive)
 - [DF_LOAD](#dfoad)
+- [IDB_DRIVE](#idb_drive)
 - [IF_LOAD](#if_load)
 - [L_LOAD](#l_load)
 - [MA_LOAD](#ma_load)
@@ -273,8 +273,8 @@ Constraint:
 - [ALU_A_SRC](#alu_a_src)
 - [ALU_B_SRC](#alu_b_src)
 - [ALU_OP](#alu_op)
-- [DB_SRC](#db_src)
 - [EA_SRC](#ea_src)
+- [IDB_SRC](#idb_src)
 - [L_OP](#l_op)
 - [MA_SRC](#ma_src)
 - [MB_SRC](#mb_src)

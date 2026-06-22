@@ -22,6 +22,14 @@ Each μop specifies:
 - μops must not assume ordering within a TS
 - μops operate only on defined source domains
 
+- All data ingress from external buses must occur through MB
+
+Specifically:
+- MDB → MB via MEM_READ_TO_MB
+- DB  → MB via DB_READ_TO_MB
+
+No μop may directly ingest DB_input into any register other than MB.
+
 ---
 
 ## Conditions (Non-μop Concept)
@@ -70,6 +78,9 @@ No intermediate state or flag storage is created.
 ### Memory Operations
 - [MEM_READ_TO_MB](#mem_read_to_mb)
 - [MEM_WRITE_FROM_MB](#mem_write_from_mb)
+
+### I/O / External
+- [DB_READ_TO_MB](#db_read_to_mb)
 
 ### Register Transfer
 - [AC_TO_MB](#ac_to_mb)
@@ -365,6 +376,34 @@ AC, L
 **Sources:**  
 AC, MB
 
+---
+
+### DB_READ_TO_MB
+
+**Category:** 
+I/O / External  
+
+**Description:**  
+Reads the value present on the System Data Bus (DB) and loads it into the Memory Buffer (MB).  
+This is the only defined mechanism for CPU ingestion of data from the DB domain.  
+
+**Target:**  
+MB  
+
+**Expression:**  
+MB ← DB_input  
+
+**Sources:**  
+DB_input  
+
+**Preconditions:**  
+- A device is currently driving DB  
+- DB contains valid data for the duration of the TS  
+
+**Constraints:**  
+- Must not be used concurrently with MDB-based reads (MEM_READ_TO_MB)  
+- MB must not be written by any other μop in the same TS  
+- DB_input validity is defined externally and must not be assumed by control  
 
 ---
 
