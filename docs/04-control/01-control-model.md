@@ -6,13 +6,20 @@ Defines the conceptual model of control in the system.
 
 This document establishes:
 - how control decisions are formed
-- how control is implemented using a control store
-- how instruction and processor state are represented for control purposes
+- how processor state is represented for control purposes
+- how inputs to the control system are defined
 
-This document is descriptive and architectural.
+This document defines control inputs and conceptual behavior only.
 
-Formal rules and requirements are defined in:  
-[Control Constraints](../04-control/03-control-constraints.md)
+For control address construction, see:
+- [Control Addressing](../04-control/02-control-addressing.md)
+
+For constraints and formal rules, see:
+- [Control Constraints](../04-control/03-control-constraints.md)
+
+For definitions of control input signals, see:
+- [Derived Flags](../04-control/10-control-input-definitions/01-derived-flags.md)
+- [IR Derived Fields](../04-control/10-control-input-definitions/02-ir-derived-fields.md)
 
 ---
 
@@ -20,43 +27,45 @@ Formal rules and requirements are defined in:
 
 Control is defined as a deterministic function:
 
-CONTROL = f(MS, TS, INST, FLAGS, EXT)
+```
+CONTROL = f(MS, TS, IR_FIELDS, FLAGS, EXT)
+```
 
 Where:
 
-- MS: Major State
-- TS: Time State
-- INST: instruction-derived signals
-- FLAGS: derived condition signals
-- EXT: external inputs
+- MS: Major State  
+- TS: Time State  
+- IR_FIELDS: instruction-derived fields from IR  
+- FLAGS: internal derived condition signals  
+- EXT: external inputs  
 
-This function produces the complete control word.
+This function selects a control word that determines system behavior.
 
 ---
 
-## 2. ROM-Based Implementation
+## 2. Control Inputs
 
-Control is implemented using a control store:
+Control depends only on explicitly defined input domains.
 
-```
-CONTROL_WORD = ROM[CTRL_ADDR]
-```
+### 2.1 Input Domains
 
-Where:
+Control inputs are partitioned into:
 
-```
-CTRL_ADDR = PACK(MS, TS, INST, FLAGS, EXT)
-```
+- execution state:
+  - MS (Major State)
+  - TS (Time State)
 
-The ROM output defines:
-- all architectural control signals
-- all microarchitectural control signals
-- MS_next (next major state)
+- instruction state:
+  - IR (Instruction Register)
+  - IR-derived fields (IR_FIELDS)
 
-No additional decoding or interpretation occurs after the control store.
+- derived conditions:
+  - FLAGS
 
-Further details:  
-[Control Store Design](../04-control/02-control-store.md)
+- external inputs:
+  - EXT
+
+Each domain is distinct and must not overlap in definition or implementation.
 
 ---
 
@@ -64,13 +73,11 @@ Further details:
 
 Control operates over two orthogonal state dimensions.
 
----
-
 ### 3.1 Major State (MS)
 
 Defines the high-level execution phase.
 
-Examples include:
+Examples:
 - FETCH
 - DEFER
 - EXECUTE
@@ -79,6 +86,7 @@ Examples include:
 Properties:
 - persists across multiple TS
 - changes only at defined transition points
+- determines high-level control flow
 
 ---
 
@@ -90,27 +98,38 @@ Properties:
 - finite sequence per MS
 - advances deterministically
 - resets on MS transition
+- defines the evaluation step within an instruction
 
 ---
 
-## 4. Instruction Representation (INST)
+## 4. Instruction Representation
 
-Control does not operate on raw instruction fields directly.
+Control does not operate directly on raw instruction encoding.
 
-Instead, the instruction register (IR) is transformed into a set of
-instruction-derived signals (INST).
+Instead, the Instruction Register (IR) is reduced to control-relevant fields.
 
 ---
 
-### 4.1 Instruction Predecode
+### 4.1 Instruction Register (IR)
 
-Instruction predecode is a combinational transformation:
+IR holds the current instruction.
+
+Properties:
+- loaded during instruction fetch
+- stable for the duration of the instruction
+- source for instruction-derived fields
+
+---
+
+### 4.2 IR-Derived Fields (IR_FIELDS)
+
+IR is transformed via combinational logic:
 
 ```
-IR → INST
+IR → IR_FIELDS
 ```
 
-INST signals represent only the control-relevant properties of the instruction.
+IR_FIELDS retain only the information required for control decisions.
 
 Examples:
 
@@ -123,172 +142,94 @@ Examples:
   - IS_ISZ
   - IS_AND
 
-- condition enables:
-  - SPA_enable
-  - SNA_enable
+- control-relevant bits:
+  - indirect bit
+
+- OPR Group 1 examples:
+  - CLA (clear accumulator)
+  - CLL (clear link)
+  - CMA (complement accumulator)
+
+- OPR Group 2 examples:
+  - SMA_enable (skip on minus accumulator)
+  - SZA_enable (skip on zero accumulator)
+  - SNL_enable (skip on non-zero link)
 
 ---
 
-### 4.2 Properties of INST Signals
+### 4.3 Properties of IR_FIELDS
 
-INST signals:
+IR_FIELDS:
 
 - are derived combinationally from IR
 - are stable for the duration of the instruction
-- represent minimal, control-relevant information
-
-They replace the need to include opcode or full IR in CTRL_ADDR.
+- represent only control-relevant information
+- must be reduced (not full IR)
 
 ---
 
-### 4.3 Design Principle
+### 4.4 Design Principle
 
 Instruction information used by control must be expressed as:
 
-> control-relevant predicates, not raw encoded state
+```
+control-relevant fields, not raw encoded state
+```
 
 ---
 
 ## 5. Condition Representation (FLAGS)
 
-FLAGS consists of derived predicates based on processor state.
+FLAGS are internal, derived condition signals used as inputs to control.
 
-These are not raw register values.
-
-They influence control selection but do not directly drive the datapath.
+They are not architecturally visible and do not correspond to a stored
+flags register.
 
 ---
 
 ### 5.1 Definition
 
-FLAGS are boolean predicates derived from processor state.
+FLAGS are boolean predicates derived from register state.
 
-They are evaluated combinationally and do not represent stored state.
+They are:
+- combinational
+- not stored
+- not architecturally observable
 
 ---
 
 ### 5.2 Properties
 
 - Type: single-bit (per flag)
-- Domain: control input (not control output)
-- Polarity: active-high (true when condition holds)
+- Domain: control input
+- Polarity: active-high
 - Timing:
   - derived from state captured at TP
   - stable during TS
-- Storage:
-  - none (purely combinational)
-- Usage:
-  - consumed by control during CTRL_ADDR formation
+- Storage: none
 
 ---
 
 ### 5.3 Constraints
 
-- FLAGS must be derived only from stable register state
-- FLAGS must not depend on transient datapath signals
-- FLAGS must not be stored or latched
-- FLAGS must be minimal and non-redundant
+- must be derived only from stable register state
+- must not depend on transient datapath signals
+- must not be latched or stored
+- must be minimal and non-redundant
 
 ---
 
-### 5.4 Usage
+### 5.4 Definition Source
 
-FLAGS contribute to control address formation:
+Complete definitions of all FLAGS are provided in:
 
-- [Control Store](../04-control/02-control-store.md)
-
----
-
-### 5.5 Scope
-
-FLAGS are not:
-
-- control signals  
-- datapath signals  
-- part of the control word  
-
-They are inputs to control selection only.
-
----
-
-### 5.6 Design Principle
-
-Control decisions are based on:
-
-> reduced condition signals, not full register contents
-
----
-
-### 5.7 Defined FLAGS
-
-#### AC_zero
-
-Description:
-True when the accumulator is zero.
-
-Expression:
-AC == 0
-
-Source:
-AC register
-
----
-
-#### AC_negative
-
-Description:
-True when the accumulator is negative.
-
-Expression:
-AC[MSB] == 1
-
-Source:
-AC register
-
----
-
-#### L_zero
-
-Description:
-True when the Link register is zero.
-
-Expression:
-L == 0
-
-Source:
-L register
-
----
-
-#### L_set
-
-Description:
-True when the Link register is one.
-
-Expression:
-L == 1
-
-Source:
-L register
-
----
-
-#### MB_zero
-
-Description:
-True when the Memory Buffer is zero.
-
-Expression:
-MB == 0
-
-Source:
-MB register
+- [Derived Flags](../04-control/10-control-input-definitions/01-derived-flags.md)
 
 ---
 
 ## 6. External Inputs (EXT)
 
-EXT represents signals external to the CPU.
+EXT represents signals originating outside the CPU.
 
 Examples:
 - interrupt request
@@ -297,75 +238,70 @@ Examples:
 Properties:
 - originate outside the CPU
 - influence control decisions
-- must be stable prior to TP
+- must be stable before TP
 
-Defined in:  
-[Control Constraints](../04-control/03-control-constraints.md#8-external-inputs-ext)
+Defined in:
+- [External Inputs](../04-control/03-control-constraints.md#8-external-inputs-ext)
 
 ---
 
 ## 7. Control Structure
 
-For reasoning purposes, control can be viewed as three conceptual components:
+Control can be understood as three conceptual operations:
 
-1. Predecode and Reduction  
-2. Address Generation  
-3. Control Store  
+- input reduction
+- address formation
+- control selection
 
 ---
 
 ### 7.1 Conceptual Roles
 
-- Predecode and Reduction  
-  - produces INST and FLAGS signals
+- input reduction:
+  - produces IR_FIELDS and FLAGS
 
-- Address Generation  
-  - combines MS, TS, INST, FLAGS, EXT into CTRL_ADDR
+- address formation:
+  - combines MS, TS, IR_FIELDS, FLAGS, EXT into CTRL_ADDR
 
-- Control Store  
-  - maps CTRL_ADDR to CONTROL_WORD
+- control selection:
+  - maps CTRL_ADDR to a control word
 
 ---
 
-### 7.2 Implementation Note
+### 7.2 Implementation Model
 
-This partitioning is conceptual only.
+These roles are conceptual only.
 
-In the actual system:
+In implementation:
 
-- all components operate concurrently as combinational logic
-- there is no sequential staging between them
+- all logic is combinational
 - signals propagate continuously during TS
+- no staged sequencing exists between components
 
-The system behaves as a single combinational network:
+Behavior:
 
 ```
-IR → INST
+IR → IR_FIELDS
 Registers → FLAGS
-(MDB_input, DB_input) → datapath sources
-(MS, TS, INST, FLAGS, EXT) → CTRL_ADDR
-CTRL_ADDR → ROM → CONTROL_WORD
+(MS, TS, IR_FIELDS, FLAGS, EXT) → CTRL_ADDR
+CTRL_ADDR → CONTROL_WORD
 ```
 
 ---
 
 ### 7.3 Timing Model
 
-- At TPₙ₋₁:
+- At TP(n-1):
   - state is latched
 
-- During TSₙ:
-  - all combinational logic evaluates continuously
+- During TS(n):
+  - all combinational logic evaluates
 
-- By TPₙ:
+- By TP(n):
   - CONTROL_WORD must be stable
 
-- At TPₙ:
+- At TP(n):
   - all state updates occur simultaneously
-
-Correct operation requires that all propagation delays are bounded such that:
-
-> CONTROL_WORD is stable before TP
 
 ---
 
@@ -373,69 +309,58 @@ Correct operation requires that all propagation delays are bounded such that:
 
 Control state does not persist across TS.
 
-However, required information persists via:
+Required information persists via:
 
-- IR (instruction register)
-- MS (major state register)
+- IR
+- MS
 - architectural registers
 
-INST and FLAGS signals remain stable because their source values are stable.
-
-No additional latching is required for instruction decode.
+IR_FIELDS and FLAGS remain stable because their sources are stable.
 
 ---
 
 ## 9. Design Principles
 
-The control model follows these principles.
+### 9.1 Decision-Based Representation
 
----
-
-### 9.1 Decision-Based Encoding
-
-CTRL_ADDR encodes:
-
-- control-relevant decisions
-
-Not:
-
-- full processor state
+Control inputs represent decisions, not full state.
 
 ---
 
 ### 9.2 Minimality
 
-Only include information required to determine control outputs.
+Only information required to determine control behavior is included.
 
 ---
 
 ### 9.3 Separation of Concerns
 
-- decode determines instruction properties
-- control store determines system behavior
+- IR decoding determines instruction properties
+- FLAGS represent conditions
+- control selects behavior based on reduced inputs
 
 ---
 
 ### 9.4 Determinism
 
-Each input combination produces exactly one control word.
+Each input combination produces exactly one control outcome.
 
 ---
 
 ## 10. Summary
 
-Control is implemented as a ROM-based mapping from reduced processor state to a complete control word.
+Control is a mapping from reduced machine state to control behavior.
 
 Key transformations:
 
 ```
-IR → INST
+IR → IR_FIELDS
 Registers → FLAGS
-(MS, TS, INST, FLAGS, EXT) → CTRL_ADDR
-CTRL_ADDR → CONTROL_WORD
+(MS, TS, IR_FIELDS, FLAGS, EXT) → control selection
 ```
 
-This structure provides:
-- compact address encoding
-- efficient hardware implementation
-- clear separation between decision logic and execution
+This model provides:
+
+- deterministic behavior
+- minimal encoding
+- clear separation between state, decisions, and execution
