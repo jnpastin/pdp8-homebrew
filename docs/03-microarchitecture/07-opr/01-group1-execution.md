@@ -59,8 +59,8 @@ TS3:
 - if IR[bit(IAC)] = 1: AC_INC  
 
 TS4:
-- if IR[bit(RAR)] = 1 AND IR[bit(BSW)] = 0: AC_ROR  
-- if IR[bit(RAL)] = 1 AND IR[bit(BSW)] = 0: AC_ROL  
+- if IR[bit(RAR)] = 1 AND IR[bit(BSW)] = 0: AC_RAR  
+- if IR[bit(RAL)] = 1 AND IR[bit(BSW)] = 0: AC_RAL  
 - if IR[bit(RAR)] = 1 AND IR[bit(BSW)] = 1: AC_RTR  
 - if IR[bit(RAL)] = 1 AND IR[bit(BSW)] = 1: AC_RTL  
 - if IR[bit(RAR)] = 0 AND IR[bit(RAL)] = 0 AND IR[bit(BSW)] = 1: AC_BSW  

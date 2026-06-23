@@ -30,6 +30,11 @@ Specifically:
 
 No μop may directly ingest DB_input into any register other than MB.
 
+MB Lifetime Rule:
+A value placed in MB must be consumed by all dependent μops
+in the immediately following TS. No μop may rely on MB contents
+beyond that TS.
+
 ---
 
 ## Conditions (Non-μop Concept)
@@ -65,8 +70,8 @@ No intermediate state or flag storage is created.
 
 #### Bit Operations
 
-- [AC_ROR](#ac_ror)
-- [AC_ROL](#ac_rol)
+- [AC_RAR](#ac_rar)
+- [AC_RAL](#ac_ral)
 - [AC_RTR](#ac_rtr)
 - [AC_RTL](#ac_rtl)
 - [AC_BSW](#ac_bsw)
@@ -81,6 +86,7 @@ No intermediate state or flag storage is created.
 
 ### I/O / External
 - [DB_READ_TO_MB](#db_read_to_mb)
+- [DB_WRITE_FROM_MB](#db_write_from_mb)
 
 ### Register Transfer
 - [AC_TO_MB](#ac_to_mb)
@@ -244,7 +250,7 @@ AC, SR
 
 ---
 
-### AC_ROR
+### AC_RAR
   
 **Category:** 
 Bit Operations  
@@ -263,7 +269,7 @@ AC, L
 
 ---
 
-### AC_ROL
+### AC_RAL
   
 **Category:** 
 Bit Operations  
@@ -404,6 +410,32 @@ DB_input
 - Must not be used concurrently with MDB-based reads (MEM_READ_TO_MB)  
 - MB must not be written by any other μop in the same TS  
 - DB_input validity is defined externally and must not be assumed by control  
+
+---
+
+### DB_WRITE_FROM_MB
+
+**Category:** I/O / External  
+**Description:** Writes the value stored in MB to the System Data Bus (DB).
+
+**Target:** DB  
+
+**Expression:**  
+DB_output ← MB  
+
+**Sources:**  
+MB  
+
+**Preconditions:**  
+- The CPU has control of the DB bus  
+- No other device is actively driving DB  
+- DB is in High-Z state prior to the write  
+
+**Constraints:**  
+- Must not be used concurrently with DB_READ_TO_MB  
+- Must not be used concurrently with MDB-based operations  
+- MB must remain stable for the duration of the TS  
+- Only one device may drive DB at any time  
 
 ---
 

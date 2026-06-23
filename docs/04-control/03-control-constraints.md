@@ -218,7 +218,138 @@ Constraint:
 
 ---
 
-## 11. External Inputs (EXT)
+### 11. Cross-Domain Operation Binding Rules
+
+#### Purpose
+
+Defines the required relationship between:
+- architectural control signals (external operations)
+- micro-operations (internal state transformations)
+
+This section ensures:
+- no implicit behavior
+- correct coordination between CPU and external subsystems
+- preservation of domain separation
+
+---
+
+### 11.1 General Principle
+
+An externally visible operation is valid only when **both**:
+1. the architectural control signal for that operation is asserted
+2. the corresponding μop is active
+
+Neither alone is sufficient.
+
+Implication:
+- architectural signals do not cause internal state changes
+- μops do not initiate external behavior
+
+---
+
+### 11.2 Memory Read Binding
+
+A memory read operation is defined by the combination of:
+
+- Architectural signal:
+  - RD = 1
+
+- Micro-operation:
+  - MEM_READ_TO_MB
+
+#### Required Behavior
+
+When both are active in the same TS:
+
+- Memory must place M[MA] onto MDB
+- MB must capture MDB_input at TP
+
+#### Invalid Conditions
+
+The following are invalid and must not occur:
+
+- RD = 1 without MEM_READ_TO_MB  
+  → external read initiated with no defined data consumption
+
+- MEM_READ_TO_MB without RD = 1  
+  → MB attempts to capture undefined MDB_input
+
+---
+
+### 11.3 Memory Write Binding
+
+A memory write operation is defined by the combination of:
+
+- Architectural signal:
+  - WR = 1
+
+- Micro-operation:
+  - MEM_WRITE_FROM_MB
+
+#### Required Behavior
+
+When both are active in the same TS:
+
+- Memory must store MB into M[MA] at TP
+
+#### Invalid Conditions
+
+The following are invalid and must not occur:
+
+- WR = 1 without MEM_WRITE_FROM_MB  
+  → external write initiated with no defined data source
+
+- MEM_WRITE_FROM_MB without WR = 1  
+  → memory state modified without external coordination
+
+---
+
+### 11.4 Domain Separation Constraint
+
+Binding between architectural signals and μops:
+
+- does not merge domains
+- does not redefine signal semantics
+- does not introduce implicit control behavior
+
+Each domain retains its role:
+
+- Architectural signals:
+  - initiate external operations
+
+- μops:
+  - define internal state changes
+
+The binding rule is a **consistency requirement**, not a mechanism.
+
+---
+
+### 11.5 Determinism Requirement
+
+For any valid execution state:
+
+- the active architectural signals and μops must form a consistent pair
+- no partially defined external operation may exist
+
+This ensures:
+
+(control word + prior state) → exactly one valid system behavior
+
+---
+
+### 11.6 Extension Rule
+
+Any future externally observable operation (e.g., DMA) must define:
+
+- required architectural signal(s)
+- required μop(s)
+- explicit binding rules identical in structure to this section
+
+No external operation may be defined without such a binding.
+
+---
+
+## 12. External Inputs (EXT)
 
 Constraint:
 - EXT must be stable during control evaluation.
@@ -231,7 +362,7 @@ Constraint:
 
 ---
 
-## 12. Control Evolution Constraints
+## 13. Control Evolution Constraints
 
 This section defines constraints governing extension of the control system.
 
@@ -240,7 +371,7 @@ Refer to:
 
 ---
 
-### 12.1 Decision Space Consistency
+### 13.1 Decision Space Consistency
 
 Constraint:
 - CTRL_ADDR must uniquely represent the full input decision space.
@@ -253,7 +384,7 @@ Constraint:
 
 ---
 
-### 12.2 No Decision Relocation
+### 13.2 No Decision Relocation
 
 Constraint:
 - New control decisions must not be implemented by extending CONTROL_WORD alone.
@@ -266,7 +397,7 @@ Constraint:
 
 ---
 
-### 12.3 Output-Only Extensions
+### 13.3 Output-Only Extensions
 
 Constraint:
 - CONTROL_WORD may be extended without modifying CTRL_ADDR only if:
@@ -278,7 +409,7 @@ Constraint:
 
 ---
 
-### 12.4 Backward Compatibility
+### 13.4 Backward Compatibility
 
 Constraint:
 - Extension of CTRL_ADDR or CONTROL_WORD must preserve existing behavior for all previously defined input combinations.
@@ -288,7 +419,7 @@ Constraint:
 
 ---
 
-### 12.5 No Implicit Expansion Mechanisms
+### 13.5 No Implicit Expansion Mechanisms
 
 Constraint:
 - The following are prohibited when extending control:
@@ -298,6 +429,7 @@ Constraint:
 
 Constraint:
 - All extensions must conform to the defined control pipeline:
+
 ```
 (MS, TS, IR_FIELDS, FLAGS, EXT)
 → CTRL_ADDR
@@ -306,7 +438,7 @@ Constraint:
 
 ---
 
-### 12.6 External Arbitration Constraints
+### 13.6 External Arbitration Constraints
 
 Constraint:
 - External arbitration mechanisms may suppress control effects but must not alter control decisions.
@@ -319,7 +451,7 @@ Constraint:
 
 ---
 
-## 13. Completeness
+## 14. Completeness
 
 Constraint:
 - Every reachable input combination must map to a defined CONTROL_WORD.
@@ -329,7 +461,7 @@ Constraint:
 
 ---
 
-## 14. Non-Aliasing
+## 15. Non-Aliasing
 
 Constraint:
 - Distinct control behaviors must not map to the same CTRL_ADDR unless explicitly intended.
@@ -339,7 +471,7 @@ Constraint:
 
 ---
 
-## 15. No Implicit Behavior
+## 16. No Implicit Behavior
 
 Constraint:
 - All control behavior must be explicitly encoded.
@@ -352,7 +484,7 @@ Constraint:
 
 ---
 
-## 16. Invariant Summary
+## 17. Invariant Summary
 
 Constraint:
 - The control system must operate exclusively as:
