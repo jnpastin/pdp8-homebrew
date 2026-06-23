@@ -12,26 +12,6 @@ FLAGS provide stable, register-derived interpretations of system state.
 
 ---
 
-### Core Invariants
-
-1. **Flags must reference consuming μops**
-   - Every FLAG definition must explicitly list the μops that depend on it.
-
-2. **All references must use GitHub link format**
-   - Must follow: `[Readable Text](relative/path.md)`
-   - Raw paths are prohibited.
-
-3. **Flags are derived only from stable register state**
-   - Evaluated continuously during TS
-   - Updated only after TP
-   - Must not depend on transient datapath values
-
-4. **Flags are not state**
-   - No storage
-   - No independent evolution
-
----
-
 ### Timing Model
 
 - Registers are latched at TP(n)
@@ -46,12 +26,12 @@ FLAGS provide stable, register-derived interpretations of system state.
 
 FLAGS must:
 
-- Be derived only from registers
+- Be derived only from registers or synchronized external inputs
 - Not depend on:
-  - MB
   - DB / MDB
   - μop intermediate values
   - control signals
+  - transient datapath values
 - Represent minimal, orthogonal conditions
 - Not duplicate derivable logic unnecessarily
 
@@ -65,15 +45,15 @@ FLAGS must:
 
 **Name:** AC_IS_NEGATIVE  
 **Source Register:** AC  
-**Purpose:** Identifies whether the accumulator contains a negative value based on sign bit.  
+**Purpose:** Indicates whether the accumulator sign bit is set.
 
 **Value Encoding:**
 - `0` → AC[11] = 0 (non-negative)
 - `1` → AC[11] = 1 (negative)
 
-**Used By μops:**
-- Skip decision logic associated with Group 2 operations:
-  - [Conditional Skip Execution](../03-microarchitecture/03-microoperation-sequencing.md)
+**Consumed By:**
+- Skip logic driving:
+  - [PC_INC μop](../03-microarchitecture/02-micro-operations.md#pc_inc)
 
 ---
 
@@ -81,15 +61,15 @@ FLAGS must:
 
 **Name:** AC_IS_ZERO  
 **Source Register:** AC  
-**Purpose:** Detects whether the accumulator value is zero.  
+**Purpose:** Indicates whether the accumulator value is zero.
 
 **Value Encoding:**
 - `0` → AC ≠ 0
 - `1` → AC = 0
 
-**Used By μops:**
-- Skip decision logic:
-  - [Conditional Skip Execution](../03-microarchitecture/03-microoperation-sequencing.md)
+**Consumed By:**
+- Skip logic driving:
+  - [PC_INC μop](../03-microarchitecture/02-micro-operations.md#pc_inc)
 
 ---
 
@@ -97,16 +77,16 @@ FLAGS must:
 
 **Name:** EA_IS_AUTOINDEX  
 **Source Register:** EA_ADDR  
-**Purpose:** Indicates that the effective address lies within the auto-index range and requires increment behavior.  
+**Purpose:** Indicates that the effective address lies within the auto-index range.
 
 **Value Encoding:**
 - `0` → EA_ADDR ∉ [0010–0017]
 - `1` → EA_ADDR ∈ [0010–0017] (octal)
 
-**Used By μops:**
-- Auto-index increment sequencing:
-  - [Memory Read μops](../03-microarchitecture/02-micro-operations.md)
-  - [Microoperation Sequencing](../03-microarchitecture/03-microoperation-sequencing.md)
+**Consumed By:**
+- Auto-index execution:
+  - [MB_INC μop](../03-microarchitecture/02-micro-operations.md#mb_inc)
+  - [MEM_WRITE_FROM_MB μop](../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)
 
 ---
 
@@ -114,18 +94,18 @@ FLAGS must:
 
 **Name:** IE_IS_SET  
 **Source Register:** IE  
-**Purpose:** Indicates whether interrupts are enabled.  
+**Purpose:** Indicates whether interrupts are enabled.
 
 **Value Encoding:**
-- `0` → Interrupts disabled
-- `1` → Interrupts enabled
+- `0` → interrupts disabled
+- `1` → interrupts enabled
 
-**Used By μops:**
-- Interrupt entry control:
-  - [Interrupt Control Flow](../04-control/03-control-constraints.md)
+**Consumed By:**
+- Control decision:
+  - Interrupt entry condition (control logic)
 - Modified by:
-  - [IE_SET](../03-microarchitecture/02-micro-operations.md)
-  - [IE_CLEAR](../03-microarchitecture/02-micro-operations.md)
+  - [IE_SET μop](../03-microarchitecture/02-micro-operations.md#ie_set)
+  - [IE_CLEAR μop](../03-microarchitecture/02-micro-operations.md#ie_clear)
 
 ---
 
@@ -133,36 +113,33 @@ FLAGS must:
 
 **Name:** II_IS_SET  
 **Source Register:** II  
-**Purpose:** Indicates that interrupt inhibit is active, preventing immediate interrupt entry.  
+**Purpose:** Indicates that interrupt inhibit is active.
 
 **Value Encoding:**
-- `0` → No inhibition
-- `1` → Interrupts inhibited
+- `0` → not inhibited
+- `1` → inhibited
 
-**Used By μops:**
-- Interrupt gating logic:
-  - [Interrupt Control Flow](../04-control/03-control-constraints.md)
+**Consumed By:**
+- Control decision:
+  - Interrupt entry gating (control logic)
 - Modified by:
-  - [II_SET](../03-microarchitecture/02-micro-operations.md)
+  - [II_SET μop](../03-microarchitecture/02-micro-operations.md#ii_set)
 
 ---
 
 ### IP
 
 **Name:** INTERRUPT_PENDING  
-**Source Register:** EXT (synchronized interrupt request)  
-**Purpose:** Indicates that an interrupt request is pending from external devices.  
+**Source Register:** EXT  
+**Purpose:** Indicates that an interrupt request is pending.
 
 **Value Encoding:**
-- `0` → No interrupt request
-- `1` → Interrupt request pending
+- `0` → no interrupt request
+- `1` → interrupt request pending
 
-**Used By μops:**
-- Interrupt entry sequencing:
-  - [Interrupt Control Flow](../04-control/03-control-constraints.md)
-- Combined with:
-  - IE_IS_SET
-  - II_IS_SET
+**Consumed By:**
+- Control decision:
+  - Interrupt entry condition (control logic)
 
 ---
 
@@ -170,44 +147,31 @@ FLAGS must:
 
 **Name:** L_IS_ZERO  
 **Source Register:** L  
-**Purpose:** Determines whether the Link register is zero.  
+**Purpose:** Indicates whether the Link register is zero.
 
 **Value Encoding:**
 - `0` → L = 1
 - `1` → L = 0
 
-**Used By μops:**
-- Skip decision logic:
-  - [Conditional Skip Execution](../03-microarchitecture/03-microoperation-sequencing.md)
+**Consumed By:**
+- Skip logic driving:
+  - [PC_INC μop](../03-microarchitecture/02-micro-operations.md#pc_inc)
 
 ---
 
-#### MBZ — Memory Buffer Zero
+### MBZ
 
-**Width:** 1 bit  
-**Role:** Indicates whether the memory buffer contains zero  
-**Visibility:** Control  
-**Type:** Derived (combinational)
+**Name:** MB_IS_ZERO  
+**Source Register:** MB  
+**Purpose:** Indicates whether the memory buffer contains zero.
 
-**Definition:**
-```
-MBZ = (MB == 0)
-```
+**Value Encoding:**
+- `0` → MB ≠ 0
+- `1` → MB = 0
 
-**Invariants:**
-- Derived from MB register state only
-- Valid only when MB is stable
-- No storage; recomputed combinationally each TS
-
-**Constraints:**
-- Must not depend on:
-  - control signals
-  - memory bus state (MDB)
-  - transient datapath values
-- May be used only after MB has been updated and is stable
-
-**Used By μops:**
-- [PC_INC](../03-microarchitecture/02-micro-operations.md#pc_inc)
+**Consumed By:**
+- ISZ execution:
+  - [PC_INC μop](../03-microarchitecture/02-micro-operations.md#pc_inc)
 
 ---
 
@@ -218,9 +182,10 @@ This flag set is:
 - Minimal (no redundancy)
 - Orthogonal (independent conditions)
 - Fully sufficient for:
-  - Group 2 skips
-  - Indirect auto-index behavior
-  - Interrupt control flow
+  - Group 2 skip evaluation
+  - ISZ conditional skip
+  - Auto-index behavior
+  - Interrupt control
 
 All FLAGS:
 
