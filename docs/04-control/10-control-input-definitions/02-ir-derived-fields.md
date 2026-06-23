@@ -170,7 +170,7 @@ IR_ADDR = IR[6:0]
 **Value Encoding:**
 - 0000000–1111111 → address field
 
-**Used by μops:**
+**Consumed By:**
 - [IR_ADDR_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#ir_addr_to_ea_addr)
 
 
@@ -195,7 +195,7 @@ IR_INDIRECT = IR_IS_MRI AND IR[8]
 - 0 → direct addressing  
 - 1 → indirect addressing  
 
-**Used by μops:**
+**Consumed By:**
 - [MB_TO_EA](../../03-microarchitecture/02-micro-operations.md#mb_to_ea)
 
 ---
@@ -219,10 +219,10 @@ IR_IOA = IR[8:3]
 
 - 000000–111111 → device address  
 
-**Used by μops:**
+**Consumed By:**
 
 
-Referenced by:
+Consumed by:
 - [Architectural Control Signals](../20-control-output-definitions/02-architectural-control-signals.md)
 
 ---
@@ -247,7 +247,7 @@ IR_IS_IOT = (IR[11:9] == 110)
 - 0 → not IOT  
 - 1 → IOT  
 
-**Used by μops:**
+**Consumed By:**
 
 ---
 
@@ -271,7 +271,7 @@ IR_IS_ISZ = (IR[11:9] == 010)
 - 0 → not ISZ
 - 1 → ISZ
 
-**Used by μops:**
+**Consumed By:**
 
 ---
 
@@ -301,7 +301,7 @@ IR_IS_MRI =
 - 0 → not MRI  
 - 1 → MRI  
 
-**Used by μops:**
+**Consumed By:**
 
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb)
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb)
@@ -312,7 +312,7 @@ IR_IS_MRI =
 - [IR_ADDR_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#ir_addr_to_ea_addr)
 - [MB_TO_EA](../../03-microarchitecture/02-micro-operations.md#mb_to_ea)
 - [EA_TO_MA](../../03-microarchitecture/02-micro-operations.md#ea_to_ma)
-- [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr
+- [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr)
 
 
 ---
@@ -337,7 +337,7 @@ IR_IS_OPR = (IR[11:9] == 111)
 - 0 → not OPR  
 - 1 → OPR  
 
-**Used by μops:**
+**Consumed By:**
 
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
 - [AC_COMPLEMENT](../../03-microarchitecture/02-micro-operations.md#ac_complement)
@@ -382,7 +382,7 @@ IR_OPR_BSW = IR_OPR_GROUP1 AND IR[1]
 - 0 → modifier inactive  
 - 1 → modifier active  
 
-**Used by μops:**
+**Consumed By:**
 - [AC_BSW](../../03-microarchitecture/02-micro-operations.md#ac_bsw)
 - [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl)
 - [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr)
@@ -402,7 +402,7 @@ Clears the accumulator (AC).
 
 **Derivation:**
 ```text
-IR_OPR_CLA = IR_OPR AND IR[7]
+IR_OPR_CLA = IR_IS_OPR AND IR[7]
 ```
 
 **Value Encoding:**
@@ -410,7 +410,7 @@ IR_OPR_CLA = IR_OPR AND IR[7]
 - 0 → inactive  
 - 1 → clear AC  
 
-**Used by μops:**
+**Consumed By:**
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
 
 ---
@@ -435,7 +435,7 @@ IR_OPR_CLL = IR_OPR_GROUP1 AND IR[6]
 - 0 → inactive  
 - 1 → clear Link  
 
-**Used by μops:**
+**Consumed By:**
 - [L_CLEAR](../../03-microarchitecture/02-micro-operations.md#l_clear)
 
 ---
@@ -460,7 +460,7 @@ IR_OPR_CMA = IR_OPR_GROUP1 AND IR[5]
 - 0 → inactive  
 - 1 → complement AC  
 
-**Used by μops:**
+**Consumed By:**
 - [AC_COMPLEMENT](../../03-microarchitecture/02-micro-operations.md#ac_complement)
 
 ---
@@ -485,7 +485,7 @@ IR_OPR_CML = IR_OPR_GROUP1 AND IR[4]
 - 0 → inactive  
 - 1 → complement Link  
 
-**Used by μops:**
+**Consumed By:**
 - [L_COMP](../../03-microarchitecture/02-micro-operations.md#l_comp)
 
 ---
@@ -510,7 +510,7 @@ IR_OPR_GROUP1 = IR_IS_OPR AND (IR[8] == 0)
 - 0 → not Group 1  
 - 1 → Group 1  
 
-**Used by μops:**
+**Consumed By:**
 
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
 - [AC_COMPLEMENT](../../03-microarchitecture/02-micro-operations.md#ac_complement)
@@ -546,7 +546,7 @@ IR_OPR_GROUP2 = IR_IS_OPR AND IR[8] AND (IR[0] == 0)
 - 0 → not Group 2  
 - 1 → Group 2  
 
-**Used by μops:**
+**Consumed By:**
 
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
 - [AC_OR_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_sr)
@@ -575,7 +575,7 @@ IR_OPR_GROUP3 = IR_IS_OPR AND IR[8] AND IR[0]
 - 0 → not Group 3  
 - 1 → Group 3  
 
-**Used by μops:**
+**Consumed By:**
 
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
@@ -604,7 +604,7 @@ IR_OPR_HLT = IR_OPR_GROUP2 AND IR[1]
 - 0 → inactive  
 - 1 → halt  
 
-**Used by μops:**
+**Consumed By:**
 
 ---
 
@@ -628,7 +628,7 @@ IR_OPR_IAC = IR_OPR_GROUP1 AND IR[3]
 - 0 → inactive  
 - 1 → increment AC  
 
-**Used by μops:**
+**Consumed By:**
 
 - [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
 
@@ -654,7 +654,7 @@ IR_OPR_OSR = IR_OPR_GROUP2 AND IR[2]
 - 0 → inactive  
 - 1 → OR switch register into AC  
 
-**Used by μops:**
+**Consumed By:**
 
 - [AC_OR_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_sr)
 
@@ -680,7 +680,7 @@ IR_OPR_RAL = IR_OPR_GROUP1 AND IR[2]
 - 0 → inactive  
 - 1 → rotate-left component enabled  
 
-**Used by μops:**
+**Consumed By:**
 
 
 - [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral)
@@ -708,7 +708,7 @@ IR_OPR_RAR = IR_OPR_GROUP1 AND IR[0]
 - 0 → inactive  
 - 1 → rotate-right component enabled  
 
-**Used by μops:**
+**Consumed By:**
 
 - [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar)
 - [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr)
@@ -735,7 +735,7 @@ IR_OPR_SKIP_MODE = IR_OPR_GROUP2 AND IR[3]
 - 0 → OR mode (any enabled condition true causes skip)  
 - 1 → AND mode (all enabled conditions must be true)  
 
-**Used by μops:**
+**Consumed By:**
 
 - [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
 
@@ -761,7 +761,7 @@ IR_OPR_SMA = IR_OPR_GROUP2 AND IR[6]
 - 0 → condition disabled  
 - 1 → condition enabled  
 
-**Used by μops:**
+**Consumed By:**
 
 - [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
 
@@ -787,7 +787,7 @@ IR_OPR_SNL = IR_OPR_GROUP2 AND IR[4]
 - 0 → condition disabled  
 - 1 → condition enabled  
 
-**Used by μops:**
+**Consumed By:**
 
 - [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
 
@@ -813,7 +813,7 @@ IR_OPR_SZA = IR_OPR_GROUP2 AND IR[5]
 - 0 → condition disabled  
 - 1 → condition enabled  
 
-**Used by μops:**
+**Consumed By:**
 
 - [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
 
@@ -839,5 +839,5 @@ IR_ZERO_PAGE = IR_IS_MRI AND IR[7]
 - 0 → current page addressing  
 - 1 → zero page addressing  
 
-**Used by μops:**
+**Consumed By:**
 - [IR_ADDR_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#ir_addr_to_ea_addr)
