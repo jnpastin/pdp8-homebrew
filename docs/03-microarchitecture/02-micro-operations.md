@@ -33,7 +33,7 @@ No μop may directly ingest DB_input into any register other than MB.
 MB Lifetime Rule:
 A value placed in MB must be consumed by all dependent μops
 in the immediately following TS. No μop may rely on MB contents
-beyond that TS.
+beyond that TS.  If MB is not consumed in the following TS, its contents are considered undefined for subsequent use.
 
 ---
 
@@ -94,9 +94,11 @@ No intermediate state or flag storage is created.
 - [DF_TO_AC](#df_to_ac)
 - [EA_TO_MA](#ea_to_ma)
 - [IB_TO_DF](#ib_to_df)
-- [IB_LOAD](#ib_load)
 - [IB_TO_IF](#ib_to_if)
+- [IF_DF_TO_IB](#if_df_to_ib)
 - [IF_TO_AC](#if_to_ac)
+- [IR_DF_TO_DF](#ir_df_to_df)
+- [IR_IF_TO_IF](#ir_if_to_if)
 - [MB_TO_EA](#mb_to_ea)
 - [MB_TO_IR](#mb_to_ir)
 - [PC_TO_MA](#pc_to_ma)
@@ -331,7 +333,7 @@ AC, L
 
 ---
 
-#### AC_TO_MB
+### AC_TO_MB
   
 **Category:** 
 Register Transfer  
@@ -476,6 +478,7 @@ AC
 
 **Expression:**  
 AC[5:3] ← DF
+AC remaining bits unaffected
 
 **Sources:**  
 DF
@@ -520,41 +523,13 @@ IB
 
 ---
 
-### IB_LOAD
-
-**Category:**  
-Register Transfer
-
-**Description:**  
-Evaluates the IB source and loads the contents into IB
-
-**Target:**  
-IB
-
-
-Expression:
-    IB ← IB_INPUT  
-
-Sources:
-    IB_INPUT ∈ {
-        concat(IF, DF),
-        IB_VAL
-    }
-
-Constraints:
-- Exactly one IB_INPUT source must be active
-- concat(IF, DF) is a combinational datapath value
-- IB_VAL is provided by control
-
----
-
 ### IB_TO_IF
 
 **Category:**  
 Register Transfer
 
 **Description:**  
-Transfers the IF value from IB (IB[2:0]) to the DF register
+Transfers the IF value from IB (IB[2:0]) to the IF register
 
 **Target:**  
 IF
@@ -605,6 +580,31 @@ IF ← 0
 
 ---
 
+### IF_DF_TO_IB
+
+**Category:**  
+Register Transfer
+
+**Description:**  
+Loads the contents of IF and DF into IB
+
+**Target:**  
+IB
+
+
+Expression:
+IB ← concat(IF, DF)
+
+Sources:
+IF, DF
+
+Constraints:
+- Exactly one IB_INPUT source must be active
+- concat(IF, DF) is a combinational datapath value
+- IB_VAL is provided by control
+
+---
+
 ### IF_TO_AC
 
 **Category:**  
@@ -618,6 +618,7 @@ AC
 
 **Expression:**  
 AC[5:3] ← IF
+AC remaining bits unaffected
 
 **Sources:**  
 IF
@@ -641,7 +642,9 @@ II ← 0
 **Sources:**  
 (none)
 
----### II_SET
+---
+
+### II_SET
 
 **Category:**  
 State Manipulation
@@ -680,6 +683,44 @@ EA
 
 **Sources:**  
 IR, PC
+
+---
+
+### IR_DF_TO_DF
+
+**Category:**  
+Register Transfer
+
+**Description:**  
+Transfers the current field value from the IR to DF
+
+**Target:**  
+DF
+
+**Expression:**  
+DF ← IR[5:3]
+
+**Sources:**  
+IR
+
+---
+
+### IR_IF_TO_IF
+
+**Category:**  
+Register Transfer
+
+**Description:**  
+Transfers the current field value from the IR to IF
+
+**Target:**  
+IF
+
+**Expression:**  
+IF ← IR[5:3]
+
+**Sources:**  
+IR
 
 ---
 
@@ -913,8 +954,7 @@ PC
 
 ---
 
-
-#### PC_TO_MB
+### PC_TO_MB
   
 **Category:** 
 Register Transfer  

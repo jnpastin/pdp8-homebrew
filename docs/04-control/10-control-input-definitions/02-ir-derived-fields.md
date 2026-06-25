@@ -97,12 +97,28 @@ Group 2:
 
 ---
 
-### 2.5 Field Extraction Signals
+### 2.5 Memory Management
+
+Represent evaluation of IOT instructions for specific memory management instructions
+
+Matches:
+- CDF
+- CIF
+- RDF
+- RIF
+- RIB
+- RMF
+
+---
+
+### 2.6 Field Extraction Signals
 
 Expose raw IR fields:
 
 - IR_ADDR → IR[6:0]
+- IR_DF → IR[5:3]
 - IR_IOA → IR[8:3]
+- IR_IF → IR[5:3]
 
 ---
 
@@ -125,7 +141,6 @@ Expose raw IR fields:
 - [IR_OPR_GROUP2](#ir_opr_group2)
 - [IR_OPR_GROUP3](#ir_opr_group3)
 
-
 ### OPR Bits
 - [IR_OPR_BSW](#ir_opr_bsw)
 - [IR_OPR_CLA](#ir_opr_cla)
@@ -142,13 +157,23 @@ Expose raw IR fields:
 - [IR_OPR_SNL](#ir_opr_snl)
 - [IR_OPR_SZA](#ir_opr_sza)
 
+### Memory Management
+- [IR_READS_DF](#ir_reads_df)
+- [IR_READS_IF](#ir_reads_if)
+- [IR_RESTORES_IB](#ir_restores_ib)
+- [IR_WRITES_IB](#ir_writes_ib)
+- [IR_WRITES_DF](#ir_writes_df)
+- [IR_WRITES_IF](#ir_writes_if)
+
 ### Fields
 - [IR_ADDR](#ir_addr)
+- [IR_DF](#ir_df)
 - [IR_IOA](#ir_ioa)
+- [IR_IF](#ir_if)
 
 ---
 
-## 4. IF Flag Definitions
+## 4. IR Flag Definitions
 
 ---
 
@@ -173,6 +198,59 @@ IR_ADDR = IR[6:0]
 **Consumed By:**
 - [IR_ADDR_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#ir_addr_to_ea_addr)
 
+---
+
+### IR_DF
+
+**Mnemonic:** IR_DF
+**Name:** Data Field
+**Type:** Field Extraction  
+**Bit Width:** 3  
+
+**Purpose:**  
+Extracts the field used by the CDF instruction
+
+**Derivation:**
+```text
+IR_DF = IR[5:3]
+```
+
+**Value Encoding:**
+- 000–111 → data field
+
+**Constraint:**
+IR_DF and IR_IF share the same bit positions but are interpreted
+in different instruction contexts (CDF vs CIF)
+
+**Consumed By:**
+- [IR_DF_TO_DF](../../03-microarchitecture/02-micro-operations.md#ir_df_to_df)
+
+---
+
+### IR_IF
+
+**Mnemonic:** IR_IF
+**Name:** Instruction Field
+**Type:** Field Extraction  
+**Bit Width:** 3  
+
+**Purpose:**  
+Extracts the field used by the CIF instruction
+
+**Derivation:**
+```text
+IR_IF = IR[5:3]
+```
+
+**Value Encoding:**
+- 000–111 → instruction field
+
+**Constraint:**
+IR_DF and IR_IF share the same bit positions but are interpreted
+in different instruction contexts (CDF vs CIF)
+
+**Consumed By:**
+- [IR_IF_TO_IF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_if)
 
 ---
 
@@ -220,9 +298,6 @@ IR_IOA = IR[8:3]
 - 000000–111111 → device address  
 
 **Consumed By:**
-
-
-Consumed by:
 - [Architectural Control Signals](../20-control-output-definitions/02-architectural-control-signals.md)
 
 ---
@@ -254,7 +329,7 @@ IR_IS_IOT = (IR[11:9] == 110)
 ### IR_IS_ISZ
 
 **Mnemonic:** IR_IS_ISZ
-**Name:**: ISZ Instruction Flag
+**Name:** ISZ Instruction Flag
 **Type:** ISZ Detect
 **Bit Width:** 1
 
@@ -550,7 +625,7 @@ IR_OPR_GROUP2 = IR_IS_OPR AND IR[8] AND (IR[0] == 0)
 
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
 - [AC_OR_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_sr)
-- [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc
+- [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
 
 
 ---
@@ -819,6 +894,157 @@ IR_OPR_SZA = IR_OPR_GROUP2 AND IR[5]
 
 ---
 
+### IR_READS_DF
+
+**Mnemonic:** IR_READS_DF
+**Name:** Data Field Read Flag
+**Type:** Memory Management
+**Bit Width:** 1
+
+**Purpose:**
+Indicates that the current instruction reads DF
+
+**Derivation:**
+```text
+IR_READS_DF = IR==110010001101 (octal 6214)
+```
+
+**Value Encoding:**
+
+- 0 → Does not read DF
+- 1 → Reads DF
+
+**Consumed By:**
+- [DF_TO_AC](../../03-microarchitecture/02-micro-operations.md#df_to_ac)
+
+---
+
+### IR_READS_IF
+
+**Mnemonic:** IR_READS_IF
+**Name:** Instruction Field Read Flag
+**Type:** Memory Management
+**Bit Width:** 1
+
+**Purpose:**
+Indicates that the current instruction reads IF
+
+**Derivation:**
+```text
+IR_READS_IF = IR==110010010101 (octal 6224)
+```
+
+**Value Encoding:**
+
+- 0 → Does not read IF
+- 1 → Reads IF
+
+**Consumed By:**
+- [IF_TO_AC](../../03-microarchitecture/02-micro-operations.md#if_to_ac)
+
+---
+
+### IR_RESTORES_IB
+
+**Mnemonic:** IR_RESTORES_IB
+**Name:** Restore Memory Field From IB Flag
+**Type:** Memory Management
+**Bit Width:** 1
+
+**Purpose:**
+Indicates that the current instruction restores DF and IF from IB
+
+**Derivation:**
+```text
+IR_RESTORES_IB = IR==110010101101 (octal 6244)
+```
+
+**Value Encoding:**
+
+- 0 → Does not restore DF/IF from IB
+- 1 → Restores IF/DF from IB
+
+**Consumed By:**
+- [IB_TO_DF](../../03-microarchitecture/02-micro-operations.md#ib_to_df)
+- [IB_TO_IF](../../03-microarchitecture/02-micro-operations.md#ib_to_if)
+
+---
+
+### IR_WRITES_IB
+
+**Mnemonic:** IR_WRITES_IB
+**Name:** Interrupt Buffer Write Flag
+**Type:** Memory Management
+**Bit Width:** 1
+
+**Purpose:**
+Indicates that the current instruction writes the IB
+
+**Derivation:**
+```text
+IR_WRITES_IB = IR==110010011101 (octal 6234)
+```
+
+**Value Encoding:**
+
+- 0 → Does not write IB
+- 1 → Writes IB
+
+**Consumed By:**
+- [IF_DF_TO_IB](../../03-microarchitecture/02-micro-operations.md#if_df_to_ib)
+
+---
+
+### IR_WRITES_DF
+
+**Mnemonic:** IR_WRITES_DF
+**Name:** Data Field Change Flag
+**Type:** Memory Management
+**Bit Width:** 1
+
+**Purpose:**
+Indicates that the current instruction writes DF (either CDF or CDF+CIF)
+
+**Derivation:**
+```text
+IR_WRITES_DF = (IR[11:6] == 110010 AND IR[2]==0 AND IR[0]==1)
+```
+
+**Value Encoding:**
+
+- 0 → Does not write DF
+- 1 → Writes DF
+
+**Consumed By:**
+- [IR_DF_TO_DF](../../03-microarchitecture/02-micro-operations.md#ir_df_to_df)
+
+---
+
+### IR_WRITES_IF
+
+**Mnemonic:** IR_WRITES_IF
+**Name:** Instruction Field Change Flag
+**Type:** Memory Management
+**Bit Width:** 1
+
+**Purpose:**
+Indicates that the current instruction writes IF (either CIF or CDF+CIF)
+
+**Derivation:**
+```text
+IR_WRITES_IF = (IR[11:6] == 110010 AND IR[2]==0 AND IR[1]==1)
+```
+
+**Value Encoding:**
+
+- 0 → not CIF
+- 1 → CIF
+
+**Consumed By:**
+- [IR_IF_TO_IF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_if)
+
+---
+
 ### IR_ZERO_PAGE
 
 **Mnemonic:** IR_ZERO_PAGE  
@@ -831,7 +1057,7 @@ Selects zero page vs current page addressing for MRI instructions.
 
 **Derivation:**
 ```text
-IR_ZERO_PAGE = IR_IS_MRI AND IR[7]
+IR_ZERO_PAGE = IR_IS_MRI AND NOT(IR[7])
 ```
 
 **Value Encoding:**

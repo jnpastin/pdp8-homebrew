@@ -180,7 +180,8 @@ These signals represent values, not control decisions.
 
 They may originate from:
 
-- constants defined within the CPU (e.g., `CONST_0`, `CONST_1`)  
+- values supplied by control
+- datapath-derived values (combinational logic)
 - externally supplied data (e.g., memory data input, I/O data input)  
 
 Properties:
@@ -256,7 +257,8 @@ Constraint:
 ### 4.1 Enable Signals
 
 - [AC_LOAD](#ac_load)
-- [DF_LOAD](#dfoad)
+- [DF_LOAD](#df_load)
+- [IB_LOAD](#ib_load)
 - [IDB_DRIVE](#idb_drive)
 - [IF_LOAD](#if_load)
 - [L_LOAD](#l_load)
@@ -273,7 +275,9 @@ Constraint:
 - [ALU_A_SRC](#alu_a_src)
 - [ALU_B_SRC](#alu_b_src)
 - [ALU_OP](#alu_op)
+- [DF_SRC](#df_src)
 - [EA_SRC](#ea_src)
+- [IF_SRC](#if_src)
 - [IDB_SRC](#idb_src)
 - [L_OP](#l_op)
 - [MA_SRC](#ma_src)
@@ -284,9 +288,13 @@ Constraint:
 
 ### 4.3 Data Value Signals
 
-- [CONST_0](#const_0)
 - [CONST_1](#const_1)
 - [DB_INPUT](#db_input)
+- [DF_VAL](#df_val)
+- [IE_VAL](#ie_val)
+- [IF_DF_COMBINED](#if_df_combined)
+- [IF_VAL](#if_val)
+- [II_VAL](#ii_val)
 - [MDB_INPUT](#mdb_input)
 
 ---
@@ -445,34 +453,6 @@ Constraint:
 - [MB_INC](../03-microarchitecture/02-micro-operations.md#mb_inc)
 - [PC_INC](../03-microarchitecture/02-micro-operations.md#pc_inc)
 
----
-
-### CONST_0
-
-**Mnemonic:** CONST_0  
-**Name:** Constant Zero  
-**Class:** Data Value  
-**Bit Width:** 1 (control), 12-bit value  
-
-**Purpose:** Direct zero injection for non-ALU register writes.
-
-**Encoding:**
-```
-0 → disabled
-1 → enabled (000000000000)
-```
-
-**Constraints:**
-- Must not be used as ALU operand
-- Used only for direct register load paths
-
-**Used by μops:**
-- [DF_CLEAR](../03-microarchitecture/02-micro-operations.md#df_clear)
-- [IF_CLEAR](../03-microarchitecture/02-micro-operations.md#if_clear)
-- [IE_CLEAR](../03-microarchitecture/02-micro-operations.md#ie_clear)
-- [II_CLEAR](../03-microarchitecture/02-micro-operations.md#ii_clear)
-- [MA_CLEAR](../03-microarchitecture/02-micro-operations.md#ma_clear)
-
 --
 
 ### CONST_1
@@ -545,6 +525,51 @@ external bus value
 
 ---
 
+### DF_SRC
+
+**Mnemonic:** DF_SRC  
+**Name:** DF Source Select  
+**Class:** Select  
+**Bit Width:** 1  
+
+**Purpose:** Selects the source input for DF.
+
+**Encoding:**
+```
+0 → Control
+1 → IB
+```
+
+**Used by μops:**
+- [IB_TO_DF](../03-microarchitecture/02-micro-operations.md#ib_to_df)
+- [DF_CLEAR](../03-microarchitecture/02-micro-operations.md#df_clear)
+- [IR_DF_TO_DF](../03-microarchitecture/02-micro-operations.md#ir_df_to_df)
+
+---
+
+### DF_VAL
+
+**Mnemonic:** DF_VAL
+**Name:** DF Value Input
+**Class:** Data Value  
+**Bit Width:** 3  
+
+**Purpose:** Represents the value loaded into DF
+
+**Encoding:**
+```
+0 - 7 (octal)
+```
+
+**Constraints:**
+- Only used when DF_SRC = Control
+
+**Used by μops:**
+- [DF_CLEAR](../03-microarchitecture/02-micro-operations.md#df_clear)
+- [IR_DF_TO_DF](../03-microarchitecture/02-micro-operations.md#ir_df_to_df)
+
+---
+
 ### EA_LOAD
 
 **Mnemonic:** EA_LOAD  
@@ -594,6 +619,29 @@ external bus value
 
 ---
 
+### IB_LOAD
+
+**Mnemonic:** IB_LOAD  
+**Name:** Interrupt Buffer Load  
+**Class:** Enable  
+**Bit Width:** 1  
+
+**Purpose:** Loads the IB register.
+
+**Encoding:**
+```
+0 → no load
+1 → load
+```
+
+**Constraints:**
+- Uses direct load path (no ALU or IDB involvement)
+
+**Used by μops:**
+- [IF_DF_TO_IB](../03-microarchitecture/02-micro-operations.md#if_df_to_ib)
+
+---
+
 ### IDB_DRIVE
 
 **Mnemonic:** IDB_DRIVE  
@@ -628,7 +676,7 @@ external bus value
 **Mnemonic:** IDB_SRC  
 **Name:** Internal Data Bus Source Select  
 **Class:** Select  
-**Bit Width:** 3  
+**Bit Width:** 4
 
 **Purpose:** Selects which source drives the internal datapath bus (IDB).
 
@@ -642,6 +690,8 @@ external bus value
 05 → EA
 06 → IR
 07 → ALU
+08 → DF
+09 → IF
 ```
 
 **Constraints:**
@@ -681,6 +731,52 @@ external bus value
 
 ---
 
+### IE_VAL
+
+**Mnemonic:** IE_VAL
+**Name:** Interrupt Enable Value
+**Class:** Data Value  
+**Bit Width:** 1  
+
+**Purpose:** Specifies the value to load into the IE register
+
+**Encoding:**
+```
+0 → 0
+1 → 1
+```
+
+**Constraints:**
+- Uses direct load path (no ALU or IDB involvement)
+
+**Used by μops:**
+- [IE_CLEAR](../03-microarchitecture/02-micro-operations.md#ie_clear)
+
+
+---
+
+### IF_DF_COMBINED
+
+**Mnemonic:** IF_DF_COMBINED
+**Name:** IF/DF Combination
+**Class:** Data Value  
+**Bit Width:** 6  
+
+**Purpose:** Represents the concatenation of IF and DF
+
+**Encoding:**
+```
+00 - 77 (octal)
+WHERE:
+IF_DF_COMBINED[2:0]=DF  and
+IF_IF_COMBINED[5:3]=IF
+```
+
+**Used by μops:**
+- [IF_DF_TO_IB](../03-microarchitecture/02-micro-operations.md#if_df_to_ib)
+
+---
+
 ### IF_LOAD
 
 **Mnemonic:** IF_LOAD  
@@ -704,6 +800,51 @@ external bus value
 
 ---
 
+### IF_SRC
+
+**Mnemonic:** IF_SRC  
+**Name:** IF Source Select  
+**Class:** Select  
+**Bit Width:** 1  
+
+**Purpose:** Selects the source input for IF.
+
+**Encoding:**
+```
+0 → Control
+1 → IB
+```
+
+**Used by μops:**
+- [IB_TO_IF](../03-microarchitecture/02-micro-operations.md#ib_to_if)
+- [IF_CLEAR](../03-microarchitecture/02-micro-operations.md#if_clear)
+- [IR_IF_TO_IF](../03-microarchitecture/02-micro-operations.md#ir_if_to_if)
+
+---
+
+### IF_VAL
+
+**Mnemonic:** IF_VAL
+**Name:** IF Value Input
+**Class:** Data Value  
+**Bit Width:** 3  
+
+**Purpose:** Represents the value loaded into IF
+
+**Encoding:**
+```
+0 - 7 (octal)
+```
+
+**Constraints:**
+- Only used when IF_SRC = Control
+
+**Used by μops:**
+- [IF_CLEAR](../03-microarchitecture/02-micro-operations.md#if_clear)
+- [IR_IF_TO_IF](../03-microarchitecture/02-micro-operations.md#ir_if_to_if)
+
+---
+
 ### II_LOAD
 
 **Mnemonic:** II_LOAD  
@@ -717,6 +858,30 @@ external bus value
 ```
 0 → no load
 1 → load
+```
+
+**Constraints:**
+- Uses direct load path (no ALU or IDB involvement)
+
+**Used by μops:**
+- [II_CLEAR](../03-microarchitecture/02-micro-operations.md#ii_clear)
+- [II_SET](../03-microarchitecture/02-micro-operations.md#ii_set)
+
+---
+
+### II_VAL
+
+**Mnemonic:** II_VAL
+**Name:** Interrupt Inhibit Value
+**Class:** Data Value  
+**Bit Width:** 1  
+
+**Purpose:** Specifies the value to load into the II register
+
+**Encoding:**
+```
+0 → 0
+1 → 1
 ```
 
 **Constraints:**
@@ -848,17 +1013,39 @@ external bus value
 ```
 00 → PC
 01 → EA
-02 → reserved
+02 → Control
 03 → reserved
 ```
 
 **Constraints:**
 - Must be valid every cycle  
-- Constant loads (e.g., MA_CLEAR) bypass this signal  
 
 **Used by μops:**
 - [EA_TO_MA](../03-microarchitecture/02-micro-operations.md#ea_to_ma)
+- [MA_CLEAR](../03-microarchitecture/02-micro-operations.md#ma_clear)
 - [PC_TO_MA](../03-microarchitecture/02-micro-operations.md#pc_to_ma)
+
+---
+
+### MA_VAL
+
+**Mnemonic:** MA_VAL
+**Name:** Memory Address Value
+**Class:** Data Value  
+**Bit Width:** 12  
+
+**Purpose:** Specifies the value to load into the MA register
+
+**Encoding:**
+```
+0-7777 (octal)
+```
+
+**Constraints:**
+- Only valid when MA_SRC == Control
+
+**Used by μops:**
+- [MA_CLEAR](../03-microarchitecture/02-micro-operations.md#ma_clear)
 
 ---
 
@@ -1028,7 +1215,7 @@ memory bus value
 ```
 00 → ALU
 01 → EA
-02 → reserved
+02 → Control
 03 → reserved
 ```
 
@@ -1036,10 +1223,31 @@ memory bus value
 - Must be valid every cycle  
 - When PC_LOAD = 1:
   - selected source must be fully driven and valid  
-- Not used for constant loads (e.g., PC_SET_1 uses CONST_1 path)  
 
 **Used by μops:**
 - [PC_LOAD_EA_ADDR](../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr)
+
+---
+
+### PC_VAL
+
+**Mnemonic:** PC_VAL
+**Name:** Program Counter Value
+**Class:** Data Value  
+**Bit Width:** 12  
+
+**Purpose:** Specifies the value to load into the PC register
+
+**Encoding:**
+```
+0-7777 (octal)
+```
+
+**Constraints:**
+- Only valid when PC_SRC == Control
+
+**Used by μops:**
+- [PC_SET_1](../03-microarchitecture/02-micro-operations.md#pc_set_1)
 
 ---
 
@@ -1105,13 +1313,6 @@ Constraints:
 
 Data Value signals provide input values.
 
-These include:
-
-- CONST_0  
-- CONST_1  
-- MDB_INPUT  
-- DB_INPUT  
-
 Constraints:
 
 - Data Value signals must always represent valid values  
@@ -1166,7 +1367,7 @@ Examples of input sources:
 
 - IDB path  
 - ALU output  
-- constant injection (CONST_0, CONST_1)  
+- Data Value signals
 - MDB input (for MB only)  
 
 No two sources may drive the same register simultaneously.
@@ -1196,19 +1397,7 @@ Additional constraints:
 
 ---
 
-### 6.8 Constant Usage Constraints
-
-Constants are used only for direct value injection.
-
-Constraints:
-
-- CONST_0 and CONST_1 must not be routed through ALU operands  
-- Constants must not be selected via IDB_SRC  
-- Constants may only be used for direct register load paths  
-
----
-
-### 6.9 Control Signal Exclusivity
+### 6.8 Control Signal Exclusivity
 
 Certain signals are mutually exclusive.
 
@@ -1225,7 +1414,7 @@ Additional exclusivity constraints must hold wherever two signals:
 
 ---
 
-### 6.10 Bus Domain Isolation
+### 6.9 Bus Domain Isolation
 
 Three data domains exist:
 
@@ -1241,7 +1430,7 @@ Constraints:
 
 ---
 
-### 6.11 Determinism Requirement
+### 6.10 Determinism Requirement
 
 System behavior must be deterministic.
 
@@ -1260,7 +1449,7 @@ This implies:
 
 ---
 
-### 6.12 No-Implied-Behavior Rule
+### 6.11 No-Implied-Behavior Rule
 
 No signal may introduce behavior not explicitly defined.
 
@@ -1277,7 +1466,7 @@ Constraints:
 
 ---
 
-### 6.13 Completeness Requirement
+### 6.12 Completeness Requirement
 
 Every control cycle must be fully specified.
 
@@ -1290,7 +1479,7 @@ regardless of whether it is used.
 
 ---
 
-### 6.14 Invalid Configuration
+### 6.13 Invalid Configuration
 
 Any control word that violates these constraints is invalid.
 
@@ -1339,7 +1528,7 @@ Sources include:
 
 - Register outputs (AC, MB, PC, etc.)
 - ALU output (computed within the cycle)
-- Data Value signals (CONST_0, CONST_1, MDB_INPUT, DB_INPUT)
+- Data Value signals (CONST_1, MDB_INPUT, DB_INPUT)
 
 Constraint:
 
@@ -1412,7 +1601,7 @@ Example:
 MA_INPUT =
     case:
         IDB path
-        constant path
+        Control path
 ```
 
 General form:
@@ -1676,7 +1865,7 @@ If R_LOAD = 1:
     exactly one of the following must be active:
         - IDB path
         - ALU output
-        - constant injection
+        - Control Data Values
         - MDB input (if applicable)
 ```
 
@@ -1893,33 +2082,7 @@ ALU_B_SRC ≠ NONE
 
 ---
 
-### 9.6 Constant Usage Constraints
-
-Constants must not conflict with other input mechanisms.
-
-Constraints:
-
-```
-If CONST_0 or CONST_1 is enabled:
-    no other input source for that register may be active
-```
-
-Invalid:
-
-```
-CONST_0 + IDB
-CONST_1 + ALU
-```
-
-Additional constraint:
-
-```
-Constants must not be used as ALU operands
-```
-
----
-
-### 9.7 L Register Interaction
+### 9.6 L Register Interaction
 
 L interacts with ALU operations and direct operations.
 
@@ -1947,7 +2110,7 @@ L_OP = NOP produces no state change
 
 ---
 
-### 9.8 Domain Exclusivity at Register Input
+### 9.7 Domain Exclusivity at Register Input
 
 A register must not mix sources from different domains.
 
@@ -1959,20 +2122,20 @@ If R_LOAD = 1:
         IDB
         ALU
         MDB
-        CONST
+        Control
 ```
 
 Invalid:
 
 ```
 IDB + MDB
-ALU + CONST
-MDB + CONST
+ALU + Control
+MDB + Control
 ```
 
 ---
 
-### 9.9 Select Signal Validity
+### 9.8 Select Signal Validity
 
 All select signals must contain valid encodings.
 
@@ -1991,7 +2154,7 @@ undefined values
 
 ---
 
-### 9.10 No Implicit Dependencies
+### 9.9 No Implicit Dependencies
 
 No signal may imply another signal.
 
@@ -2007,7 +2170,7 @@ All dependencies must be explicitly satisfied.
 
 ---
 
-### 9.11 Complete Specification Requirement
+### 9.10 Complete Specification Requirement
 
 Every control word must fully specify all required signals.
 
@@ -2025,7 +2188,7 @@ Includes:
 
 ---
 
-### 9.12 Invalid Control Word
+### 9.11 Invalid Control Word
 
 A control word is invalid if it violates any constraint in this section.
 
