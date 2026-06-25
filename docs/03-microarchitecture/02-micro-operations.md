@@ -91,7 +91,12 @@ No intermediate state or flag storage is created.
 ### Register Transfer
 - [AC_TO_MB](#ac_to_mb)
 - [AC_TO_MQ_AND_CLEAR_AC](#ac_to_mq_and_clear_ac)
+- [DF_TO_AC](#df_to_ac)
 - [EA_TO_MA](#ea_to_ma)
+- [IB_TO_DF](#ib_to_df)
+- [IB_LOAD](#ib_load)
+- [IB_TO_IF](#ib_to_if)
+- [IF_TO_AC](#if_to_ac)
 - [MB_TO_EA](#mb_to_ea)
 - [MB_TO_IR](#mb_to_ir)
 - [PC_TO_MA](#pc_to_ma)
@@ -458,6 +463,25 @@ DF ← 0
 
 ---
 
+### DF_TO_AC
+
+**Category:**  
+Register Transfer
+
+**Description:**  
+Transfers the current DF register value to AC[5:3]
+
+**Target:**  
+AC
+
+**Expression:**  
+AC[5:3] ← DF
+
+**Sources:**  
+DF
+
+---
+
 ### EA_TO_MA
 
 **Category:**  
@@ -474,6 +498,72 @@ MA ← EA
 
 **Sources:**  
 EA
+
+---
+
+### IB_TO_DF
+
+**Category:**  
+Register Transfer
+
+**Description:**  
+Transfers the DF value from IB (IB[5:3]) to the DF register
+
+**Target:**  
+DF
+
+**Expression:**  
+DF ← IB[5:3]
+
+**Sources:**  
+IB
+
+---
+
+### IB_LOAD
+
+**Category:**  
+Register Transfer
+
+**Description:**  
+Evaluates the IB source and loads the contents into IB
+
+**Target:**  
+IB
+
+
+Expression:
+    IB ← IB_INPUT  
+
+Sources:
+    IB_INPUT ∈ {
+        concat(IF, DF),
+        IB_VAL
+    }
+
+Constraints:
+- Exactly one IB_INPUT source must be active
+- concat(IF, DF) is a combinational datapath value
+- IB_VAL is provided by control
+
+---
+
+### IB_TO_IF
+
+**Category:**  
+Register Transfer
+
+**Description:**  
+Transfers the IF value from IB (IB[2:0]) to the DF register
+
+**Target:**  
+IF
+
+**Expression:**  
+IF ← IB[2:0]
+
+**Sources:**  
+IB
 
 ---
 
@@ -512,6 +602,25 @@ IF ← 0
 
 **Sources:**  
 (none)
+
+---
+
+### IF_TO_AC
+
+**Category:**  
+Register Transfer
+
+**Description:**  
+Transfers the current IF register value to AC[5:3]
+
+**Target:**  
+AC
+
+**Expression:**  
+AC[5:3] ← IF
+
+**Sources:**  
+IF
 
 ---
 
