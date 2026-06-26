@@ -1,136 +1,112 @@
-# Control Output Signal Index
+## Control Output Signal Index
 
-This document organizes all control output signals into their respective domains and provides links to their canonical definitions in the Section 04/20 documents.
+### Purpose
 
----
+Defines the complete and authoritative index of all control output signals. 
 
-# Domain Classification
+All definitions reside in:
 
-Signals are grouped into three primary domains:
-
-- μop domain (datapath realization)
-- Architectural control domain (external side effects)
-- Sequencing domain (control flow)
-
-Each signal must belong to exactly one domain.
+- [Microarchitectural Control Signals](./01-microarchitectural-control-signals.md)  
+- [Architectural Control Signals](./02-architectural-control-signals.md)  
+- [Sequencing Control Signals](./03-sequencing-control-signals.md)  
 
 ---
 
-# μop Domain (Datapath Realization)
+## Domain Classification
 
-These signals directly implement micro-operations defined in:
-- [Micro Operations](../03-microarchitecture/02-micro-operations.md)
+Signals are partitioned into three strictly disjoint domains:
 
-They control:
-- register writes
-- datapath movement
-- ALU execution
+- Microarchitectural (datapath)  
+- Architectural (external interface)  
+- Sequencing (control flow)  
 
-## Register Load Enables
-
-- AC_load → [AC load definition](../04-control/20-control-output-definitions/01-register-controls.md#ac_load)
-- L_load → [L load definition](../04-control/20-control-output-definitions/01-register-controls.md#l_load)
-- PC_load → [PC load definition](../04-control/20-control-output-definitions/01-register-controls.md#pc_load)
-- MA_load → [MA load definition](../04-control/20-control-output-definitions/01-register-controls.md#ma_load)
-- MB_load → [MB load definition](../04-control/20-control-output-definitions/01-register-controls.md#mb_load)
-- IR_load → [IR load definition](../04-control/20-control-output-definitions/01-register-controls.md#ir_load)
-
-## Register Source Selects
-
-(Per-register select signals)
-
-- AC_src → [AC source select](../04-control/20-control-output-definitions/01-register-controls.md#ac_src)
-- PC_src → [PC source select](../04-control/20-control-output-definitions/01-register-controls.md#pc_src)
-- MA_src → [MA source select](../04-control/20-control-output-definitions/01-register-controls.md#ma_src)
-- MB_src → [MB source select](../04-control/20-control-output-definitions/01-register-controls.md#mb_src)
-
-## ALU Control
-
-- ALU_OP → [ALU operation encoding](../04-control/20-control-output-definitions/02-alu-control.md#alu_op)
-- ALU_A_SEL → [ALU A input select](../04-control/20-control-output-definitions/02-alu-control.md#alu_a_sel)
-- ALU_B_SEL → [ALU B input select](../04-control/20-control-output-definitions/02-alu-control.md#alu_b_sel)
-- L_UPDATE_MODE → [L update mode](../04-control/20-control-output-definitions/02-alu-control.md#l_update_mode)
-
-## Explicit State Control (Non-ALU)
-
-- II_CLEAR → [Interrupt inhibit clear](../04-control/20-control-output-definitions/01-register-controls.md#ii_clear)
-- IE_SET / IE_CLEAR → [Interrupt enable control](../04-control/20-control-output-definitions/01-register-controls.md#ie_control)
+Each signal appears exactly once in this index.
 
 ---
 
-# Architectural Control Domain
+## Microarchitectural Control Signals
 
-These signals define externally observable behavior.
-
-They do not directly perform data movement; they must bind to μops.
-
-## Memory Control
-
-- RD → [Read control signal](../04-control/20-control-output-definitions/03-architectural-control.md#rd)
-- WR → [Write control signal](../04-control/20-control-output-definitions/03-architectural-control.md#wr)
-
-## I/O Control
-
-- DB_READ → [DB read control](../04-control/20-control-output-definitions/03-architectural-control.md#db_read)
-- DB_WRITE → [DB write control](../04-control/20-control-output-definitions/03-architectural-control.md#db_write)
-- IOA_ENABLE → [IOA control](../04-control/20-control-output-definitions/03-architectural-control.md#ioa)
+Defined in:
+- [Microarchitectural Control Signals](./01-microarchitectural-control-signals.md)
 
 ---
 
-# Sequencing Domain
+### Enable Signals
 
-These signals determine control flow across Major States.
-
-They must not:
-- move data
-- update registers
-- produce side effects
-
-## Sequencing Signals
-
-- MS_next → [Next major state](../04-control/20-control-output-definitions/03-sequencing-control.md#ms_next)
-- CONDITION_SELECT → [Condition selection](../04-control/20-control-output-definitions/03-sequencing-control.md#condition_select)
-
----
-
-# Cross-Domain Rules
-
-## Domain Separation
-
-- μop signals:
-  - affect only internal state
-- architectural signals:
-  - affect only external interface
-- sequencing signals:
-  - affect only control flow
-
-No signal may span domains.
+- [AC_LOAD](./01-microarchitectural-control-signals.md#ac_load)  
+- [DF_LOAD](./01-microarchitectural-control-signals.md#df_load)  
+- [EA_LOAD](./01-microarchitectural-control-signals.md#ea_load)  
+- [IB_LOAD](./01-microarchitectural-control-signals.md#ib_load)  
+- [IDB_DRIVE](./01-microarchitectural-control-signals.md#idb_drive)  
+- [IE_LOAD](./01-microarchitectural-control-signals.md#ie_load)  
+- [IF_LOAD](./01-microarchitectural-control-signals.md#if_load)  
+- [II_LOAD](./01-microarchitectural-control-signals.md#ii_load)  
+- [IR_LOAD](./01-microarchitectural-control-signals.md#ir_load)  
+- [L_LOAD](./01-microarchitectural-control-signals.md#l_load)  
+- [MA_LOAD](./01-microarchitectural-control-signals.md#ma_load)  
+- [MB_LOAD](./01-microarchitectural-control-signals.md#mb_load)  
+- [MQ_LOAD](./01-microarchitectural-control-signals.md#mq_load)  
+- [PC_INC](./01-microarchitectural-control-signals.md#pc_inc)  
+- [PC_LOAD](./01-microarchitectural-control-signals.md#pc_load)  
 
 ---
 
-## Binding Requirements
+### Select Signals
 
-Certain signals must be paired across domains:
-
-- RD must bind to:
-  - μop: MEM_READ_TO_MB
-- WR must bind to:
-  - μop: MEM_WRITE_FROM_MB
-- DB_READ / DB_WRITE must bind to:
-  - corresponding DB μops
-
----
-
-## Inactive Encoding Rules
-
-- All enable signals default to 0
-- All select signals must encode a valid inert value
-- No field may be undefined in any CONTROL_WORD
+- [ALU_A_SRC](./01-microarchitectural-control-signals.md#alu_a_src)  
+- [ALU_B_SRC](./01-microarchitectural-control-signals.md#alu_b_src)  
+- [ALU_OP](./01-microarchitectural-control-signals.md#alu_op)  
+- [DF_SRC](./01-microarchitectural-control-signals.md#df_src)  
+- [EA_SRC](./01-microarchitectural-control-signals.md#ea_src)  
+- [IF_SRC](./01-microarchitectural-control-signals.md#if_src)  
+- [IDB_SRC](./01-microarchitectural-control-signals.md#idb_src)  
+- [L_OP](./01-microarchitectural-control-signals.md#l_op)  
+- [MA_SRC](./01-microarchitectural-control-signals.md#ma_src)  
+- [MB_SRC](./01-microarchitectural-control-signals.md#mb_src)  
+- [PC_SRC](./01-microarchitectural-control-signals.md#pc_src)  
 
 ---
 
-# Notes
+### Data Value Signals
 
-- This index is purely organizational
-- It does not redefine signals
-- All authoritative definitions reside in the linked documents
+- [CONST_1](./01-microarchitectural-control-signals.md#const_1)  
+- [DB_INPUT](./01-microarchitectural-control-signals.md#db_input)  
+- [DF_VAL](nals.md#pc_val)  
+
+---
+
+## Architectural Control Signals
+
+Defined in:
+- [Architectural Control Signals](./02-architectural-control-signals.md)
+
+---
+
+### Memory Interface
+
+- [RD](./02-architectural-control-signals.md#31-memory-read-rd)  
+- [WR](./02-architectural-control-signals.md#32-memory-write-wr)  
+
+---
+
+### I/O Interface
+
+- [IOA[5:0]](./02-architectural-control-signals.md#33-io-address-bus-ioa50)  
+- [DB_READ](./02-architectural-control-signals.md#34-db_read)  
+- [DB_WRITE](./02-architectural-control-signals.md#db_write)  
+
+---
+
+## Sequencing Control Signals
+
+Defined in:
+- [Sequencing Control Signals](./03-sequencing-control-signals.md)
+
+---
+
+### Control Flow
+
+- [MS_next](./03-sequencing-control-signals.md#31-next-major-state-ms_next)  
+- [BRANCH_enable](./03-sequencing-control-signals.md#32-branch-enable-branch_enable)  
+- [BRANCH_when_true](./03-sequencing-control-signals.md#33-branch-polarity-branch_when_true)  
+

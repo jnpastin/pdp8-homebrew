@@ -288,7 +288,6 @@ Constraint:
 
 ### 4.3 Data Value Signals
 
-- [CONST_1](#const_1)
 - [DB_INPUT](#db_input)
 - [DF_VAL](#df_val)
 - [IE_VAL](#ie_val)
@@ -452,30 +451,6 @@ Constraint:
 - [AC_INC](../03-microarchitecture/02-micro-operations.md#ac_inc)
 - [MB_INC](../03-microarchitecture/02-micro-operations.md#mb_inc)
 - [PC_INC](../03-microarchitecture/02-micro-operations.md#pc_inc)
-
---
-
-### CONST_1
-
-**Mnemonic:** CONST_1  
-**Name:** Constant One  
-**Class:** Data Value  
-**Bit Width:** 1 (control), 12-bit value  
-
-**Purpose:** Direct constant one injection for non-ALU register writes.
-
-**Encoding:**
-```
-0 → disabled
-1 → enabled (000000000001)
-```
-
-**Constraints:**
-- Must not be used as an ALU operand  
-- Used only for direct register load paths  
-
-**Used by μops:**
-- [PC_SET_1](../03-microarchitecture/02-micro-operations.md#pc_set_1)
 
 ---
 
