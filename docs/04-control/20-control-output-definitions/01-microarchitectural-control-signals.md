@@ -258,9 +258,13 @@ Constraint:
 
 - [AC_LOAD](#ac_load)
 - [DF_LOAD](#df_load)
+- [EA_LOAD](#ea_load)
 - [IB_LOAD](#ib_load)
 - [IDB_DRIVE](#idb_drive)
+- [IE_LOAD](#ie_load)
 - [IF_LOAD](#if_load)
+- [II_LOAD](#ir_load)
+- [IR_LOAD](#ir_load)
 - [L_LOAD](#l_load)
 - [MA_LOAD](#ma_load)
 - [MB_LOAD](#mb_load)
@@ -294,7 +298,9 @@ Constraint:
 - [IF_DF_COMBINED](#if_df_combined)
 - [IF_VAL](#if_val)
 - [II_VAL](#ii_val)
+- [MA_VAL](#ma_val)
 - [MDB_INPUT](#mdb_input)
+- [PC_VAL](#pc_val)
 
 ---
 
@@ -524,8 +530,8 @@ external bus value
 
 ### DF_VAL
 
-**Mnemonic:** DF_VAL
-**Name:** DF Value Input
+**Mnemonic:** DF_VAL  
+**Name:** DF Value Input  
 **Class:** Data Value  
 **Bit Width:** 3  
 
@@ -708,8 +714,8 @@ external bus value
 
 ### IE_VAL
 
-**Mnemonic:** IE_VAL
-**Name:** Interrupt Enable Value
+**Mnemonic:** IE_VAL  
+**Name:** Interrupt Enable Value  
 **Class:** Data Value  
 **Bit Width:** 1  
 
@@ -732,8 +738,8 @@ external bus value
 
 ### IF_DF_COMBINED
 
-**Mnemonic:** IF_DF_COMBINED
-**Name:** IF/DF Combination
+**Mnemonic:** IF_DF_COMBINED  
+**Name:** IF/DF Combination  
 **Class:** Data Value  
 **Bit Width:** 6  
 
@@ -799,8 +805,8 @@ IF_IF_COMBINED[5:3]=IF
 
 ### IF_VAL
 
-**Mnemonic:** IF_VAL
-**Name:** IF Value Input
+**Mnemonic:** IF_VAL  
+**Name:** IF Value Input  
 **Class:** Data Value  
 **Bit Width:** 3  
 
@@ -846,8 +852,8 @@ IF_IF_COMBINED[5:3]=IF
 
 ### II_VAL
 
-**Mnemonic:** II_VAL
-**Name:** Interrupt Inhibit Value
+**Mnemonic:** II_VAL  
+**Name:** Interrupt Inhibit Value  
 **Class:** Data Value  
 **Bit Width:** 1  
 
@@ -1004,8 +1010,8 @@ IF_IF_COMBINED[5:3]=IF
 
 ### MA_VAL
 
-**Mnemonic:** MA_VAL
-**Name:** Memory Address Value
+**Mnemonic:** MA_VAL  
+**Name:** Memory Address Value  
 **Class:** Data Value  
 **Bit Width:** 12  
 
@@ -1206,8 +1212,8 @@ memory bus value
 
 ### PC_VAL
 
-**Mnemonic:** PC_VAL
-**Name:** Program Counter Value
+**Mnemonic:** PC_VAL  
+**Name:** Program Counter Value  
 **Class:** Data Value  
 **Bit Width:** 12  
 

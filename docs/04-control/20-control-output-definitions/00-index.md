@@ -69,9 +69,16 @@ Defined in:
 
 ### Data Value Signals
 
-- [CONST_1](./01-microarchitectural-control-signals.md#const_1)  
 - [DB_INPUT](./01-microarchitectural-control-signals.md#db_input)  
-- [DF_VAL](nals.md#pc_val)  
+- [DF_VAL](./01-microarchitectural-control-signals.md#df_val)  
+- [IE_VAL](./01-microarchitectural-control-signals.md#ie_val)  
+- [IF_DF_COMBINED](./01-microarchitectural-control-signals.md#if_df_combined)  
+- [IF_VAL](./01-microarchitectural-control-signals.md#if_val)  
+- [II_VAL](./01-microarchitectural-control-signals.md#ii_val)  
+- [MA_VAL](./01-microarchitectural-control-signals.md#ma_val)  
+- [MDB_INPUT](./01-microarchitectural-control-signals.md#mdb_input)  
+- [PC_VAL](./01-microarchitectural-control-signals.md#pc_val)  
+
 
 ---
 
