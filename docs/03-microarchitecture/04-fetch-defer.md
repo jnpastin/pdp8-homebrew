@@ -124,14 +124,8 @@ Description:
 
 μops (conditional):
 - MB_INC
-- MEM_WRITE_FROM_MB
-
-Condition:
-
-    if EA_addr is within autoindex range
-
 Description:
-- Increments the value at the indirect address and writes it back to memory.
+- Increments the value at the indirect address
 
 ---
 
@@ -140,11 +134,20 @@ Description:
 μops:
 - MB_TO_EA
 
+μops (conditional):  
+- MEM_WRITE_FROM_MB
+
+Condition:
+
+    if EA_addr is within autoindex range
+
+
 Control Decisions:
 
     MS_next ← EXECUTE
 
 Description:
+- Writes incremented value back to memory
 - Updates EA register with final resolved address
 - Transitions to EXECUTE
 
