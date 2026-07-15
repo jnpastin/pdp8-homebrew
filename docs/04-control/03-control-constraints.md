@@ -110,7 +110,7 @@ Defined in:
 
 Additional constraints:
 
-- must be derived only from stable register state
+- must be derived only from stable register state or direct reflection of stable one-bit state registers
 - must not depend on transient datapath signals
 - must not be stored or latched
 - must be stable during the control evaluation window
@@ -182,7 +182,10 @@ Constraint:
   - all sequencing behavior
 
 Constraint:
-- CONTROL_WORD must include MS_next.
+- CONTROL_WORD must include:
+  - MS_next
+  - RUN_NEXT
+  - HLT_REQ_NEXT
 
 Constraint:
 - No control behavior may exist outside CONTROL_WORD.
@@ -195,7 +198,10 @@ Constraint:
 - State transitions must be determined solely by CONTROL_WORD.
 
 Constraint:
-- MS_next must not be computed outside the control store.
+- MS_NEXT, RUN_NEXT and HALT_REQUEST_NEXT must not be computed outside the control store.
+
+Constraint:
+- RUN and HALT_REQUEST must not be modified outside defined sequencing state updates.
 
 Constraint:
 - TS progression must be deterministic and independent of datapath signals.
@@ -283,14 +289,19 @@ A memory write operation is defined by the combination of:
 - Architectural signal:
   - WR = 1
 
-- Micro-operation:
+- One of the Micro-operations:
   - MEM_WRITE_FROM_MB
+  - MEM_WRITE_FROM_SR
+
+Effective control required for memory writes:
+- WR + MEM_WR_SRC = MB + MEM_WRITE_FROM_MB
+- WR + MEM_WR_SRC = SR + MEM_WRITE_FROM_SR
 
 #### Required Behavior
 
 When both are active in the same TS:
 
-- Memory must store MB into M[MA] at TP
+- Memory must store the source data into M[MA] at TP
 
 #### Invalid Conditions
 

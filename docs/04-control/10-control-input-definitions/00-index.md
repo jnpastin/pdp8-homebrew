@@ -117,8 +117,7 @@ Defined in:
 
 ## Derived Flags
 
-Defined in:
-- [Derived Flags](./03-derived-flags.md)
+Defined in: [Derived Flags](./03-derived-flags.md)
 
 - [SKIP_TAKEN](./03-derived-flags.md#skip_taken)  
 - [ISZ_SKIP_REQUIRED](./03-derived-flags.md#isz_skip_required)  

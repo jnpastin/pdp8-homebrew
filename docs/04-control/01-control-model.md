@@ -192,9 +192,15 @@ flags register.
 FLAGS are boolean predicates derived from register state.
 
 They are:
-- combinational
 - not stored
 - not architecturally observable
+
+A FLAG may be either:
+
+- a direct reflection of a one-bit state register
+- a combinational predicate derived from one or more registers
+
+FLAGS do not imply the existence of a stored aggregate flags register.
 
 ---
 
@@ -232,7 +238,8 @@ Complete definitions of all FLAGS are provided in:
 EXT represents signals originating outside the CPU.
 
 Examples:
-- interrupt request
+- Front panel request
+- Interrupt request
 - DMA request
 
 Properties:
