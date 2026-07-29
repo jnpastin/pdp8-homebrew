@@ -1,4 +1,4 @@
-## Derived Flags
+## Primitive Flags
 
 ### Purpose
 
@@ -90,6 +90,22 @@ FLAGS must:
 
 ---
 
+### HLT_REQ
+
+**Name:** HALT_REQUEST_PENDING  
+**Source Register:** HLT_REQ  
+**Purpose:** Indicates that a halt request is pending.  
+
+**Value Encoding:**
+- 0 → no pending halt request
+- 1 → halt request pending
+
+**Consumed By:**
+- Control decision:
+  - Instruction-completion halt processing
+
+---
+
 ### IE
 
 **Name:** IE_IS_SET  
@@ -172,6 +188,24 @@ FLAGS must:
 **Consumed By:**
 - ISZ execution:
   - [PC_INC μop](../03-microarchitecture/02-micro-operations.md#pc_inc)
+
+---
+
+### RUN
+
+**Name:** RUN_STATE  
+**Source Register:** RUN  
+**Purpose:** Indicates whether normal instruction execution is active.  
+
+**Value Encoding:**  
+- 0 → processor halted
+- 1 → processor executing
+
+**Consumed By:**
+- Control decision:
+  - Front panel execution control
+  - Single-step control
+  - Single-instruction control
 
 ---
 

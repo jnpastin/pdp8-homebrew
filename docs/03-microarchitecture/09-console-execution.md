@@ -122,14 +122,14 @@ A halt request remains pending until consumed.
 
 # Console Address Context
 
-Console operations use both:
+Console operations update both:
 
 ```text
 MA
 EA_ADDR
 ```
 
-as the current console address context.
+This maintains the expected state when the CPU resumes normal operations.
 
 The two registers are maintained in lockstep during console operation.
 
@@ -144,32 +144,28 @@ EA_ADDR
     Internal address context used by existing CPU address-loading paths
 ```
 
-This avoids introducing console-specific address loading behavior and allows START to reuse existing execution mechanisms.
+This allows CONT to reuse existing execution mechanisms.
+
+The PC is loaded via the SR, this is then used to drive MA and EA for EXAM and DEP actions
 
 ---
 
 # Load Address Operation
 
-Load Address establishes the current console address context.
+Load Address sets the front panel execution context by reading IF, DF, and PC from the switches
 
 Microoperation sequence:
 
 ```text
-FP_SR_TO_MA
-
-FP_SR_TO_EA
-
+FP_SR_TO_PC
 FP_IF_TO_IF
-
 FP_DF_TO_DF
 ```
 
 Result:
 
 ```text
-MA      ← SR
-EA_ADDR ← SR
-
+PC      ← SR
 IF      ← Front Panel IF
 DF      ← Front Panel DF
 ```
@@ -182,28 +178,27 @@ The processor remains halted.
 
 # Examine Operation
 
-Examine reads the memory location identified by the current console address context.
+Examine sets the address context from the PC, reads memory, and increments the PC
 
 Microoperation sequence:
 
 ```text
+PC_TO_MA
+PC_LOAD_EA_ADDR
+PC_INC
 MEM_READ_TO_MB
-
-MA_INC
-
-EA_INC
 ```
 
 Result:
 
 ```text
-MB ← Memory[IF:EA_ADDR]
-
-MA      ← MA + 1
-EA_ADDR ← EA_ADDR + 1
+MA      ← PC
+EA      ← PC
+MB      ← Memory[IF:PC]
+PC      ← PC + 1
 ```
 
-Address advancement occurs automatically after the read.
+The memory read sources the address from PC, not MA or EA.  This is done to allow all microoperations to occur simultaneously.
 
 The processor remains halted.
 
@@ -211,29 +206,27 @@ The processor remains halted.
 
 # Deposit Operation
 
-Deposit writes the switch register value to the current console address and updates the memory buffer display value.
+Deposit sets the address context from the PC, writes the value of the SR to memory, and increments the PC
 
 Microoperation sequence:
 
 ```text
+PC_TO_MA
+PC_LOAD_EA_ADDR
+PC_INC
 FP_SR_TO_MB
-
 MEM_WRITE_FROM_SR
-
-MA_INC
-
-EA_INC
 ```
 
 Result:
 
 ```text
-MB ← SR
 
-Memory[IF:EA_ADDR] ← SR
-
-MA      ← MA + 1
-EA_ADDR ← EA_ADDR + 1
+MA              ← PC
+EA              ← PC
+MB              ← SR
+Memory[IF:PC]   ← SR
+PC              ← PC + 1
 ```
 
 `FP_SR_TO_MB` exists to update the observable MB state for the front panel.
@@ -241,6 +234,8 @@ EA_ADDR ← EA_ADDR + 1
 `MEM_WRITE_FROM_SR` exists to avoid an invalid same-TS dependency on the newly loaded MB value.
 
 The memory write and MB update both consume SR as their source, allowing the operation to remain a valid single TS-equivalent console transaction.
+
+The memory write sources the address from the PC, not MA or EA.  This allows all microoperations to occur simultaneously.
 
 The processor remains halted.
 
@@ -254,32 +249,20 @@ Microoperation sequence:
 
 ```text
 AC_CLEAR
-
 L_CLEAR
-
 MQ_CLEAR
-
 IE_CLEAR
-
 II_CLEAR
-
-PC_LOAD_EA_ADDR
 ```
 
 Result:
 
 ```text
 AC ← 0000
-
 L ← 0
-
 MQ ← 0000
-
 IE ← 0
-
 II ← 0
-
-PC ← EA_ADDR
 ```
 
 Execution begins in:
@@ -289,6 +272,8 @@ FETCH
 ```
 
 at the first timing state.
+
+The address that execution begins at is set via the LOAD command.
 
 The processor enters the Running state.
 
@@ -437,42 +422,3 @@ Instruction completion
 ```
 
 Execution never halts in the middle of a major state.
-
----
-
-# Console Operation Summary
-
-```text
-LOAD ADDRESS
-
-    FP_SR_TO_MA
-    FP_SR_TO_EA
-    FP_IF_TO_IF
-    FP_DF_TO_DF
-
-EXAM
-
-    MEM_READ_TO_MB
-    MA_INC
-    EA_INC
-
-DEPOSIT
-
-    FP_SR_TO_MB
-    MEM_WRITE_FROM_SR
-    MA_INC
-    EA_INC
-
-START
-
-    AC_CLEAR
-    L_CLEAR
-    MQ_CLEAR
-    IE_CLEAR
-    II_CLEAR
-    PC_LOAD_EA_ADDR
-
-CONTINUE
-
-    No architectural μops
-```

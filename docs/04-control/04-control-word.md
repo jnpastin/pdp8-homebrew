@@ -303,7 +303,9 @@ Constraint:
 State-output signals define next-state values.
 
 Examples:
-- MS_next
+- MS_NEXT
+- RUN_NEXT
+- HLT_REQ_NEXT
 
 Behavior:
 - must be explicitly defined for every CONTROL_WORD
@@ -354,7 +356,10 @@ Constraint:
 ## 8. Sequencing Responsibility
 
 Constraint:
-- CONTROL_WORD must define MS_next.
+- CONTROL_WORD must define all sequencing state outputs.
+  - MS_NEXT
+  - RUN_NEXT
+  - HLT_REQ_NEXT
 - Control flow must be determined entirely by CONTROL_WORD.
 
 ---

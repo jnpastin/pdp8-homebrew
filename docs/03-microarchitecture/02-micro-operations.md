@@ -96,9 +96,8 @@ No intermediate state or flag storage is created.
 - [EA_TO_MA](#ea_to_ma)
 - [FP_DF_TO_DF](#fp_df_to_df)
 - [FP_IF_TO_IF](#fp_if_to_if)
-- [FP_SR_TO_EA](#fp_sr_to_ea)
-- [FP_SR_TO_MA](#fp_sr_to_ma)
 - [FP_SR_TO_MB](#fp_sr_to_mb)
+- [FP_SR_TO_PC](#fp_sr_to_pc)
 - [IB_TO_DF](#ib_to_df)
 - [IB_TO_IF](#ib_to_if)
 - [IF_DF_TO_IB](#if_df_to_ib)
@@ -115,7 +114,6 @@ No intermediate state or flag storage is created.
 - [AC_COMPLEMENT](#ac_complement)
 - [AC_INC](#ac_inc)
 - [DF_CLEAR](#df_clear)
-- [EA_INC](#ea_inc)
 - [IE_CLEAR](#ie_clear)
 - [IF_CLEAR](#if_clear)
 - [II_CLEAR](#ii_clear)
@@ -123,7 +121,6 @@ No intermediate state or flag storage is created.
 - [L_CLEAR](#l_clear)
 - [L_COMP](#l_comp)
 - [MA_CLEAR](#ma_clear)
-- [MA_INC](#ma_inc)
 - [MB_INC](#mb_inc)
 - [MQ_CLEAR](#mq_clear)
 - [PC_SET_1](#pc_set_1)
@@ -494,25 +491,6 @@ DF
 
 ---
 
-### EA_INC
-  
-**Category:**  
-State Manipulation
-
-**Description:**  
-Increments the effective address register by one.
-
-**Target:**  
-EA
-
-**Expression:**  
-EA ← EA + 1
-
-**Sources:**  
-EA
-
----
-
 ### EA_TO_MA
 
 **Category:**  
@@ -570,44 +548,6 @@ FP_IF
 
 ---
 
-### FP_SR_TO_EA
-  
-**Category:**  
-Register Transfer
-
-**Description:**  
-Loads the Effective Address register from the Front Panel Switch Register.
-
-**Target:**  
-EA
-
-**Expression:**  
-EA ← SR
-
-**Sources:**  
-SR
-
----
-
-### FP_SR_TO_MA
-  
-**Category:**  
-Register Transfer
-
-**Description:**  
-Loads the Memory Address register from the Front Panel Switch Register.
-
-**Target:**  
-MA
-
-**Expression:**  
-MA ← SR
-
-**Sources:**  
-SR
-
----
-
 ### FP_SR_TO_MB
   
 **Category:**  
@@ -621,6 +561,25 @@ MB
 
 **Expression:**  
 MB ← SR
+
+**Sources:**  
+SR
+
+---
+
+### FP_SR_TO_PC
+  
+**Category:**  
+Register Transfer
+
+**Description:**  
+Loads the Program Counter register from the Front Panel Switch Register.
+
+**Target:**  
+PC
+
+**Expression:**  
+PC ← SR
 
 **Sources:**  
 SR
@@ -901,25 +860,6 @@ MA ← 0
 
 **Sources:**  
 (none)
-
----
-
-### MA_INC
-  
-**Category:**  
-State Manipulation
-
-**Description:**  
-Increments the Memory Address register by one.
-
-**Target:**  
-MA
-
-**Expression:**  
-MA ← MA + 1
-
-**Sources:**  
-MA
 
 ---
 

@@ -89,7 +89,7 @@ Constraint:
 ### 3.3 State-Output Signals
 
 Constraint:
-- State-output signals (e.g., MS_next) are always applied.
+- State-output signals (e.g., MS_NEXT, RUN_NEXT, HLT_REQ_NEXT) are always applied.
 - No conditional or suppressed updates are permitted.
 
 ---
@@ -267,7 +267,7 @@ Constraint:
 Constraint:
 - DMA must suspend datapath progression by:
   - inhibiting register writes
-  - inhibiting MS updates
+  - inhibiting MS, RUN, HLT_REQ updates
   - inhibiting TS advancement
 
 Constraint:
