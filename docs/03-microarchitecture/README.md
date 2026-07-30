@@ -86,7 +86,7 @@ Microarchitecture binds control behavior to timing structure.
 ### Design Constraints
 
 - Behavior must be expressible as:
-  (MS, TS, IR, FLAGS, EXT) → CONTROL
+  (MS, TS, IR_FIELDS, FLAGS, EXT) → CONTROL
 - No implicit sequencing logic
 - No hidden state
 

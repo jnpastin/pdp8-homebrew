@@ -9,16 +9,18 @@ All definitions reside in:
 - [Primitive Flags](./01-flags.md)
 - [IR Derived Fields](./02-ir-derived-fields.md)
 - [Derived Flags](./03-derived-flags.md)  
+- [External Inputs](./04-external-inputs.md)
 
 ---
 
 ## Domain Classification
 
-Input signals are grouped into three domains:
+Input signals are grouped into four domains:
 
 - Primitive Flags (register-derived)
 - IR-Derived Signals (instruction decode surface)
 - Derived Flags (composed control conditions)
+- External Flags (conditions determined outside of the CPU)
 
 Each signal appears exactly once.
 
@@ -32,11 +34,12 @@ Defined in:
 - [ACN](./01-flags.md#acn)  
 - [ACZ](./01-flags.md#acz)  
 - [EAI](./01-flags.md#eai)  
+- [HLT_REQ](./01-flags.md#hlt_req)
 - [IE](./01-flags.md#ie)  
 - [II](./01-flags.md#ii)  
-- [IP](./01-flags.md#ip)  
 - [LZ](./01-flags.md#lz)  
 - [MBZ](./01-flags.md#mbz)  
+- [RUN](./01-flags.md#run)
 
 ---
 
@@ -124,3 +127,28 @@ Defined in: [Derived Flags](./03-derived-flags.md)
 - [AUTO_INDEX_REQUIRED](./03-derived-flags.md#auto_index_required)  
 - [INTERRUPT_REQUEST_VALID](./03-derived-flags.md#interrupt_request_valid)  
 
+---
+
+## External Inputs
+
+Defined in: [External Inputs](./04-external-inputs.md)
+
+### Front Panel Commands
+- [FP_START](./04-external-inputs.md#fp_start)
+- [FP_CONTINUE](./04-external-inputs.md#fp_continue)
+- [FP_STOP](./04-external-inputs.md#fp_stop)
+- [FP_LOAD_ADDRESS](./04-external-inputs.md#fp_load_address)
+- [FP_EXAMINE](./04-external-inputs.md#fp_examine)
+- [FP_DEPOSIT](./04-external-inputs.md#fp_deposit)
+
+### Front Panel Modes
+- [FP_SINGLE_INSTRUCTION](./04-external-inputs.md#fp_single_instruction)
+- [FP_SINGLE_STEP](./04-external-inputs.md#fp_single_step)
+
+### Front Panel Data
+- [FP_IF](./04-external-inputs.md#fp_if)
+- [FP_DF](./04-external-inputs.md#fp_df)
+
+### External Requests
+- [INT_REQ](./04-external-inputs.md#int_req)
+- [DMA_REQ](./04-external-inputs.md#dma_req)

@@ -106,6 +106,7 @@ No intermediate state or flag storage is created.
 - [IR_IF_TO_IF](#ir_if_to_if)
 - [MB_TO_EA](#mb_to_ea)
 - [MB_TO_IR](#mb_to_ir)
+- [PC_TO_EA_ADDR](#pc_to_ea_addr)
 - [PC_TO_MA](#pc_to_ma)
 - [PC_TO_MB](#pc_to_mb)
 
@@ -757,11 +758,10 @@ Constructs the base effective address from the instruction address field using p
 EA
 
 **Expression:**
-
-    if P == 0:
-        EA ← (0…0 || IR[6:0])
-    else:
-        EA ← (PC[11:7] || IR[6:0])
+if IR_ZERO_PAGE == 1:
+    EA ← (0…0 || IR[6:0])
+else:
+    EA ← (PC[11:7] || IR[6:0])
 
 **Sources:**  
 IR, PC
@@ -875,8 +875,7 @@ Increments the value stored in MB, producing a new value for subsequent use.
 MB
 
 **Expression:**
-
-    MB ← MB + 1
+MB ← MB + 1
 
 **Sources:**  
 MB
@@ -895,8 +894,7 @@ Transfers the value currently held in MB into EA as the resolved effective addre
 EA
 
 **Expression:**
-
-    EA ← MB
+EA ← MB
 
 **Sources:**  
 MB
@@ -934,10 +932,18 @@ Reads the value at the address specified by MA and places it into the memory buf
 MB
 
 **Expression:**  
-MB ← M[MA]
+MB ← M[MEM_ADDR]
+
+Where:
+
+```text
+MEM_ADDR =
+    MA  when MEM_OP_SRC = MA
+    PC  when MEM_OP_SRC = PC
+```
 
 **Sources:**  
-MA
+MA or PC
 
 ---
 
@@ -950,13 +956,21 @@ Memory Operations
 Writes the value stored in MB to the memory location specified by MA.
 
 **Target:**  
-M[MA]
+M[MEM_ADDR]
 
 **Expression:**  
-M[MA] ← MB
+M[MEM_ADDR] ← MB
+
+Where:
+
+```text
+MEM_ADDR =
+    MA  when MEM_OP_SRC = MA
+    PC  when MEM_OP_SRC = PC
+```
 
 **Sources:**  
-MA, MB
+MA or PC, MB
 
 ---
 
@@ -969,13 +983,21 @@ Memory Operations
 Writes the value currently present in the Front Panel Switch Register to the memory location specified by MA.
 
 **Target:**  
-M[MA]
+M[MEM_ADDR]
 
 **Expression:**  
-M[MA] ← SR
+M[MEM_ADDR] ← SR
+
+Where:
+
+```text
+MEM_ADDR =
+    MA  when MEM_OP_SRC = MA
+    PC  when MEM_OP_SRC = PC
+```
 
 **Sources:**  
-MA, SR
+MA or PC, SR
 
 **Constraints:**
 - Intended for front-panel deposit operations
@@ -1057,6 +1079,25 @@ PC ← 0001
 
 **Sources:**  
 (none)
+
+---
+
+### PC_TO_EA_ADDR
+
+**Category:**  
+Register Transfer
+
+**Description:**  
+Transfers the program counter into the effective address register for instruction fetch.
+
+**Target:**  
+EA_ADDR
+
+**Expression:**  
+EA_ADDR ← PC
+
+**Sources:**  
+PC
 
 ---
 

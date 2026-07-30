@@ -12,14 +12,16 @@ This document establishes:
 This document defines control inputs and conceptual behavior only.
 
 For control address construction, see:
-- [Control Addressing](../04-control/02-control-addressing.md)
+- [Control Addressing](./02-control-addressing.md)
 
 For constraints and formal rules, see:
-- [Control Constraints](../04-control/03-control-constraints.md)
+- [Control Constraints](./03-control-constraints.md)
 
 For definitions of control input signals, see:
-- [Derived Flags](../04-control/10-control-input-definitions/01-derived-flags.md)
-- [IR Derived Fields](../04-control/10-control-input-definitions/02-ir-derived-fields.md)
+- [Primitive Flags](./10-control-input-definitions/01-flags.md)
+- [IR Derived Fields](./10-control-input-definitions/02-ir-derived-fields.md)
+- [Derived Flags](./10-control-input-definitions/03-derived-flags.md)
+- [External Inputs](./10-control-input-definitions/04-external-inputs.md)
 
 ---
 
@@ -82,6 +84,7 @@ Examples:
 - DEFER
 - EXECUTE
 - INTERRUPT
+- DMA
 
 Properties:
 - persists across multiple TS
@@ -229,7 +232,8 @@ FLAGS do not imply the existence of a stored aggregate flags register.
 
 Complete definitions of all FLAGS are provided in:
 
-- [Derived Flags](../04-control/10-control-input-definitions/01-derived-flags.md)
+- [Primitive Flags](./10-control-input-definitions/01-flags.md)
+- [Derived Flags](./10-control-input-definitions/03-derived-flags.md)
 
 ---
 
@@ -248,7 +252,7 @@ Properties:
 - must be stable before TP
 
 Defined in:
-- [External Inputs](../04-control/03-control-constraints.md#8-external-inputs-ext)
+- [External Inputs](./10-control-input-definitions/04-external-inputs.md)
 
 ---
 

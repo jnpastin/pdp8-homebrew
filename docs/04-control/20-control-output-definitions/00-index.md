@@ -63,6 +63,8 @@ Defined in:
 - [L_OP](./01-microarchitectural-control-signals.md#l_op)  
 - [MA_SRC](./01-microarchitectural-control-signals.md#ma_src)  
 - [MB_SRC](./01-microarchitectural-control-signals.md#mb_src)  
+- [MEM_OP_SRC](./01-microarchitectural-control-signals.md#mem_op_src)  
+- [MEM_WR_SRC](./01-microarchitectural-control-signals.md#mem_wr_src)  
 - [PC_SRC](./01-microarchitectural-control-signals.md#pc_src)  
 
 ---
@@ -93,14 +95,15 @@ Defined in:
 
 - [RD](./02-architectural-control-signals.md#31-memory-read-rd)  
 - [WR](./02-architectural-control-signals.md#32-memory-write-wr)  
+- [DMA_GRANT](./02-architectural-control-signals.md#35-dma_grant)  
 
 ---
 
 ### I/O Interface
 
-- [IOA[5:0]](./02-architectural-control-signals.md#33-io-address-bus-ioa50)  
-- [DB_READ](./02-architectural-control-signals.md#34-db_read)  
-- [DB_WRITE](./02-architectural-control-signals.md#db_write)  
+- [DB_READ](./02-architectural-control-signals.md#33-db_read)  
+- [DB_WRITE](./02-architectural-control-signals.md#34-db_write)  
+- [IOA[5:0]](./02-architectural-control-signals.md#36-io-address-bus-ioa50)  
 
 ---
 
@@ -113,7 +116,7 @@ Defined in:
 
 ### Control Flow
 
-- [MS_next](./03-sequencing-control-signals.md#31-next-major-state-ms_next)  
-- [BRANCH_enable](./03-sequencing-control-signals.md#32-branch-enable-branch_enable)  
-- [BRANCH_when_true](./03-sequencing-control-signals.md#33-branch-polarity-branch_when_true)  
+- [MS_NEXT](./03-sequencing-control-signals.md#31-next-major-state-ms_next)  
+- [RUN_NEXT](./03-sequencing-control-signals.md#32-run-state-next-value-run_next)  
+- [HLT_REQ_NEXT](./03-sequencing-control-signals.md#33-halt-request-next-value-hlt_req_next)  
 

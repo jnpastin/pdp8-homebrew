@@ -23,7 +23,7 @@ Entry into INTERRUPT is determined by control based on:
 - interrupt request signals  
 
 Control conditions governing entry are defined in:
-- [Control Model](../04-control/README.md)
+- [Control Model](../04-control/01-control-model.md)
 
 ## Execution Model
   
@@ -136,7 +136,7 @@ Upon completion of INTERRUPT:
   - preserve and restore any required register state (AC, L, MQ)
 
 - Interrupt enable state (IE) is modified by IOT instructions (e.g., ION, IOF), defined in:
-  - [IOT Execution](../07-opr/01-iot-execution.md)
+  - [IOT Execution](../06-iot-execution.md)
 
 ### Interrupt Model
 

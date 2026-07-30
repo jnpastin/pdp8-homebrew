@@ -680,6 +680,7 @@ IR_OPR_HLT = IR_OPR_GROUP2 AND IR[1]
 - 1 → halt  
 
 **Consumed By:**
+- Halt-request sequencing control
 
 ---
 

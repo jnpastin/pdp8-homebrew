@@ -10,8 +10,8 @@ This document specifies only:
 
 All shared execution semantics are defined in:
 
-- ../03-microarchitecture/01-execution-model.md  
-- ../02-isa/00-encoding-model.md  
+- [Execution Model](./01-execution-model.md)
+- [Encoding Model](../02-isa/00-encoding-model.md)
 
 ---
 

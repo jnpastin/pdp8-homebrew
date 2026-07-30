@@ -36,7 +36,7 @@ For each TSn:
     Active_μops(TSn) = f(MS, TS, IR, FLAGS, EXT)
 
 Where:
-- MS defines the major state (FETCH, DEFER, EXECUTE, INTERRUPT)
+- MS defines the major state (FETCH, DEFER, EXECUTE, INTERRUPT, DMA)
 - TS defines the current time step
 - IR provides instruction encoding
 - FLAGS are derived from register state

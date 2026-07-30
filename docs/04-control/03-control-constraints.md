@@ -9,8 +9,8 @@ This document is normative:
 - violations are considered design errors
 
 Definitions are provided in:
-- [Control Model](01-control-model.md)
-- [Control Addressing](02-control-addressing.md)
+- [Control Model](./01-control-model.md)
+- [Control Addressing](./02-control-addressing.md)
 
 ---
 
@@ -106,7 +106,8 @@ Constraint:
 ## 6. FLAGS Constraints
 
 Defined in:
-- [Derived Flags](10-control-input-definitions/01-derived-flags.md)
+- [Primitive Flags](10-control-input-definitions/01-flags.md)
+- [Derived Flags](10-control-input-definitions/03-derived-flags.md)
 
 Additional constraints:
 
@@ -123,7 +124,7 @@ Constraint:
 ## 7. Control Address Constraints
 
 Defined in:
-- [Control Addressing](02-control-addressing.md)
+- [Control Addressing](./02-control-addressing.md)
 
 Additional constraints:
 
@@ -183,10 +184,10 @@ Constraint:
 
 Constraint:
 - CONTROL_WORD must include:
-  - MS_next
+  - MS_NEXT
   - RUN_NEXT
   - HLT_REQ_NEXT
-
+  
 Constraint:
 - No control behavior may exist outside CONTROL_WORD.
 
@@ -198,10 +199,10 @@ Constraint:
 - State transitions must be determined solely by CONTROL_WORD.
 
 Constraint:
-- MS_NEXT, RUN_NEXT and HALT_REQUEST_NEXT must not be computed outside the control store.
+- MS_NEXT, RUN_NEXT and HLT_REQ_NEXT must not be computed outside the control store.
 
 Constraint:
-- RUN and HALT_REQUEST must not be modified outside defined sequencing state updates.
+- RUN and HALT_REQ must not be modified outside defined sequencing state updates.
 
 Constraint:
 - TS progression must be deterministic and independent of datapath signals.
@@ -267,8 +268,14 @@ A memory read operation is defined by the combination of:
 
 When both are active in the same TS:
 
-- Memory must place M[MA] onto MDB
 - MB must capture MDB_input at TP
+- Memory must place M[MEM_ADDR] onto MDB
+
+Where:
+
+MEM_ADDR =
+    MA when MEM_OP_SRC = MA
+    PC when MEM_OP_SRC = PC
 
 #### Invalid Conditions
 
@@ -301,17 +308,32 @@ Effective control required for memory writes:
 
 When both are active in the same TS:
 
-- Memory must store the source data into M[MA] at TP
+Memory must store the selected source data into M[MEM_ADDR] at TP
+
+Where:
+
+MEM_ADDR =
+    MA when MEM_OP_SRC = MA
+    PC when MEM_OP_SRC = PC
 
 #### Invalid Conditions
 
 The following are invalid and must not occur:
 
-- WR = 1 without MEM_WRITE_FROM_MB  
+- WR = 1 without a valid memory-write μop
   → external write initiated with no defined data source
 
-- MEM_WRITE_FROM_MB without WR = 1  
+- MEM_WRITE_FROM_MB without WR = 1
   → memory state modified without external coordination
+
+- MEM_WRITE_FROM_SR without WR = 1
+  → memory state modified without external coordination
+
+- MEM_WRITE_FROM_MB with MEM_WR_SRC ≠ MB
+  → write-source mismatch
+
+- MEM_WRITE_FROM_SR with MEM_WR_SRC ≠ SR
+  → write-source mismatch
 
 ---
 
@@ -378,7 +400,7 @@ Constraint:
 This section defines constraints governing extension of the control system.
 
 Refer to:
-- [Control Addressing](02-control-addressing.md)
+- [Control Addressing](./02-control-addressing.md)
 
 ---
 
@@ -452,10 +474,15 @@ Constraint:
 ### 13.6 External Arbitration Constraints
 
 Constraint:
-- External arbitration mechanisms may suppress control effects but must not alter control decisions.
+- External arbitration mechanisms must not modify CTRL_ADDR formation.
 
 Constraint:
-- CONTROL_WORD must remain a pure function of CTRL_ADDR.
+- External arbitration mechanisms must not suppress CONTROL_WORD effects.
+
+Constraint:
+- DMA service must be represented through EXT inputs,
+  CTRL_ADDR selection, CONTROL_WORD outputs,
+  and defined sequencing behavior.
 
 Constraint:
 - No external mechanism may introduce implicit control behavior.

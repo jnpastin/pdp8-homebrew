@@ -36,6 +36,7 @@ FETCH
 DEFER
 EXECUTE
 INTERRUPT
+DMA
 ```
 
 major states execute normally.
@@ -184,7 +185,7 @@ Microoperation sequence:
 
 ```text
 PC_TO_MA
-PC_LOAD_EA_ADDR
+PC_TO_EA_ADDR
 PC_INC
 MEM_READ_TO_MB
 ```
@@ -193,12 +194,12 @@ Result:
 
 ```text
 MA      ← PC
-EA      ← PC
+EA_ADDR ← PC
 MB      ← Memory[IF:PC]
 PC      ← PC + 1
 ```
 
-The memory read sources the address from PC, not MA or EA.  This is done to allow all microoperations to occur simultaneously.
+The memory read sources the address from PC, not MA or EA.  This is done to allow all microoperations to occur simultaneously. MEM_OP_SRC = PC, while normal memory operations use MEM_OP_SRC = MA
 
 The processor remains halted.
 
@@ -212,7 +213,7 @@ Microoperation sequence:
 
 ```text
 PC_TO_MA
-PC_LOAD_EA_ADDR
+PC_TO_EA_ADDR
 PC_INC
 FP_SR_TO_MB
 MEM_WRITE_FROM_SR
@@ -223,7 +224,7 @@ Result:
 ```text
 
 MA              ← PC
-EA              ← PC
+EA_ADDR         ← PC
 MB              ← SR
 Memory[IF:PC]   ← SR
 PC              ← PC + 1
@@ -235,7 +236,7 @@ PC              ← PC + 1
 
 The memory write and MB update both consume SR as their source, allowing the operation to remain a valid single TS-equivalent console transaction.
 
-The memory write sources the address from the PC, not MA or EA.  This allows all microoperations to occur simultaneously.
+The memory write sources the address from the PC, not MA or EA.  This allows all microoperations to occur simultaneously. MEM_OP_SRC = PC, while normal memory operations use MEM_OP_SRC = MA
 
 The processor remains halted.
 

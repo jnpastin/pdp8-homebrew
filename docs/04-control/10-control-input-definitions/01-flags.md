@@ -53,7 +53,7 @@ FLAGS must:
 
 **Consumed By:**
 - Skip logic driving:
-  - [PC_INC μop](../03-microarchitecture/02-micro-operations.md#pc_inc)
+  - [PC_INC μop](../../03-microarchitecture/02-micro-operations.md#pc_inc)
 
 ---
 
@@ -69,7 +69,7 @@ FLAGS must:
 
 **Consumed By:**
 - Skip logic driving:
-  - [PC_INC μop](../03-microarchitecture/02-micro-operations.md#pc_inc)
+  - [PC_INC μop](../../03-microarchitecture/02-micro-operations.md#pc_inc)
 
 ---
 
@@ -85,8 +85,8 @@ FLAGS must:
 
 **Consumed By:**
 - Auto-index execution:
-  - [MB_INC μop](../03-microarchitecture/02-micro-operations.md#mb_inc)
-  - [MEM_WRITE_FROM_MB μop](../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)
+  - [MB_INC μop](../../03-microarchitecture/02-micro-operations.md#mb_inc)
+  - [MEM_WRITE_FROM_MB μop](../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)
 
 ---
 
@@ -120,8 +120,8 @@ FLAGS must:
 - Control decision:
   - Interrupt entry condition (control logic)
 - Modified by:
-  - [IE_SET μop](../03-microarchitecture/02-micro-operations.md#ie_set)
-  - [IE_CLEAR μop](../03-microarchitecture/02-micro-operations.md#ie_clear)
+  - [IE_SET μop](../../03-microarchitecture/02-micro-operations.md#ie_set)
+  - [IE_CLEAR μop](../../03-microarchitecture/02-micro-operations.md#ie_clear)
 
 ---
 
@@ -139,23 +139,7 @@ FLAGS must:
 - Control decision:
   - Interrupt entry gating (control logic)
 - Modified by:
-  - [II_SET μop](../03-microarchitecture/02-micro-operations.md#ii_set)
-
----
-
-### IP
-
-**Name:** INTERRUPT_PENDING  
-**Source Register:** EXT  
-**Purpose:** Indicates that an interrupt request is pending.
-
-**Value Encoding:**
-- `0` → no interrupt request
-- `1` → interrupt request pending
-
-**Consumed By:**
-- Control decision:
-  - Interrupt entry condition (control logic)
+  - [II_SET μop](../../03-microarchitecture/02-micro-operations.md#ii_set)
 
 ---
 
@@ -171,7 +155,7 @@ FLAGS must:
 
 **Consumed By:**
 - Skip logic driving:
-  - [PC_INC μop](../03-microarchitecture/02-micro-operations.md#pc_inc)
+  - [PC_INC μop](../../03-microarchitecture/02-micro-operations.md#pc_inc)
 
 ---
 
@@ -187,7 +171,7 @@ FLAGS must:
 
 **Consumed By:**
 - ISZ execution:
-  - [PC_INC μop](../03-microarchitecture/02-micro-operations.md#pc_inc)
+  - [PC_INC μop](../../03-microarchitecture/02-micro-operations.md#pc_inc)
 
 ---
 

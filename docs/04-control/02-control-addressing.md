@@ -12,10 +12,10 @@ This document establishes:
 This document defines structure and constraints only.
 
 For the control model, see:
-- [Control Model](01-control-model.md)
+- [Control Model](./01-control-model.md)
 
 For constraints and formal rules, see:
-- [Control Constraints](03-control-constraints.md)
+- [Control Constraints](./03-control-constraints.md)
 
 ---
 
@@ -355,7 +355,8 @@ Constraint:
 - Only FLAGS may represent conditional state in CTRL_ADDR.
 
 For definitions, see:
-- [Derived Flag Definitions](10-control-input-definitions/01-derived-flags.md)
+- [Primitive Flag Definitions](10-control-input-definitions/01-flags.md)
+- [Derived Flag Definitions](10-control-input-definitions/03-derived-flags.md)
 
 ---
 
@@ -569,7 +570,7 @@ Constraint:
 ### 7.6 Relationship to CONTROL_WORD
 
 See:
-- [Control Word](04-control-word.md)
+- [Control Word](./04-control-word.md)
 
 Constraint:
 - Extending CONTROL_WORD and extending CTRL_ADDR are independent operations.
@@ -630,17 +631,6 @@ Constraint:
 
 Constraint:
 - no cross-layer behavior is allowed.
-
-
-#### 9.3.1 External Arbitration Independence
-
-Constraint:
-- External arbitration mechanisms (e.g., DMA) must not affect CTRL_ADDR formation.
-
-Constraint:
-- CTRL_ADDR must be computed solely from:
-  - MS, TS, IR_FIELDS, FLAGS, EXT
-
 
 ---
 

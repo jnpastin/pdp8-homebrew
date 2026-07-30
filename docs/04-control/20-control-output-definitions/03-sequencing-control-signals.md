@@ -7,7 +7,7 @@ Defines control outputs responsible for **control flow within the CPU**.
 These signals determine:
 
 - Major State progression
-- conditional control decisions
+- Run/stop behavior
 
 Sequencing signals:
 
@@ -27,11 +27,11 @@ Related:
 
 Sequencing control signals define **how control transitions between Major States (MS)**.
 
-They:
+They select:
 
-- select MS_next
-- evaluate conditions
-- control branching decisions
+- MS_NEXT
+- RUN_NEXT
+- HLT_REQ_NEXT
 
 They do NOT:
 
@@ -49,7 +49,7 @@ They do NOT:
 Control is defined as:
 
 ```
-CONTROL = f(MS, TS, INST, FLAGS, EXT)
+CONTROL = f(MS, TS, IR_FIELDS, FLAGS, EXT)
 ```
 
 Sequencing signals are part of this function.
@@ -65,14 +65,15 @@ Sequencing signals are part of this function.
 For every tuple:
 
 ```
-(MS, TS, INST, FLAGS, EXT)
+(MS, TS, IR_FIELDS, FLAGS, EXT)
 ```
 
 there must be exactly one:
 
 ```
-MS_next value
-branch decision
+MS_NEXT value
+RUN_NEXT value
+HLT_REQ_NEXT value
 ```
 
 No ambiguity is permitted.
@@ -97,10 +98,10 @@ TS/TP behavior is defined in:
 
 ---
 
-### 3.1 Next Major State (MS_next)
+### 3.1 Next Major State (MS_NEXT)
 
 **Name**  
-MS_next  
+MS_NEXT  
 
 **Type**  
 Encoded field  
@@ -108,8 +109,7 @@ Encoded field
 **Domain**  
 Sequencing  
 
-**Width**  
-Sufficient to encode all Major States  
+**Width** 3 bits
 
 Defined in:
 - [Major State Model](../../03-microarchitecture/00-state-model.md)
@@ -118,12 +118,14 @@ Defined in:
 
 Specifies the next Major State.
 
-Typical values:
-
-- FETCH
-- DEFER
-- EXECUTE
-- INTERRUPT
+**Value Encoding:**
+```text
+0 → FETCH
+1 → DEFER
+2 → EXECUTE
+3 → INTERRUPT
+4 → DMA
+```
 
 **Behavior**
 
@@ -139,62 +141,72 @@ Typical values:
 
 ---
 
-### 3.2 Branch Enable (BRANCH_enable)
+### 3.2 Run State Next Value (RUN_NEXT)
 
-**Name**  
-BRANCH_enable  
+**Name** RUN_NEXT  
+**Type** Single-bit state-output field  
+**Domain** Sequencing  
+**Width** 1 bit  
 
-**Type**  
-Single-bit  
-
-**Domain**  
-Sequencing  
-
-**Description**
-
-Enables conditional sequencing behavior.
+**Description**  
+Specifies the next value of the RUN state.
 
 **Behavior**
+- evaluated as part of the control word
+- committed at TP
+- becomes the new RUN state after the update point
 
-- when 1:
-  - a condition is evaluated
-  - sequencing selects between alternate outcomes
-
-- when 0:
-  - default sequencing behavior applies
-
-**Constraints**
-
-- must not be asserted without a valid condition context
-- must not directly modify MS or TS
-- only affects selection of MS_next or control flow path
-
----
-
-### 3.3 Branch Polarity (BRANCH_when_true)
-
-**Name**  
-BRANCH_when_true  
-
-**Type**  
-Single-bit  
-
-**Domain**  
-Sequencing  
-
-**Description**
-
-Defines the polarity of the condition used for branching.
-
-Values:
-
-- 1 → branch when condition is true  
-- 0 → branch when condition is false  
+**Value Encoding:**
+```text
+0 → processor halted
+1 → processor running
+```
 
 **Constraints**
+- must be defined in every control word
+- must not be computed outside the control store
+- must not be modified by μops
+- must be consumed as a committed state value through [RUN](../10-control-input-definitions/01-flags.md#run)
 
-- only meaningful when BRANCH_enable = 1
-- must be explicitly defined for all valid control states
+**Used for**
+- front-panel START behavior
+- front-panel CONTINUE behavior
+- Single Step halt behavior
+- Single Instruction halt behavior
+- halt-request consumption behavior
+
+### 3.3 Halt Request Next Value (HLT_REQ_NEXT)
+
+**Name** HLT_REQ_NEXT  
+**Type** Single-bit state-output field  
+**Domain** Sequencing  
+**Width** 1 bit  
+
+**Description**  
+Specifies the next value of the halt-request pending state.
+
+**Behavior**
+- evaluated as part of the control word
+- committed at TP
+- becomes the new HLT_REQ state after the update point
+
+**Value Encoding:**
+```text
+0 → no halt request pending
+1 → halt request pending
+```
+
+**Constraints**
+- must be defined in every control word
+- must not be computed outside the control store
+- must not be modified by μops
+- must be consumed as a committed state value through [HLT_REQ](../10-control-input-definitions/01-flags.md#hlt_req)
+
+**Used for**
+- front-panel STOP behavior
+- HLT instruction behavior from [IR_OPR_HLT](../10-control-input-definitions/02-ir-derived-fields.md#ir_opr_hlt)
+- halt-request preservation
+- halt-request clearing after consumption
 
 ---
 
@@ -224,44 +236,28 @@ Control:
 
 At TS4:
 
-- MS_next is selected
+- MS_NEXT is selected
 - transition occurs at TP4
 
 General transitions:
 
 - FETCH → EXECUTE or DEFER
 - DEFER → EXECUTE
-- EXECUTE → FETCH or INTERRUPT
+- EXECUTE → FETCH, INTERRUPT. or DMA
 - INTERRUPT → FETCH
+- DMA → FETCH
+- DMA → DMA
 
 All transitions must be explicitly defined.
 
 ---
 
-### 4.3 Conditional Sequencing
-
-When BRANCH_enable = 1:
-
-```
-if condition == BRANCH_when_true:
-    select alternate control decision
-else:
-    select default control decision
-```
-
-Branch decisions may affect:
-
-- MS_next
-- control word selection
-
----
-
-### 4.4 TS Coverage Requirement
+### 4.3 TS Coverage Requirement
 
 Control must define behavior for every:
 
 ```
-(MS, TS, INST class)
+(MS, TS, IR_FIELDS class)
 ```
 
 Implications:
@@ -274,12 +270,15 @@ Implications:
 
 ## 5. Skip and Flow Behavior
 
-Skip behavior is implemented through μops.
+Skip behavior is implemented through datapath control outputs.
+
+Conditional evaluation occurs through CTRL_ADDR selection.
+
+The selected CONTROL_WORD determines whether PC_INC is asserted.
 
 Sequencing signals:
-
 - do not directly modify PC
-- only determine whether skip-related μops are active
+- do not directly implement skip behavior
 
 Defined in:
 - [Group 2 Execution](../../03-microarchitecture/07-opr/02-group2-execution.md)
@@ -326,7 +325,7 @@ Sequencing signals must not interact with:
 
 - clock gating
 - shift register control
-- DMA hold mechanisms
+- external bus ownership mechanisms
 
 Those are defined in:
 - [Timing Model](../../09-timing/README.md)
@@ -337,11 +336,11 @@ Those are defined in:
 
 Sequencing control signals define **how control progresses between Major States**.
 
-They:
+They select:
 
-- select MS_next
-- evaluate conditions
-- control branching decisions
+- MS_NEXT
+- RUN_NEXT
+- HLT_REQ_NEXT
 
 They do not:
 

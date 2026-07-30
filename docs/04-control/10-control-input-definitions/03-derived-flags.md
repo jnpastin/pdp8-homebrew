@@ -99,7 +99,7 @@ AND (
 ---
 
 **Used By μops:**
-- [PC_INC](../03-microarchitecture/02-micro-operations.md#pc_inc)
+- [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
 
 ---
 
@@ -133,7 +133,7 @@ AND MBZ
 ---
 
 **Used By μops:**
-- [PC_INC](../03-microarchitecture/02-micro-operations.md#pc_inc)
+- [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
 
 ---
 
@@ -167,8 +167,8 @@ AND EAI
 ---
 
 **Used By μops:**
-- [MB_INC](../03-microarchitecture/02-micro-operations.md#mb_inc)
-- [MEM_WRITE_FROM_MB](../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)
+- [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc)
+- [MEM_WRITE_FROM_MB](../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)
 
 ---
 
@@ -177,7 +177,7 @@ AND EAI
 **Inputs:**
 - IE
 - II
-- IP
+- INT_REQ
 
 ---
 
@@ -192,7 +192,7 @@ Determines whether interrupt entry conditions are satisfied.
 INTERRUPT_REQUEST_VALID =
     IE
 AND (II = 0)
-AND IP
+AND INT_REQ
 ```
 
 ---

@@ -92,23 +92,22 @@ Architectural
 Indicates that the CPU is requesting a memory read operation.
 
 When asserted:
-
-- memory must provide the contents of address MA
+- memory must provide the contents of the address selected by `MEM_OP_SRC`
 
 **Preconditions**
-
-- MA contains a valid address
+- the address selected by `MEM_OP_SRC` is valid
+- `MEM_OP_SRC` contains a valid encoding
 
 **Timing**
-
 - asserted during the TS corresponding to a read operation
 - memory must satisfy data availability before TP
 
 **Constraints**
-
-- must not be asserted simultaneously with WR
+- must not be asserted simultaneously with `WR`
 - does not imply data transfer into any register
 - does not define MDB validity or timing behavior
+- does not select the memory address source
+- must be paired with [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb)
 
 ---
 
@@ -127,28 +126,114 @@ Architectural
 Indicates that the CPU is requesting a memory write operation.
 
 When asserted:
-
-- memory must store the value of MB into address MA
+- memory must store the selected write data into the address selected by `MEM_OP_SRC`
 
 **Preconditions**
-
-- MA contains a valid address
-- MB contains valid data
+- the address selected by `MEM_OP_SRC` is valid
+- the selected write data source is valid
+- `MEM_OP_SRC` contains a valid encoding
 
 **Timing**
-
 - asserted during the TS corresponding to a write operation
 - data must be stable before TP
 
 **Constraints**
+- must not be asserted simultaneously with `RD`
+- does not select the memory address source
+- does not select the memory write data source
+- must be paired with a valid memory-write μop
+- valid memory-write μops are:
+  - [MEM_WRITE_FROM_MB](../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)
+  - [MEM_WRITE_FROM_SR](../../03-microarchitecture/02-micro-operations.md#mem_write_from_sr)
+  
+---
 
-- must not be asserted simultaneously with RD
-- does not define how data is sourced
-- does not define internal memory timing behavior
+### 3.3 DB_READ
+
+**Category:** Architectural Control Signal  
+**Description:** Indicates that the CPU is performing an I/O read operation and will sample the System Data Bus (DB) during this time state.
+
+**Polarity:** Active-low (/DB_READ)
+
+**Role:**
+- Identifies the time window during which the CPU captures data from DB
+- Must be paired with DB_READ_TO_MB for valid operation
+
+**Behavior:**
+- When asserted, the CPU samples DB and loads the value into MB via DB_READ_TO_MB
+- Devices may drive DB based on device selection (IOA) and internal behavior
+
+**Constraints:**
+- Must not be asserted concurrently with DB_WRITE
+- Must not be asserted without DB_READ_TO_MB
+- CPU must not drive DB while DB_READ is asserted
+- DB must be driven by at most one external device
 
 ---
 
-### 3.3 I/O Address Bus (IOA[5:0])
+### 3.4 DB_WRITE
+
+**Category:** Architectural Control Signal  
+**Description:** Indicates that the CPU is performing an I/O write operation and will drive the System Data Bus (DB) during this time state.
+
+**Polarity:** Active-low (/DB_WRITE)
+
+**Role:**
+- Enables CPU-driven output onto DB
+- Must be paired with DB_WRITE_FROM_MB for valid operation
+
+**Behavior:**
+- When asserted, the CPU drives DB using the value contained in MB via DB_WRITE_FROM_MB
+- Selected I/O devices may capture DB during this interval
+
+**Constraints:**
+- Must not be asserted concurrently with DB_READ
+- Must not be asserted without DB_WRITE_FROM_MB
+- CPU is the sole driver of DB when this signal is asserted
+- External devices must not drive DB during this interval
+
+---
+
+### 3.5 DMA_GRANT
+
+**Name** DMA_GRANT  
+**Polarity** Active-high  
+**Domain** Architectural  
+
+**Description**  
+Indicates that the CPU has entered DMA service and has released normal CPU ownership of memory-cycle control.
+
+When asserted:
+- the external DMA-capable device or device-side DMA arbiter may perform memory access
+- normal CPU instruction execution is suspended
+- CPU-generated memory-cycle requests must remain inactive
+
+**Preconditions**
+- `MS = DMA`
+- `DMA_REQ = 1`
+- CPU instruction execution has reached a valid DMA entry boundary
+
+**Timing**
+- asserted during DMA major-state cycles
+- remains asserted while control remains in `MS = DMA`
+- deasserted when control exits DMA service
+
+**Constraints**
+- must be generated only by the control word
+- must not be asserted during normal instruction execution
+- must not be asserted concurrently with CPU-initiated `RD` or `WR`
+- does not itself define DMA address, data, direction, or device selection
+- does not modify CPU architectural state
+- does not modify `RUN` or `HLT_REQ`
+- external DMA ownership and multi-device arbitration are outside CPU control and must be resolved before or during DMA service
+
+**Consumed By**
+- external DMA-capable device interface
+- external DMA device arbitration logic
+
+---
+
+### 3.6 I/O Address Bus (IOA[5:0])
 
 **Name**  
 IOA[5:0]
@@ -185,52 +270,6 @@ Defined in:
 - must not be modified by μops
 - does not imply data transfer or direction
 - does not define device behavior
-
----
-
-### 3.4 DB_READ
-
-**Category:** Architectural Control Signal  
-**Description:** Indicates that the CPU is performing an I/O read operation and will sample the System Data Bus (DB) during this time state.
-
-**Polarity:** Active-low (/DB_READ)
-
-**Role:**
-- Identifies the time window during which the CPU captures data from DB
-- Must be paired with DB_READ_TO_MB for valid operation
-
-**Behavior:**
-- When asserted, the CPU samples DB and loads the value into MB via DB_READ_TO_MB
-- Devices may drive DB based on device selection (IOA) and internal behavior
-
-**Constraints:**
-- Must not be asserted concurrently with DB_WRITE
-- Must not be asserted without DB_READ_TO_MB
-- CPU must not drive DB while DB_READ is asserted
-- DB must be driven by at most one external device
-
----
-
-### DB_WRITE
-
-**Category:** Architectural Control Signal  
-**Description:** Indicates that the CPU is performing an I/O write operation and will drive the System Data Bus (DB) during this time state.
-
-**Polarity:** Active-low (/DB_WRITE)
-
-**Role:**
-- Enables CPU-driven output onto DB
-- Must be paired with DB_WRITE_FROM_MB for valid operation
-
-**Behavior:**
-- When asserted, the CPU drives DB using the value contained in MB via DB_WRITE_FROM_MB
-- Selected I/O devices may capture DB during this interval
-
-**Constraints:**
-- Must not be asserted concurrently with DB_READ
-- Must not be asserted without DB_WRITE_FROM_MB
-- CPU is the sole driver of DB when this signal is asserted
-- External devices must not drive DB during this interval
 
 ---
 
@@ -311,6 +350,7 @@ They:
 
 - initiate memory operations (RD, WR)
 - select I/O devices (IOA)
+- grant DMA service ('DMA_GRANT')
 
 They do not:
 

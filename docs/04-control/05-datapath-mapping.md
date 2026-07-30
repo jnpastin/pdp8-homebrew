@@ -12,15 +12,15 @@ This document establishes:
 This document does not define signals or control logic.
 
 Signal definitions are provided in:
-- [Microarchitectural Control Signals](../04-control/20-control-output-definitions/01-microarchitectural-control-signals.md)
-- [Architectural Control Signals](../04-control/20-control-output-definitions/02-architectural-control-signals.md)
-- [Sequencing Control Signals](../04-control/20-control-output-definitions/03-sequencing-control-signals.md)
+- [Microarchitectural Control Signals](./20-control-output-definitions/01-microarchitectural-control-signals.md)
+- [Architectural Control Signals](./20-control-output-definitions/02-architectural-control-signals.md)
+- [Sequencing Control Signals](./20-control-output-definitions/03-sequencing-control-signals.md)
 
 Control behavior is defined in:
-- [Control Word](04-control-word.md)
+- [Control Word](./04-control-word.md)
 
 Constraints are defined in:
-- [Control Constraints](03-control-constraints.md)
+- [Control Constraints](./03-control-constraints.md)
 
 ---
 
@@ -28,8 +28,8 @@ Constraints are defined in:
 
 System behavior is derived from CONTROL_WORD:
 
-```
-CONTROL_WORD → control signals → (external masking) → datapath behavior → state update
+```text
+CONTROL_WORD → control signals → datapath behavior → state update
 ```
 
 Constraint:
@@ -60,7 +60,7 @@ Constraint:
 ## 3. Signal Role Application
 
 Control signals are interpreted according to their roles as defined in:
-- [Control Word](04-control-word.md)
+- [Control Word](./04-control-word.md)
 
 ---
 
@@ -136,7 +136,7 @@ Constraint:
 ## 6. Timing Behavior
 
 Defined in:
-- [Control Model](01-control-model.md)
+- [Control Model](./01-control-model.md)
 
 Behavior:
 
@@ -229,62 +229,58 @@ Constraint:
 
 ---
 
-## 11. External Bus Arbitration (DMA)
+## 11. DMA Datapath Behavior
 
-External arbitration mechanisms may temporarily override CPU control of shared resources.
+DMA is represented as a control-selected major state.
 
----
+DMA behavior is not implemented by masking control signals or freezing timing state.
 
-### 11.1 Bus Ownership
+### 11.1 DMA Major State
 
-Constraint:
-- At any time, exactly one agent may drive shared buses.
-
-Constraint:
-- When DMA is active:
-  - CPU must not drive address bus
-  - CPU must not drive data bus
-  - CPU must not assert RD, WR, or IOA
-
----
-
-### 11.2 Signal Masking
+When `MS = DMA`, the active `CONTROL_WORD` defines the complete system behavior for the DMA cycle.
 
 Constraint:
-- CPU bus signals must be gated as:
+- `MS = DMA` must have fully defined control words.
+- No datapath behavior may be inferred from `DMA_REQ`.
+- No external mechanism may suppress or rewrite active control signals.
 
-```
-CPU_signal = CONTROL_signal AND NOT DMA_HOLD
-```
+### 11.2 CPU Datapath Quiescence
 
-Constraint:
-- Masking must not alter CONTROL_WORD interpretation.
+During DMA service, CPU datapath state changes must occur only if explicitly encoded in the DMA control word.
 
----
-
-### 11.3 Execution Suspension
-
-Constraint:
-- DMA must suspend datapath progression by:
-  - inhibiting register writes
-  - inhibiting MS, RUN, HLT_REQ updates
-  - inhibiting TS advancement
+Default DMA service behavior:
+- CPU register load enables inactive
+- `PC_INC` inactive
+- `PC_LOAD` inactive
+- CPU-initiated `RD` inactive
+- CPU-initiated `WR` inactive
+- `DMA_GRANT` asserted
 
 Constraint:
-- No datapath state may change while DMA is active.
+- Any CPU state update during `MS = DMA` must be explicitly defined by `CONTROL_WORD`.
+- No implicit datapath suspension mechanism exists outside control.
 
----
+### 11.3 DMA Sequencing
 
-### 11.4 Resumption
+DMA sequencing is controlled through `MS_NEXT`.
+
+Expected sequencing:
+- `MS_NEXT = DMA` while continued DMA service is requested
+- `MS_NEXT = FETCH` when DMA service is complete
 
 Constraint:
-- After DMA completes, execution resumes with:
-  - unchanged MS
-  - unchanged TS
-  - recomputed CONTROL_WORD
+- DMA continuation and exit must be selected through `CTRL_ADDR`.
+- DMA must not inhibit `MS_NEXT`, `RUN_NEXT`, or `HLT_REQ_NEXT`.
+- Sequencing state updates remain controlled by `CONTROL_WORD`.
+
+### 11.4 External DMA Ownership
+
+`DMA_GRANT` indicates that external DMA service is available.
 
 Constraint:
-- No control signals are restored from prior cycles.
+- External DMA ownership must be coordinated by the external device interface or device-side arbiter.
+- External DMA ownership must not modify CPU control signals.
+- External DMA ownership must not modify CPU control state.
 
 ---
 
@@ -300,4 +296,3 @@ CONTROL_WORD → signals → datapath → state update
 
 Constraint:
 - This mapping must be complete, explicit, and deterministic.
-``
