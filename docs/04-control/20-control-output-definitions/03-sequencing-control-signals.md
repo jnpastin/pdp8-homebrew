@@ -175,6 +175,8 @@ Specifies the next value of the RUN state.
 - Single Instruction halt behavior
 - halt-request consumption behavior
 
+---
+
 ### 3.3 Halt Request Next Value (HLT_REQ_NEXT)
 
 **Name** HLT_REQ_NEXT  
