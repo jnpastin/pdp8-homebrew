@@ -217,7 +217,7 @@ Instruction behavior is identified strictly by **IR bit fields**.
 
 Control operates directly on:
 
-(MS, TS, IR, FLAGS, EXT)
+(MS, TS, IR_FIELDS, FLAGS, EXT)
 
 No symbolic or mnemonic-based decoding is permitted.
 

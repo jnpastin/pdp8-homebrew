@@ -22,6 +22,19 @@ Each μop specifies:
 - μops must not assume ordering within a TS
 - μops operate only on defined source domains
 
+- All data ingress from external buses must occur through MB
+
+Specifically:
+- MDB → MB via MEM_READ_TO_MB
+- DB  → MB via DB_READ_TO_MB
+
+No μop may directly ingest DB_input into any register other than MB.
+
+MB Lifetime Rule:
+A value placed in MB must be consumed by all dependent μops
+in the immediately following TS. No μop may rely on MB contents
+beyond that TS.  If MB is not consumed in the following TS, its contents are considered undefined for subsequent use.
+
 ---
 
 ## Conditions (Non-μop Concept)
@@ -57,8 +70,8 @@ No intermediate state or flag storage is created.
 
 #### Bit Operations
 
-- [AC_ROR](#ac_ror)
-- [AC_ROL](#ac_rol)
+- [AC_RAR](#ac_rar)
+- [AC_RAL](#ac_ral)
 - [AC_RTR](#ac_rtr)
 - [AC_RTL](#ac_rtl)
 - [AC_BSW](#ac_bsw)
@@ -70,13 +83,30 @@ No intermediate state or flag storage is created.
 ### Memory Operations
 - [MEM_READ_TO_MB](#mem_read_to_mb)
 - [MEM_WRITE_FROM_MB](#mem_write_from_mb)
+- [MEM_WRITE_FROM_SR](#mem_write_from_sr)
+
+### I/O / External
+- [DB_READ_TO_MB](#db_read_to_mb)
+- [DB_WRITE_FROM_MB](#db_write_from_mb)
 
 ### Register Transfer
 - [AC_TO_MB](#ac_to_mb)
 - [AC_TO_MQ_AND_CLEAR_AC](#ac_to_mq_and_clear_ac)
+- [DF_TO_AC](#df_to_ac)
 - [EA_TO_MA](#ea_to_ma)
+- [FP_DF_TO_DF](#fp_df_to_df)
+- [FP_IF_TO_IF](#fp_if_to_if)
+- [FP_SR_TO_MB](#fp_sr_to_mb)
+- [FP_SR_TO_PC](#fp_sr_to_pc)
+- [IB_TO_DF](#ib_to_df)
+- [IB_TO_IF](#ib_to_if)
+- [IF_DF_TO_IB](#if_df_to_ib)
+- [IF_TO_AC](#if_to_ac)
+- [IR_DF_TO_DF](#ir_df_to_df)
+- [IR_IF_TO_IF](#ir_if_to_if)
 - [MB_TO_EA](#mb_to_ea)
 - [MB_TO_IR](#mb_to_ir)
+- [PC_TO_EA_ADDR](#pc_to_ea_addr)
 - [PC_TO_MA](#pc_to_ma)
 - [PC_TO_MB](#pc_to_mb)
 
@@ -93,6 +123,7 @@ No intermediate state or flag storage is created.
 - [L_COMP](#l_comp)
 - [MA_CLEAR](#ma_clear)
 - [MB_INC](#mb_inc)
+- [MQ_CLEAR](#mq_clear)
 - [PC_SET_1](#pc_set_1)
 
 
@@ -233,7 +264,7 @@ AC, SR
 
 ---
 
-### AC_ROR
+### AC_RAR
   
 **Category:** 
 Bit Operations  
@@ -252,7 +283,7 @@ AC, L
 
 ---
 
-### AC_ROL
+### AC_RAL
   
 **Category:** 
 Bit Operations  
@@ -309,7 +340,7 @@ AC, L
 
 ---
 
-#### AC_TO_MB
+### AC_TO_MB
   
 **Category:** 
 Register Transfer  
@@ -365,6 +396,60 @@ AC, L
 **Sources:**  
 AC, MB
 
+---
+
+### DB_READ_TO_MB
+
+**Category:** 
+I/O / External  
+
+**Description:**  
+Reads the value present on the System Data Bus (DB) and loads it into the Memory Buffer (MB).  
+This is the only defined mechanism for CPU ingestion of data from the DB domain.  
+
+**Target:**  
+MB  
+
+**Expression:**  
+MB ← DB_input  
+
+**Sources:**  
+DB_input  
+
+**Preconditions:**  
+- A device is currently driving DB  
+- DB contains valid data for the duration of the TS  
+
+**Constraints:**  
+- Must not be used concurrently with MDB-based reads (MEM_READ_TO_MB)  
+- MB must not be written by any other μop in the same TS  
+- DB_input validity is defined externally and must not be assumed by control  
+
+---
+
+### DB_WRITE_FROM_MB
+
+**Category:** I/O / External  
+**Description:** Writes the value stored in MB to the System Data Bus (DB).
+
+**Target:** DB  
+
+**Expression:**  
+DB_output ← MB  
+
+**Sources:**  
+MB  
+
+**Preconditions:**  
+- The CPU has control of the DB bus  
+- No other device is actively driving DB  
+- DB is in High-Z state prior to the write  
+
+**Constraints:**  
+- Must not be used concurrently with DB_READ_TO_MB  
+- Must not be used concurrently with MDB-based operations  
+- MB must remain stable for the duration of the TS  
+- Only one device may drive DB at any time  
 
 ---
 
@@ -387,6 +472,26 @@ DF ← 0
 
 ---
 
+### DF_TO_AC
+
+**Category:**  
+Register Transfer
+
+**Description:**  
+Transfers the current DF register value to AC[5:3]
+
+**Target:**  
+AC
+
+**Expression:**  
+AC[5:3] ← DF
+AC remaining bits unaffected
+
+**Sources:**  
+DF
+
+---
+
 ### EA_TO_MA
 
 **Category:**  
@@ -403,6 +508,120 @@ MA ← EA
 
 **Sources:**  
 EA
+
+---
+
+### FP_DF_TO_DF
+  
+**Category:**  
+Register Transfer
+
+**Description:**  
+Loads the Data Field register from the Front Panel DF switch setting.
+
+**Target:**  
+DF
+
+**Expression:**  
+DF ← FP_DF
+
+**Sources:**  
+FP_DF
+
+---
+
+### FP_IF_TO_IF
+  
+**Category:**  
+Register Transfer
+
+**Description:**  
+Loads the Instruction Field register from the Front Panel IF switch setting.
+
+**Target:**  
+IF
+
+**Expression:**  
+IF ← FP_IF
+
+**Sources:**  
+FP_IF
+
+---
+
+### FP_SR_TO_MB
+  
+**Category:**  
+Register Transfer
+
+**Description:**  
+Loads the Memory Buffer register from the Front Panel Switch Register.
+
+**Target:**  
+MB
+
+**Expression:**  
+MB ← SR
+
+**Sources:**  
+SR
+
+---
+
+### FP_SR_TO_PC
+  
+**Category:**  
+Register Transfer
+
+**Description:**  
+Loads the Program Counter register from the Front Panel Switch Register.
+
+**Target:**  
+PC
+
+**Expression:**  
+PC ← SR
+
+**Sources:**  
+SR
+
+---
+
+### IB_TO_DF
+
+**Category:**  
+Register Transfer
+
+**Description:**  
+Transfers the DF value from IB (IB[5:3]) to the DF register
+
+**Target:**  
+DF
+
+**Expression:**  
+DF ← IB[5:3]
+
+**Sources:**  
+IB
+
+---
+
+### IB_TO_IF
+
+**Category:**  
+Register Transfer
+
+**Description:**  
+Transfers the IF value from IB (IB[2:0]) to the IF register
+
+**Target:**  
+IF
+
+**Expression:**  
+IF ← IB[2:0]
+
+**Sources:**  
+IB
 
 ---
 
@@ -444,6 +663,51 @@ IF ← 0
 
 ---
 
+### IF_DF_TO_IB
+
+**Category:**  
+Register Transfer
+
+**Description:**  
+Loads the contents of IF and DF into IB
+
+**Target:**  
+IB
+
+
+Expression:
+IB ← concat(IF, DF)
+
+Sources:
+IF, DF
+
+Constraints:
+- Exactly one IB_INPUT source must be active
+- concat(IF, DF) is a combinational datapath value
+- IB_VAL is provided by control
+
+---
+
+### IF_TO_AC
+
+**Category:**  
+Register Transfer
+
+**Description:**  
+Transfers the current IF register value to AC[5:3]
+
+**Target:**  
+AC
+
+**Expression:**  
+AC[5:3] ← IF
+AC remaining bits unaffected
+
+**Sources:**  
+IF
+
+---
+
 ### II_CLEAR
 
 **Category:**  
@@ -461,7 +725,9 @@ II ← 0
 **Sources:**  
 (none)
 
----### II_SET
+---
+
+### II_SET
 
 **Category:**  
 State Manipulation
@@ -492,14 +758,51 @@ Constructs the base effective address from the instruction address field using p
 EA
 
 **Expression:**
-
-    if P == 0:
-        EA ← (0…0 || IR[6:0])
-    else:
-        EA ← (PC[11:7] || IR[6:0])
+if IR_ZERO_PAGE == 1:
+    EA ← (0…0 || IR[6:0])
+else:
+    EA ← (PC[11:7] || IR[6:0])
 
 **Sources:**  
 IR, PC
+
+---
+
+### IR_DF_TO_DF
+
+**Category:**  
+Register Transfer
+
+**Description:**  
+Transfers the current field value from the IR to DF
+
+**Target:**  
+DF
+
+**Expression:**  
+DF ← IR[5:3]
+
+**Sources:**  
+IR
+
+---
+
+### IR_IF_TO_IF
+
+**Category:**  
+Register Transfer
+
+**Description:**  
+Transfers the current field value from the IR to IF
+
+**Target:**  
+IF
+
+**Expression:**  
+IF ← IR[5:3]
+
+**Sources:**  
+IR
 
 ---
 
@@ -572,8 +875,7 @@ Increments the value stored in MB, producing a new value for subsequent use.
 MB
 
 **Expression:**
-
-    MB ← MB + 1
+MB ← MB + 1
 
 **Sources:**  
 MB
@@ -592,8 +894,7 @@ Transfers the value currently held in MB into EA as the resolved effective addre
 EA
 
 **Expression:**
-
-    EA ← MB
+EA ← MB
 
 **Sources:**  
 MB
@@ -631,10 +932,18 @@ Reads the value at the address specified by MA and places it into the memory buf
 MB
 
 **Expression:**  
-MB ← M[MA]
+MB ← M[MEM_ADDR]
+
+Where:
+
+```text
+MEM_ADDR =
+    MA  when MEM_OP_SRC = MA
+    PC  when MEM_OP_SRC = PC
+```
 
 **Sources:**  
-MA
+MA or PC
 
 ---
 
@@ -647,13 +956,72 @@ Memory Operations
 Writes the value stored in MB to the memory location specified by MA.
 
 **Target:**  
-M[MA]
+M[MEM_ADDR]
 
 **Expression:**  
-M[MA] ← MB
+M[MEM_ADDR] ← MB
+
+Where:
+
+```text
+MEM_ADDR =
+    MA  when MEM_OP_SRC = MA
+    PC  when MEM_OP_SRC = PC
+```
 
 **Sources:**  
-MA, MB
+MA or PC, MB
+
+---
+
+### MEM_WRITE_FROM_SR
+  
+**Category:**  
+Memory Operations
+
+**Description:**  
+Writes the value currently present in the Front Panel Switch Register to the memory location specified by MA.
+
+**Target:**  
+M[MEM_ADDR]
+
+**Expression:**  
+M[MEM_ADDR] ← SR
+
+Where:
+
+```text
+MEM_ADDR =
+    MA  when MEM_OP_SRC = MA
+    PC  when MEM_OP_SRC = PC
+```
+
+**Sources:**  
+MA or PC, SR
+
+**Constraints:**
+- Intended for front-panel deposit operations
+- May be executed concurrently with FP_SR_TO_MB
+- Does not depend on MB contents
+
+---
+
+### MQ_CLEAR
+  
+**Category:**  
+State Manipulation
+
+**Description:**  
+Clears the Multiplier Quotient register.
+
+**Target:**  
+MQ
+
+**Expression:**  
+MQ ← 0
+
+**Sources:**  
+(none)
 
 ---
 
@@ -714,6 +1082,25 @@ PC ← 0001
 
 ---
 
+### PC_TO_EA_ADDR
+
+**Category:**  
+Register Transfer
+
+**Description:**  
+Transfers the program counter into the effective address register for instruction fetch.
+
+**Target:**  
+EA_ADDR
+
+**Expression:**  
+EA_ADDR ← PC
+
+**Sources:**  
+PC
+
+---
+
 ### PC_TO_MA
 
 **Category:**  
@@ -733,8 +1120,7 @@ PC
 
 ---
 
-
-#### PC_TO_MB
+### PC_TO_MB
   
 **Category:** 
 Register Transfer  

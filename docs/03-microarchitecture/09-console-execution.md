@@ -1,0 +1,425 @@
+# 09-console-execution.md
+
+## Purpose
+
+This document defines the microarchitectural behavior of console operations and halted execution.
+
+It describes:
+
+- Run and Halt operating modes
+- Console operation execution
+- Halt request handling
+- Single Instruction behavior
+- Single Step behavior
+- Timing relationships
+- Microoperation sequences invoked by console controls
+
+Control implementation details are defined in Section 4.
+
+Operator-visible behavior is defined in Section 10.
+
+---
+
+# Run and Halt Modes
+
+The processor operates in one of two modes:
+
+```text
+RUNNING
+HALTED
+```
+
+When running:
+
+```text
+FETCH
+DEFER
+EXECUTE
+INTERRUPT
+DMA
+```
+
+major states execute normally.
+
+When halted:
+
+```text
+Normal instruction sequencing is inactive.
+```
+
+Console operation switches become active.
+
+The halted state preserves all architectural processor state.
+
+No registers are modified unless explicitly changed by a console operation.
+
+---
+
+# Console Operation Execution Model
+
+While halted, console operation switches invoke bounded microoperation sequences.
+
+Console operations are not executed through the normal instruction sequencing mechanism.
+
+Each console operation executes as a single TS-equivalent transaction.
+
+All μops associated with the operation execute concurrently.
+
+Console operations must not rely on ordering between constituent μops.
+
+Conceptually:
+
+```text
+HALTED
+    +
+Console Operation
+    →
+Single TS-equivalent transaction
+    →
+HALTED
+```
+
+or:
+
+```text
+HALTED
+    +
+START / CONTINUE
+    →
+RUNNING
+```
+
+The following switches execute console operations:
+
+```text
+LOAD ADDRESS
+EXAM
+DEPOSIT
+START
+CONTINUE
+```
+
+---
+
+# Halt Requests
+
+The processor does not halt immediately when a halt request is generated.
+
+Instead, a halt request is recorded and evaluated at an instruction completion boundary.
+
+Sources of halt requests include:
+
+```text
+STOP switch
+
+HLT instruction
+```
+
+Both mechanisms produce identical architectural behavior.
+
+A halt request remains pending until consumed.
+
+---
+
+# Console Address Context
+
+Console operations update both:
+
+```text
+MA
+EA_ADDR
+```
+
+This maintains the expected state when the CPU resumes normal operations.
+
+The two registers are maintained in lockstep during console operation.
+
+Purpose:
+
+```text
+MA
+    Observable address register
+    Visible on the front panel
+
+EA_ADDR
+    Internal address context used by existing CPU address-loading paths
+```
+
+This allows CONT to reuse existing execution mechanisms.
+
+The PC is loaded via the SR, this is then used to drive MA and EA for EXAM and DEP actions
+
+---
+
+# Load Address Operation
+
+Load Address sets the front panel execution context by reading IF, DF, and PC from the switches
+
+Microoperation sequence:
+
+```text
+FP_SR_TO_PC
+FP_IF_TO_IF
+FP_DF_TO_DF
+```
+
+Result:
+
+```text
+PC      ← SR
+IF      ← Front Panel IF
+DF      ← Front Panel DF
+```
+
+No memory access occurs.
+
+The processor remains halted.
+
+---
+
+# Examine Operation
+
+Examine sets the address context from the PC, reads memory, and increments the PC
+
+Microoperation sequence:
+
+```text
+PC_TO_MA
+PC_TO_EA_ADDR
+PC_INC
+MEM_READ_TO_MB
+```
+
+Result:
+
+```text
+MA      ← PC
+EA_ADDR ← PC
+MB      ← Memory[IF:PC]
+PC      ← PC + 1
+```
+
+The memory read sources the address from PC, not MA or EA.  This is done to allow all microoperations to occur simultaneously. MEM_OP_SRC = PC, while normal memory operations use MEM_OP_SRC = MA
+
+The processor remains halted.
+
+---
+
+# Deposit Operation
+
+Deposit sets the address context from the PC, writes the value of the SR to memory, and increments the PC
+
+Microoperation sequence:
+
+```text
+PC_TO_MA
+PC_TO_EA_ADDR
+PC_INC
+FP_SR_TO_MB
+MEM_WRITE_FROM_SR
+```
+
+Result:
+
+```text
+
+MA              ← PC
+EA_ADDR         ← PC
+MB              ← SR
+Memory[IF:PC]   ← SR
+PC              ← PC + 1
+```
+
+`FP_SR_TO_MB` exists to update the observable MB state for the front panel.
+
+`MEM_WRITE_FROM_SR` exists to avoid an invalid same-TS dependency on the newly loaded MB value.
+
+The memory write and MB update both consume SR as their source, allowing the operation to remain a valid single TS-equivalent console transaction.
+
+The memory write sources the address from the PC, not MA or EA.  This allows all microoperations to occur simultaneously. MEM_OP_SRC = PC, while normal memory operations use MEM_OP_SRC = MA
+
+The processor remains halted.
+
+---
+
+# Start Operation
+
+Start establishes a known processor execution state.
+
+Microoperation sequence:
+
+```text
+AC_CLEAR
+L_CLEAR
+MQ_CLEAR
+IE_CLEAR
+II_CLEAR
+```
+
+Result:
+
+```text
+AC ← 0000
+L ← 0
+MQ ← 0000
+IE ← 0
+II ← 0
+```
+
+Execution begins in:
+
+```text
+FETCH
+```
+
+at the first timing state.
+
+The address that execution begins at is set via the LOAD command.
+
+The processor enters the Running state.
+
+---
+
+# Continue Operation
+
+Continue resumes execution from the preserved processor state.
+
+No architectural μops are executed.
+
+Result:
+
+```text
+Execution resumes from the current machine state.
+```
+
+The processor enters the Running state.
+
+Continue does not modify:
+
+```text
+PC
+AC
+L
+MQ
+IF
+DF
+MA
+EA_ADDR
+MS
+TS
+```
+
+---
+
+# Single Instruction Mode
+
+Single Instruction is an execution mode.
+
+When enabled:
+
+```text
+One complete instruction is executed.
+```
+
+At instruction completion:
+
+```text
+RUNNING → HALTED
+```
+
+Instruction completion occurs after the final major state associated with the instruction.
+
+Examples:
+
+```text
+FETCH → EXECUTE
+```
+
+```text
+FETCH → DEFER → EXECUTE
+```
+
+Single Instruction does not alter execution behavior.
+
+It only changes when execution halts.
+
+---
+
+# Single Step Mode
+
+Single Step is an execution mode.
+
+When enabled:
+
+```text
+One major state is executed.
+```
+
+A halt is generated at major-state completion.
+
+The halt point occurs after:
+
+```text
+TS4
+```
+
+of the currently executing major state.
+
+Examples:
+
+```text
+FETCH
+```
+
+```text
+DEFER
+```
+
+```text
+EXECUTE
+```
+
+```text
+INTERRUPT
+```
+
+each execute individually.
+
+Resumption requires:
+
+```text
+START
+```
+
+or:
+
+```text
+CONTINUE
+```
+
+---
+
+# Timing Relationships
+
+Console operation switches execute as single TS-equivalent transactions while halted.
+
+Single Step halt evaluation:
+
+```text
+Major-state completion
+(TS4)
+```
+
+Single Instruction halt evaluation:
+
+```text
+Instruction completion
+```
+
+STOP and HLT halt evaluation:
+
+```text
+Instruction completion
+```
+
+Execution never halts in the middle of a major state.

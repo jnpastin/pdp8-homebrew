@@ -24,11 +24,11 @@ Where:
 
 Execution proceeds as a sequence of discrete transitions:
 
-    (MS, TS) -> (MS_next, TS_next)
+    (MS, TS) -> (MS_NEXT, TS_next)
 
 With:
 - TS_next determined solely by the timing system
-- MS_next determined by execution behavior
+- MS_NEXT determined by execution behavior
 
 ---
 
@@ -43,6 +43,7 @@ Properties:
 - DEFER occurs only for indirect addressing
 - EXECUTE occurs exactly once per instruction
 - INTERRUPT occurs only when conditions are met at the end of EXECUTE
+- DMA occurs only when conditions are met at the end of EXECUTE
 
 ---
 
@@ -55,17 +56,18 @@ Valid states:
 - DEFER
 - EXECUTE
 - INTERRUPT
+- DMA
 
 ### MS Update Rule
 
 
-MS_next is determined by control logic during TS4 and is not represented as a μop.
+MS_NEXT is determined by control logic during TS4 and is not represented as a μop.
 
 MS updates are not produced by datapath operations.
 
 MS is stored in a register and updated only at TP4:
 
-    MS <- MS_next   (only at TP4)
+    MS <- MS_NEXT   (only at TP4)
 
 Constraints:
 - MS is stable during TP1–TP3
@@ -180,7 +182,7 @@ Requirement:
 
 ### Control
 
-Control decisions (including MS_next) are evaluated during TS and committed at TP, subject to the same stability and input constraints as μops.
+Control decisions (including MS_NEXT) are evaluated during TS and committed at TP, subject to the same stability and input constraints as μops.
 
 
 ---

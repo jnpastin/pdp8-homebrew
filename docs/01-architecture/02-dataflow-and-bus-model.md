@@ -35,6 +35,18 @@ DB → Register → Consumer
   - I/O devices capture into a register within the device's controller
 - No direct consumption
 
+DB → MB → CPU
+
+- DB is transient
+- MB stores stable value
+
+All CPU ingestion of DB must occur via MB.
+
+Constraints:
+- No register may consume DB directly
+- DB must be captured into MB before any use by the CPU datapath
+- This mirrors the MDB → MB → CPU model
+
 ---
 
 ### Constraints

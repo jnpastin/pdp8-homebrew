@@ -42,6 +42,20 @@ All instruction behavior beyond this interface is defined by the selected device
 
 ---
 
+### Data Ingestion Rule
+
+Any data transfer from an I/O device to the CPU must be expressed as:
+
+1. DB_READ_TO_MB (capture from DB)
+2. A subsequent μop that consumes MB
+
+No direct DB → register transfer is permitted.
+
+This ensures consistency with the MDB ingestion model and preserves
+the invariant that all bus values are captured through registers.
+
+---
+
 ### IOA Handling
   
 IOA is implemented as control signals derived directly from IR.
