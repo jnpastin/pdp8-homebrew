@@ -286,8 +286,8 @@ Constraint:
 - [L_OP](#l_op)
 - [MA_SRC](#ma_src)
 - [MB_SRC](#mb_src)
+- [MDB_SRC](#mem_wr_src)
 - [MEM_OP_SRC](#mem_op_src)
-- [MEM_WR_SRC](#mem_wr_src)
 - [PC_SRC](#pc_src)
 
 ---
@@ -1125,6 +1125,33 @@ memory bus value
 
 ---
 
+### MDB_SRC
+
+**Mnemonic:** MDB_SRC  
+**Name:** Memory Data Bus Source Select  
+**Class:** Select  
+**Bit Width:** 2  
+
+**Purpose:** Selects the data source used for driving MDB.
+
+**Encoding:**
+```text
+0 → Memory
+1 → MB
+2 → SR
+3 → DMA
+```
+
+**Constraints:**
+- Must contain a valid encoding in every control word
+
+**Used by μops:**
+- [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb)
+- [MEM_WRITE_FROM_MB](../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)
+- [MEM_WRITE_FROM_SR](../../03-microarchitecture/02-micro-operations.md#mem_write_from_sr)
+
+---
+
 ### MEM_OP_SRC
 
 **Mnemonic:** MEM_OP_SRC  
@@ -1145,31 +1172,6 @@ memory bus value
 
 **Used by μops:**
 - [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb)
-- [MEM_WRITE_FROM_MB](../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)
-- [MEM_WRITE_FROM_SR](../../03-microarchitecture/02-micro-operations.md#mem_write_from_sr)
-
----
-
-### MEM_WR_SRC
-
-**Mnemonic:** MEM_WR_SRC  
-**Name:** Memory Write Data Source Select  
-**Class:** Select  
-**Bit Width:** 1  
-
-**Purpose:** Selects the data source used for memory write operations.
-
-**Encoding:**
-```text
-0 -> MB
-1 -> SR
-```
-
-**Constraints:**
-- Meaningful only when `WR = 1`
-- Must contain a valid encoding in every control word
-
-**Used by μops:**
 - [MEM_WRITE_FROM_MB](../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)
 - [MEM_WRITE_FROM_SR](../../03-microarchitecture/02-micro-operations.md#mem_write_from_sr)
 

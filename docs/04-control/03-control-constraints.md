@@ -281,12 +281,14 @@ MEM_ADDR =
 
 The following are invalid and must not occur:
 
-- RD = 1 without MEM_READ_TO_MB  
+- RD = 1 without MEM_READ_TO_MB or MS = DMA  
   → external read initiated with no defined data consumption
 
 - MEM_READ_TO_MB without RD = 1  
   → MB attempts to capture undefined MDB_input
 
+- RD = 1 without MDB_SRC = Memory
+  → read can only be driven by memory
 ---
 
 ### 11.3 Memory Write Binding
@@ -301,8 +303,10 @@ A memory write operation is defined by the combination of:
   - MEM_WRITE_FROM_SR
 
 Effective control required for memory writes:
-- WR + MEM_WR_SRC = MB + MEM_WRITE_FROM_MB
-- WR + MEM_WR_SRC = SR + MEM_WRITE_FROM_SR
+- WR + MDB_SRC = MB + MEM_WRITE_FROM_MB
+- WR + MDB_SRC = SR + MEM_WRITE_FROM_SR
+- WR + MDB_SRC = DMA + MS = DMA
+
 
 #### Required Behavior
 

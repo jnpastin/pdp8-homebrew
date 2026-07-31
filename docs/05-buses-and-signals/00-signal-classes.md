@@ -20,7 +20,7 @@ All signals are classified into one of five categories:
 
 - Class A: System Buses
 - Class B: Global Control Lines
-- Class C: Timing and Sequencing Signals
+- Class C: Timing Signals
 - Class D: External Interface Signals (Front Panel)
 - Class E: Local / Internal Signals
 
@@ -98,12 +98,8 @@ System-wide control signals that coordinate behavior across modules.
 
 #### Data Break (Reserved)
 
-- DB_REQ
-- DB_GRANT
-- DB_ADDR_EN
-- DB_DATA_EN
-- DB_READ
-- DB_WRITE
+- DMA_REQ
+- DMA_GRANT
 
 ### Rules
 
@@ -113,7 +109,7 @@ System-wide control signals that coordinate behavior across modules.
 
 ---
 
-## Class C — Timing and Sequencing Signals
+## Class C — Timing Signals
 
 ### Definition
 
@@ -130,7 +126,6 @@ Signals that define the internal timing model and sequencing of execution.
 - CLK
 - TS[1–4]
 - TP[1–4]
-- MS[2:0]
 
 ### Rules
 

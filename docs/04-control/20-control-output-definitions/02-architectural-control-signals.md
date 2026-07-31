@@ -96,6 +96,7 @@ When asserted:
 
 **Preconditions**
 - the address selected by `MEM_OP_SRC` is valid
+- the selected MDB data source is valid
 - `MEM_OP_SRC` contains a valid encoding
 
 **Timing**
@@ -107,7 +108,8 @@ When asserted:
 - does not imply data transfer into any register
 - does not define MDB validity or timing behavior
 - does not select the memory address source
-- must be paired with [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb)
+- does not select the MDB data source
+- must be paired with [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb) or DMA
 
 ---
 
@@ -130,7 +132,7 @@ When asserted:
 
 **Preconditions**
 - the address selected by `MEM_OP_SRC` is valid
-- the selected write data source is valid
+- the selected MDB data source is valid
 - `MEM_OP_SRC` contains a valid encoding
 
 **Timing**
@@ -140,8 +142,8 @@ When asserted:
 **Constraints**
 - must not be asserted simultaneously with `RD`
 - does not select the memory address source
-- does not select the memory write data source
-- must be paired with a valid memory-write μop
+- does not select the MDB data source
+- must be paired with a valid memory-write μop or DMA
 - valid memory-write μops are:
   - [MEM_WRITE_FROM_MB](../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)
   - [MEM_WRITE_FROM_SR](../../03-microarchitecture/02-micro-operations.md#mem_write_from_sr)

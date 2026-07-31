@@ -8,7 +8,6 @@ between independent modules.
 This document is limited to:
 - signal definitions
 - structural properties
-- invariants
 
 It does NOT define:
 - ownership
@@ -17,7 +16,7 @@ It does NOT define:
 
 
 This document follows the conventions defined in:
-../00-overview/98-signal-conventions.md
+[Signal Conventions](../00-overview/98-signal-conventions.md)
 
 ---
 
@@ -26,7 +25,6 @@ This document follows the conventions defined in:
 Class A signals are multi-bit buses that:
 - are present on all backplane slots
 - support shared communication between modules
-- require strict ownership and tri-state discipline
 
 The system defines three buses:
 
@@ -70,10 +68,12 @@ A11
 
 #### Function
 
-Carries memory addresses for:
+Carries memory addresses for all system memory accesses.
+
+Examples include:
 - instruction fetch (PC-derived)
 - operand access (EA-derived)
-- future data break operations
+- DMA operations
 
 ---
 
@@ -102,8 +102,7 @@ D11
 
 Carries data for:
 - I/O operations
-- front panel interactions (via CPU)
-- general system data transfers
+- Other peripheral or external subsystems
 
 ---
 
@@ -132,47 +131,9 @@ MDB11
 
 Carries data for:
 - memory read/write operations
-- future data break (DMA) transfers
+- DMA transfers
 
 MDB is logically independent from DB
-
----
-
-## Structural Invariants
-
-### Bus Independence
-
-- AB, DB, and MDB are independent buses
-- No implicit coupling exists between buses
-- Any transfer between buses must occur via datapath elements
-
----
-
-### Bus Completeness
-
-- All bits of a bus must be driven by a single source
-- Partial bus driving is not permitted
-
----
-
-### Default State
-
-- All bus drivers must support tri-state operation
-- Default state for all buses is high-impedance (Z)
-
----
-
-### Timing Constraint
-
-- Bus values must be stable before the timing pulse (TP) that latches a receiving register
-- Bus timing must align with the TS/TP timing model
-
----
-
-### Width Constraint
-
-- All buses are fixed at 12 bits
-- No operation may assume a different width
 
 ---
 
@@ -196,8 +157,6 @@ Class A buses provide the fundamental data and address transport mechanisms for 
 
 They are:
 - globally visible
-- strictly controlled
-- timing-constrained
 - foundational to all module interaction
 
 All subsequent control and ownership definitions rely on these buses being well-defined
