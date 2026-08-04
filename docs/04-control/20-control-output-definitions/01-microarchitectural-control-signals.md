@@ -664,7 +664,7 @@ external bus value
 **Mnemonic:** IDB_SRC  
 **Name:** Internal Data Bus Source Select  
 **Class:** Select  
-**Bit Width:** 4
+**Bit Width:** 3
 
 **Purpose:** Selects which source drives the internal datapath bus (IDB).
 
@@ -678,8 +678,6 @@ external bus value
 05 → EA
 06 → IR
 07 → ALU
-08 → DF
-09 → IF
 ```
 
 **Constraints:**
@@ -689,11 +687,15 @@ external bus value
 
 **Used by μops:**
 - [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb)
-- [PC_TO_MB](../../03-microarchitecture/02-micro-operations.md#pc_to_mb)
-- [MB_TO_EA](../../03-microarchitecture/02-micro-operations.md#mb_to_ea)
-- [MB_TO_IR](../../03-microarchitecture/02-micro-operations.md#mb_to_ir)
 - [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac)
 - [FP_SR_TO_MB](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_mb)
+- [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc)
+- [MB_TO_EA](../../03-microarchitecture/02-micro-operations.md#mb_to_ea)
+- [MB_TO_IR](../../03-microarchitecture/02-micro-operations.md#mb_to_ir)
+- [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr)
+- [PC_TO_MB](../../03-microarchitecture/02-micro-operations.md#pc_to_mb)
+
+
 
 ---
 
@@ -1076,7 +1078,7 @@ IF_IF_COMBINED[5:3]=IF
 **Mnemonic:** MB_SRC  
 **Name:** MB Source Select  
 **Class:** Select  
-**Bit Width:** 2  
+**Bit Width:** 1  
 
 **Purpose:** Selects the input source for MB.
 
@@ -1084,8 +1086,6 @@ IF_IF_COMBINED[5:3]=IF
 ```
 00 → IDB
 01 → MDB
-02 → ALU
-03 → reserved
 ```
 
 **Constraints:**
@@ -1263,10 +1263,8 @@ memory bus value
 
 **Encoding:**
 ```
-00 → ALU
-01 → EA
-02 → Control
-03 → SR
+00 → IDB
+01 → Control
 ```
 
 **Constraints:**
