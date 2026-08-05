@@ -8,7 +8,7 @@ Defines the programmer-visible machine model. This includes what software can ob
 
 ### General System Data Path
 
-![System Datapaths](..\..\diagrams\architecture\class-a-buses\export\class-a-buses.png)
+![System Datapaths](../../diagrams/architecture/class-a-buses/export/class-a-buses.png)
 
 ---
 

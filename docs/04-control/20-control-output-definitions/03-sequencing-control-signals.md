@@ -251,7 +251,7 @@ General transitions:
 
 All transitions must be explicitly defined.
 
-![MS_NEXT Flowchart](..\..\diagrams\control\ms_next-flowchart\export\ms_next-flowchart.png)
+![MS_NEXT Flowchart](../../diagrams/control/ms_next-flowchart/export/ms_next-flowchart.png)
 
 ---
 

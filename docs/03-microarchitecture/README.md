@@ -34,7 +34,7 @@ Excludes:
 
 ### General CPU Microarchitecture
 
-![CPU Microarchitecture]( ..\..\diagrams\microarchitecture\cpu-architecture\export\CPU_Architecture.png)
+![CPU Microarchitecture]( ../../diagrams/microarchitecture/cpu-architecture/export/CPU_Architecture.png)
 
 ---
 
