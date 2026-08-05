@@ -86,8 +86,8 @@ No intermediate state or flag storage is created.
 - [MEM_WRITE_FROM_SR](#mem_write_from_sr)
 
 ### I/O / External
-- [DB_READ_TO_MB](#db_read_to_mb)
-- [DB_WRITE_FROM_MB](#db_write_from_mb)
+- [DB_READ_TO_AC](#db_read_to_ac)
+- [DB_WRITE_FROM_AC](#db_write_from_ac)
 
 ### Register Transfer
 - [AC_TO_MB](#ac_to_mb)
@@ -398,20 +398,20 @@ AC, MB
 
 ---
 
-### DB_READ_TO_MB
+### DB_READ_TO_AC
 
 **Category:** 
 I/O / External  
 
 **Description:**  
-Reads the value present on the System Data Bus (DB) and loads it into the Memory Buffer (MB).  
+Reads the value present on the System Data Bus (DB) and loads it into the Accumulator (AC).  
 This is the only defined mechanism for CPU ingestion of data from the DB domain.  
 
 **Target:**  
-MB  
+AC  
 
 **Expression:**  
-MB ← DB_input  
+AC ← DB_input  
 
 **Sources:**  
 DB_input  
@@ -421,24 +421,23 @@ DB_input
 - DB contains valid data for the duration of the TS  
 
 **Constraints:**  
-- Must not be used concurrently with MDB-based reads (MEM_READ_TO_MB)  
-- MB must not be written by any other μop in the same TS  
+- AC must not be written by any other μop in the same TS  
 - DB_input validity is defined externally and must not be assumed by control  
 
 ---
 
-### DB_WRITE_FROM_MB
+### DB_WRITE_FROM_AC
 
 **Category:** I/O / External  
-**Description:** Writes the value stored in MB to the System Data Bus (DB).
+**Description:** Writes the value stored in AC to the System Data Bus (DB).
 
 **Target:** DB  
 
 **Expression:**  
-DB_output ← MB  
+DB_output ← AC  
 
 **Sources:**  
-MB  
+AC  
 
 **Preconditions:**  
 - The CPU has control of the DB bus  
@@ -447,8 +446,7 @@ MB
 
 **Constraints:**  
 - Must not be used concurrently with DB_READ_TO_MB  
-- Must not be used concurrently with MDB-based operations  
-- MB must remain stable for the duration of the TS  
+- AC must remain stable for the duration of the TS  
 - Only one device may drive DB at any time  
 
 ---

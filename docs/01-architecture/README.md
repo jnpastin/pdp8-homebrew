@@ -4,6 +4,14 @@
 ### Purpose
 Defines the programmer-visible machine model. This includes what software can observe and rely on.
 
+---
+
+### General System Data Path
+
+![System Datapaths](..\..\diagrams\architecture\class-a-buses\export\class-a-buses.png)
+
+---
+
 ### Scope
 Includes:
 - Architectural registers (PC, AC, L, MQ, IF, DF, IE)

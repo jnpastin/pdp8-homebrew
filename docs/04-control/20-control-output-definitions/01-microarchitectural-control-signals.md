@@ -954,10 +954,10 @@ IF_IF_COMBINED[5:3]=IF
 
 **Encoding:**
 ```
-00 → NOP
-01 → CLEAR
-02 → COMP
-03 → ALU_CARRY
+00 → CLEAR
+01 → COMP
+02 → ALU_CARRY
+03 → Reserved
 ```
 
 **Constraints:**

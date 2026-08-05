@@ -245,12 +245,13 @@ General transitions:
 
 - FETCH → EXECUTE or DEFER
 - DEFER → EXECUTE
-- EXECUTE → FETCH, INTERRUPT. or DMA
+- EXECUTE → FETCH, INTERRUPT, or DMA
 - INTERRUPT → FETCH
-- DMA → FETCH
-- DMA → DMA
+- DMA → FETCH or DMA
 
 All transitions must be explicitly defined.
+
+![MS_NEXT Flowchart](..\..\diagrams\control\ms_next-flowchart\export\ms_next-flowchart.png)
 
 ---
 

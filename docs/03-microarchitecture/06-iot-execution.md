@@ -46,10 +46,10 @@ All instruction behavior beyond this interface is defined by the selected device
 
 Any data transfer from an I/O device to the CPU must be expressed as:
 
-1. DB_READ_TO_MB (capture from DB)
-2. A subsequent μop that consumes MB
+1. DB_READ_TO_AC (capture from AC)
+2. A subsequent μop that consumes AC
 
-No direct DB → register transfer is permitted.
+No direct DB → arbitrary register transfer is permitted.
 
 This ensures consistency with the MDB ingestion model and preserves
 the invariant that all bus values are captured through registers.

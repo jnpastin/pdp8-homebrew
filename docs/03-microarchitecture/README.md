@@ -32,6 +32,12 @@ Excludes:
 
 ---
 
+### General CPU Microarchitecture
+
+![CPU Microarchitecture]( ..\..\diagrams\microarchitecture\cpu-architecture\export\CPU_Architecture.png)
+
+---
+
 ### Execution Model
 
 ustate = (MS, TS)

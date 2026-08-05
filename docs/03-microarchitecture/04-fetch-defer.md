@@ -176,3 +176,4 @@ perform any indirect or autoindex handling.
 
 FETCH loads the instruction, advances the PC, and forms base addressing.
 DEFER resolves indirection and prepares the final effective address.
+

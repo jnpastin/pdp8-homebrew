@@ -159,15 +159,15 @@ When asserted:
 
 **Role:**
 - Identifies the time window during which the CPU captures data from DB
-- Must be paired with DB_READ_TO_MB for valid operation
+- Must be paired with DB_READ_TO_AC for valid operation
 
 **Behavior:**
-- When asserted, the CPU samples DB and loads the value into MB via DB_READ_TO_MB
+- When asserted, the CPU samples DB and loads the value into AC via DB_READ_TO_AC
 - Devices may drive DB based on device selection (IOA) and internal behavior
 
 **Constraints:**
 - Must not be asserted concurrently with DB_WRITE
-- Must not be asserted without DB_READ_TO_MB
+- Must not be asserted without DB_READ_TO_AC
 - CPU must not drive DB while DB_READ is asserted
 - DB must be driven by at most one external device
 
@@ -182,15 +182,15 @@ When asserted:
 
 **Role:**
 - Enables CPU-driven output onto DB
-- Must be paired with DB_WRITE_FROM_MB for valid operation
+- Must be paired with DB_WRITE_FROM_AC for valid operation
 
 **Behavior:**
-- When asserted, the CPU drives DB using the value contained in MB via DB_WRITE_FROM_MB
+- When asserted, the CPU drives DB using the value contained in AC via DB_WRITE_FROM_AC
 - Selected I/O devices may capture DB during this interval
 
 **Constraints:**
 - Must not be asserted concurrently with DB_READ
-- Must not be asserted without DB_WRITE_FROM_MB
+- Must not be asserted without DB_WRITE_FROM_AC
 - CPU is the sole driver of DB when this signal is asserted
 - External devices must not drive DB during this interval
 

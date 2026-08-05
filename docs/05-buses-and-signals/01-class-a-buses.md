@@ -32,6 +32,8 @@ The system defines three buses:
 - System Data Bus (DB)
 - Memory Data Bus (MDB)
 
+![Class A Buses](..\..\diagrams\architecture\class-a-buses\export\class-a-buses.png)
+
 ---
 
 ## Bit Ordering and Conventions
