@@ -55,7 +55,6 @@ These rules apply to all signal classes and must be followed by all system modul
 - /RD, /WR
 - /RST
 - /HLT
-- /INT_ACK_IN / OUT
 - /DB_GRANT_IN / OUT
 - /DB_ADDR_EN, /DB_DATA_EN
 - /DB_READ, DB_WRITE
@@ -128,7 +127,6 @@ Applies to:
   - or consume and block
 
 Applies to:
-- INT_ACK_IN / OUT
 - DB_GRANT_IN / OUT
 
 ---

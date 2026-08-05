@@ -199,7 +199,7 @@ MB      ← Memory[IF:PC]
 PC      ← PC + 1
 ```
 
-The memory read sources the address from PC, not MA or EA.  This is done to allow all microoperations to occur simultaneously. MEM_OP_SRC = PC, while normal memory operations use MEM_OP_SRC = MA
+The memory read drives AB from PC, not MA or EA. This allows all microoperations to occur simultaneously within a single TS. AB_SRC = PC, while normal memory operations use AB_SRC = MA.
 
 The processor remains halted.
 
@@ -236,7 +236,7 @@ PC              ← PC + 1
 
 The memory write and MB update both consume SR as their source, allowing the operation to remain a valid single TS-equivalent console transaction.
 
-The memory write sources the address from the PC, not MA or EA.  This allows all microoperations to occur simultaneously. MEM_OP_SRC = PC, while normal memory operations use MEM_OP_SRC = MA
+The memory write drives AB from PC, not MA or EA. This allows all microoperations to occur simultaneously within a single TS. AB_SRC = PC, while normal memory operations use AB_SRC = MA.
 
 The processor remains halted.
 

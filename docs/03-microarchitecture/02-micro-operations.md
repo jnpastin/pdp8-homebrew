@@ -936,8 +936,8 @@ Where:
 
 ```text
 MEM_ADDR =
-    MA  when MEM_OP_SRC = MA
-    PC  when MEM_OP_SRC = PC
+    MA  when AB_SRC = MA
+    PC  when AB_SRC = PC
 ```
 
 **Sources:**  
@@ -963,8 +963,8 @@ Where:
 
 ```text
 MEM_ADDR =
-    MA  when MEM_OP_SRC = MA
-    PC  when MEM_OP_SRC = PC
+    MA  when AB_SRC = MA
+    PC  when AB_SRC = PC
 ```
 
 **Sources:**  
@@ -990,8 +990,8 @@ Where:
 
 ```text
 MEM_ADDR =
-    MA  when MEM_OP_SRC = MA
-    PC  when MEM_OP_SRC = PC
+    MA  when AB_SRC = MA
+    PC  when AB_SRC = PC
 ```
 
 **Sources:**  

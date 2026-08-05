@@ -26,7 +26,7 @@ Bus semantics are defined in:
 
 Ownership is defined in:
 
-- [Bus Ownership Matrix](./08-bus-ownership-matrix.md)
+- [Bus Ownership Matrix](./08-ownership-matrix.md)
 
 DMA-specific behavior is defined in:
 
@@ -82,8 +82,8 @@ A memory read transfers data from memory to the CPU.
 ### Address Domain Participation
 
 During a memory read:
-
-- The CPU provides the address on AB.
+- The CPU drives AB from MA.
+- AB carries the address to memory.
 
 ### Memory Data Domain Participation
 
@@ -108,9 +108,9 @@ A memory write transfers data from the CPU to memory.
 
 ### Address Domain Participation
 
-During a memory write:
-
-- The CPU provides the address on AB.
+During a memory read:
+- The CPU drives AB from MA.
+- AB carries the address to memory.
 
 ### Memory Data Domain Participation
 
@@ -155,12 +155,12 @@ Domain definitions and isolation requirements are defined in:
 ---
 
 ## Global Invariants
-
 - AB participates in all memory operations.
 - MDB participates in all memory operations.
 - Memory is the MDB producer during memory reads.
 - The CPU is the MDB producer during memory writes.
-- The CPU provides the memory address for normal memory operations.
+- During normal memory operations, the CPU drives AB from MA.
+- During DMA, an external device drives AB; the CPU does not drive AB.
 - RD identifies memory read operations.
 - WR identifies memory write operations.
 - Domain definitions, ownership behavior, timing behavior, and control semantics are defined elsewhere.

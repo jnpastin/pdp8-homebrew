@@ -276,6 +276,7 @@ Constraint:
 
 ### 4.2 Select Signals
 
+- [AB_SRC](#ab_src)
 - [ALU_A_SRC](#alu_a_src)
 - [ALU_B_SRC](#alu_b_src)
 - [ALU_OP](#alu_op)
@@ -286,8 +287,7 @@ Constraint:
 - [L_OP](#l_op)
 - [MA_SRC](#ma_src)
 - [MB_SRC](#mb_src)
-- [MDB_SRC](#mem_wr_src)
-- [MEM_OP_SRC](#mem_op_src)
+- [MDB_SRC](#mdb_src)
 - [PC_SRC](#pc_src)
 
 ---
@@ -307,6 +307,31 @@ Constraint:
 ---
 
 ## 5. Signal Definitions
+
+---
+
+### AB_SRC
+
+**Mnemonic:** AB_SRC  
+**Name:** Address Bus Source Select  
+**Class:** Select  
+**Bit Width:** 1  
+
+**Purpose:** Selects the address source for memory reads and writes.
+
+**Encoding:**
+```
+00 → MA
+01 → PC
+```
+
+**Constraints:**
+- Drive must be asserted via either RD or WR
+
+**Used by μops:**
+- [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb)
+- [MEM_WRITE_FROM_MB](../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)
+- [MEM_WRITE_FROM_SR](../../03-microarchitecture/02-micro-operations.md#mem_write_from_sr)
 
 ---
 
@@ -1144,31 +1169,6 @@ memory bus value
 
 **Constraints:**
 - Must contain a valid encoding in every control word
-
-**Used by μops:**
-- [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb)
-- [MEM_WRITE_FROM_MB](../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)
-- [MEM_WRITE_FROM_SR](../../03-microarchitecture/02-micro-operations.md#mem_write_from_sr)
-
----
-
-### MEM_OP_SRC
-
-**Mnemonic:** MEM_OP_SRC  
-**Name:** Memory Operation Address Source Select  
-**Class:** Select  
-**Bit Width:** 1  
-
-**Purpose:** Selects the address source for memory reads and writes.
-
-**Encoding:**
-```
-00 → MA
-01 → PC
-```
-
-**Constraints:**
-- Drive must be asserted via either RD or WR
 
 **Used by μops:**
 - [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb)

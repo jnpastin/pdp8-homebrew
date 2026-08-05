@@ -90,7 +90,6 @@ System-wide control signals that coordinate behavior across modules.
 #### Interrupts
 
 - INT_REQ (wired-OR)
-- INT_ACK
 
 #### System Control
 

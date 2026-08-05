@@ -274,8 +274,8 @@ When both are active in the same TS:
 Where:
 
 MEM_ADDR =
-    MA when MEM_OP_SRC = MA
-    PC when MEM_OP_SRC = PC
+    MA when AB_SRC = MA
+    PC when AB_SRC = PC
 
 #### Invalid Conditions
 
@@ -317,8 +317,8 @@ Memory must store the selected source data into M[MEM_ADDR] at TP
 Where:
 
 MEM_ADDR =
-    MA when MEM_OP_SRC = MA
-    PC when MEM_OP_SRC = PC
+    MA when AB_SRC = MA
+    PC when AB_SRC = PC
 
 #### Invalid Conditions
 

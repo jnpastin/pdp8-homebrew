@@ -289,7 +289,7 @@ Consumers:
 ### MS – Major State
 Width: 3 bits
 
-Role: Encodes processor phase (FETCH, DEFER, EXECUTE, INTERRUPT)
+Role: Encodes processor phase (FETCH, DEFER, EXECUTE, INTERRUPT, DMA)
 
 Visibility: Control
 
@@ -300,7 +300,7 @@ Invariants:
 Constraints:
 - Changes only at cycle boundaries
 - Not directly influenced by datapath combinational logic
-- Initially only 0-3 are valid values 4-7 are reserved
+- Initially only 0-4 are valid values 5-7 are reserved
 
 Writers:
 - Control state machine

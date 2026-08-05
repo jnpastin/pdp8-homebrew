@@ -11,11 +11,12 @@ Bus → Register → Consumer
 ---
 
 ### Address Path
-AB → MA → Memory
 
-- AB is transient
-- MA is authoritative
-- Memory must use MA exclusively
+MA → AB → Memory
+- MA is the authoritative CPU address register
+- AB is an architectural bus driven by MA during normal CPU operation
+- During DMA, an external device drives AB instead of MA
+- Memory is addressed via AB
 
 ---
 

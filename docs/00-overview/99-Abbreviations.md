@@ -79,8 +79,6 @@ RESET   = System Reset
 
 INT_REQ = Interrupt Request (wired-OR)
 
-INT_ACK = Interrupt Acknowledge
-
 
 ---
 

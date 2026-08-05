@@ -13,13 +13,15 @@ All state changes occur exclusively at TP.
 ---
 
 ## FETCH
+
 ### TS1 — Address Setup
-- PC drives AB
+- MA_SRC = PC (PC selected as MA input)
 
 ### TP1
-- MA loaded from AB
+- MA loaded from PC
 
 ### TS2 — Memory Access
+- MA drives AB
 - RD asserted
 - Memory drives MDB
 

@@ -210,24 +210,23 @@ The fast/slow mechanism will be modeled after DEC's timing design. The specific 
 
 ---
 
-# 8) DMA Integration
+## 8) DMA Integration
 
-DMA interacts with timing by inhibiting progression.
+DMA does not inhibit timing progression.
+DMA is a control-selected Major State (MS = DMA), sequenced identically to other major states.
 
-Define:
-
-```
-SHIFT_ENABLE = NOT DMA_HOLD
-```
-
-Constraint:
-- TS must not advance while DMA_HOLD is active.
+Properties:
+- TSTEP progression is unaffected by DMA
+- TS and TP proceed normally during MS = DMA
+- DMA entry and exit are selected through MS_NEXT at TP4
 
 Constraint:
-- DMA_HOLD must be asserted synchronously at a TP boundary.
+- Timing must not freeze, gate, or skip TSTEP progression for DMA.
+- No DMA_HOLD or shift-enable inhibit mechanism exists.
 
-Constraint:
-- DMA_HOLD must be cleared synchronously.
+DMA sequencing and datapath behavior are defined in:
+- [Sequencing Control Signals](../04-control/20-control-output-definitions/03-sequencing-control-signals.md)
+- [Datapath Mapping](../04-control/05-datapath-mapping.md)
 
 ---
 
