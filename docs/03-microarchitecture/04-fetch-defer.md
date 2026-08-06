@@ -103,7 +103,7 @@ Handles autoindex increment when applicable.
 ### TS1
 
 μops:
-- EA_TO_MA
+- EA_ADDR_TO_MA
 
 Description:
 - Prepares effective address for memory access.
@@ -132,23 +132,23 @@ Description:
 ### TS4
 
 μops:
-- MB_TO_EA
+- MB_TO_EA_ADDR
 
 μops (conditional):  
 - MEM_WRITE_FROM_MB
 
 Condition:
 
-    if EA_addr is within autoindex range
+    if EA_ADDR is within autoindex range
 
 
 Control Decisions:
 
-    MS_next ← EXECUTE
+    MS_NEXT ← EXECUTE
 
 Description:
 - Writes incremented value back to memory
-- Updates EA register with final resolved address
+- Updates EA_ADDR register with final resolved address
 - Transitions to EXECUTE
 
 ---

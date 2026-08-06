@@ -101,9 +101,9 @@ Defined in:
 ### Memory Management Flags
 
 - [IR_READS_DF](./02-ir-derived-fields.md#ir_reads_df)  
+- [IR_READS_IB](./02-ir-derived-fields.md#ir_reads_ib)  
 - [IR_READS_IF](./02-ir-derived-fields.md#ir_reads_if)  
 - [IR_RESTORES_IB](./02-ir-derived-fields.md#ir_restores_ib)  
-- [IR_WRITES_IB](./02-ir-derived-fields.md#ir_writes_ib)  
 - [IR_WRITES_DF](./02-ir-derived-fields.md#ir_writes_df)  
 - [IR_WRITES_IF](./02-ir-derived-fields.md#ir_writes_if)  
 

@@ -159,9 +159,9 @@ Expose raw IR fields:
 
 ### Memory Management
 - [IR_READS_DF](#ir_reads_df)
+- [IR_READS_IB](#ir_reads_ib)
 - [IR_READS_IF](#ir_reads_if)
 - [IR_RESTORES_IB](#ir_restores_ib)
-- [IR_WRITES_IB](#ir_writes_ib)
 - [IR_WRITES_DF](#ir_writes_df)
 - [IR_WRITES_IF](#ir_writes_if)
 
@@ -274,7 +274,7 @@ IR_INDIRECT = IR_IS_MRI AND IR[8]
 - 1 → indirect addressing  
 
 **Consumed By:**
-- [MB_TO_EA](../../03-microarchitecture/02-micro-operations.md#mb_to_ea)
+- [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr)
 
 ---
 
@@ -386,7 +386,7 @@ IR_IS_MRI =
 - [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc)
 - [IR_ADDR_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#ir_addr_to_ea_addr)
 - [MB_TO_EA](../../03-microarchitecture/02-micro-operations.md#mb_to_ea)
-- [EA_TO_MA](../../03-microarchitecture/02-micro-operations.md#ea_to_ma)
+- [EA_ADDR_TO_MA](../../03-microarchitecture/02-micro-operations.md#ea_addr_to_ma)
 - [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr)
 
 
@@ -920,6 +920,31 @@ IR_READS_DF = IR==110010001101 (octal 6214)
 
 ---
 
+### IR_READS_IB
+
+**Mnemonic:** IR_READS_IB
+**Name:** Interrupt Buffer Read Flag
+**Type:** Memory Management
+**Bit Width:** 1
+
+**Purpose:**
+Indicates that the current instruction reads the IB into AC
+
+**Derivation:**
+```text
+IR_WRITES_IB = IR==110010011100 (octal 6234)
+```
+
+**Value Encoding:**
+
+- 0 → Does not read IB
+- 1 → Reads IB
+
+**Consumed By:**
+- [IF_DF_TO_IB](../../03-microarchitecture/02-micro-operations.md#if_df_to_ib)
+
+---
+
 ### IR_READS_IF
 
 **Mnemonic:** IR_READS_IF
@@ -967,32 +992,7 @@ IR_RESTORES_IB = IR==110010101101 (octal 6244)
 
 **Consumed By:**
 - [IB_TO_DF](../../03-microarchitecture/02-micro-operations.md#ib_to_df)
-- [IB_TO_IF](../../03-microarchitecture/02-micro-operations.md#ib_to_if)
-
----
-
-### IR_WRITES_IB
-
-**Mnemonic:** IR_WRITES_IB
-**Name:** Interrupt Buffer Write Flag
-**Type:** Memory Management
-**Bit Width:** 1
-
-**Purpose:**
-Indicates that the current instruction writes the IB
-
-**Derivation:**
-```text
-IR_WRITES_IB = IR==110010011101 (octal 6234)
-```
-
-**Value Encoding:**
-
-- 0 → Does not write IB
-- 1 → Writes IB
-
-**Consumed By:**
-- [IF_DF_TO_IB](../../03-microarchitecture/02-micro-operations.md#if_df_to_ib)
+- [IB_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ib_to_dif)
 
 ---
 

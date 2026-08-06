@@ -9,29 +9,31 @@ All stable values in the system must reside in registers.
 ---
 
 ### Architectural Registers
-- AC: [Accumulator](#AC--Accumulator)
-- DF: [Data Field](#DF--Data-Field)
-- IE: [Interrupt Enable](#IE--Interrupt-Enable)
-- IF: [Instruction Field](#IF--Instruction-Field)
-- L:  [Link](#L--Link)
-- MQ: [Multiplier Quotient](#MQ--Multiplier-Quotient)
-- PC: [Program Counter](#PC--Program-Counter)
-- SR: [Switch Register](#SR--Switch-Register)
+- AC: [Accumulator](#ac--accumulator)
+- DF: [Data Field](#df--data-field)
+- IE: [Interrupt Enable](#ie--interrupt-enable)
+- IF: [Instruction Field](#if--instruction-field)
+- L:  [Link](#l--link)
+- MQ: [Multiplier Quotient](#mq--multiplier-quotient)
+- PC: [Program Counter](#pc--program-counter)
+- SR: [Switch Register](#sr--switch-register)
 
 
 ---
 
 ### Control-Visible State
-- IR: [Instruction Register](#IR--Instruction-Register)
-- MS: [Major State](#MS--Major-State)
-- II: [Interrupt Inhibit](#II--Interrupt-Inhibit)
+- IR: [Instruction Register](#ir--instruction-register)
+- MS: [Major State](#ms--major-state)
+- II: [Interrupt Inhibit](#ii--interrupt-inhibit)
 
 ---
 
 ### Internal Registers
-- EA: [Effective Address](#EA--Effective-Address)
-- MA: [Memory Address](#MA--Memory-Address)
-- MB: [Memory Buffer](#MB--Memory-Buffer)
+- DIF: [Deferred Instruction Field](#dif--deferred-instruction-field)
+- EA_ADDR: [Effective Address (Address Portion)](#ea_addr--effective-address-address-portion)
+- IB: [Interrupt Buffer](#ib--interrupt-buffer)
+- MA: [Memory Address](#ma--memory-address)
+- MB: [Memory Buffer](#mb--memory-buffer)
 
 ---
 
@@ -82,21 +84,41 @@ Writers:
 
 ---
 
-### EA – Effective Address
+#### DIF – Deferred Instruction Field
+
+Width: 3 bits
+
+Role: Holds a pending instruction field value awaiting transfer to IF at the next JMP or JMS.  This register implements the deferred field-change behavior required for CIF.
+
+Visibility: Internal (control-managed)
+
+Invariants:
+- Holds the pending IF between a deferred field-change and the next JMP/JMS
+
+Constraints:
+- The deferred-change sequencing (load, and transfer to IF on JMP/JMS) is defined separately
+- This document defines the register only
+
+Writers:
+- Field-change control (deferred CIF); sequencing defined separately
+
+---
+
+### EA_ADDR – Effective Address (Address Portion)
+
 Width: 12 bits
 
-Role:
-Holds the 12-bit address portion of the effective address.
+Role: Holds the 12-bit address portion of the effective address.
 
-The full logical effective address is represented as:
+The full logical effective address is a composite:
 
-    EA_logical = (EA_fld, EA_addr)
+EA = (EA_FIELD, EA_ADDR)
 
 Where:
-- EA_addr is stored in EA
-- EA_fld is provided by IF or DF
+- EA_ADDR is the 12-bit value stored in this register
+- EA_FIELD is IF or DF, selected via MFB_SRC, and is not stored here
 
-No register stores the combined value.
+No register stores the combined value; EA is a composite concept, not a register.
 
 Visibility: Internal
 
@@ -115,6 +137,31 @@ Writers:
 
 ---
 
+#### IB – Interrupt Buffer
+
+Width: 6 bits
+
+Role: Holds the instruction and data fields (IF, DF) saved at interrupt entry.  Serves as the source for RIB (read into AC) and RMF (restore to IF/DF).
+
+Bit layout:
+- IB[5:3] = saved IF
+- IB[2:0] = saved DF
+
+Visibility: Internal (control-managed)
+
+Invariants:
+- Captures IF and DF at interrupt entry
+- Stable from interrupt entry until the next interrupt entry
+
+Constraints:
+- Written only at interrupt entry
+- Read only by RIB and RMF
+
+Writers:
+- Interrupt entry control (IF_DF_TO_IB)
+
+---
+
 ### IE – Interrupt Enable
 Width: 1 bit
 
@@ -125,7 +172,7 @@ Visibility: Global
 Invariants:
 - Determines whether interrupts are recognized
 - Stable during instruction execution
-- EA must never directly drive memory; it must first be transferred to MA
+
 
 Constraints:
 - Modified only by ION/IOF instructions

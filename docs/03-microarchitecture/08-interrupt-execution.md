@@ -62,9 +62,11 @@ Description:
 ### TS2 — Address Formation
   
 - MA_CLEAR  
+- IF_DF_TO_IB
 
 Description:
 - Sets MA to 0000  
+- Saves the current IF and DF into IB
 
 ---
 
@@ -96,6 +98,7 @@ Description:
 - PC is saved exactly once to memory location 0000
 - Memory write occurs before PC is modified
 - PC is updated only after the original value is preserved
+- IF and DF are saved into IB before they are cleared
 - IE is cleared during interrupt entry
 - IF and DF are cleared during interrupt entry (if present)
 - No IR-dependent behavior occurs during this state
@@ -107,6 +110,7 @@ Description:
   
 Upon completion of INTERRUPT:
 - M[0000] contains the return address
+- IB[5:3] = saved IF, IB[2:0] = saved DF
 - PC = 0001
 - IE = 0
 - IF = 0 and DF = 0 (if implemented)

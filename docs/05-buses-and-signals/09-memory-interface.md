@@ -83,7 +83,8 @@ A memory read transfers data from memory to the CPU.
 
 During a memory read:
 - The CPU drives AB from MA.
-- AB carries the address to memory.
+- The CPU drives MFB from EA_FIELD (IF or DF per MFB_SRC).
+- AB and MFB together carry the physical address to memory.
 
 ### Memory Data Domain Participation
 
@@ -110,7 +111,8 @@ A memory write transfers data from the CPU to memory.
 
 During a memory read:
 - The CPU drives AB from MA.
-- AB carries the address to memory.
+- The CPU drives MFB from EA_FIELD (IF or DF per MFB_SRC).
+- AB and MFB together carry the physical address to memory.
 
 ### Memory Data Domain Participation
 
@@ -156,11 +158,13 @@ Domain definitions and isolation requirements are defined in:
 
 ## Global Invariants
 - AB participates in all memory operations.
+- MFB participates in all memory operations.
 - MDB participates in all memory operations.
 - Memory is the MDB producer during memory reads.
 - The CPU is the MDB producer during memory writes.
-- During normal memory operations, the CPU drives AB from MA.
-- During DMA, an external device drives AB; the CPU does not drive AB.
+- During normal memory operations, the CPU drives AB from MA and MFB from EA_FIELD.
+- During DMA, an external device drives AB and MFB; the CPU drives neither.
+- AB and MFB together form the physical memory address: {MFB, AB} = {F[2:0], A[11:0]}.
 - RD identifies memory read operations.
 - WR identifies memory write operations.
 - Domain definitions, ownership behavior, timing behavior, and control semantics are defined elsewhere.

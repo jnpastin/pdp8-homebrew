@@ -26,11 +26,12 @@ Class A signals are multi-bit buses that:
 - are present on all backplane slots
 - support shared communication between modules
 
-The system defines three buses:
+The system defines four buses:
 
 - Address Bus (AB)
 - System Data Bus (DB)
 - Memory Data Bus (MDB)
+- Memory Field Bus (MFB)
 
 ![Class A Buses](../../diagrams/architecture/class-a-buses/export/class-a-buses.png)
 
@@ -40,7 +41,7 @@ The system defines three buses:
 
 - Bit 0 = Least Significant Bit (LSB)
 - Bit 11 = Most Significant Bit (MSB)
-- All buses are 12 bits wide
+- All buses are 12 bits wide except MFB which is 3 bits wide
 - All signals are active-high
 
 ---
@@ -136,6 +137,28 @@ Carries data for:
 - DMA transfers
 
 MDB is logically independent from DB
+
+---
+
+### MFB — Memory Field Bus
+
+#### Logical Definition:
+
+MFB = F[2:0]
+
+#### Physical Signals
+
+MFB0
+MFB1
+MFB2
+
+#### Function
+
+ Carries the field half of the effective address (EA_FIELD) to the memory system, extending the 12-bit AB to a full physical address.
+
+- MFB carries the address field only; it must not be conflated with data-domain buses (MDB, DB)
+- MFB and AB together form the physical memory address: {MFB, AB} = {F[2:0], A[11:0]}
+- External device (MS = DMA): drives MFB directly; the CPU releases MFB
 
 ---
 

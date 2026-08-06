@@ -86,7 +86,7 @@ Constraint:
 μops that consume external bus domains must not conflict.
 
 Specifically:
-- MEM_READ_TO_MB (MDB domain) and DB_READ_TO_MB (DB domain)
+- MEM_READ_TO_MB (MDB domain) and DB_READ_TO_AC (DB domain)
   must not be active in the same TS
 
 Rationale:

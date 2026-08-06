@@ -70,20 +70,6 @@ Permissible source selections are defined in the control architecture.
 
 ---
 
-### Memory Data Bus (MDB)
-
-**Ownership Control**
-
-- MDB_SRC
-
-**Purpose**
-
-Selects the source permitted to drive MDB.
-
-Permissible source selections are defined in the control architecture.
-
----
-
 ### Data Bus (DB)
 
 **Ownership Control**
@@ -107,6 +93,34 @@ Permissible source selections are defined in the control architecture.
 **Purpose**
 
 Selects the source permitted to drive IDB.
+
+Permissible source selections are defined in the control architecture.
+
+---
+
+### Memory Data Bus (MDB)
+
+**Ownership Control**
+
+- MDB_SRC
+
+**Purpose**
+
+Selects the source permitted to drive MDB.
+
+Permissible source selections are defined in the control architecture.
+
+---
+
+### Memory Field Bus (MFB)
+
+**Ownership Control**
+
+- MFB_SRC
+
+**Purpose**
+
+Selects the source permitted to drive MFB.
 
 Permissible source selections are defined in the control architecture.
 

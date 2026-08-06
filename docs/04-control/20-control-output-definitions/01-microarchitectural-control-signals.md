@@ -258,7 +258,8 @@ Constraint:
 
 - [AC_LOAD](#ac_load)
 - [DF_LOAD](#df_load)
-- [EA_LOAD](#ea_load)
+- [DIF_LOAD](#dif_load)
+- [EA_ADDR_LOAD](#ea_addr_load)
 - [IB_LOAD](#ib_load)
 - [IDB_DRIVE](#idb_drive)
 - [IE_LOAD](#ie_load)
@@ -281,13 +282,15 @@ Constraint:
 - [ALU_B_SRC](#alu_b_src)
 - [ALU_OP](#alu_op)
 - [DF_SRC](#df_src)
-- [EA_SRC](#ea_src)
+- [DIF_SRC](#dif_src)
+- [EA_ADDR_SRC](#ea_addr_src)
 - [IF_SRC](#if_src)
 - [IDB_SRC](#idb_src)
 - [L_OP](#l_op)
 - [MA_SRC](#ma_src)
 - [MB_SRC](#mb_src)
 - [MDB_SRC](#mdb_src)
+- [MFB_SRC](#mfb_src)
 - [PC_SRC](#pc_src)
 
 ---
@@ -583,10 +586,53 @@ external bus value
 
 ---
 
-### EA_LOAD
+### DIF_LOAD
 
-**Mnemonic:** EA_LOAD  
-**Name:** Effective Address Load  
+**Mnemonic:** DIF_LOAD  
+**Name:** Deferred Instruction Field Load  
+**Class:** Enable  
+**Bit Width:** 1  
+
+**Purpose:** Loads the DIF register.
+
+**Encoding:**
+```
+0 → no load
+1 → load
+```
+
+**Constraints:**
+- Uses direct load path (no ALU or IDB involvement)
+
+**Used by μops:**
+- [IB_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ib_to_dif)
+
+---
+
+### DIF_SRC
+
+**Mnemonic:** DIF_SRC  
+**Name:** DIF Source Select  
+**Class:** Select  
+**Bit Width:** 1  
+
+**Purpose:** Selects the source input for DIF.
+
+**Encoding:**
+```
+0 → IB
+1 → reserved
+```
+
+**Used by μops:**
+- [IB_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ib_to_dif)
+
+---
+
+### EA_ADDR_LOAD
+
+**Mnemonic:** EA_ADDR_LOAD  
+**Name:** Effective Address Load (Address Portion)   
 **Class:** Enable  
 **Bit Width:** 1  
 
@@ -603,18 +649,19 @@ external bus value
 
 **Used by μops:**
 - [IR_ADDR_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#ir_addr_to_ea_addr)
-- [MB_TO_EA](../../03-microarchitecture/02-micro-operations.md#mb_to_ea)
+- [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr)
+- [PC_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_to_ea_addr)
 
 ---
 
-### EA_SRC
+### EA_ADDR_SRC
 
-**Mnemonic:** EA_SRC  
-**Name:** EA Source Select  
+**Mnemonic:** EA_ADDR_SRC  
+**Name:** EA_ADDR Source Select  
 **Class:** Select  
 **Bit Width:** 1  
 
-**Purpose:** Selects the source input for EA.
+**Purpose:** Selects the source input for EA_ADDR.
 
 **Encoding:**
 ```
@@ -628,7 +675,8 @@ external bus value
 
 **Used by μops:**
 - [IR_ADDR_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#ir_addr_to_ea_addr)
-- [MB_TO_EA](../../03-microarchitecture/02-micro-operations.md#mb_to_ea)
+- [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr)
+- [PC_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_to_ea_addr)
 
 ---
 
@@ -677,10 +725,11 @@ external bus value
 **Used by μops:**
 - [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb)
 - [PC_TO_MB](../../03-microarchitecture/02-micro-operations.md#pc_to_mb)
-- [MB_TO_EA](../../03-microarchitecture/02-micro-operations.md#mb_to_ea)
+- [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr)
 - [MB_TO_IR](../../03-microarchitecture/02-micro-operations.md#mb_to_ir)
 - [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac)
 - [FP_SR_TO_MB](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_mb)
+- [PC_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_to_ea_addr)
 
 ---
 
@@ -700,7 +749,7 @@ external bus value
 02 → MB
 03 → MQ
 04 → SR
-05 → EA
+05 → EA_ADDR
 06 → IR
 07 → ALU
 ```
@@ -715,9 +764,10 @@ external bus value
 - [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac)
 - [FP_SR_TO_MB](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_mb)
 - [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc)
-- [MB_TO_EA](../../03-microarchitecture/02-micro-operations.md#mb_to_ea)
+- [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr)
 - [MB_TO_IR](../../03-microarchitecture/02-micro-operations.md#mb_to_ir)
 - [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr)
+- [PC_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_to_ea_addr)
 - [PC_TO_MB](../../03-microarchitecture/02-micro-operations.md#pc_to_mb)
 
 
@@ -744,6 +794,7 @@ external bus value
 
 **Used by μops:**
 - [IE_CLEAR](../../03-microarchitecture/02-micro-operations.md#ie_clear)
+- [IE_SET](../../03-microarchitecture/02-micro-operations.md#ie_set)
 
 ---
 
@@ -767,7 +818,7 @@ external bus value
 
 **Used by μops:**
 - [IE_CLEAR](../../03-microarchitecture/02-micro-operations.md#ie_clear)
-
+- [IE_SET](../../03-microarchitecture/02-micro-operations.md#ie_set)
 
 ---
 
@@ -1016,7 +1067,7 @@ IF_IF_COMBINED[5:3]=IF
 - Must not conflict with other MA writers  
 
 **Used by μops:**
-- [EA_TO_MA](../../03-microarchitecture/02-micro-operations.md#ea_to_ma)
+- [EA_ADDR_TO_MA](../../03-microarchitecture/02-micro-operations.md#ea_addr_to_ma)
 - [PC_TO_MA](../../03-microarchitecture/02-micro-operations.md#pc_to_ma)
 - [MA_CLEAR](../../03-microarchitecture/02-micro-operations.md#ma_clear)
 
@@ -1043,7 +1094,7 @@ IF_IF_COMBINED[5:3]=IF
 - Must be valid every cycle  
 
 **Used by μops:**
-- [EA_TO_MA](../../03-microarchitecture/02-micro-operations.md#ea_to_ma)
+- [EA_ADDR_TO_MA](../../03-microarchitecture/02-micro-operations.md#ea_addr_to_ma)
 - [MA_CLEAR](../../03-microarchitecture/02-micro-operations.md#ma_clear)
 - [PC_TO_MA](../../03-microarchitecture/02-micro-operations.md#pc_to_ma)
 
@@ -1174,6 +1225,29 @@ memory bus value
 - [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb)
 - [MEM_WRITE_FROM_MB](../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)
 - [MEM_WRITE_FROM_SR](../../03-microarchitecture/02-micro-operations.md#mem_write_from_sr)
+
+---
+
+### MFB_SRC
+
+**Mnemonic:** MFB_SRC 
+**Name:** Memory Field Bus Source Select 
+**Class:** Select 
+**Bit Width:** 1
+
+**Purpose:** Selects the field register that drives the Memory Field Bus (MFB) as EA_FIELD for memory operations.
+
+**Encoding:** 
+```text
+00 → IF
+01 → DF
+```
+
+**Constraints:**
+- Selects the MFB driver during CPU-initiated memory operations
+- Governs the address field only; must not be conflated with data-side selects (MDB_SRC)
+- Console EXAM/DEP use MFB_SRC = IF
+- During MS = DMA, the CPU does not drive MFB; MFB_SRC has no effect
 
 ---
 
@@ -2067,7 +2141,7 @@ multiple conceptual sources active
 **Used by μops:**
 - [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb)
 - [PC_TO_MB](../../03-microarchitecture/02-micro-operations.md#pc_to_mb)
-- [MB_TO_EA](../../03-microarchitecture/02-micro-operations.md#mb_to_ea)
+- [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr)
 - [MB_TO_IR](../../03-microarchitecture/02-micro-operations.md#mb_to_ir)
 - [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac)
 

@@ -32,7 +32,7 @@ IR[11:9] = 000–101
 **Mnemonic (non-normative):** AND  
 
 TS1:
-- EA_TO_MA  
+- EA_ADDR_TO_MA  
 
 TS2:
 - MEM_READ_TO_MB  
@@ -50,7 +50,7 @@ TS4:
 **Mnemonic (non-normative):** TAD  
 
 TS1:
-- EA_TO_MA  
+- EA_ADDR_TO_MA  
 
 TS2:
 - MEM_READ_TO_MB  
@@ -68,7 +68,7 @@ TS4:
 **Mnemonic (non-normative):** ISZ  
 
 TS1:
-- EA_TO_MA  
+- EA_ADDR_TO_MA  
 
 TS2:
 - MEM_READ_TO_MB  
@@ -87,7 +87,7 @@ TS4:
 **Mnemonic (non-normative):** DCA  
 
 TS1:
-- EA_TO_MA  
+- EA_ADDR_TO_MA  
 
 TS2:
 - AC_TO_MB  
@@ -105,7 +105,7 @@ TS4:
 **Mnemonic (non-normative):** JMS  
 
 TS1:
-- EA_TO_MA  
+- EA_ADDR_TO_MA  
 
 TS2:
 - PC_TO_MB  

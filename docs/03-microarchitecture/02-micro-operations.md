@@ -26,9 +26,10 @@ Each μop specifies:
 
 Specifically:
 - MDB → MB via MEM_READ_TO_MB
-- DB  → MB via DB_READ_TO_MB
+- DB  → AC via DB_READ_TO_AC
 
-No μop may directly ingest DB_input into any register other than MB.
+No μop may directly ingest MDB_input into any register other than MB.
+No μop may directly ingest DB_input into any register other than AC.
 
 MB Lifetime Rule:
 A value placed in MB must be consumed by all dependent μops
@@ -93,18 +94,19 @@ No intermediate state or flag storage is created.
 - [AC_TO_MB](#ac_to_mb)
 - [AC_TO_MQ_AND_CLEAR_AC](#ac_to_mq_and_clear_ac)
 - [DF_TO_AC](#df_to_ac)
-- [EA_TO_MA](#ea_to_ma)
+- [EA_ADDR_TO_MA](#ea_addr_to_ma)
 - [FP_DF_TO_DF](#fp_df_to_df)
 - [FP_IF_TO_IF](#fp_if_to_if)
 - [FP_SR_TO_MB](#fp_sr_to_mb)
 - [FP_SR_TO_PC](#fp_sr_to_pc)
+- [IB_TO_AC](#ib_to_ac)
 - [IB_TO_DF](#ib_to_df)
-- [IB_TO_IF](#ib_to_if)
+- [IB_TO_DIF](#ib_to_dif)
 - [IF_DF_TO_IB](#if_df_to_ib)
 - [IF_TO_AC](#if_to_ac)
 - [IR_DF_TO_DF](#ir_df_to_df)
 - [IR_IF_TO_IF](#ir_if_to_if)
-- [MB_TO_EA](#mb_to_ea)
+- [MB_TO_EA_ADDR](#mb_to_ea_addr)
 - [MB_TO_IR](#mb_to_ir)
 - [PC_TO_EA_ADDR](#pc_to_ea_addr)
 - [PC_TO_MA](#pc_to_ma)
@@ -116,6 +118,7 @@ No intermediate state or flag storage is created.
 - [AC_INC](#ac_inc)
 - [DF_CLEAR](#df_clear)
 - [IE_CLEAR](#ie_clear)
+- [IE_SET](#ie_set)
 - [IF_CLEAR](#if_clear)
 - [II_CLEAR](#ii_clear)
 - [II_SET](#ii_set)
@@ -445,7 +448,7 @@ AC
 - DB is in High-Z state prior to the write  
 
 **Constraints:**  
-- Must not be used concurrently with DB_READ_TO_MB  
+- Must not be used concurrently with DB_READ_TO_AC  
 - AC must remain stable for the duration of the TS  
 - Only one device may drive DB at any time  
 
@@ -490,22 +493,22 @@ DF
 
 ---
 
-### EA_TO_MA
+### EA_ADDR_TO_MA
 
 **Category:**  
 Register Transfer
 
 **Description:**  
-Transfers the effective address into the memory address register for operand access.
+Transfers the effective address (address portion) into the memory address register for operand access.
 
 **Target:**  
 MA
 
 **Expression:**  
-MA ← EA
+MA ← EA_ADDR
 
 **Sources:**  
-EA
+EA_ADDR
 
 ---
 
@@ -591,32 +594,53 @@ SR
 Register Transfer
 
 **Description:**  
-Transfers the DF value from IB (IB[5:3]) to the DF register
+Transfers the DF value from IB (IB[2:0]) to the DF register
 
 **Target:**  
 DF
 
 **Expression:**  
-DF ← IB[5:3]
+DF ← IB[2:0]
 
 **Sources:**  
 IB
 
 ---
 
-### IB_TO_IF
+### IB_TO_AC
 
 **Category:**  
 Register Transfer
 
 **Description:**  
-Transfers the IF value from IB (IB[2:0]) to the IF register
+Transfers the saved instruction and data fields from IB into AC[5:0].
 
 **Target:**  
-IF
+AC
+
+**Expression:** 
+AC[5:3] ← IB[5:3]  
+AC[2:0] ← IB[2:0]  
+AC remaining bits unaffected
+
+**Sources:** 
+IB
+
+---
+
+### IB_TO_DIF
+
+**Category:**  
+Register Transfer
+
+**Description:**  
+Transfers the saved IF value from IB (IB[5:3]) into DIF as a pending (deferred) instruction field change.
+
+**Target:**  
+DIF
 
 **Expression:**  
-IF ← IB[2:0]
+DIF ← IB[5:3]
 
 **Sources:**  
 IB
@@ -636,6 +660,25 @@ IE
 
 **Expression:**  
 IE ← 0
+
+**Sources:**  
+(none)
+
+---
+
+### IE_SET
+
+**Category:**  
+State Manipulation
+
+**Description:**  
+Sets the interrupt enable register.
+
+**Target:**  
+IE
+
+**Expression:**  
+IE ← 1
 
 **Sources:**  
 (none)
@@ -757,9 +800,9 @@ EA
 
 **Expression:**
 if IR_ZERO_PAGE == 1:
-    EA ← (0…0 || IR[6:0])
+    EA_ADDR ← (0…0 || IR[6:0])
 else:
-    EA ← (PC[11:7] || IR[6:0])
+    EA_ADDR ← (PC[11:7] || IR[6:0])
 
 **Sources:**  
 IR, PC
@@ -880,13 +923,13 @@ MB
 
 ---
 
-### MB_TO_EA
+### MB_TO_EA_ADDR
 
 **Category:**  
 Register Transfer
 
 **Description:**  
-Transfers the value currently held in MB into EA as the resolved effective address.
+Transfers the value currently held in MB into EA_ADDR as the resolved effective address (address portion).
 
 **Target:**  
 EA
@@ -929,19 +972,18 @@ Reads the value at the address specified by MA and places it into the memory buf
 **Target:**  
 MB
 
-**Expression:**  
-MB ← M[MEM_ADDR]
+**Expression:** MB ← M[MEM_ADDR]
 
-Where:
+Where: 
 
 ```text
-MEM_ADDR =
-    MA  when AB_SRC = MA
-    PC  when AB_SRC = PC
+MEM_ADDR = {MFB, AB}  
+    AB  = MA when AB_SRC = MA, PC when AB_SRC = PC  
+    MFB = IF when MFB_SRC = IF, DF when MFB_SRC = DF  
 ```
 
-**Sources:**  
-MA or PC
+**Sources:** 
+MA or PC, IF or DF
 
 ---
 
@@ -962,13 +1004,13 @@ M[MEM_ADDR] ← MB
 Where:
 
 ```text
-MEM_ADDR =
-    MA  when AB_SRC = MA
-    PC  when AB_SRC = PC
+MEM_ADDR = {MFB, AB}  
+    AB  = MA when AB_SRC = MA, PC when AB_SRC = PC  
+    MFB = IF when MFB_SRC = IF, DF when MFB_SRC = DF  
 ```
 
-**Sources:**  
-MA or PC, MB
+**Sources:** 
+MA or PC, IF or DF, MB
 
 ---
 
@@ -989,13 +1031,13 @@ M[MEM_ADDR] ← SR
 Where:
 
 ```text
-MEM_ADDR =
-    MA  when AB_SRC = MA
-    PC  when AB_SRC = PC
+MEM_ADDR = {MFB, AB}  
+    AB  = MA when AB_SRC = MA, PC when AB_SRC = PC  
+    MFB = IF when MFB_SRC = IF, DF when MFB_SRC = DF  
 ```
 
-**Sources:**  
-MA or PC, SR
+**Sources:** 
+MA or PC, IF or DF, SR
 
 **Constraints:**
 - Intended for front-panel deposit operations
@@ -1054,10 +1096,10 @@ Replaces the program counter with the contents of the EA register.
 PC
 
 **Expression:**  
-PC ← EA
+PC ← EA_ADDR
 
 **Sources:**  
-EA
+EA_ADDR
 
 ---
 
