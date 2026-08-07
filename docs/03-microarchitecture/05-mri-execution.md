@@ -116,6 +116,8 @@ TS3:
 
 TS4:
 - PC_INC  
+- if IF_CHANGE_PENDING: DIF_TO_IF
+- if CIFP: CIFP_CLEAR
 
 ---
 
@@ -133,7 +135,8 @@ TS3:
 - PC_LOAD_EA_ADDR  
 
 TS4:
-- (no μops)  
+- if IF_CHANGE_PENDING: DIF_TO_IF
+- if CIFP: CIFP_CLEAR 
 
 ---
 

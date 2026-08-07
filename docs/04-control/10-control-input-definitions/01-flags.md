@@ -73,6 +73,26 @@ FLAGS must:
 
 ---
 
+### CIFP
+
+**Name:** CIF_PENDING  
+**Source Register:** CIFP  
+**Purpose:** Indicates that a deferred instruction-field change (CIF) is pending, awaiting the next JMP/JMS.
+
+**Value Encoding:**
+- 0 → no CIF pending
+- 1 → CIF pending
+
+**Consumed By:**
+- Control decision:
+  - Interrupt inhibit gating (holds II across the CIF-to-branch window)
+  - FETCH II_CLEAR selection (II_CLEAR is selected only when CIFP = 0)
+- Modified by:
+  - [CIFP_SET](../../03-microarchitecture/02-micro-operations.md#cifp_set)
+  - [CIFP_CLEAR](../../03-microarchitecture/02-micro-operations.md#cifp_clear)
+
+---
+
 ### EAI
 
 **Name:** EA_IS_AUTOINDEX  

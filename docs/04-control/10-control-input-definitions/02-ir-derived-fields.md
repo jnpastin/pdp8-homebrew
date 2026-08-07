@@ -932,7 +932,7 @@ Indicates that the current instruction reads the IB into AC
 
 **Derivation:**
 ```text
-IR_WRITES_IB = IR==110010011100 (octal 6234)
+IR_READS_IB = IR==110010011100 (octal 6234)
 ```
 
 **Value Encoding:**
@@ -941,7 +941,7 @@ IR_WRITES_IB = IR==110010011100 (octal 6234)
 - 1 → Reads IB
 
 **Consumed By:**
-- [IF_DF_TO_IB](../../03-microarchitecture/02-micro-operations.md#if_df_to_ib)
+- [IB_TO_AC](../../03-microarchitecture/02-micro-operations.md#ib_to_ac)
 
 ---
 
@@ -1042,7 +1042,7 @@ IR_WRITES_IF = (IR[11:6] == 110010 AND IR[2]==0 AND IR[1]==1)
 - 1 → CIF
 
 **Consumed By:**
-- [IR_IF_TO_IF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_if)
+- [IR_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_Dif)
 
 ---
 

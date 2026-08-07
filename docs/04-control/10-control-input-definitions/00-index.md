@@ -33,6 +33,7 @@ Defined in:
 
 - [ACN](./01-flags.md#acn)  
 - [ACZ](./01-flags.md#acz)  
+- [CIFP](.01-flags.md#cifp)
 - [EAI](./01-flags.md#eai)  
 - [HLT_REQ](./01-flags.md#hlt_req)
 - [IE](./01-flags.md#ie)  
@@ -122,10 +123,11 @@ Defined in:
 
 Defined in: [Derived Flags](./03-derived-flags.md)
 
-- [SKIP_TAKEN](./03-derived-flags.md#skip_taken)  
-- [ISZ_SKIP_REQUIRED](./03-derived-flags.md#isz_skip_required)  
 - [AUTO_INDEX_REQUIRED](./03-derived-flags.md#auto_index_required)  
+- [IF_CHANGE_PENDING](./03-derived-flags.md#if_change_pending)
 - [INTERRUPT_REQUEST_VALID](./03-derived-flags.md#interrupt_request_valid)  
+- [ISZ_SKIP_REQUIRED](./03-derived-flags.md#isz_skip_required)  
+- [SKIP_TAKEN](./03-derived-flags.md#skip_taken)  
 
 ---
 

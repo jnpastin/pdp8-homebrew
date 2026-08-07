@@ -85,11 +85,13 @@ Description:
 - IE_CLEAR  
 - IF_CLEAR (if present)  
 - DF_CLEAR (if present)  
+- DIF_CLEAR (if present)  
 
 Description:
 - Loads PC with address 0001  
 - Clears interrupt enable state  
 - Forces instruction and data fields to 0 (if implemented)  
+- Clears the deferred instruction field (DIF) so the ISR starts with no pending field change
 
 ---
 
@@ -101,6 +103,7 @@ Description:
 - IF and DF are saved into IB before they are cleared
 - IE is cleared during interrupt entry
 - IF and DF are cleared during interrupt entry (if present)
+- DIF is cleared during interrupt entry, so no field change is pending in the ISR
 - No IR-dependent behavior occurs during this state
 - No device interrupt state is modified during this state
 
@@ -114,6 +117,7 @@ Upon completion of INTERRUPT:
 - PC = 0001
 - IE = 0
 - IF = 0 and DF = 0 (if implemented)
+- DIF = 0 (no pending field change)
 
 ---
 

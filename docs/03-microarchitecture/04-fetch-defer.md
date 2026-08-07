@@ -43,11 +43,13 @@ Responsibilities:
 
 μops:
 - PC_TO_MA
-- II_CLEAR
+
+μops (conditional):
+- if NOT CIFP: II_CLEAR
 
 Description:
 - Places the instruction address in MA for memory access.
-- Clears the Interrupt Inhibit register
+- Clears the Interrupt Inhibit register, unless a CIF field change is pending (CIFP = 1), in which case the inhibit is held until the pending field is applied at the next JMP/JMS
 
 ---
 

@@ -94,7 +94,9 @@ No intermediate state or flag storage is created.
 - [AC_TO_MQ_AND_CLEAR_AC](#ac_to_mq_and_clear_ac)
 - [DF_TO_AC](#df_to_ac)
 - [EA_ADDR_TO_MA](#ea_addr_to_ma)
+- [DIF_TO_IF](#dif_to_if)
 - [FP_DF_TO_DF](#fp_df_to_df)
+- [FP_IF_TO_DIF](#fp_if_to_dif)
 - [FP_IF_TO_IF](#fp_if_to_if)
 - [FP_SR_TO_MB](#fp_sr_to_mb)
 - [FP_SR_TO_PC](#fp_sr_to_pc)
@@ -104,7 +106,7 @@ No intermediate state or flag storage is created.
 - [IF_DF_TO_IB](#if_df_to_ib)
 - [IF_TO_AC](#if_to_ac)
 - [IR_DF_TO_DF](#ir_df_to_df)
-- [IR_IF_TO_IF](#ir_if_to_if)
+- [IR_IF_TO_DIF](#ir_if_to_dif)
 - [MB_TO_EA_ADDR](#mb_to_ea_addr)
 - [MB_TO_IR](#mb_to_ir)
 - [PC_TO_EA_ADDR](#pc_to_ea_addr)
@@ -115,7 +117,10 @@ No intermediate state or flag storage is created.
 - [AC_CLEAR](#ac_clear)
 - [AC_COMP](#ac_comp)
 - [AC_INC](#ac_inc)
+- [CIFP_CLEAR](#cifp_clear)
+- [CIFP_SET](#cifp_set)
 - [DF_CLEAR](#df_clear)
+- [DIF_CLEAR](dif_clear)
 - [IE_CLEAR](#ie_clear)
 - [IE_SET](#ie_set)
 - [IF_CLEAR](#if_clear)
@@ -400,6 +405,44 @@ AC, MB
 
 ---
 
+### CIFP_CLEAR
+
+**Category:**  
+State Manipulation
+
+**Description:**  
+Clears the CIF-pending register, releasing the interrupt inhibit established by CIF. Executed at the JMP/JMS that applies the pending field.
+
+**Target:**  
+CIFP
+
+**Expression:**  
+CIFP ← 0
+
+**Sources:**  
+(none)
+
+---
+
+### CIFP_SET
+
+**Category:**  
+State Manipulation
+
+**Description:**  
+Sets the CIF-pending register, marking a deferred instruction-field change and inhibiting interrupt recognition until the next JMP/JMS.
+
+**Target:**  
+CIFP
+
+**Expression:**  
+CIFP ← 1
+
+**Sources:**  
+(none)
+
+---
+
 ### DB_READ_TO_AC
 
 **Category:** 
@@ -413,10 +456,10 @@ This is the only defined mechanism for CPU ingestion of data from the DB domain.
 AC  
 
 **Expression:**  
-AC ← DB_input  
+AC ← AC OR DB_input  
 
 **Sources:**  
-DB_input  
+AC, DB_input  
 
 **Preconditions:**  
 - A device is currently driving DB  
@@ -472,6 +515,25 @@ DF ← 0
 
 ---
 
+### DIF_CLEAR
+
+**Category:**  
+State Manipulation
+
+**Description:**  
+Clears the deferred instruction field register.
+
+**Target:**  
+DIF
+
+**Expression:**  
+DIF ← 0
+
+**Sources:**  
+(none)
+
+---
+
 ### DF_TO_AC
 
 **Category:**  
@@ -484,11 +546,30 @@ Transfers the current DF register value to AC[5:3]
 AC
 
 **Expression:**  
-AC[5:3] ← DF
+AC[5:3] ← AC[5:3] OR DF
 AC remaining bits unaffected
 
 **Sources:**  
-DF
+AC, DF
+
+---
+
+### DIF_TO_IF
+
+**Category:**  
+Register Transfer
+
+**Description:**  
+Applies the pending deferred instruction field by transferring DIF into IF. Executed at the JMP/JMS that concludes a CIF, gated by IF_CHANGE_PENDING.
+
+**Target:**  
+IF
+
+**Expression:**  
+IF ← DIF
+
+**Sources:**  
+DIF
 
 ---
 
@@ -527,6 +608,25 @@ DF ← FP_DF
 
 **Sources:**  
 FP_DF
+
+---
+
+### FP_IF_TO_DIF
+  
+**Category:**  
+Register Transfer
+
+**Description:**  
+Loads the Deferred Instruction Field register from the Front Panel IF switch setting.
+
+**Target:**  
+DIF
+
+**Expression:**  
+DIF ← FP_IF
+
+**Sources:**  
+FP_IF
 
 ---
 
@@ -587,6 +687,27 @@ SR
 
 ---
 
+### IB_TO_AC
+
+**Category:**  
+Register Transfer
+
+**Description:**  
+Transfers the saved instruction and data fields from IB into AC[5:0].
+
+**Target:**  
+AC
+
+**Expression:** 
+AC[5:3] ← AC[5:3] OR IB[5:3]  
+AC[2:0] ← AC[2:0] OR IB[2:0]  
+AC remaining bits unaffected
+
+**Sources:** 
+AC, IB
+
+---
+
 ### IB_TO_DF
 
 **Category:**  
@@ -602,27 +723,6 @@ DF
 DF ← IB[2:0]
 
 **Sources:**  
-IB
-
----
-
-### IB_TO_AC
-
-**Category:**  
-Register Transfer
-
-**Description:**  
-Transfers the saved instruction and data fields from IB into AC[5:0].
-
-**Target:**  
-AC
-
-**Expression:** 
-AC[5:3] ← IB[5:3]  
-AC[2:0] ← IB[2:0]  
-AC remaining bits unaffected
-
-**Sources:** 
 IB
 
 ---
@@ -740,11 +840,11 @@ Transfers the current IF register value to AC[5:3]
 AC
 
 **Expression:**  
-AC[5:3] ← IF
+AC[5:3] ← AC[5:3] OR IF
 AC remaining bits unaffected
 
 **Sources:**  
-IF
+AC, IF
 
 ---
 
@@ -827,19 +927,19 @@ IR
 
 ---
 
-### IR_IF_TO_IF
+### IR_IF_TO_DIF
 
 **Category:**  
 Register Transfer
 
 **Description:**  
-Transfers the current field value from the IR to IF
+Transfers the current field value from the IR to DIF
 
 **Target:**  
-IF
+DIF
 
 **Expression:**  
-IF ← IR[5:3]
+DIF ← IR[5:3]
 
 **Sources:**  
 IR

@@ -158,7 +158,9 @@ Load Address sets the front panel execution context by reading IF, DF, and PC fr
 Microoperation sequence:
 
 ```text
+CIFP_CLEAR
 FP_SR_TO_PC
+FP_IF_TO_DIF
 FP_IF_TO_IF
 FP_DF_TO_DF
 ```
@@ -166,9 +168,11 @@ FP_DF_TO_DF
 Result:
 
 ```text
-PC      ← SR
-IF      ← Front Panel IF
+CIFP ← 0
 DF      ← Front Panel DF
+DIF     ← Front Panel IF
+IF      ← Front Panel IF
+PC      ← SR
 ```
 
 No memory access occurs.

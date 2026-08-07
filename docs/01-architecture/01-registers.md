@@ -22,9 +22,10 @@ All stable values in the system must reside in registers.
 ---
 
 ### Control-Visible State
+- CIFP: [Change Instruction Field Pending](#cifp--change-instruction-field-pending)
+- II: [Interrupt Inhibit](#ii--interrupt-inhibit)
 - IR: [Instruction Register](#ir--instruction-register)
 - MS: [Major State](#ms--major-state)
-- II: [Interrupt Inhibit](#ii--interrupt-inhibit)
 
 ---
 
@@ -64,7 +65,31 @@ Writers:
 
 ---
 
+#### CIFP – Change Instruction Field Pending
+
+Width: 1 bit
+
+Role: Records that a deferred instruction-field change (CIF) is pending, awaiting the next JMP or JMS.
+
+Visibility: Control-visible
+
+Invariants:
+- Set from execution of CIF until the field is applied at the next JMP/JMS
+- While set, interrupt recognition is inhibited (holds II set across the CIF-to-branch window)
+
+Constraints:
+- Set only by CIF execution (IR_WRITES_IF)
+- Cleared only at the JMP/JMS that applies the pending field (EXECUTE TS4)
+- Must not be directly modified by datapath logic
+
+Writers:
+- IOT execution (CIF; CIFP_SET μop)
+- MRI execution (JMP/JMS; CIFP_CLEAR μop)
+
+---
+
 ### DF – Data Field
+
 Width: 3 bits
 
 Role: Upper field for operand memory addressing
@@ -84,23 +109,28 @@ Writers:
 
 ---
 
-#### DIF – Deferred Instruction Field
+### DIF – Deferred Instruction Field
+  
+Width: 3 bits  
 
-Width: 3 bits
+Role: Holds a pending instruction field value awaiting transfer to IF at the next JMP or JMS.  This register implements the deferred field-change behavior required for CIF.  
 
-Role: Holds a pending instruction field value awaiting transfer to IF at the next JMP or JMS.  This register implements the deferred field-change behavior required for CIF.
-
-Visibility: Internal (control-managed)
+Visibility: Internal (control-managed)  
 
 Invariants:
-- Holds the pending IF between a deferred field-change and the next JMP/JMS
+- Equal to IF except while a field change is pending (between a CIF and the applying JMP/JMS)
+- When DIF differs from IF (IF_CHANGE_PENDING), the value is applied to IF at the next JMP/JMS  
 
 Constraints:
-- The deferred-change sequencing (load, and transfer to IF on JMP/JMS) is defined separately
-- This document defines the register only
+- Loaded by CIF (from IR), RMF (from IB), Load Address (from FP_IF), and cleared at interrupt entry
+- Applied to IF only at the JMP/JMS that concludes a pending CIF, gated by IF_CHANGE_PENDING
+- Must not change during FETCH, DEFER, or EXECUTE except at the defined load/apply points  
 
 Writers:
-- Field-change control (deferred CIF); sequencing defined separately
+- IOT execution (CIF; IR_IF_TO_DIF)
+- IOT execution (RMF; IB_TO_DIF)
+- Console (Load Address; FP_IF_TO_DIF)
+- Interrupt entry (DIF_CLEAR)
 
 ---
 

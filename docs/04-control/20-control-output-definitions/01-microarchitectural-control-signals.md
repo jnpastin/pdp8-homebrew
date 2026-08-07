@@ -257,6 +257,7 @@ Constraint:
 ### 4.1 Enable Signals
 
 - [AC_LOAD](#ac_load)
+- [CIFP_LOAD](#cifp_load)
 - [DF_LOAD](#df_load)
 - [DIF_LOAD](#dif_load)
 - [EA_ADDR_LOAD](#ea_addr_load)
@@ -278,6 +279,7 @@ Constraint:
 ### 4.2 Select Signals
 
 - [AB_SRC](#ab_src)
+- [AC_SRC](#ac_src)
 - [ALU_A_SRC](#alu_a_src)
 - [ALU_B_SRC](#alu_b_src)
 - [ALU_OP](#alu_op)
@@ -297,6 +299,7 @@ Constraint:
 
 ### 4.3 Data Value Signals
 
+- [CIFP_VAL](#cifp_val)
 - [DB_INPUT](#db_input)
 - [DF_VAL](#df_val)
 - [IE_VAL](#ie_val)
@@ -358,19 +361,73 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Constraints:**
 
 **Used by μops:**
-- [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb)
-- [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp)
-- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
-- [AC_OR_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_sr)
-- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb)
-- [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar)
-- [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral)
-- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr)
-- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl)
+- [AC_ANF_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb)
 - [AC_BSW](../../03-microarchitecture/02-micro-operations.md#ac_bsw)
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
+- [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp)
 - [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
+- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
+- [AC_OR_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_sr)
+- [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral)
+- [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar)
+- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl)
+- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr)
 - [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac)
+- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb)
+- [DB_READ_TO_AC](../../03-microarchitecture/02-micro-operations.md#db_read_to_ac)
+- [DF_TO_AC](../../03-microarchitecture/02-micro-operations.md#df_to_ac)
+- [IB_TO_AC](../../03-microarchitecture/02-micro-operations.md#ib_to_ac)
+- [IF_TO_AC]../../03-microarchitecture/02-micro-operations.md#if_to_ac)
+
+---
+
+#### AC_SRC
+
+**Mnemonic:** AC_SRC  
+**Name:** Accumulator Source Select  
+**Class:** Select  
+**Bit Width:** 3
+
+**Purpose:** Selects the input source for AC.
+
+**Encoding:** 
+```
+00 → ALU
+01 → DB
+02 → IF (field-merge)
+03 → DF (field-merge)
+04 → IB (field-merge)
+05 → reserved
+06 → reserved
+07 → reserved
+```
+
+**Constraints:**
+- Must be valid every cycle
+- ALU is the source for all arithmetic/logical AC loads
+- DB is the source for I/O data ingestion (DB_READ_TO_AC); the DB value is OR'd into AC
+- Field-merge encodings OR the selected field into its DEC-defined AC bit positions and preserve all other AC bits:
+  - IF, DF → AC[5:3]
+  - IB → AC[5:3] (saved IF), AC[2:0] (saved DF)
+
+**Used by μops:**
+- [AC_ANF_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb)
+- [AC_BSW](../../03-microarchitecture/02-micro-operations.md#ac_bsw)
+- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
+- [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp)
+- [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
+- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
+- [AC_OR_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_sr)
+- [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral)
+- [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar)
+- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl)
+- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr)
+- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac)
+- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb)
+- [DB_READ_TO_AC](../../03-microarchitecture/02-micro-operations.md#db_read_to_ac)
+- [DF_TO_AC](../../03-microarchitecture/02-micro-operations.md#df_to_ac)
+- [IB_TO_AC](../../03-microarchitecture/02-micro-operations.md#ib_to_ac)
+- [IF_TO_AC]../../03-microarchitecture/02-micro-operations.md#if_to_ac)
 
 ---
 
@@ -493,6 +550,54 @@ All numeric encodings in this section are octal unless otherwise noted.
 
 ---
 
+### CIFP_LOAD
+
+**Mnemonic:** CIFP_LOAD  
+**Name:** CIF Pending Load  
+**Class:** Enable  
+**Bit Width:** 1
+
+**Purpose:** Loads the CIFP register.
+
+**Encoding:**
+```
+0 → no load
+1 → load
+```
+
+**Constraints:**
+- Uses direct load path (no ALU or IDB involvement)
+
+**Used by μops:**
+- [CIFP_CLEAR](../../03-microarchitecture/02-micro-operations.md#cifp_clear)
+- [CIFP_SET](../../03-microarchitecture/02-micro-operations.md#cifp_set)
+
+---
+
+### CIFP_VAL
+
+**Mnemonic:**  CIFP_VAL  
+**Name:** CIF Pending Value  
+**Class:** Data Value  
+**Bit Width:** 1
+
+**Purpose:** Specifies the value to load into the CIFP register.
+
+**Encoding:**
+```
+0 → 0
+1 → 1
+```
+
+**Constraints:**
+- Uses direct load path (no ALU or IDB involvement)
+
+**Used by μops:**
+- [CIFP_CLEAR](../../03-microarchitecture/02-micro-operations.md#cifp_clear)
+- [CIFP_SET](../../03-microarchitecture/02-micro-operations.md#cifp_set)
+
+---
+
 ### DB_INPUT
 
 **Mnemonic:** DB_INPUT  
@@ -512,7 +617,7 @@ external bus value
 - No effect unless explicitly consumed  
 
 **Used by μops:**
-- none
+- [DB_READ_TO_AC](../../03-microarchitecture/02-micro-operations.md#db_read_to_ac)
 
 ---
 
@@ -609,7 +714,10 @@ external bus value
 - Uses direct load path (no ALU or IDB involvement)
 
 **Used by μops:**
+- [DIF_CLEAR](../../03-microarchitecture/02-micro-operations.md#dif_clear)
+- [FP_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#fp_if_to_dif)
 - [IB_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ib_to_dif)
+- [IF_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_dif)
 
 ---
 
@@ -618,18 +726,23 @@ external bus value
 **Mnemonic:** DIF_SRC  
 **Name:** DIF Source Select  
 **Class:** Select  
-**Bit Width:** 1  
+**Bit Width:** 2  
 
 **Purpose:** Selects the source input for DIF.
 
 **Encoding:**
 ```
 0 → IB
-1 → reserved
+1 → IR
+2 → Control (hardwired 0)
+3 → FP_IF
 ```
 
 **Used by μops:**
+- [DIF_CLEAR](../../03-microarchitecture/02-micro-operations.md#dif_clear)
+- [FP_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#fp_if_to_dif)
 - [IB_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ib_to_dif)
+- [IF_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_dif)
 
 ---
 
@@ -867,9 +980,8 @@ IF_IF_COMBINED[5:3]=IF
 - Uses direct load path (no ALU or IDB involvement)
 
 **Used by μops:**
-- [IB_TO_IF](../../03-microarchitecture/02-micro-operations.md#ib_to_if)
 - [IF_CLEAR](../../03-microarchitecture/02-micro-operations.md#if_clear)
-- [IR_IF_TO_IF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_if)
+- [DIF_TO_IF](../../03-microarchitecture/02-micro-operations.md#dif_to_if)
 - [FP_IF_TO_IF](../../03-microarchitecture/02-micro-operations.md#fp_if_to_if)
 
 ---
@@ -886,15 +998,14 @@ IF_IF_COMBINED[5:3]=IF
 **Encoding:**
 ```
 0 → Control
-1 → IB
+1 → DIF
 2 → FP_IF
 3 → reserved
 ```
 
 **Used by μops:**
-- [IB_TO_IF](../../03-microarchitecture/02-micro-operations.md#ib_to_if)
 - [IF_CLEAR](../../03-microarchitecture/02-micro-operations.md#if_clear)
-- [IR_IF_TO_IF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_if)
+- [DIF_TO_IF](../../03-microarchitecture/02-micro-operations.md#dif_to_if)
 - [FP_IF_TO_IF](../../03-microarchitecture/02-micro-operations.md#fp_if_to_if)
 
 ---

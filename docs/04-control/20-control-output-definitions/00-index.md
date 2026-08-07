@@ -34,6 +34,7 @@ Defined in:
 ### Enable Signals
 
 - [AC_LOAD](./01-microarchitectural-control-signals.md#ac_load)  
+- [CIFP_LOAD](./01-microarchitectural-control-signals.md#cifp_load)  
 - [DF_LOAD](./01-microarchitectural-control-signals.md#df_load)  
 - [DIF_LOAD](./01-microarchitectural-control-signals.md#dif_load)  
 - [EA_ADDR_LOAD](./01-microarchitectural-control-signals.md#ea_addr_load)  
@@ -74,6 +75,7 @@ Defined in:
 
 ### Data Value Signals
 
+- [CIFP_VAL](./01-microarchitectural-control-signals.md#cifp_val)  
 - [DB_INPUT](./01-microarchitectural-control-signals.md#db_input)  
 - [DF_VAL](./01-microarchitectural-control-signals.md#df_val)  
 - [IE_VAL](./01-microarchitectural-control-signals.md#ie_val)  

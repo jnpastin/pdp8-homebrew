@@ -100,7 +100,7 @@ TS4:
 
 ---
 
-### IR[11:9] = 110 AND IOA = 000 AND IR[2:0] = 000
+#### IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 000
 
 **Mnemonic (non-normative):** IOF
 
@@ -118,7 +118,7 @@ TS4:
 
 ---
 
-### IR[11:9] = 110 AND IOA = 000 AND IR[2:0] = 001
+#### IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 001
 
 **Mnemonic (non-normative):** ION
 
@@ -137,6 +137,36 @@ TS4:
 
 ---
 
+### Instruction Definitions (Memory Extension Control - Devices 20-27)
+
+---
+
+#### IR[11:9] = 110 AND IOA = 2n AND IR[2:1] = 01
+  
+**Mnemonic (non-normative):** CIF  
+
+Where:
+- n = instruction field number (IOA[2:0] = IR[5:3])  
+
+TS1:
+- (no μops)  
+
+TS2:
+- IR_IF_TO_DIF
+- II_SET
+- CIFP_SET  
+
+TS3:
+- (no μops)  
+
+TS4:
+- (no μops)
+
+Description:
+- Loads DIF with the target field n from IR (deferred; applied to IF at the next JMP/JMS)
+- Sets II and CIFP to inhibit interrupts across the CIF-to-branch window
+
+---
 
 ### Notes
   
