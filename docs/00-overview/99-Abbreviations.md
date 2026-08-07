@@ -54,6 +54,8 @@ IE   = [Interrupt Enable](../01-architecture/01-registers.md#ie--interrupt-enabl
 
 IF   = [Instruction Field](../01-architecture/01-registers.md#if--instruction-field)
 
+II   = [Interrupt Inhibit](../01-architecture/01-registers.md#ii--interrupt-inhibit)
+
 IR   = [Instruction Register](../01-architecture/01-registers.md#ir--instruction-register)
 
 L    = [Link](../01-architecture/01-registers.md#l--link)

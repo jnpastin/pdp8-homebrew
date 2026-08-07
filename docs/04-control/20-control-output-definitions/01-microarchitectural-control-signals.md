@@ -1335,7 +1335,7 @@ memory bus value
 **Mnemonic:** PC_SRC  
 **Name:** Program Counter Source Select  
 **Class:** Select  
-**Bit Width:** 2  
+**Bit Width:** 1  
 
 **Purpose:** Selects the input source for PC.
 

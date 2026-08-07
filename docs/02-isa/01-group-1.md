@@ -25,7 +25,7 @@ Each flag performs a single operation, these actions will occur at a defined TP 
 | RAR | 4<sup>(1)</sup> | Rotate AC & L right |
 | RAL | 4<sup>(2)</sup> | Rotate AC & L left |
 | BSW | 4<sup>(3)</sup> | Swap 6 high bits of AC with 6 low bits of AC |
-| IAC | 3 | Increment AC |
+| IAC | 3 | Increment AC (carry propagates into L) |
 
 1. If `RAR` is combined with `BSW`, the effect will be to rotate right twice
 2. If `RAL` is combined with `BSW`, the effect will be to rotate left twice
