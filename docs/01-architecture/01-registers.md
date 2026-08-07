@@ -247,11 +247,12 @@ Invariants:
 
 Constraints:  
 - Set only by ION instruction  
-- Cleared only during FETCH
+- Cleared during FETCH when no CIF field change is pending (CIFP = 0)
 - Must not be directly modified by control logic  
 
 Writers:  
-- IOT execution (ION)  
+- IOT execution (ION; II_SET μop) 
+- IOT execution (CIF; II_SET μop) 
 - FETCH execution (II_CLEAR μop)
 
 ---

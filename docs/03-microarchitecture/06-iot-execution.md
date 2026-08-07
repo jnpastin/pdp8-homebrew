@@ -100,7 +100,7 @@ TS4:
 
 ---
 
-#### IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 000
+#### IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 010
 
 **Mnemonic (non-normative):** IOF
 

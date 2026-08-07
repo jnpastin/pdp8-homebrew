@@ -284,9 +284,9 @@ Constraint:
 Select signals define parameters of an operation.
 
 Examples:
-- DB_src
-- AB_src
-- ALU_op
+- MDB_SRC
+- AB_SRC
+- ALU_OP
 
 Behavior:
 - must always contain a valid encoding

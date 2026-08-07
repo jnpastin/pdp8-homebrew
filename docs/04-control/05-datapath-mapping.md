@@ -102,17 +102,17 @@ Examples of interactions:
 
 - register update:
   - enable: register load
-  - select: data source (DB_src)
+  - select: data source (IDB_SRC)
 
 - ALU operation:
-  - select: ALU_op
+  - select: ALU_OP
   - inputs: operand selection
   - result consumed by register load
 
 - memory operation:
   - enable: RD / WR
-  - address source: AB_src
-  - data source: DB_src
+  - address source: AB_SRC
+  - data source: MDB_SRC
 
 Constraint:
 - All interactions must be fully defined by CONTROL_WORD.

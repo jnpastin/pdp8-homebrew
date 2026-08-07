@@ -43,29 +43,34 @@ All state changes occur exclusively at TP.
 ---
 
 ## DEFER
-### TS1
-- MA valid
-- Memory read in progress
+
+### TS1 — Address Setup
+- MA_SRC = EA_ADDR (pointer location selected as MA input)
 
 ### TP1
-- MB loaded
+- MA loaded from EA_ADDR
 
-### TS2
-- Effective address computed
+### TS2 — Memory Access
+- MA drives AB
+- RD asserted
+- Memory drives MDB (pointer value)
 
 ### TP2
-- EA updated
+- MB loaded from MDB
 
-### TS3
-- Address staging
+### TS3 — Autoindex (conditional)
+- if EA_ADDR is within autoindex range: MB incremented
 
 ### TP3
-- MA loaded with EA
+- MB updated with incremented value (autoindex only)
 
-### TS4
+### TS4 — Resolution
+- MB drives the resolved address
+- if autoindex: WR asserted, incremented value written back to the pointer location
 
 ### TP4
-- Transition to EXECUTE
+- EA_ADDR loaded from MB (final resolved effective address)
+- MS transition to EXECUTE
 
 ---
 

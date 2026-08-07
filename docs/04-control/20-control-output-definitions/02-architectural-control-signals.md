@@ -92,12 +92,12 @@ Architectural
 Indicates that the CPU is requesting a memory read operation.
 
 When asserted:
-- memory must provide the contents of the address selected by `MEM_OP_SRC`
+- memory must provide the contents of the address selected by `AB_SRC` and `MFB_SRC`
 
 **Preconditions**
-- the address selected by `MEM_OP_SRC` is valid
+- the address selected by `AB_SRC` and `MFB_SRC` is valid
 - the selected MDB data source is valid
-- `MEM_OP_SRC` contains a valid encoding
+- `AB_SRC` and `MFB_SRC` contain valid encodings
 
 **Timing**
 - asserted during the TS corresponding to a read operation
@@ -128,12 +128,12 @@ Architectural
 Indicates that the CPU is requesting a memory write operation.
 
 When asserted:
-- memory must store the selected write data into the address selected by `MEM_OP_SRC`
+- memory must provide the contents of the address selected by `AB_SRC` and `MFB_SRC`
 
 **Preconditions**
-- the address selected by `MEM_OP_SRC` is valid
+- the address selected by `AB_SRC` and `MFB_SRC` is valid
 - the selected MDB data source is valid
-- `MEM_OP_SRC` contains a valid encoding
+- `AB_SRC` and `MFB_SRC` contain valid encodings
 
 **Timing**
 - asserted during the TS corresponding to a write operation

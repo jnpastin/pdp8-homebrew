@@ -815,16 +815,14 @@ Loads the contents of IF and DF into IB
 IB
 
 
-Expression:
+**Expression:**
 IB ← concat(IF, DF)
 
-Sources:
+**Sources:**
 IF, DF
 
-Constraints:
-- Exactly one IB_INPUT source must be active
+**Constraints:**
 - concat(IF, DF) is a combinational datapath value
-- IB_VAL is provided by control
 
 ---
 

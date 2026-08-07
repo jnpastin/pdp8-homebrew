@@ -65,7 +65,8 @@ Let the active predicate set P be:
 
 Condition:
 
-- if P is non-empty AND all predicates in P evaluate true: PC_INC
+- if all predicates in P evaluate true: PC_INC
+- an empty P is vacuously true, so it skips unconditionally (SKP = 7410)
 
 Examples:
 
@@ -123,7 +124,7 @@ Examples:
 Notes:
 - Predicates are included only when their corresponding IR bit = 1
 - Unset bits contribute no condition
-- If P is empty, no skip occurs
+- If P is empty: the AND sub-group skips unconditionally (vacuous truth); the OR sub-group does not skip
 - Evaluation uses only register state; no intermediate state is created
 
 ---

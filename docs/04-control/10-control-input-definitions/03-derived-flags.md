@@ -70,15 +70,6 @@ AND_ALL_TRUE =
   AND ( !SZL OR (LZ = 1) )
 ```
 
-Selected predicate presence:
-
-```
-ANY_AND_SELECTED =
-      SPA
-   OR SNA
-   OR SZL
-```
-
 Final expression:
 
 ```
@@ -86,7 +77,7 @@ SKIP_TAKEN =
     IR_OPR_GROUP2
 AND (
        ( !IR_OPR_SKIP_MODE AND OR_ANY_TRUE )
-    OR ( IR_OPR_SKIP_MODE AND ANY_AND_SELECTED AND AND_ALL_TRUE )
+    OR ( IR_OPR_SKIP_MODE AND  AND_ALL_TRUE )
 )
 ```
 
