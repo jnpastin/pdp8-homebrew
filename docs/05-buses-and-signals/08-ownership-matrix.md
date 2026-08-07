@@ -74,14 +74,11 @@ Permissible source selections are defined in the control architecture.
 
 **Ownership Control**
 
-- DB_SRC
+- DB_WRITE
 
 **Purpose**
 
-Selects the source permitted to drive DB.
-
-Permissible source selections are defined in the control architecture.
-
+Determines when the CPU drives DB. The CPU drives DB (source AC) only when DB_WRITE is asserted; otherwise the selected I/O device drives DB, or DB is idle (High-Z). Unlike the other buses, DB has no source-select signal because the CPU has a single DB source (AC).
 ---
 
 ### Internal Data Bus (IDB)
