@@ -76,6 +76,10 @@ SR   = [Switch Register](../01-architecture/01-registers.md#sr--switch-register)
 ## Global Control Signals (Class B)
 
 
+DMA_REQ = [DMA Request](../04-control/10-control-input-definitions/04-external-inputs.md#dma_req) (wired-OR)
+
+DMA_GRANT = [DMA Grant](../04-control/20-control-output/02-architectural-control-signals.md#dma_grant
+
 RD      = [Memory Read](../04-control/01-architectural-signals.md#rd)
 
 WR      = [Memory Write](../04-control/01-architectural-signals.md#wr)
@@ -105,24 +109,6 @@ TSn   = [Timing State n](../09-timing/01-terminology.md#4-time-states-ts)
 
 ---
 
-### Data Break (Reserved)
-
-
-DB_REQ     = Data Break Request
-
-DB_GRANT   = Data Break Grant
-
-DB_ADDR_EN = Data Break Address Enable
-
-DB_DATA_EN = Data Break Data Enable
-
-DB_READ    = Data Break Read
-
-DB_WRITE   = Data Break Write
-
-
----
-
 ## I/O Signals
 
 
@@ -132,22 +118,26 @@ IOA[5:0] = I/O Device Address Bus
 ---
 
 ## Front Panel Signals (Class D)
+  
+FP_START     = [Start Switch](../04-control/10-control-input-definitions/04-external-inputs.md#fp_start)
+ 
+FP_CONTINUE  = [Continue Switch](../04-control/10-control-input-definitions/04-external-inputs.md#fp_continue)
 
+FP_STOP      = [Stop Switch](../04-control/10-control-input-definitions/04-external-inputs.md#fp_stop)
 
-DS   = Deposit Switch
+FP_LOAD_ADDRESS = [Load Address Switch](../04-control/10-control-input-definitions/04-external-inputs.md#fp_load_address)
 
-ES   = Examine Switch
+FP_EXAMINE   = [Examine Switch](../04-control/10-control-input-definitions/04-external-inputs.md#fp_examine)
 
-GS   = Go / Continue Switch
+FP_DEPOSIT   = [Deposit Switch](../04-control/10-control-input-definitions/04-external-inputs.md#fp_deposit)
 
-LAS  = Load Address Switch
+FP_SINGLE_INSTRUCTION = [Single Instruction Switch](../04-control/10-control-input-definitions/04-external-inputs.md#fp_single_instruction)
 
-SIS  = Single Instruction Switch
+FP_SINGLE_STEP = [Single Step Switch](../04-control/10-control-input-definitions/04-external-inputs.md#fp_single_step)
 
-SSC  = Single Cycle Switch
+FP_IF        = [Instruction Field Switches](../04-control/10-control-input-definitions/04-external-inputs.md#fp_if)
 
-SS   = Stop Switch
-
+FP_DF        = [Data Field Switches](../04-control/10-control-input-definitions/04-external-inputs.md#fp_df)
 
 ---
 

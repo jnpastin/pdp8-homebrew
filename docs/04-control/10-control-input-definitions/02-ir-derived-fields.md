@@ -415,7 +415,7 @@ IR_IS_OPR = (IR[11:9] == 111)
 **Consumed By:**
 
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
-- [AC_COMPLEMENT](../../03-microarchitecture/02-micro-operations.md#ac_complement)
+- [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp)
 - [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
 - [L_CLEAR](../../03-microarchitecture/02-micro-operations.md#l_clear)
 - [L_COMP](../../03-microarchitecture/02-micro-operations.md#l_comp)

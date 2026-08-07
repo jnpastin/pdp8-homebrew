@@ -122,9 +122,12 @@ Signals that define the internal timing model and sequencing of execution.
 
 ### Signals
 
-- CLK
-- TS[1–4]
-- TP[1–4]
+- MCLK
+- TCLK
+- TSTEP
+- TSEQ
+- TS
+- TP
 
 ### Rules
 
@@ -150,10 +153,11 @@ Signals connecting the system to the human operator interface.
 
 #### Control Inputs
 
-- Start / Continue
+- Start
+- Continue
 - Stop
 - Single Instruction
-- Single Cycle
+- Single Step
 - Deposit
 - Examine
 - Load Address

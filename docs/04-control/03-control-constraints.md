@@ -334,10 +334,10 @@ The following are invalid and must not occur:
 - MEM_WRITE_FROM_SR without WR = 1
   → memory state modified without external coordination
 
-- MEM_WRITE_FROM_MB with MEM_WR_SRC ≠ MB
+- MEM_WRITE_FROM_MB with MDB_SRC ≠ MB
   → write-source mismatch
 
-- MEM_WRITE_FROM_SR with MEM_WR_SRC ≠ SR
+- MEM_WRITE_FROM_SR with MDB_SRC ≠ SR
   → write-source mismatch
 
 ---

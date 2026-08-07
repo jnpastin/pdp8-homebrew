@@ -55,8 +55,6 @@ These rules apply to all signal classes and must be followed by all system modul
 - /RD, /WR
 - /RST
 - /HLT
-- /DB_GRANT_IN / OUT
-- /DB_ADDR_EN, /DB_DATA_EN
 - /DB_READ, DB_WRITE
 - /INT_REQ
 - /DB_REQ
@@ -115,23 +113,11 @@ All Class A buses follow this model:
 
 Applies to:
 - /INT_REQ
-- /DB_REQ
+- /DMA_REQ
 
 ---
 
-## 8. Daisy-Chain Signals
-
-- propagated signal (not multi-driven)
-- each device must:
-  - pass through
-  - or consume and block
-
-Applies to:
-- DB_GRANT_IN / OUT
-
----
-
-## 9. Global Invariants
+## 8. Global Invariants
 
 - All signals must have explicit polarity
 - No implicit active level is allowed

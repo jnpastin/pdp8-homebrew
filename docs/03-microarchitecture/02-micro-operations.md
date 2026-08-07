@@ -64,7 +64,6 @@ No intermediate state or flag storage is created.
 
 ### Arithmetic / Logical
 - [AC_AND_MB](#ac_and_mb)
-- [AC_COMP](#ac_comp)
 - [AC_OR_MQ](#ac_or_mq)
 - [AC_OR_SR](#ac_or_sr)
 - [ADD_AC_MB](#add_ac_mb)
@@ -114,7 +113,7 @@ No intermediate state or flag storage is created.
 
 ### State Manipulation
 - [AC_CLEAR](#ac_clear)
-- [AC_COMPLEMENT](#ac_complement)
+- [AC_COMP](#ac_comp)
 - [AC_INC](#ac_inc)
 - [DF_CLEAR](#df_clear)
 - [IE_CLEAR](#ie_clear)
@@ -191,7 +190,7 @@ none
 
 ---
 
-### AC_COMPLEMENT
+### AC_COMP
 
 **Category:**  
 State Manipulation
