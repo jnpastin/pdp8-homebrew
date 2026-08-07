@@ -8,10 +8,10 @@ This document specifies:
 - register state transitions required for interrupt entry  
 
 Interrupt semantics and programmer-visible behavior are defined in:
-- [Interrupts and Skip](../../08-interrupts-and-skip/README.md)
+- [Interrupts and Skip](../08-interrupts-and-skip/README.md)
 
 Execution behavior follows:
-- [Execution Model](../01-execution-model.md)
+- [Execution Model](./01-execution-model.md)
 
 ## Scope
   
@@ -140,7 +140,7 @@ Upon completion of INTERRUPT:
   - preserve and restore any required register state (AC, L, MQ)
 
 - Interrupt enable state (IE) is modified by IOT instructions (e.g., ION, IOF), defined in:
-  - [IOT Execution](../06-iot-execution.md)
+  - [IOT Execution](./06-iot-execution.md)
 
 ### Interrupt Model
 

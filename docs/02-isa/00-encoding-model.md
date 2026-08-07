@@ -52,7 +52,7 @@ The contents of the instruction register are interpreted differently based on th
 
 - I - Indirect addressing required
 - P - Page bit (0=page 0, 1=current page)
-See the [addressing model](.04-addressing-model.md) doc for more details on address resolution
+See the [addressing model](./04-addressing-model.md) doc for more details on address resolution
 
 ### Effective Address
 
@@ -79,7 +79,7 @@ Where:
 ```
 
 - All IOT instructions have an opcode of 6
-- Each I/O device has a unique 5 bit address that it responds to, all IOT instructions for other addresses are ignored
+- Each I/O device has a unique 6 bit address that it responds to, all IOT instructions for other addresses are ignored
 - Each device supports 8 unique instructions, these are custom to the device and are defined in the logic of the device's controller
 
 

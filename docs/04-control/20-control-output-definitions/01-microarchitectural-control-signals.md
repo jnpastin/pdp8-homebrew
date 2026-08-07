@@ -311,6 +311,8 @@ Constraint:
 
 ## 5. Signal Definitions
 
+All numeric encodings in this section are octal unless otherwise noted.
+
 ---
 
 ### AB_SRC
@@ -467,6 +469,8 @@ Constraint:
 13 → reserved
 14 → reserved
 15 → reserved
+16 → reserved
+17 → reserved
 ```
 
 **Constraints:**

@@ -6,7 +6,7 @@ Applies only to Memory Reference Instructions (MRI).
 
 See:  
 - [Encoding model](./00-encoding-model.md)
-- [Addressing model](./04-addressing-models.md)
+- [Addressing model](./04-addressing-model.md)
 
 ---
 

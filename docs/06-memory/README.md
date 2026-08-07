@@ -13,4 +13,4 @@ Defines memory interaction model.
 - Write: MB drives MDB, memory captures
 
 ### Related Documents
-- [../04-control/01-architectural-signals.md](../04-control/01-architectural-signals.md)
+- [Architectural Signals](../04-control/20-control-output-definitions/02-architectural-control-signals.md)

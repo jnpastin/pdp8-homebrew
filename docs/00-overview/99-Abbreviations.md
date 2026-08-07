@@ -33,7 +33,7 @@ DB   = [System Data Bus](../05-buses-and-signals/01-class-a-buses.md#system-data
 
 MDB  = [Memory Data Bus](../05-buses-and-signals/01-class-a-buses.md#memory-data-bus-mdb) (MDB[11:0])
 
-MFB = [Memory Field Bus](../05-buses-and-signals/01-class-a-buses.md#mfb--memory-field) (MFB[2:0])
+MFB  = [Memory Field Bus](../05-buses-and-signals/01-class-a-buses.md#mfb--memory-field) (MFB[2:0])
 
 ---
 
@@ -80,9 +80,9 @@ DMA_REQ = [DMA Request](../04-control/10-control-input-definitions/04-external-i
 
 DMA_GRANT = [DMA Grant](../04-control/20-control-output/02-architectural-control-signals.md#dma_grant
 
-RD      = [Memory Read](../04-control/01-architectural-signals.md#rd)
+RD      = [Memory Read](../04-control/20-control-output-definitions/02-architectural-control-signals.md#31-memory-read-rd)
 
-WR      = [Memory Write](../04-control/01-architectural-signals.md#wr)
+WR      = [Memory Write](../04-control/20-control-output-definitions/02-architectural-control-signals.md#32-memory-write-wr)
 
 RESET   = System Reset
 
