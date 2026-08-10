@@ -907,7 +907,7 @@ Indicates that the current instruction reads DF
 
 **Derivation:**
 ```text
-IR_READS_DF = IR==110010001101 (octal 6214)
+IR_READS_DF = IR==110010001100 (octal 6214)
 ```
 
 **Value Encoding:**
@@ -957,7 +957,7 @@ Indicates that the current instruction reads IF
 
 **Derivation:**
 ```text
-IR_READS_IF = IR==110010010101 (octal 6224)
+IR_READS_IF = IR==110010010100 (octal 6224)
 ```
 
 **Value Encoding:**
@@ -982,7 +982,7 @@ Indicates that the current instruction restores DF and IF from IB
 
 **Derivation:**
 ```text
-IR_RESTORES_IB = IR==110010101101 (octal 6244)
+IR_RESTORES_IB = IR==110010101100 (octal 6244)
 ```
 
 **Value Encoding:**

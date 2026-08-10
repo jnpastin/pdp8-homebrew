@@ -52,7 +52,7 @@ The contents of the instruction register are interpreted differently based on th
 
 - I - Indirect addressing required
 - P - Page bit (0=page 0, 1=current page)
-See the [addressing model](./04-addressing-model.md) doc for more details on address resolution
+See the [addressing model](./05-addressing-model.md) doc for more details on address resolution
 
 ### Effective Address
 
@@ -82,6 +82,9 @@ Where:
 - Each I/O device has a unique 6 bit address that it responds to, all IOT instructions for other addresses are ignored
 - Each device supports 8 unique instructions, these are custom to the device and are defined in the logic of the device's controller
 
+The CPU implements two internal IOT device groups directly. See the [IOT](./04-iot.md) doc for full definitions:
+- Device 0 - processor IOTs (interrupt and flag control)
+- Devices 20-27 - memory extension control (field instructions)
 
 ## OPR Model
 

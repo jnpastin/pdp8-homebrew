@@ -366,6 +366,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
 - [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp)
 - [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
+- [AC_MQ_SWAP](- ../../03-microarchitecture/02-micro-operations.md#ac_mq_swap)
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
 - [AC_OR_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_sr)
 - [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral)
@@ -397,7 +398,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 02 → IF (field-merge)
 03 → DF (field-merge)
 04 → IB (field-merge)
-05 → reserved
+05 → MQ
 06 → reserved
 07 → reserved
 ```
@@ -409,6 +410,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 - Field-merge encodings OR the selected field into its DEC-defined AC bit positions and preserve all other AC bits:
   - IF, DF → AC[5:3]
   - IB → AC[5:3] (saved IF), AC[2:0] (saved DF)
+- MQ replaces AC in full (AC ← MQ), not a merge or OR; used by AC_MQ_SWAP
 
 **Used by μops:**
 - [AC_ANF_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb)
@@ -416,6 +418,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
 - [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp)
 - [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
+- [AC_MQ_SWAP](- ../../03-microarchitecture/02-micro-operations.md#ac_mq_swap)
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
 - [AC_OR_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_sr)
 - [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral)

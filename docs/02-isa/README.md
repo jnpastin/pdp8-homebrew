@@ -39,5 +39,5 @@ EA_addr is a 12-bit value; EA_fld is provided by IF or DF.
 
 Addressing and effective address behavior is defined in:
 
-- [04-addressing-model.md](./04-addressing-model.md)
-- [05-ea-generation.md](./05-ea-generation.md)
+- [05-addressing-model.md](./05-addressing-model.md)
+- [06-ea-generation.md](./06-ea-generation.md)

@@ -52,6 +52,7 @@ All state changes occur exclusively at TP.
 
 ### TS2 — Memory Access
 - MA drives AB
+- MFB_SRC = IF (pointer located in the IF domain)
 - RD asserted
 - Memory drives MDB (pointer value)
 
@@ -66,7 +67,7 @@ All state changes occur exclusively at TP.
 
 ### TS4 — Resolution
 - MB drives the resolved address
-- if autoindex: WR asserted, incremented value written back to the pointer location
+- if autoindex: WR asserted, MFB_SRC = IF, incremented value written back to the pointer location
 
 ### TP4
 - EA_ADDR loaded from MB (final resolved effective address)

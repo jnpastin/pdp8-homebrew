@@ -23,9 +23,11 @@ All stable values in the system must reside in registers.
 
 ### Control-Visible State
 - CIFP: [Change Instruction Field Pending](#cifp--change-instruction-field-pending)
+- HLT_REQ: [Halt Request](#hlt_req--halt-request)
 - II: [Interrupt Inhibit](#ii--interrupt-inhibit)
 - IR: [Instruction Register](#ir--instruction-register)
 - MS: [Major State](#ms--major-state)
+- RUN: [Run State](#run--run-state)
 
 ---
 
@@ -164,6 +166,30 @@ Constraints:
 Writers:
 - Address calculation logic
 - Indirect resolution path
+
+---
+
+### HLT_REQ – Halt Request
+
+Width: 1 bit
+
+Role: Records that a halt has been requested and is pending consumption at an instruction-completion boundary.
+
+Visibility: Control-visible
+
+Invariants:
+- Set when a halt is requested (STOP switch or HLT instruction)
+- Remains set until the pending halt is consumed at an instruction-completion boundary
+- Stable within a major state; updated only at TP
+
+Constraints:
+- Updated only from HLT_REQ_NEXT (sequencing control), committed at TP
+- Set by the STOP command and by the HLT instruction
+- Cleared when the pending halt is consumed (RUN transitions to 0)
+- Must not be directly modified by datapath logic or μops
+
+Writers:
+- Sequencing control (HLT_REQ_NEXT)
 
 ---
 
@@ -431,6 +457,31 @@ Constraints:
 Writers:
 - PC + 1 increment path
 - Control flow load path (JMP/JMS)
+
+---
+
+### RUN – Run State
+
+Width: 1 bit
+
+Role: Indicates whether normal instruction sequencing is active.
+
+Visibility: Control-visible
+
+Invariants:
+- When RUN = 1, the processor executes the normal major-state sequence
+- When RUN = 0, normal instruction sequencing is inactive and console operations may be performed
+- Preserves all other architectural state while halted
+- Stable within a major state; updated only at TP
+
+Constraints:
+- Updated only from RUN_NEXT (sequencing control), committed at TP
+- Set to 1 by START and CONTINUE
+- Set to 0 when a pending halt is consumed at an instruction-completion boundary, and at the completion boundary defined by Single Instruction and Single Step modes
+- Must not be directly modified by datapath logic or μops
+
+Writers:
+- Sequencing control (RUN_NEXT)
 
 ---
 

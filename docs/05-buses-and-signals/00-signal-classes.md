@@ -50,6 +50,7 @@ Multi-bit shared signal groups used for data and addressing across independent m
 - Address Bus: A[11:0]
 - Data Bus: D[11:0]
 - Memory Data Bus: MDB[11:0]
+- Memory Field Bus: MFB[2:0]
 
 ### Rules
 
@@ -95,7 +96,7 @@ System-wide control signals that coordinate behavior across modules.
 
 - RESET
 
-#### Data Break (Reserved)
+#### Data Break
 
 - DMA_REQ
 - DMA_GRANT

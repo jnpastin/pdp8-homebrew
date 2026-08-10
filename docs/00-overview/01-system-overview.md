@@ -30,11 +30,12 @@ The system aims to achieve:
 - Correct execution of PDP-8 instructions
 - Compatible instruction encodings
 - Functional support for OS/8
+- Data break (DMA)
 
 ### Not Required (initially)
 - Full DEC hardware replication
 - Timesharing support (UF not implemented initially)
-- Data break (DMA)
+
 
 ---
 

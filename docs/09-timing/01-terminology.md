@@ -136,7 +136,8 @@ Major States represent instruction-level control flow:
 FETCH  
 DEFER  
 EXECUTE  
-INTERRUPT  
+INTERRUPT
+DMA  
 
 ---
 

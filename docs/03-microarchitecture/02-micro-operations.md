@@ -90,6 +90,7 @@ No intermediate state or flag storage is created.
 - [DB_WRITE_FROM_AC](#db_write_from_ac)
 
 ### Register Transfer
+- [AC_MQ_SWAP](#ac_mq_swap)
 - [AC_TO_MB](#ac_to_mb)
 - [AC_TO_MQ_AND_CLEAR_AC](#ac_to_mq_and_clear_ac)
 - [DF_TO_AC](#df_to_ac)
@@ -230,6 +231,26 @@ AC, L
 
 **Sources:**  
 AC
+
+---
+
+### AC_MQ_SWAP
+
+**Category:** 
+Register Transfer  
+
+**Description:** 
+Exchanges the accumulator and the multiplier quotient register. Both registers receive the other's prior value in a single atomic transformation.
+
+**Target:** 
+AC, MQ  
+
+**Expression:** 
+AC ← MQ  
+MQ ← AC  
+
+**Sources:** 
+AC, MQ
 
 ---
 

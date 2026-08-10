@@ -49,6 +49,7 @@ All μop selection is derived directly from IR bits.
 
 - if IR[bit(MQA)] = 1: AC_OR_MQ
 - if IR[bit(MQL)] = 1: AC_TO_MQ_AND_CLEAR_AC
+- if IR[bit(MQA)] = 1 AND IR[bit(MQL)] = 1: AC_MQ_SWAP
 
 ---
 
@@ -78,8 +79,9 @@ All μop selection is derived directly from IR bits.
 - No two μops may write the same register in the same TS
 
 ### Group 3 Constraints
-- IR[bit(MQA)] and IR[bit(MQL)] must not both be 1
-- Behavior is undefined if both are set simultaneously
+- When IR[bit(MQA)] and IR[bit(MQL)] are both 1, the combination selects AC_MQ_SWAP (the SWP instruction), which exchanges AC and MQ as a single operation
+- TS2 must resolve to at most one μop
+- This mirrors the Group 1 rotate/BSW decode, where two otherwise-conflicting bits select a single combined operation
 
 ---
 

@@ -94,6 +94,8 @@ TS3:
 TS4:
 - (no μops)  
 
+Note:  
+The transfer direction (device drives DB into AC, or CPU drives AC onto DB) is not determined by IR. It is signaled at runtime by the selected device via device-response inputs, resolved when the I/O subsystem is defined. The generic IOT cycle provides the ordered interaction windows and the bus path; it does not itself select direction.
 ---
 
 ### Instruction Definitions (CPU Control - Device 0)
@@ -135,18 +137,94 @@ TS3:
 TS4:
 - (no μops)
 
+Description:
+- Turns the interrupt system on (IE_SET)
+- Sets II so interrupt recognition is delayed until after the instruction following ION; FETCH clears II when no CIF field change is pending, realizing the standard one-instruction ION delay
+
+---
+
+#### IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 000
+
+**Mnemonic (non-normative):** SKON
+
+TS1:
+- (no μops)
+
+TS2:
+- if IE: PC_INC
+- IE_CLEAR
+
+TS3:
+- (no μops)
+
+TS4:
+- (no μops)
+
+Description:
+- Skips the next instruction if the interrupt system is on, then turns it off
+- The skip (PC_INC) is conditional on IE; IE_CLEAR is unconditional
+- Both μops target different registers (PC, IE) and may occur in the same TS
+
+---
+
+#### IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 011
+
+**Mnemonic (non-normative):** SRQ
+
+  TS1:
+- (no μops)
+
+  TS2:
+- if INT_REQ: PC_INC
+
+  TS3:
+- (no μops)
+
+  TS4:
+- (no μops)
+
+Description:
+
+- Skips the next instruction if an interrupt request is currently asserted
+- INT_REQ is an external input; the skip does not modify interrupt state
+
 ---
 
 ### Instruction Definitions (Memory Extension Control - Devices 20-27)
 
 ---
 
-#### IR[11:9] = 110 AND IOA = 2n AND IR[2:1] = 01
+#### IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2] = 0 AND IR[0] = 1
+
+**Mnemonic (non-normative):** CDF
+
+Where:
+- n = target field number (IOA[2:0] = IR[5:3])  
+
+TS1:
+- (no μops)
+
+TS2:
+- IR_DF_TO_DF
+
+TS3:
+- (no μops)
+
+TS4:
+- (no μops)
+
+Description:
+- Loads DF with the target field n from IR (immediate)
+
+
+---
+
+#### IR[11:9] = 110 AND IOA = 2n AND IR[2] = 0 AND IR[1] = 1
   
 **Mnemonic (non-normative):** CIF  
 
 Where:
-- n = instruction field number (IOA[2:0] = IR[5:3])  
+- n = target field number (IOA[2:0] = IR[5:3])  
 
 TS1:
 - (no μops)  
@@ -165,6 +243,91 @@ TS4:
 Description:
 - Loads DIF with the target field n from IR (deferred; applied to IF at the next JMP/JMS)
 - Sets II and CIFP to inhibit interrupts across the CIF-to-branch window
+
+---
+
+#### IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 001
+
+**Mnemonic (non-normative):** RDF
+
+TS1:
+- (no μops)
+
+TS2:
+- DF_TO_AC
+
+TS3:
+- (no μops)
+
+TS4:
+- (no μops)
+
+Description:
+- Reads DF into AC[5:3] (OR'd into AC; other AC bits unaffected)
+
+---
+
+#### IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 010
+
+**Mnemonic (non-normative):** RIF
+
+TS1:
+- (no μops)
+
+TS2:
+- IF_TO_AC
+
+TS3:
+- (no μops)
+
+TS4:
+- (no μops)
+
+Description:
+- Reads IF into AC[5:3] (OR'd into AC; other AC bits unaffected)
+
+---
+
+#### IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 011
+
+**Mnemonic (non-normative):** RIB
+
+TS1:
+- (no μops)
+
+TS2:
+- IB_TO_AC
+
+TS3:
+- (no μops)
+
+TS4:
+- (no μops)
+
+Description:
+- Reads the interrupt-saved fields into AC: AC[5:3] <- saved IF, AC[2:0] <- saved DF (OR'd into AC)
+
+---
+
+#### IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 100
+
+**Mnemonic (non-normative):** RMF
+
+TS1:
+- (no μops)
+
+TS2:
+- IB_TO_DF
+- IB_TO_DIF
+
+TS3:
+- (no μops)
+
+TS4:
+- (no μops)
+
+Description:
+- Restores the fields saved in IB: DF <- saved DF (immediate), IF <- saved IF (deferred via DIF; applied at the next JMP/JMS)
 
 ---
 

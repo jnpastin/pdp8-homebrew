@@ -56,6 +56,7 @@ Defined in:
 ### Select Signals
 
 - [AB_SRC](./01-microarchitectural-control-signals.md#ab_src)  
+- [AC_SRC](./01-microarchitectural-control-signals.md#ac_src)  
 - [ALU_A_SRC](./01-microarchitectural-control-signals.md#alu_a_src)  
 - [ALU_B_SRC](./01-microarchitectural-control-signals.md#alu_b_src)  
 - [ALU_OP](./01-microarchitectural-control-signals.md#alu_op)  

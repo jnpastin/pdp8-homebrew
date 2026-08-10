@@ -42,11 +42,15 @@ MFB  = [Memory Field Bus](../05-buses-and-signals/01-class-a-buses.md#mfb--memor
 
 AC   = [Accumulator](../01-architecture/01-registers.md#ac--accumulator)
 
+CIFP = [Change Instruction Field Pending](../01-architecture/01-registers.md#cifp--change-instruction-field-pending0
+
 DF   = [Data Field](../01-architecture/01-registers.md#df--data-field)
 
 DIF  = [Deferred Instruction Field](../01-architecture/01-registers.md#dif--deferred-instruction-field)
 
 EA_ADDR   = [Effective Address (Address Portion)](../01-architecture/01-registers.md#ea_addr--effective-address-address-portion)
+
+HLT_REQ   = [Halt Request](../01-architecture/01-registers.md#hlt_req--halt-request)
 
 IB   = [Interrupt Buffer](../01-architecture/01-registers.md#ib--interrupt-buffer)
 
@@ -69,6 +73,8 @@ MS   = [Major State](../01-architecture/01-registers.md#ms--major-state)
 MQ   = [Multiplier Quotient](../01-architecture/01-registers.md#mq--multiplier-quotient)
 
 PC   = [Program Counter](../01-architecture/01-registers.md#pc--program-counter)
+
+RUN  = [Run state](../01-architecture/01-registers.md#run--run-state)
 
 SR   = [Switch Register](../01-architecture/01-registers.md#sr--switch-register)
 

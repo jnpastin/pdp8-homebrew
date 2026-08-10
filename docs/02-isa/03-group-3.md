@@ -22,6 +22,10 @@ Each flag performs a single operation, these actions will occur at a defined TP 
 | MQA | 2 | Logical OR AC and MQ, with result in AC.  MQ is not affected |
 | MQL | 2 | Clear MQ, then move the AC into MQ.  AC is cleared |
 
+When MQA and MQL are combined, the result is the SWP instruction (7521), which exchanges AC and MQ (AC and MQ each receive the other's prior value).
+
 ### Combining Operations
 
  Similar to Group 1, combined operations that happen at different TPs will happen in that order.  `CLA MQL` will clear AC and then move that into MQ, effectively clearing both.  Conversely `CLA MQA` will clear the AC, then OR the MQ into the AC, resulting in AC = MQ.
+ 
+ `MQA` and `MQL` combined form `SWP` (7521), which exchanges AC and MQ. This parallels the Group 1 rotate encoding, where two bits that would otherwise conflict select a single combined operation. `SWP` may still be combined with `CLA`: since `CLA` clears AC at TP1 and the exchange occurs at TP2, `CLA SWP` (7621) results in AC = old MQ and MQ = 0.
