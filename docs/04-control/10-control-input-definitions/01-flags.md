@@ -160,6 +160,7 @@ FLAGS must:
   - Interrupt entry gating (control logic)
 - Modified by:
   - [II_SET μop](../../03-microarchitecture/02-micro-operations.md#ii_set)
+  - [II_CLEAR μop](../../03-microarchitecture/02-micro-operations.md#ii_clear)
 
 ---
 

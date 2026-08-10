@@ -37,8 +37,8 @@ Shared behavior:
 
 Additional behavior (not present in JMS):
 - IE ← 0  
-- IF ← 0 (if present)  
-- DF ← 0 (if present)  
+- IF ← 0   
+- DF ← 0   
 
 Properties:
 - No IR decoding occurs during this state
@@ -83,14 +83,14 @@ Description:
   
 - PC_SET_1  
 - IE_CLEAR  
-- IF_CLEAR (if present)  
-- DF_CLEAR (if present)  
-- DIF_CLEAR (if present)  
+- IF_CLEAR  
+- DF_CLEAR  
+- DIF_CLEAR  
 
 Description:
 - Loads PC with address 0001  
 - Clears interrupt enable state  
-- Forces instruction and data fields to 0 (if implemented)  
+- Forces instruction and data fields to 0  
 - Clears the deferred instruction field (DIF) so the ISR starts with no pending field change
 
 ---
@@ -102,7 +102,7 @@ Description:
 - PC is updated only after the original value is preserved
 - IF and DF are saved into IB before they are cleared
 - IE is cleared during interrupt entry
-- IF and DF are cleared during interrupt entry (if present)
+- IF and DF are cleared during interrupt entry
 - DIF is cleared during interrupt entry, so no field change is pending in the ISR
 - No IR-dependent behavior occurs during this state
 - No device interrupt state is modified during this state
@@ -116,7 +116,7 @@ Upon completion of INTERRUPT:
 - IB[5:3] = saved IF, IB[2:0] = saved DF
 - PC = 0001
 - IE = 0
-- IF = 0 and DF = 0 (if implemented)
+- IF = 0 and DF = 0
 - DIF = 0 (no pending field change)
 
 ---

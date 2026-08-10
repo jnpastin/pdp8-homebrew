@@ -53,11 +53,10 @@ These rules apply to all signal classes and must be followed by all system modul
 ### Active-Low
 
 - /RD, /WR
-- /RST
-- /HLT
-- /DB_READ, DB_WRITE
+- /RESET
+- /DB_READ, /DB_WRITE
 - /INT_REQ
-- /DB_REQ
+- /DMA_REQ
 
 ---
 

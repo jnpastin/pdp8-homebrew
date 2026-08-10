@@ -38,7 +38,7 @@ Excludes:
 - [04-control-word.md](./04-control-word.md)
 - [05-datapath-mapping.md](./05-datapath-mapping.md)
 - Control input definitions:
-  - [00-index.md]10-control-input-definitions/00-index.md(./10-control-input-definitions/00-index.md)
+  - [00-index.md](./10-control-input-definitions/00-index.md)
   - [01-flags.md](./10-control-input-definitions/01-flags.md)
   - [02-ir-derived-fields.md](./10-control-input-definitions/02-ir-derived-fields.md)
   - [03-derived-flags.md](./10-control-input-definitions/03-derived-flags.md)

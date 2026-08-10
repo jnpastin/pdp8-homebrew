@@ -32,7 +32,7 @@ Excludes:
 - [00-signal-classes.md](./00-signal-classes.md)
 - [01-class-a-buses.md](./01-class-a-buses.md)
 - [02-class-b-control.md](./02-class-b-control.md)
-- [03-class-cc-timing.md
+- [03-class-c-timing.md](./03-class-c-timing.md)
 - [04-class-d-front-panel.md](./04-class-d-front-panel.md)
 - [05-class-e-internal.md](./05-class-e-internal.md)
 - [06-bus-semantics.md](./06-bus-semantics.md)

@@ -42,7 +42,7 @@ MFB  = [Memory Field Bus](../05-buses-and-signals/01-class-a-buses.md#mfb--memor
 
 AC   = [Accumulator](../01-architecture/01-registers.md#ac--accumulator)
 
-CIFP = [Change Instruction Field Pending](../01-architecture/01-registers.md#cifp--change-instruction-field-pending0
+CIFP = [Change Instruction Field Pending](../01-architecture/01-registers.md#cifp--change-instruction-field-pending)
 
 DF   = [Data Field](../01-architecture/01-registers.md#df--data-field)
 

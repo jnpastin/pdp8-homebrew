@@ -1,7 +1,5 @@
 # Design Principles
 
-Status: work in progress
-
 ## Core Principles
 
 ### 1. Correctness Over Performance

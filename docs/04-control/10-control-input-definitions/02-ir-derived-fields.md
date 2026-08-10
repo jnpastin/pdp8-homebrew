@@ -982,7 +982,7 @@ Indicates that the current instruction restores DF and IF from IB
 
 **Derivation:**
 ```text
-IR_RESTORES_IB = IR==110010101100 (octal 6244)
+IR_RESTORES_IB = IR==110010100100 (octal 6244)
 ```
 
 **Value Encoding:**

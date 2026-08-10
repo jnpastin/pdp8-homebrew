@@ -470,7 +470,7 @@ CIFP ← 1
 I/O / External  
 
 **Description:**  
-Reads the value present on the System Data Bus (DB) and loads it into the Accumulator (AC).  
+Reads the value present on the System Data Bus (DB) and ORs it into the Accumulator (AC).  
 This is the only defined mechanism for CPU ingestion of data from the DB domain.  
 
 **Target:**  
@@ -914,7 +914,7 @@ Address Formation
 Constructs the base effective address from the instruction address field using page selection rules.
 
 **Target:**  
-EA
+EA_ADDR
 
 **Expression:**
 if IR_ZERO_PAGE == 1:
@@ -1050,10 +1050,10 @@ Register Transfer
 Transfers the value currently held in MB into EA_ADDR as the resolved effective address (address portion).
 
 **Target:**  
-EA
+EA_ADDR
 
 **Expression:**
-EA ← MB
+EA_ADDR ← MB
 
 **Sources:**  
 MB

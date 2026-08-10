@@ -63,7 +63,7 @@ Writers:
 - ALU result path
 - Shift/rotate network (AC:L)
 - OPR control operations (CLA, CMA, IAC)
-- MQ transfer path (if implemented)
+- MQ transfer path
 
 ---
 
@@ -376,7 +376,7 @@ Constraints:
   - CPU datapath prior to memory write
 - Must not change while:
   - Memory strobe is active
-  - Data break (DMA) transfer is in progress using MB
+  - DMA transfer is in progress using MB
 - Cannot be bypassed for architecturally visible memory transfers
 
 Writers:
@@ -386,7 +386,7 @@ Writers:
 Consumers:
 - CPU datapath (instruction load, operand use)
 - Memory system (write cycles)
-- Data break / DMA logic
+- DMA logic
 
 ---
 
@@ -428,7 +428,7 @@ Constraints:
 
 Writers:
 - Multiply/divide microcode path
-- AC transfer path (if present)
+- AC transfer path
 
 ---
 

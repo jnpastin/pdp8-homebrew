@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document defines the architectural interface used for Direct Memory Access (DMA) operations.
+This document defines the architectural interface used for Direct Memory Access (DMA) operations.  On the PDP-8 this mechanism is historically called data break, including its single-cycle and three-cycle variants; this documentation uses the modern term DMA throughout.
 
 This document defines:
 

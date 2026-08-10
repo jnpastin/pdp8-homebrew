@@ -1,7 +1,5 @@
 # System Overview
 
-Status: work in progress
-
 ## Objective
 
 The goal of this project is to design and build a homebrew computer using discrete logic that is compatible with the PDP-8/e architecture.
@@ -30,7 +28,7 @@ The system aims to achieve:
 - Correct execution of PDP-8 instructions
 - Compatible instruction encodings
 - Functional support for OS/8
-- Data break (DMA)
+- DMA
 
 ### Not Required (initially)
 - Full DEC hardware replication
@@ -75,16 +73,14 @@ Completed:
 - Register set identified
 - High-level bus structure outlined
 - Timing architecture defined (TCLK / TSTEP / TP / TS model)
-- Major state model defined (FETCH, DEFER, EXECUTE, INTERRUPT)
+- Major state model defined (FETCH, DEFER, EXECUTE, INTERRUPT, DMA)
 
 In progress:
-- Control signal definition
-- Interrupt and skip models
 - Bus and register refinement
+- I/O subsystem definition (device interface, DMA data path)
 
 Not yet defined:
-- Microarchitecture (cycle-by-cycle behavior)
-- Control implementation
+- Memory subsystem detail
 - I/O device behavior
 
 ---
@@ -93,10 +89,8 @@ Not yet defined:
 
 The following areas must be defined before hardware design begins:
 
-- Complete microoperation specification
-- Control signal mapping to instruction execution
-- Timing pulse and state definitions
 - I/O instruction behavior and device interaction
+- Memory subsystem detail
 
 ---
 

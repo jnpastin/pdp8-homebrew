@@ -62,10 +62,10 @@ Multi-bit shared signal groups used for data and addressing across independent m
 ### Notes
 
 The system defines two distinct data paths:
-- D bus for system and I/O transactions
+- DB bus for system and I/O transactions
 - MDB bus for memory transactions
 
-This separation is required to support future data break (DMA) functionality.
+This separation is required to support DMA functionality.
 
 ---
 
@@ -94,9 +94,9 @@ System-wide control signals that coordinate behavior across modules.
 
 #### System Control
 
-- RESET
+- /RESET
 
-#### Data Break
+#### DMA
 
 - DMA_REQ
 - DMA_GRANT
@@ -242,6 +242,5 @@ This classification establishes strict boundaries between:
 
 These boundaries are required to:
 - maintain system modularity
-- enable future expansion (e.g., data break)
 - prevent unintended coupling between subsystems
 - support reliable hardware implementation
