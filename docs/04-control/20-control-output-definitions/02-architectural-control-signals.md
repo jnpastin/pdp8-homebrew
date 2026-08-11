@@ -34,7 +34,7 @@ They do NOT:
 
 Bus behavior, ownership, and electrical semantics are defined in:
 
-- [Bus Semantics](../../05-buses-and-signals/03-bus-semantics.md)
+- [Bus Semantics](../../05-buses-and-signals/06-bus-semantics.md)
 
 ---
 
@@ -128,7 +128,7 @@ Architectural
 Indicates that the CPU is requesting a memory write operation.
 
 When asserted:
-- memory must provide the contents of the address selected by `AB_SRC` and `MFB_SRC`
+- memory must store the selected data into the address selected by `AB_SRC` and `MFB_SRC`
 
 **Preconditions**
 - the address selected by `AB_SRC` and `MFB_SRC` is valid

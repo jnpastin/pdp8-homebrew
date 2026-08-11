@@ -210,7 +210,7 @@ The fast/slow mechanism will be modeled after DEC's timing design. The specific 
 
 ---
 
-## 8) DMA Integration
+# 8) DMA Integration
 
 DMA does not inhibit timing progression.
 DMA is a control-selected Major State (MS = DMA), sequenced identically to other major states.
@@ -240,10 +240,3 @@ The system timing model enforces:
   - timing (TS, TP)
   - control (MS)
 
----
-
-# 9) Next Steps
-
-- Define Major State timing behavior
-- Define instruction-level timing
-- Define memory and I/O timing interactions

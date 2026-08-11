@@ -30,7 +30,7 @@ Related:
 
 ## 2. Signal Classes
 
-### 2.1 IR Class Flags
+### 2.1 IR Derived Fields
 
 Divide the instruction space based on opcode field `IR[11:9]`.
 
@@ -250,7 +250,7 @@ IR_DF and IR_IF share the same bit positions but are interpreted
 in different instruction contexts (CDF vs CIF)
 
 **Consumed By:**
-- [IR_IF_TO_IF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_if)
+- [IR_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_dif)
 
 ---
 
@@ -385,7 +385,7 @@ IR_IS_MRI =
 - [MEM_WRITE_FROM_MB](../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)
 - [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc)
 - [IR_ADDR_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#ir_addr_to_ea_addr)
-- [MB_TO_EA](../../03-microarchitecture/02-micro-operations.md#mb_to_ea)
+- [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr)
 - [EA_ADDR_TO_MA](../../03-microarchitecture/02-micro-operations.md#ea_addr_to_ma)
 - [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr)
 
@@ -536,7 +536,7 @@ IR_OPR_CMA = IR_OPR_GROUP1 AND IR[5]
 - 1 → complement AC  
 
 **Consumed By:**
-- [AC_COMPLEMENT](../../03-microarchitecture/02-micro-operations.md#ac_complement)
+- [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp)
 
 ---
 
@@ -588,7 +588,7 @@ IR_OPR_GROUP1 = IR_IS_OPR AND (IR[8] == 0)
 **Consumed By:**
 
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
-- [AC_COMPLEMENT](../../03-microarchitecture/02-micro-operations.md#ac_complement)
+- [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp)
 - [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
 - [L_CLEAR](../../03-microarchitecture/02-micro-operations.md#l_clear)
 - [L_COMP](../../03-microarchitecture/02-micro-operations.md#l_comp)
@@ -907,7 +907,7 @@ Indicates that the current instruction reads DF
 
 **Derivation:**
 ```text
-IR_READS_DF = IR==110010001100 (octal 6214)
+IR_READS_DF = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==001) (octal 6214)
 ```
 
 **Value Encoding:**
@@ -932,7 +932,7 @@ Indicates that the current instruction reads the IB into AC
 
 **Derivation:**
 ```text
-IR_READS_IB = IR==110010011100 (octal 6234)
+IR_READS_IB = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==011) (octal 6234)
 ```
 
 **Value Encoding:**
@@ -957,7 +957,7 @@ Indicates that the current instruction reads IF
 
 **Derivation:**
 ```text
-IR_READS_IF = IR==110010010100 (octal 6224)
+IR_READS_IF = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==010) (octal 6224)
 ```
 
 **Value Encoding:**
@@ -982,7 +982,7 @@ Indicates that the current instruction restores DF and IF from IB
 
 **Derivation:**
 ```text
-IR_RESTORES_IB = IR==110010100100 (octal 6244)
+IR_RESTORES_IB = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==100) (octal 6244)
 ```
 
 **Value Encoding:**

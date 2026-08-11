@@ -26,7 +26,7 @@ Bus semantics are defined in:
 
 Ownership is defined in:
 
-- [Bus Ownership Matrix](./08-bus-ownership-matrix.md)
+- [Bus Ownership Matrix](./08-ownership-matrix.md)
 
 Memory arbitration is defined in Section 6.
 
@@ -149,7 +149,7 @@ DMA devices participate directly in the MDB ownership model.
 
 Authoritative ownership behavior is defined in:
 
-- [Bus Ownership Matrix](./08-bus-ownership-matrix.md)
+- [Bus Ownership Matrix](./08-ownership-matrix.md)
 - [Microarchitectural Control Signals](../04-control/20-control-output-definitions/01-microarchitectural-control-signals.md)
 
 ### Control Participation

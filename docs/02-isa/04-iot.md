@@ -25,8 +25,6 @@ All device-0 and memory-extension instructions listed here are PDP-8/E processor
 
 ### Device 0 - Processor IOTs
 
-### Device 0 - Processor IOTs
-
 These instructions control the interrupt system. They are decoded when IR[11:9] = 110 and IR[8:3] = 000000 (device address 0). The specific operation is selected by the value of IR[2:0].
 
 ┌────┬────┬────┬────┬────┬────┬────┬────┬────┬─────┬─────┬─────┐

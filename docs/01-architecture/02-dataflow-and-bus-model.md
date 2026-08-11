@@ -1,7 +1,7 @@
 
 ## Dataflow and Bus Model
 
-Buses are defined and described in more detail [here](https://github.com/jnpastin/pdp8-homebrew/blob/arch/docs/05-buses-and-signals/01-class-a-buses.md).
+Buses are defined and described in more detail [here](../05-buses-and-signals/01-class-a-buses.md).
 
 ### Core Principle
 All data movement follows:

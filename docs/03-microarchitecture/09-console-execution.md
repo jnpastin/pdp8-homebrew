@@ -240,7 +240,7 @@ PC              ← PC + 1
 
 The memory write and MB update both consume SR as their source, allowing the operation to remain a valid single TS-equivalent console transaction.
 
-The memory read drives AB from PC and MFB from IF, not MA or EA. This allows all microoperations to occur simultaneously within a single TS. AB_SRC = PC and MFB_SRC = IF, while normal memory operations select AB_SRC and MFB_SRC per the active phase.
+The memory write drives AB from PC and MFB from IF, not MA or EA. This allows all microoperations to occur simultaneously within a single TS. AB_SRC = PC and MFB_SRC = IF, while normal memory operations select AB_SRC and MFB_SRC per the active phase.
 
 The processor remains halted.
 

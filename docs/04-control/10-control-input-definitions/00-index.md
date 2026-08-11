@@ -20,7 +20,7 @@ Input signals are grouped into four domains:
 - Primitive Flags (register-derived)
 - IR-Derived Signals (instruction decode surface)
 - Derived Flags (composed control conditions)
-- External Flags (conditions determined outside of the CPU)
+- External Inputs (conditions determined outside of the CPU)
 
 Each signal appears exactly once.
 
@@ -33,7 +33,7 @@ Defined in:
 
 - [ACN](./01-flags.md#acn)  
 - [ACZ](./01-flags.md#acz)  
-- [CIFP](.01-flags.md#cifp)
+- [CIFP](./01-flags.md#cifp)
 - [EAI](./01-flags.md#eai)  
 - [HLT_REQ](./01-flags.md#hlt_req)
 - [IE](./01-flags.md#ie)  

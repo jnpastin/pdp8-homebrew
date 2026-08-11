@@ -58,7 +58,7 @@ EA_addr must not be assumed to be final prior to EXECUTE
 
 ## Inputs
 
-- IR bits: I, P, offset[0:6]  
+- IR bits: I, P, offset[6:0]  
 - PC (12-bit)  
 - IF (Instruction Field)  
 - DF (Data Field)  

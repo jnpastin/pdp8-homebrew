@@ -26,7 +26,7 @@ Bus semantics are defined in:
 
 Ownership is defined in:
 
-- [Bus Ownership Matrix](./08-bus-ownership-matrix.md)
+- [Bus Ownership Matrix](./08-ownership-matrix.md)
 
 DMA-specific behavior is defined in:
 

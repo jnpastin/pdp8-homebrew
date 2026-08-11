@@ -109,7 +109,7 @@ A memory write transfers data from the CPU to memory.
 
 ### Address Domain Participation
 
-During a memory read:
+During a memory write:
 - The CPU drives AB from MA.
 - The CPU drives MFB from EA_FIELD (IF or DF per MFB_SRC).
 - AB and MFB together carry the physical address to memory.

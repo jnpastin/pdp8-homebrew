@@ -86,4 +86,3 @@ Constraints:
 - All behavior is expressed strictly in μops  
 - No symbolic instruction interpretation is used  
 - All μop selection is derived directly from IR bits  
-``

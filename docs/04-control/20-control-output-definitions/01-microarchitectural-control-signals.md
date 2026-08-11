@@ -361,12 +361,12 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Constraints:**
 
 **Used by μops:**
-- [AC_ANF_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb)
+- [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb)
 - [AC_BSW](../../03-microarchitecture/02-micro-operations.md#ac_bsw)
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
 - [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp)
 - [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
-- [AC_MQ_SWAP](- ../../03-microarchitecture/02-micro-operations.md#ac_mq_swap)
+- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap)
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
 - [AC_OR_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_sr)
 - [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral)
@@ -378,11 +378,11 @@ All numeric encodings in this section are octal unless otherwise noted.
 - [DB_READ_TO_AC](../../03-microarchitecture/02-micro-operations.md#db_read_to_ac)
 - [DF_TO_AC](../../03-microarchitecture/02-micro-operations.md#df_to_ac)
 - [IB_TO_AC](../../03-microarchitecture/02-micro-operations.md#ib_to_ac)
-- [IF_TO_AC]../../03-microarchitecture/02-micro-operations.md#if_to_ac)
+- [IF_TO_AC](../../03-microarchitecture/02-micro-operations.md#if_to_ac)
 
 ---
 
-#### AC_SRC
+### AC_SRC
 
 **Mnemonic:** AC_SRC  
 **Name:** Accumulator Source Select  
@@ -413,12 +413,12 @@ All numeric encodings in this section are octal unless otherwise noted.
 - MQ replaces AC in full (AC ← MQ), not a merge or OR; used by AC_MQ_SWAP
 
 **Used by μops:**
-- [AC_ANF_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb)
+- [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb)
 - [AC_BSW](../../03-microarchitecture/02-micro-operations.md#ac_bsw)
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
 - [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp)
 - [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
-- [AC_MQ_SWAP](- ../../03-microarchitecture/02-micro-operations.md#ac_mq_swap)
+- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap)
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
 - [AC_OR_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_sr)
 - [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral)
@@ -430,7 +430,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 - [DB_READ_TO_AC](../../03-microarchitecture/02-micro-operations.md#db_read_to_ac)
 - [DF_TO_AC](../../03-microarchitecture/02-micro-operations.md#df_to_ac)
 - [IB_TO_AC](../../03-microarchitecture/02-micro-operations.md#ib_to_ac)
-- [IF_TO_AC]../../03-microarchitecture/02-micro-operations.md#if_to_ac)
+- [IF_TO_AC](../../03-microarchitecture/02-micro-operations.md#if_to_ac)
 
 ---
 
@@ -720,7 +720,7 @@ external bus value
 - [DIF_CLEAR](../../03-microarchitecture/02-micro-operations.md#dif_clear)
 - [FP_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#fp_if_to_dif)
 - [IB_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ib_to_dif)
-- [IF_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_dif)
+- [IR_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_dif)
 
 ---
 
@@ -745,7 +745,7 @@ external bus value
 - [DIF_CLEAR](../../03-microarchitecture/02-micro-operations.md#dif_clear)
 - [FP_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#fp_if_to_dif)
 - [IB_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ib_to_dif)
-- [IF_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_dif)
+- [IR_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_dif)
 
 ---
 
@@ -1032,7 +1032,6 @@ IF_IF_COMBINED[5:3]=IF
 
 **Used by μops:**
 - [IF_CLEAR](../../03-microarchitecture/02-micro-operations.md#if_clear)
-- [IR_IF_TO_IF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_if)
 
 ---
 

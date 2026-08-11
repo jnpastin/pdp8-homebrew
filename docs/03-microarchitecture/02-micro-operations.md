@@ -121,7 +121,7 @@ No intermediate state or flag storage is created.
 - [CIFP_CLEAR](#cifp_clear)
 - [CIFP_SET](#cifp_set)
 - [DF_CLEAR](#df_clear)
-- [DIF_CLEAR](dif_clear)
+- [DIF_CLEAR](#dif_clear)
 - [IE_CLEAR](#ie_clear)
 - [IE_SET](#ie_set)
 - [IF_CLEAR](#if_clear)

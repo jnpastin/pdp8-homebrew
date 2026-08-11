@@ -67,7 +67,7 @@ Writers:
 
 ---
 
-#### CIFP – Change Instruction Field Pending
+### CIFP – Change Instruction Field Pending
 
 Width: 1 bit
 
@@ -193,7 +193,7 @@ Writers:
 
 ---
 
-#### IB – Interrupt Buffer
+### IB – Interrupt Buffer
 
 Width: 6 bits
 
