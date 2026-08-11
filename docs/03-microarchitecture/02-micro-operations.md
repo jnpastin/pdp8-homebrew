@@ -22,8 +22,6 @@ Each μop specifies:
 - μops must not assume ordering within a TS
 - μops operate only on defined source domains
 
-- All data ingress from external buses must occur through MB
-
 Specifically:
 - MDB → MB via MEM_READ_TO_MB
 - DB  → AC via DB_READ_TO_AC

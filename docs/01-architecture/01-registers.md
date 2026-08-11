@@ -272,7 +272,7 @@ Invariants:
 - Stable during instruction execution  
 
 Constraints:  
-- Set only by ION instruction  
+- Set only by ION and CIF instructions  
 - Cleared during FETCH when no CIF field change is pending (CIFP = 0)
 - Must not be directly modified by control logic  
 

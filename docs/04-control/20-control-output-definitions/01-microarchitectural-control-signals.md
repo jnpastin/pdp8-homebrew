@@ -756,7 +756,7 @@ external bus value
 **Class:** Enable  
 **Bit Width:** 1  
 
-**Purpose:** Loads the EA register.
+**Purpose:** Loads the EA_ADDR register.
 
 **Encoding:**
 ```
@@ -844,6 +844,7 @@ external bus value
 
 **Used by μops:**
 - [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb)
+- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap)
 - [PC_TO_MB](../../03-microarchitecture/02-micro-operations.md#pc_to_mb)
 - [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr)
 - [MB_TO_IR](../../03-microarchitecture/02-micro-operations.md#mb_to_ir)
@@ -881,6 +882,7 @@ external bus value
 
 **Used by μops:**
 - [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb)
+- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap)
 - [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac)
 - [FP_SR_TO_MB](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_mb)
 - [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc)
@@ -1202,7 +1204,7 @@ IF_IF_COMBINED[5:3]=IF
 **Encoding:**
 ```
 00 → PC
-01 → EA
+01 → EA_ADDR
 02 → Control
 03 → reserved
 ```
@@ -1388,6 +1390,7 @@ memory bus value
 
 **Used by μops:**
 - [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac)
+- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap)
 
 ---
 

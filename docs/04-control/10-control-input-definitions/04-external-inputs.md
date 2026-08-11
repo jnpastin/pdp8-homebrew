@@ -236,6 +236,7 @@ Front-panel data inputs provide externally selected values used by console opera
 
 **Consumed By:**
 - [FP_IF_TO_IF](../../03-microarchitecture/02-micro-operations.md#fp_if_to_if)
+- [FP_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#fp_if_to_dif)
 
 **Constraints:**
 - must be stable when sampled

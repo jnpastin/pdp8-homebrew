@@ -86,7 +86,7 @@ SR   = [Switch Register](../01-architecture/01-registers.md#sr--switch-register)
 
 DMA_REQ = [DMA Request](../04-control/10-control-input-definitions/04-external-inputs.md#dma_req) (wired-OR)
 
-DMA_GRANT = [DMA Grant](../04-control/20-control-output/02-architectural-control-signals.md#dma_grant)
+DMA_GRANT = [DMA Grant](../04-control/20-control-output/02-architectural-control-signals.md#35-dma_grant)
 
 RD      = [Memory Read](../04-control/20-control-output-definitions/02-architectural-control-signals.md#31-memory-read-rd)
 
