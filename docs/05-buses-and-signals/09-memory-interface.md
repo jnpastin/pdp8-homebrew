@@ -128,7 +128,7 @@ The value presented to MDB is determined by the active operation.
 Possible sources include:
 
 - MB
-- SR
+- FP_SR
 
 Authoritative source-selection behavior is defined in:
 

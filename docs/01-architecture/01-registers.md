@@ -16,7 +16,7 @@ All stable values in the system must reside in registers.
 - L:  [Link](#l--link)
 - MQ: [Multiplier Quotient](#mq--multiplier-quotient)
 - PC: [Program Counter](#pc--program-counter)
-- SR: [Switch Register](#sr--switch-register)
+- FP_SR: [Switch Register](#fp_sr--switch-register)
 
 
 ---
@@ -166,6 +166,26 @@ Constraints:
 Writers:
 - Address calculation logic
 - Indirect resolution path
+
+---
+
+### FP_SR – Switch Register
+Width: 12 bits
+
+Role: External input register from front panel
+
+Visibility: External (read-only to CPU)
+
+Invariants:
+- Reflects external switch state at sampling time
+- No guarantee of stability outside explicit read
+
+Constraints:
+- Cannot be written by CPU
+- Sampled only during specific instructions
+
+Writers:
+- External hardware only
 
 ---
 
@@ -483,22 +503,3 @@ Constraints:
 Writers:
 - Sequencing control (RUN_NEXT)
 
----
-
-### SR – Switch Register
-Width: 12 bits
-
-Role: External input register from front panel
-
-Visibility: External (read-only to CPU)
-
-Invariants:
-- Reflects external switch state at sampling time
-- No guarantee of stability outside explicit read
-
-Constraints:
-- Cannot be written by CPU
-- Sampled only during specific instructions
-
-Writers:
-- External hardware only

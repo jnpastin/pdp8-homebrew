@@ -50,6 +50,8 @@ DIF  = [Deferred Instruction Field](../01-architecture/01-registers.md#dif--defe
 
 EA_ADDR   = [Effective Address (Address Portion)](../01-architecture/01-registers.md#ea_addr--effective-address-address-portion)
 
+FP_SR   = [Switch Register](../01-architecture/01-registers.md#sr--switch-register)
+
 HLT_REQ   = [Halt Request](../01-architecture/01-registers.md#hlt_req--halt-request)
 
 IB   = [Interrupt Buffer](../01-architecture/01-registers.md#ib--interrupt-buffer)
@@ -75,8 +77,6 @@ MQ   = [Multiplier Quotient](../01-architecture/01-registers.md#mq--multiplier-q
 PC   = [Program Counter](../01-architecture/01-registers.md#pc--program-counter)
 
 RUN  = [Run state](../01-architecture/01-registers.md#run--run-state)
-
-SR   = [Switch Register](../01-architecture/01-registers.md#sr--switch-register)
 
 
 ---

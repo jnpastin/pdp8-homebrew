@@ -339,7 +339,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Used by μops:**
 - [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb)
 - [MEM_WRITE_FROM_MB](../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)
-- [MEM_WRITE_FROM_SR](../../03-microarchitecture/02-micro-operations.md#mem_write_from_sr)
+- [MEM_WRITE_FROM_FP_SR](../../03-microarchitecture/02-micro-operations.md#mem_write_from_fp_sr)
 
 ---
 
@@ -368,7 +368,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 - [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
 - [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap)
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
-- [AC_OR_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_sr)
+- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr)
 - [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral)
 - [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar)
 - [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl)
@@ -393,7 +393,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 
 **Encoding:** 
 ```
-00 → ALU
+00 → IDB
 01 → DB
 02 → IF (field-merge)
 03 → DF (field-merge)
@@ -405,7 +405,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 
 **Constraints:**
 - Must be valid every cycle
-- ALU is the source for all arithmetic/logical AC loads
+- ALU is the source for all arithmetic/logical AC loads via the IDB
 - DB is the source for I/O data ingestion (DB_READ_TO_AC); the DB value is OR'd into AC
 - Field-merge encodings OR the selected field into its DEC-defined AC bit positions and preserve all other AC bits:
   - IF, DF → AC[5:3]
@@ -420,7 +420,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 - [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
 - [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap)
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
-- [AC_OR_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_sr)
+- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr)
 - [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral)
 - [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar)
 - [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl)
@@ -459,7 +459,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb)
 - [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp)
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
-- [AC_OR_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_sr)
+- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr)
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb)
 - [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar)
 - [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral)
@@ -487,7 +487,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 01 → AC
 02 → MB
 03 → MQ
-04 → SR
+04 → FP_SR
 05 → PC
 06 → L
 07 → reserved
@@ -499,7 +499,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Used by μops:**
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb)
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
-- [AC_OR_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_sr)
+- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr)
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb)
 
 ---
@@ -540,7 +540,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb)
 - [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp)
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
-- [AC_OR_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_sr)
+- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr)
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb)
 - [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar)
 - [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral)
@@ -869,7 +869,7 @@ external bus value
 01 → PC
 02 → MB
 03 → MQ
-04 → SR
+04 → FP_SR
 05 → EA_ADDR
 06 → IR
 07 → ALU
@@ -1333,7 +1333,7 @@ memory bus value
 ```text
 0 → Memory
 1 → MB
-2 → SR
+2 → FP_SR
 3 → DMA
 ```
 
@@ -1343,7 +1343,7 @@ memory bus value
 **Used by μops:**
 - [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb)
 - [MEM_WRITE_FROM_MB](../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)
-- [MEM_WRITE_FROM_SR](../../03-microarchitecture/02-micro-operations.md#mem_write_from_sr)
+- [MEM_WRITE_FROM_FP_SR](../../03-microarchitecture/02-micro-operations.md#mem_write_from_fp_sr)
 
 ---
 
@@ -2321,7 +2321,7 @@ ALU_B_SRC ≠ NONE
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb)
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb)
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
-- [AC_OR_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_sr)
+- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr)
 
 ---
 

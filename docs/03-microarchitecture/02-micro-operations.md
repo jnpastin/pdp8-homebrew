@@ -63,7 +63,7 @@ No intermediate state or flag storage is created.
 ### Arithmetic / Logical
 - [AC_AND_MB](#ac_and_mb)
 - [AC_OR_MQ](#ac_or_mq)
-- [AC_OR_SR](#ac_or_sr)
+- [AC_OR_FP_SR](#ac_or_fp_sr)
 - [ADD_AC_MB](#add_ac_mb)
 
 #### Bit Operations
@@ -81,7 +81,7 @@ No intermediate state or flag storage is created.
 ### Memory Operations
 - [MEM_READ_TO_MB](#mem_read_to_mb)
 - [MEM_WRITE_FROM_MB](#mem_write_from_mb)
-- [MEM_WRITE_FROM_SR](#mem_write_from_sr)
+- [MEM_WRITE_FROM_FP_SR](#mem_write_from_fp_sr)
 
 ### I/O / External
 - [DB_READ_TO_AC](#db_read_to_ac)
@@ -271,7 +271,7 @@ AC, MQ
 
 ---
 
-### AC_OR_SR
+### AC_OR_FP_SR
   
 **Category:** 
 Arithmetic / Logical  
@@ -283,10 +283,10 @@ Performs a bitwise OR between the accumulator and the switch register, storing t
 AC  
 
 **Expression:** 
-AC ← AC OR SR  
+AC ← AC OR FP_SR  
 
 **Sources:** 
-AC, SR
+AC, FP_SR
 
 ---
 
@@ -680,10 +680,10 @@ Loads the Memory Buffer register from the Front Panel Switch Register.
 MB
 
 **Expression:**  
-MB ← SR
+MB ← FP_SR
 
 **Sources:**  
-SR
+FP_SR
 
 ---
 
@@ -699,10 +699,10 @@ Loads the Program Counter register from the Front Panel Switch Register.
 PC
 
 **Expression:**  
-PC ← SR
+PC ← FP_SR
 
 **Sources:**  
-SR
+FP_SR
 
 ---
 
@@ -1130,7 +1130,7 @@ MA or PC, IF or DF, MB
 
 ---
 
-### MEM_WRITE_FROM_SR
+### MEM_WRITE_FROM_FP_SR
   
 **Category:**  
 Memory Operations
@@ -1142,7 +1142,7 @@ Writes the value currently present in the Front Panel Switch Register to the mem
 M[MEM_ADDR]
 
 **Expression:**  
-M[MEM_ADDR] ← SR
+M[MEM_ADDR] ← FP_SR
 
 Where:
 
@@ -1153,7 +1153,7 @@ MEM_ADDR = {MFB, AB}
 ```
 
 **Sources:** 
-MA or PC, IF or DF, SR
+MA or PC, IF or DF, FP_SR
 
 **Constraints:**
 - Intended for front-panel deposit operations

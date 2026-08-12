@@ -89,7 +89,7 @@ These are selected by IR[2:0] = 100, with the specific instruction determined by
 |---|---|---|---|
 | RDF | 6214 | Read Data Field | AC[5:3] <- DF (OR'd into AC; other AC bits unaffected) |
 | RIF | 6224 | Read Instruction Field | AC[5:3] <- IF (OR'd into AC; other AC bits unaffected) |
-| RIB | 6234 | Read Interrupt Buffer | AC[5:3] <- saved IF, AC[2:0] <- saved DF |
+| RIB | 6234 | Read Interrupt Buffer | AC[5:3] <- saved IF, AC[2:0] <- saved DF (OR'd into AC; other AC bits unaffected) |
 | RMF | 6244 | Restore Memory Field | IF <- saved IF (deferred), DF <- saved DF |
 
 Semantics:

@@ -57,6 +57,11 @@ Physical distribution of Class C signals is implementation-dependent.
 
 ## Signal Categories
 
+Authoritative definitions are maintained in:
+
+- [Timing Terminology](../09-timing/01-terminology.md)
+- [Timing Architecture](../09-timing/02-timing-architecture.md)
+
 ### Clock Signals
 
 Clock signals provide the timing source used by the timing system.
@@ -65,10 +70,6 @@ Signals:
 
 - MCLK
 - TCLK
-
-Authoritative definitions are maintained in:
-
-- [Timing Terminology](../09-timing/01-terminology.md)
 
 ### Timing Sequence Signals
 
@@ -79,11 +80,6 @@ Signals:
 - TSTEP
 - TSEQ
 
-Authoritative definitions are maintained in:
-
-- [Timing Terminology](../09-timing/01-terminology.md)
-- [Timing Architecture](../09-timing/02-timing-architecture.md)
-
 ### Timing Execution Signals
 
 Timing execution signals define execution windows and execution events.
@@ -92,11 +88,6 @@ Signals:
 
 - TS
 - TP
-
-Authoritative definitions are maintained in:
-
-- [Timing Terminology](../09-timing/01-terminology.md)
-- [Timing Architecture](../09-timing/02-timing-architecture.md)
 
 ---
 

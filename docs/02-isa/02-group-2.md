@@ -23,7 +23,7 @@ Group 2 is divided into two sub-groups, the AND sub-group and the OR sub-group. 
 | SPA | 1 | Skip on positive AC (`0000` is positive) |
 | SNA | 1 | Skip on non-zero AC |
 | SZL | 1 | Skip on zero L |
-| OSR | 3 | Logical OR SR with AC |
+| OSR | 3 | Logical OR FP_SR with AC |
 | HLT | 3 | Halt |
 
 ### Combining AND Sub-Group operations
