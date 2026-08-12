@@ -13,10 +13,6 @@ The addressing concepts in this document do not apply to:
 
 ---
 
-## Address Resolution Flowchart
-
-![Address Resolution Flowchart](../../diagrams/isa/addressing-model/export/addressing-model.png)
-
 ## Address Representation
 
 ### Logical Address
