@@ -154,3 +154,11 @@ Defined in: [External Inputs](./04-external-inputs.md)
 ### External Requests
 - [INT_REQ](./04-external-inputs.md#int_req)
 - [DMA_REQ](./04-external-inputs.md#dma_req)
+
+### External IOT Response Inputs
+
+- [I/O_READ](./04-external-inputs.md#io_read_req)
+- [I/O_WRITE_REQ](./04-external-inputs.md#io_write_req)
+- [I/O_SKIP_REQ]./04-external-inputs.md#io_skip_req)
+- [I/O_CLEAR_AC_REQ](./04-external-inputs.md#io_clear_ac_req)
+- [I/O_WAIT](./04-external-inputs.md#io_wait)

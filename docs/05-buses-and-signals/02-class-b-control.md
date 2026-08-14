@@ -147,6 +147,64 @@ Authoritative definitions are maintained in:
 
 ---
 
+### External IOT Interface Signals
+
+#### CPU to Controllers
+
+- `IOT_ACTIVE`
+- `IOA[5:0]`
+- `IOP[2:0]`
+- `DB_READ`
+- `DB_WRITE`
+- TS signals
+- TP signals
+
+#### Selected Controller to CPU
+
+- `IO_READ_REQ`
+- `IO_WRITE_REQ`
+- `IO_SKIP_REQ`
+- `IO_CLEAR_AC_REQ`
+- `IO_WAIT`
+
+### DMA Arbitration Signals
+
+#### DMA Controllers to Arbiter
+
+- `DMA_REQ[15:0]`
+
+Each DMA-capable controller asserts exactly one request line corresponding to its configured DMA priority.
+
+#### DMA Arbiter to CPU
+
+- aggregate `DMA_REQ`
+
+#### CPU to DMA Arbiter
+
+- CPU-level `DMA_GRANT`
+
+#### DMA Arbiter to Controllers
+
+- controller-facing `DMA_GRANT`
+- `DMA_GRANT_ID[3:0]`
+
+### Signal Responsibilities
+
+- IOA, IOP, `IOT_ACTIVE`, `DB_READ`, and `DB_WRITE` are CPU outputs during external-IOT execution.
+- `IO_READ_REQ`, `IO_WRITE_REQ`, `IO_SKIP_REQ`, `IO_CLEAR_AC_REQ`, and `IO_WAIT` are selected-controller outputs and CPU inputs.
+- `DMA_REQ[15:0]` are controller-to-arbiter priority-channel requests.
+- Aggregate `DMA_REQ` is the arbiter-to-CPU request.
+- CPU-level `DMA_GRANT` authorizes external DMA service during `MS = DMA`.
+- `DMA_GRANT_ID[3:0]` identifies the granted DMA priority channel.
+- During DMA, the granted controller drives RD and WR.
+- During CPU memory operations, CPU control drives RD and WR.
+
+Detailed I/O behavior is defined in [I/O Architecture](../07-io/01-io-architecture.md)
+
+Detailed DMA arbitration is defined in [DMA Arbitration](../07-io/06-dma-arbitration.md)
+
+---
+
 ## Relationship to Other Signal Classes
 
 Class A signals provide address and data transport.

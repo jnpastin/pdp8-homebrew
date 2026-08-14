@@ -202,13 +202,17 @@ When asserted:
 **Polarity** Active-high  
 **Domain** Architectural  
 
-**Description**  
-Indicates that the CPU has entered DMA service and has released normal CPU ownership of memory-cycle control.
+**Description:** Indicates that the CPU is in `MS = DMA` and has released normal CPU ownership of the memory interface.
 
 When asserted:
-- the external DMA-capable device or device-side DMA arbiter may perform memory access
-- normal CPU instruction execution is suspended
-- CPU-generated memory-cycle requests must remain inactive
+
+- the external DMA arbiter is authorized to grant DMA ownership;
+- normal CPU instruction execution is suspended;
+- CPU-generated memory-cycle requests remain inactive.
+
+`DMA_GRANT` does not identify the selected DMA controller.
+
+Controller selection uses the grant identity defined in [DMA Arbitration](../../07-io/06-dma-arbitration.md)
 
 **Preconditions**
 - `MS = DMA`
@@ -262,16 +266,82 @@ Properties:
 Defined in:
 - [IOT Execution Model](../../03-microarchitecture/06-iot-execution.md)
 
-**Timing**
+**Timing:**
 
-- valid during all TS of EXECUTE for IOT instructions
+- Valid throughout external-IOT EXECUTE.
+- Stable from TS1 through TP4.
 
-**Constraints**
+**Constraints:**
 
-- must not be driven during non-IOT instructions
-- must not be modified by μops
-- does not imply data transfer or direction
-- does not define device behavior
+- Meaningful to external controllers only while `IOT_ACTIVE` is asserted.
+- Must not be modified by a micro-operation.
+- Does not imply data transfer or direction.
+- Does not define device behavior.
+
+---
+
+### 3.7 I/O Operation Field (`IOP[2:0]`)
+
+**Name:**  
+IOP[2:0]  
+
+**Polarity:**  
+Active-high  
+
+**Domain:**  
+Architectural  
+
+**Description:**  
+Presents `IR[2:0]` unchanged to external I/O controllers during an external IOT.
+
+**Timing:**
+
+- Valid throughout external-IOT EXECUTE.
+- Stable from TS1 through TP4.
+
+**Constraints:**
+
+- Does not select a controller.
+- Does not directly determine DB direction.
+- Does not define controller behavior.
+- Must not be interpreted unless `IOT_ACTIVE` is asserted.
+- Must not be modified by a micro-operation.
+
+**Consumed By:**
+
+- external I/O controllers
+
+### 3.8 External IOT Active (`IOT_ACTIVE`)
+
+**Name:**  
+IOT_ACTIVE  
+
+**Polarity:**  
+Active-high  
+
+**Domain:**  
+Architectural  
+
+**Description:**  
+Identifies execution of an external IOT and qualifies IOA, IOP, controller responses, and I/O wait behavior.
+
+**Timing:**
+
+- Asserted throughout EXECUTE for external-device IOT instructions.
+- Deasserted for CPU-internal IOT instructions.
+- Deasserted for all non-IOT instructions.
+
+**Constraints:**
+
+- Does not itself cause data movement.
+- Does not itself cause controller state change.
+- Must be paired with IOA, IOP, TS, and TP according to the controller contract.
+
+**Consumed By:**
+
+- external I/O controllers
+- external IOT response qualification
+- I/O wait qualification
 
 ---
 

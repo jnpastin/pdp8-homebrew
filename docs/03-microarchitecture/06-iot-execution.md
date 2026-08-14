@@ -25,20 +25,101 @@ IR[11:9] = 110
 
 ---
 
-### Execution Model
-  
-IOT execution is defined as interaction between the CPU and an external device via:
+### External IOT Execution Model
 
-- IOA (device selection)
-- DB (data transfer)
+External IOT execution uses:
 
-The CPU:
+- `IOT_ACTIVE` to identify an external-IOT EXECUTE cycle
+- `IOA[5:0]` for controller selection
+- `IOP[2:0]` for controller-defined operation selection
+- `DB[11:0]` for data transport
+- phase-specific controller response inputs
 
-- Selects a device via IOA
-- Initiates a device-defined operation
-- May participate in data transfer over DB
+The selected controller may request:
 
-All instruction behavior beyond this interface is defined by the selected device.
+- `IO_READ_REQ`
+- `IO_WRITE_REQ`
+- `IO_SKIP_REQ`
+- `IO_CLEAR_AC_REQ`
+
+The selected controller may also assert `IO_WAIT` during eligible setup steps.
+
+The CPU remains responsible for all CPU-local state changes. A controller response does not directly modify CPU state.
+
+### Data Ingestion Rule
+
+Device-to-CPU data transfer uses `DB_READ_TO_AC`:
+
+```text
+AC <- AC OR DB_INPUT
+```
+
+No direct DB transfer to another CPU register is defined.
+
+### IOA and IOP Handling
+
+IOA and IOP are derived directly from IR.
+
+Properties:
+
+- `IOA[5:0]` reflects `IR[8:3]`.
+- `IOP[2:0]` reflects `IR[2:0]`.
+- IOA and IOP are driven by control, not by a micro-operation.
+- IOA and IOP do not participate in the CPU datapath.
+- IOA and IOP remain stable throughout external-IOT EXECUTE.
+- IOA and IOP are meaningful to external controllers only while `IOT_ACTIVE` is asserted.
+
+Constraints:
+
+- No micro-operation may target IOA or IOP.
+- IOA selects the external controller.
+- IOP identifies the selected controller's operation.
+- IOP does not independently determine transfer direction or CPU behavior.
+
+---
+
+### External IOT Phase Model
+
+#### TS1
+
+During TS1:
+
+- `IOT_ACTIVE`, IOA, and IOP are valid.
+- Controllers evaluate address match.
+- The selected controller decodes IOP.
+- No external-IOT action commits at TP1.
+
+#### TS2 and TS3
+
+During TS2 and TS3:
+
+- The selected controller may assert phase-specific read, write, or clear responses.
+- A response asserted during a TS commits exactly once at the following TP.
+- The selected controller may assert `IO_WAIT` during an eligible non-TP setup step.
+
+#### TS4
+
+During TS4:
+
+- The selected controller may assert phase-specific read, write, clear, or skip responses.
+- `IO_SKIP_REQ` is valid only during TS4.
+- `IO_SKIP_REQ` is based on a skip condition captured at TP3.
+- TP4 device actions and CPU sequencing decisions commit simultaneously from pre-TP4 inputs.
+- A result committed at TP4 cannot affect another action or decision committed at TP4.
+
+### Response Constraints
+
+- `IO_READ_REQ` and `IO_WRITE_REQ` are mutually exclusive.
+- Read and AC clear must not commit at the same TP.
+- Write and AC clear may commit at the same TP.
+- For a same-TP write and clear, the external controller captures the pre-TP AC value.
+- A response applies only to the TS in which it is asserted.
+- A controller must reassert a response during a later TS if another action is required at a later TP.
+- Only the address-matched controller may respond.
+
+Detailed transaction behavior is defined in [External IOT Interface](../07-io/02-external-iot-interface.md)
+
+Timing behavior is defined in [I/O Timing](../07-io/03-io-timing.md)
 
 ---
 

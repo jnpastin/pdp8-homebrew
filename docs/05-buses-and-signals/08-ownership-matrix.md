@@ -133,15 +133,41 @@ Ownership selection values, constraints, and operational behavior are defined in
 
 ---
 
-## Relationship to DMA
+## DMA Ownership
 
-This document defines ownership during normal operation.
+During `MS = DMA`, CPU control releases normal ownership of:
 
-DMA may modify ownership behavior for one or more transport mechanisms.
+- MFB
+- AB
+- MDB
+- RD
+- WR
 
-DMA-specific ownership behavior is defined in:
+The external DMA arbiter selects exactly one controller through controller-facing `DMA_GRANT` and `DMA_GRANT_ID[3:0]`.
 
-- [DMA Interface](./11-dma-interface.md)
+The granted controller owns:
+
+- MFB
+- AB
+- RD
+- WR
+- MDB during DMA writes
+
+Memory owns MDB during DMA reads.
+
+Ownership rules:
+
+- No controller may drive a DMA-owned interface without a matching active grant.
+- CPU and DMA ownership must not overlap.
+- Grant identity remains stable throughout the active burst.
+- An active grant is non-preemptive.
+- DMA ownership ends at TP4 before CPU ownership resumes in the following FETCH TS1.
+- Memory is the sole MDB producer during a DMA read.
+- The granted controller is the sole MDB producer during a DMA write.
+
+Detailed DMA interface behavior is defined in [DMA Interface](../07-io/05-dma-interface.md)
+
+Arbitration and grant behavior are defined in [DMA Arbitration](../07-io/06-dma-arbitration.md)
 
 ---
 

@@ -45,9 +45,15 @@ TCLK rising edge (CLK↑)
 A single position in the timing sequence.
 
 Properties:
-- One-hot encoded
-- Exactly one active at a time
-- Advances on each TCLK rising edge
+
+- One-hot encoded.
+- Exactly one TSTEP is active at a time.
+- TSTEP normally advances on each TCLK rising edge.
+- During an external IOT, `IO_WAIT` may hold an eligible non-TP setup TSTEP.
+- MCLK and TCLK continue while TSTEP is held.
+- `IO_WAIT` is ignored when the current TSTEP is a TP position.
+- TSTEP transition logic evaluates the pre-edge TSTEP value.
+- At most one TSTEP increment occurs on each TCLK rising edge.
 
 ---
 
@@ -75,10 +81,13 @@ TPn = (TSTEP == n)
 
 ## 3.2 Properties
 
-- Active-high (following DEC convention)
-- Active for exactly one TCLK cycle
-- Mutually exclusive
-- Represents a discrete execution event
+- Active-high.
+- Active for exactly one TCLK cycle.
+- Mutually exclusive.
+- Represents a discrete execution event.
+- Cannot be extended by `IO_WAIT`.
+- Cannot be suppressed by `IO_WAIT`.
+- Cannot be repeated by `IO_WAIT`.
 
 ---
 

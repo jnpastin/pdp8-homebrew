@@ -36,131 +36,86 @@ DMA-specific behavior is defined in:
 
 ## I/O Interface Participants
 
-I/O communication involves:
+External IOT communication involves:
 
 - CPU
-- I/O Device
-- IOA
+- selected I/O controller
+- `IOT_ACTIVE`
+- `IOA[5:0]`
+- `IOP[2:0]`
 - DB
-- DB_READ
-- DB_WRITE
+- `DB_READ`
+- `DB_WRITE`
+- `IO_READ_REQ`
+- `IO_WRITE_REQ`
+- `IO_SKIP_REQ`
+- `IO_CLEAR_AC_REQ`
+- `IO_WAIT`
+- shared TS signals
+- shared TP signals
 
-## I/O Address Interface
+## I/O Selection Interface
 
-The I/O Address Interface identifies the target I/O device associated with an I/O operation.
+`IOA[5:0]` identifies the target external controller.
 
-This interface is represented by:
+`IOP[2:0]` identifies the controller-defined operation.
 
-- IOA
+IOA and IOP are distinct interfaces and remain stable throughout external-IOT EXECUTE.
 
-IOA definitions are maintained in:
+IOA and IOP are meaningful to controllers only while `IOT_ACTIVE` is asserted.
 
-- [Class B - Control](./02-class-b-control.md)
+### Controller Response Interface
 
-## I/O Data Domain
+The selected controller may assert:
 
-The I/O Data Domain provides the data associated with an I/O operation.
+- `IO_READ_REQ`
+- `IO_WRITE_REQ`
+- `IO_SKIP_REQ`
+- `IO_CLEAR_AC_REQ`
+- `IO_WAIT`
 
-This domain is represented by:
+Controller responses request CPU behavior. They do not directly modify CPU state.
 
-- DB
-
-Defined in:
-
-- [Class A - Buses](./01-class-a-buses.md)
-
-## Control Interface
-
-I/O operations are identified by:
-
-- DB_READ
-- DB_WRITE
-
-Control behavior is defined in Section 4.
-
----
+Responses are phase-specific and must satisfy the timing and combination constraints defined in [External I/O Interface](../07-io/02-external-iot-interface.md)
 
 ## I/O Read Model
 
-An I/O read transfers data from an I/O device to the CPU.
-
-### I/O Address Participation
+An I/O read transfers data from the selected controller to the CPU.
 
 During an I/O read:
 
-- The CPU provides the device address on IOA.
-
-### I/O Data Domain Participation
-
-During an I/O read:
-
-- The I/O device is the DB producer.
-- The CPU is the DB consumer.
-
-DB transports the value provided by the selected I/O device.
-
-### Control Participation
-
-DB_READ identifies the operation as an I/O read.
-
-Control behavior and timing are defined elsewhere.
-
----
+- the CPU provides IOA and IOP;
+- the selected controller asserts `IO_READ_REQ`;
+- CPU control asserts `DB_READ`;
+- the selected controller is the DB producer;
+- the CPU is the DB consumer;
+- `DB_READ_TO_AC` commits `AC <- AC OR DB` at the applicable TP.
 
 ## I/O Write Model
 
-An I/O write transfers data from the CPU to an I/O device.
-
-### I/O Address Participation
+An I/O write transfers data from the CPU to the selected controller.
 
 During an I/O write:
 
-- The CPU provides the device address on IOA.
-
-### I/O Data Domain Participation
-
-During an I/O write:
-
-- The CPU is the DB producer.
-- The I/O device is the DB consumer.
-
-DB transports the value written to the selected I/O device.
-
-The value presented to DB is determined by the active operation.
-
-Authoritative source-selection behavior is defined in Section 4.
-
-### Control Participation
-
-DB_WRITE identifies the operation as an I/O write.
-
-Control behavior and timing are defined elsewhere.
-
----
-
-## Domain Participation
-
-I/O operations use:
-
-- I/O Address Interface (IOA)
-- I/O Data Domain (DB)
-
-Domain definitions and isolation requirements are defined in:
-
-- [Domain Boundaries](./07-domain-boundaries.md)
-
----
+- the CPU provides IOA and IOP;
+- the selected controller asserts `IO_WRITE_REQ`;
+- CPU control asserts `DB_WRITE`;
+- the CPU is the DB producer;
+- the selected controller is the DB consumer;
+- the selected controller captures DB at the applicable TP.
 
 ## Global Invariants
 
-- IOA participates in all I/O operations.
-- DB participates in all I/O operations.
-- The CPU provides the I/O address for normal I/O operations.
-- I/O devices are the DB producer during I/O reads.
-- The CPU is the DB producer during I/O writes.
-- DB_READ identifies I/O read operations.
-- DB_WRITE identifies I/O write operations.
-- Domain definitions, ownership behavior, timing behavior, and control semantics are defined elsewhere.
+- IOA and IOP are distinct controller-facing fields.
+- IOA and IOP are meaningful only while `IOT_ACTIVE` is asserted.
+- Controller responses are phase-specific.
+- Only the address-matched controller may respond.
+- `DB_READ` and `DB_WRITE` are CPU control outputs describing the active DB operation.
+- `IO_READ_REQ` and `IO_WRITE_REQ` are mutually exclusive.
+- Only one source may drive DB.
+- Controller response signals do not directly modify CPU state.
+- All CPU and controller state changes occur only at TP.
+- I/O wait behavior is defined in [I/O Timing](../07-io/03-io-timing.md)
 
 ## Summary
 

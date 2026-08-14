@@ -342,7 +342,42 @@ The following are invalid and must not occur:
 
 ---
 
-### 11.4 Domain Separation Constraint
+### 11.4 External IOT Response Binding
+
+During external-IOT EXECUTE:
+
+- `IO_READ_REQ` selects `DB_READ` and `DB_READ_TO_AC` for the current phase.
+- `IO_WRITE_REQ` selects `DB_WRITE` and `DB_WRITE_FROM_AC` for the current phase.
+- `IO_SKIP_REQ` selects `PC_INC` at TP4.
+- `IO_CLEAR_AC_REQ` selects AC clear at the following TP.
+
+Constraints:
+
+- Controller responses are phase-specific.
+- A response asserted during a TS causes exactly one action at the following TP.
+- Read and write are mutually exclusive.
+- Read and AC clear must not target AC at the same TP.
+- Write and AC clear may commit at the same TP using the pre-TP AC value.
+- No TP action may depend on a result committed at that TP.
+- Only the selected external controller may contribute an IOT response.
+- Control does not centrally validate controller compliance with address qualification.
+
+#### I/O Wait Binding
+
+`IO_WAIT` may inhibit TSTEP progression only at eligible non-TP setup positions during external-IOT EXECUTE.
+
+Constraints:
+
+- `IO_WAIT` must not alter RUN.
+- `IO_WAIT` must not alter MS.
+- `IO_WAIT` must not directly modify architectural state.
+- `IO_WAIT` must not suppress, extend, or repeat a TP.
+- All control outputs and external values required by the pending phase must remain stable while TSTEP is held.
+- TSTEP progression must resume normally when `IO_WAIT` is deasserted.
+
+---
+
+### 11.5 Domain Separation Constraint
 
 Binding between architectural signals and μops:
 
@@ -362,7 +397,7 @@ The binding rule is a **consistency requirement**, not a mechanism.
 
 ---
 
-### 11.5 Determinism Requirement
+### 11.6 Determinism Requirement
 
 For any valid execution state:
 
@@ -375,7 +410,7 @@ This ensures:
 
 ---
 
-### 11.6 Extension Rule
+### 11.7 Extension Rule
 
 Any future externally observable operation (e.g., DMA) must define:
 

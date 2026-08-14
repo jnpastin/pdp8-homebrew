@@ -103,6 +103,25 @@ Semantics:
 
 ---
 
+### External Device Address and Operation Transport
+
+External-device IOT instructions present two distinct controller-facing fields:
+
+- `IOA[5:0]` carries the six-bit device address from `IR[8:3]`.
+- `IOP[2:0]` carries the three-bit device operation field from `IR[2:0]`.
+
+IOP semantics are defined by the selected controller.
+
+A controller compatible with a DEC device must reproduce the device address, operation encoding, combined-operation behavior, and programmer-visible effects required by the emulated controller.
+
+A custom controller may define its own IOP semantics.
+
+Device address configuration does not alter instruction encoding. Software issuing direct IOT instructions must use the controller's configured address.
+
+Detailed external-IOT behavior is defined in the [IOT interface](../07-io/02-external-iot-interface.md)
+
+---
+
 ### Deferred Instructions (Planned)
 
 The following processor IOTs are recognized as part of the PDP-8/E device-0 set but are not yet defined for this system. They are listed here for completeness of the device-0 operation space (IR[2:0] = 100 through 111). Each is deferred pending a design dependency noted below.

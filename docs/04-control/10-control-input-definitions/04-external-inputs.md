@@ -306,6 +306,145 @@ Front-panel data inputs provide externally selected values used by console opera
 - must be synchronized before use by control
 - must not directly modify processor state
 
+---
+
+### External IOT Response Inputs
+
+External-IOT response inputs originate in the selected external controller.
+
+They participate in EXT and must be stable during the control evaluation window preceding their commit TP.
+
+#### IO_READ_REQ
+
+**Name:** I/O Read Request  
+**Type:** External IOT Response Input  
+**Bit Width:** 1  
+**Purpose:** Requests a device-to-CPU DB transfer during the current external-IOT phase.
+
+**Value Encoding:**
+
+- `0` -> no read requested
+- `1` -> device-to-CPU read requested
+
+**Consumed By:**
+
+- `DB_READ`
+- `DB_READ_TO_AC`
+
+**Constraints:**
+
+- Valid only when `IOT_ACTIVE = 1`.
+- Valid only from the address-matched controller.
+- Phase-specific.
+- Mutually exclusive with `IO_WRITE_REQ`.
+- Must not coincide with `IO_CLEAR_AC_REQ` in the same phase.
+- Must not directly modify AC.
+
+#### IO_WRITE_REQ
+
+**Name:** I/O Write Request  
+**Type:** External IOT Response Input  
+**Bit Width:** 1  
+**Purpose:** Requests a CPU-to-device DB transfer during the current external-IOT phase.
+
+**Value Encoding:**
+
+- `0` -> no write requested
+- `1` -> CPU-to-device write requested
+
+**Consumed By:**
+
+- `DB_WRITE`
+- `DB_WRITE_FROM_AC`
+
+**Constraints:**
+
+- Valid only when `IOT_ACTIVE = 1`.
+- Valid only from the address-matched controller.
+- Phase-specific.
+- Mutually exclusive with `IO_READ_REQ`.
+- Must not directly cause the controller to capture DB outside the associated TP.
+
+#### IO_SKIP_REQ
+
+**Name:** I/O Skip Request  
+**Type:** External IOT Response Input  
+**Bit Width:** 1  
+**Purpose:** Requests PC increment at TP4.
+
+**Value Encoding:**
+
+- `0` -> no skip requested
+- `1` -> skip requested
+
+**Consumed By:**
+
+- `PC_INC`
+
+**Constraints:**
+
+- Valid only during TS4 of an external IOT.
+- Valid only from the address-matched controller.
+- Must be based on controller state captured at TP3.
+- Causes only CPU `PC_INC`.
+- Must not depend on a result committed at TP4.
+- Must not directly modify PC.
+
+#### IO_CLEAR_AC_REQ
+
+**Name:** I/O Clear AC Request  
+**Type:** External IOT Response Input  
+**Bit Width:** 1  
+**Purpose:** Requests AC clear at the following TP.
+
+**Value Encoding:**
+
+- `0` -> no AC clear requested
+- `1` -> AC clear requested
+
+**Consumed By:**
+
+- AC clear control
+
+**Constraints:**
+
+- Valid only when `IOT_ACTIVE = 1`.
+- Valid only from the address-matched controller.
+- Phase-specific.
+- Must not coincide with `IO_READ_REQ` in the same phase.
+- May coincide with `IO_WRITE_REQ`.
+- Must not directly modify AC.
+
+#### IO_WAIT
+
+**Name:** I/O Wait Request  
+**Type:** External Timing Request Input  
+**Bit Width:** 1  
+**Purpose:** Holds the current eligible non-TP setup TSTEP until the selected controller is ready.
+
+**Value Encoding:**
+
+- `0` -> normal TSTEP progression
+- `1` -> hold the current eligible non-TP setup TSTEP
+
+**Consumed By:**
+
+- TSTEP progression logic
+
+**Constraints:**
+
+- Valid only when `IOT_ACTIVE = 1`.
+- Valid only from the address-matched controller.
+- Ignored when the current TSTEP is a TP position.
+- Must not extend, suppress, or repeat a TP.
+- Must be synchronized before influencing TSTEP progression.
+- Must not modify RUN.
+- Must not directly modify MS or architectural state.
+
+Detailed behavior is defined in [I/O Timing](../../07-io/03-io-timing.md)
+
+---
+
 ### Summary
 
 External inputs define the complete set of non-register inputs available to control.
