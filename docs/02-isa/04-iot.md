@@ -27,6 +27,7 @@ All device-0 and memory-extension instructions listed here are PDP-8/E processor
 
 These instructions control the interrupt system. They are decoded when IR[11:9] = 110 and IR[8:3] = 000000 (device address 0). The specific operation is selected by the value of IR[2:0].
 
+```
 ┌────┬────┬────┬────┬────┬────┬────┬────┬────┬─────┬─────┬─────┐
 │ 11 │ 10 │ 9  │ 8  │ 7  │ 6  │ 5  │ 4  │ 3  │  2  │  1  │  0  │
 ├────┼────┼────┼────┼────┼────┼────┼────┼────┼─────┼─────┼─────┤
@@ -34,6 +35,7 @@ These instructions control the interrupt system. They are decoded when IR[11:9] 
 ├────┴────┴────┼────┴────┴────┴────┴────┴────┼─────┴─────┴─────┤
 │     IOT      │        Device 0 (CPU)       │    Operation    │
 └──────────────┴─────────────────────────────┴─────────────────┘
+```
 
 Unlike the field instructions and Group 1 OPR, these are distinct operations selected by the IR[2:0] value; they are not independent flags and may not be combined.
 
@@ -60,6 +62,7 @@ These instructions manage the instruction field (IF) and data field (DF) for ext
 
 The target field n is encoded in IR[5:3], making the device address 2n. The two low operation bits are independent flags: CDF (bit 0) and CIF (bit 1).
 
+```
 ┌────┬────┬────┬────┬────┬────┬─────┬─────┬─────┬────┬─────┬─────┐
 │ 11 │ 10 │ 9  │ 8  │ 7  │ 6  │  5  │  4  │  3  │ 2  │  1  │  0  │
 ├────┼────┼────┼────┼────┼────┼─────┼─────┼─────┼────┼─────┼─────┤
@@ -67,6 +70,7 @@ The target field n is encoded in IR[5:3], making the device address 2n. The two 
 ├────┴────┴────┼────┴────┴────┼─────┴─────┴─────┼────┼─────┼─────┤
 │     IOT      │     MEM      │      Field      │    │     │     │
 └──────────────┴──────────────┴─────────────────┴────┴─────┴─────┘
+```
 
 | Flag | Bit | Name | Operation |
 |---|---|---|---|
