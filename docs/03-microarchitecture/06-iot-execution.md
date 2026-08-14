@@ -96,6 +96,7 @@ TS4:
 
 Note:  
 The transfer direction (device drives DB into AC, or CPU drives AC onto DB) is not determined by IR. It is signaled at runtime by the selected device via device-response inputs, resolved when the I/O subsystem is defined. The generic IOT cycle provides the ordered interaction windows and the bus path; it does not itself select direction.
+
 ---
 
 ### Instruction Definitions (CPU Control - Device 0)
