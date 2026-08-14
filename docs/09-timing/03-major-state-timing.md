@@ -85,6 +85,42 @@ All state changes occur exclusively at TP.
 
 ---
 
+### EXECUTE: External IOT
+
+#### TS1
+
+- `IOT_ACTIVE` is asserted.
+- IOA is valid.
+- IOP is valid.
+- Controllers evaluate address match.
+- The selected controller decodes IOP.
+- `IO_WAIT` may hold an eligible non-TP setup TSTEP.
+
+#### TP1
+
+- No external-IOT action commits.
+
+#### TS2 and TS3
+
+- The selected controller may assert phase-specific read, write, or clear responses.
+- `IO_WAIT` may hold eligible non-TP setup TSTEPs.
+- A response asserted during the TS commits at the following TP.
+
+#### TS4
+
+- The selected controller may assert phase-specific read, write, clear, or skip responses.
+- `IO_SKIP_REQ` uses a skip condition captured at TP3.
+- TP4 sequencing and interrupt inputs must be stable before TP4.
+
+#### TP4
+
+- Requested device and CPU actions commit.
+- `IO_SKIP_REQ` increments PC when asserted.
+- Interrupt and sequencing decisions use only pre-TP4 inputs.
+- No TP4 result affects another decision committed at TP4.
+
+---
+
 ## INTERRUPT
 - Sequence defined by control
 
@@ -94,3 +130,76 @@ All state changes occur exclusively at TP.
 
 ### TP4
 - Return to FETCH
+
+---
+
+### DMA
+
+Each DMA major-state cycle transfers at most one memory word.
+
+#### TS1
+
+If no controller-facing grant is active:
+
+- the external DMA arbiter evaluates pending request channels;
+- the highest-priority pending requester is selected.
+
+If a burst continues:
+
+- the active grant remains selected;
+- arbitration is not repeated.
+
+#### TP1
+
+- A new controller-facing grant commits when arbitration was required.
+- No memory transfer commits.
+
+#### TS2
+
+The granted controller:
+
+- drives MFB;
+- drives AB;
+- asserts RD or WR;
+- drives MDB for a DMA write.
+
+For a DMA read, memory drives MDB.
+
+#### TP2
+
+- One DMA memory transfer commits.
+- For a read, the granted controller captures MDB.
+- For a write, memory captures MDB.
+
+#### TS3
+
+- Completion of the TP2 transfer is available to the granted controller and DMA arbiter.
+
+#### TP3
+
+- The controller updates its complete-operation address.
+- The controller updates its remaining operation word count.
+- The DMA arbiter increments the active burst count.
+
+#### TS4
+
+The DMA arbiter determines whether DMA service continues.
+
+- If the current burst continues, aggregate `DMA_REQ` remains asserted.
+- If the current burst ends, aggregate `DMA_REQ` is deasserted.
+- Pending controller request lines may remain asserted after a burst ends.
+
+#### TP4
+
+```text
+DMA_REQ = 1 -> MS_NEXT = DMA
+DMA_REQ = 0 -> MS_NEXT = FETCH
+```
+
+At a terminating TP4:
+
+- controller-facing DMA grant ends;
+- the previously granted controller releases MFB, AB, MDB, RD, and WR;
+- CPU ownership resumes during the following FETCH TS1.
+
+Aggregate `DMA_REQ` may be reasserted after entry to FETCH because DMA entry is not evaluated again until the following instruction's EXECUTE TP4.

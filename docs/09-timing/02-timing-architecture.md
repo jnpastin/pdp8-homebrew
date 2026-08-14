@@ -51,8 +51,9 @@ The timing diagram reflects electrical states: TS signals are drawn LOW when act
 
 On each rising edge of TCLK:
 
-- TSTEP advances to the next position
-- Exactly one TSTEP is active
+- TSTEP advances to the next position unless a defined timing rule holds an eligible setup position.
+- Exactly one TSTEP remains active.
+- A TP position cannot be held by `IO_WAIT`.
 
 ---
 
