@@ -123,18 +123,28 @@ Signals that define the internal timing model and sequencing of execution.
 
 ### Signals
 
+CPU-local timing signals:
+
 - MCLK
 - TCLK
 - TSTEP
 - TSEQ
+
+Architecturally distributed timing signals:
+
 - TS
 - TP
 
 ### Rules
 
-- Must NOT be placed on the backplane
-- Must remain local to the CPU or timing distribution subsystem
-- Must not be required by independent modules
+#### Rules
+
+- MCLK, TCLK, TSTEP, and TSEQ remain within the timing-generation and timing-distribution subsystem unless another architectural interface explicitly requires them.
+- TS and TP are architectural timing-distribution signals available to external I/O controllers.
+- TS and TP may appear on the backplane.
+- External controllers must use TS and TP only according to the [I/O Timing Contract](/../07-io/03-io-timing.md).
+- External controllers must not depend directly on TSTEP or TSEQ.
+- Timing-signal loading, buffering, and electrical distribution belong to the physical implementation documentation.
 
 ---
 

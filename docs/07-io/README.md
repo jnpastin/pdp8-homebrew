@@ -1,32 +1,33 @@
-# I/O Subsystem
+## I/O Subsystem
 
-## Purpose
+### Purpose
 
 Section 7 defines the architectural interface between the CPU, external I/O controllers, the DMA arbiter, and memory-facing DMA devices.
 
-## Scope
+### Scope
 
 This section defines:
 
 - external IOT selection and operation transport
 - controller response signals
 - IOT timing and wait behavior
-- controller obligations
+- common controller obligations
 - DMA ownership, arbitration, and timing
+- device address allocation
+- programmer-visible controller behavior
 - invalid architectural conditions
 
 This section does not define:
 
 - electrical configuration mechanisms
 - connector or backplane implementation
-- device-specific IOT instruction sets
-- device-specific register sets
-- the final device address map
-- individual controller implementations
+- physical driver technology
+- physical media interfaces
+- controller component selection
 
-Those items will be added or refined as later design priorities are resolved.
+Those items belong to the physical implementation documentation.
 
-## Documents
+### Common Architecture Documents
 
 - [I/O Architecture](./01-io-architecture.md)
 - [External IOT Interface](./02-external-iot-interface.md)
@@ -35,8 +36,16 @@ Those items will be added or refined as later design priorities are resolved.
 - [DMA Interface](./05-dma-interface.md)
 - [DMA Arbitration](./06-dma-arbitration.md)
 - [Invalid Conditions](./07-invalid-conditions.md)
+- [Device Address Map](./08-device-address-map.md)
 
-## Existing Authoritative Dependencies
+### Controller Documents
+
+- [Read Me](./controllers/README.md)
+- [KL8E Equivalent Serial Controller(Teletype keyboard/printer alternative)](./controllers/01-kl8e-uart.md)
+- [PC8E Equivalent Paper-Tape Controller](./controllers/02-pc8e-paper-tape.md)
+- [RK8E Equivalent Disk Controller](./controllers/03-rk8e-storage.md)
+
+### Existing Authoritative Dependencies
 
 - [IOT Instruction Detail](../02-isa/04-iot.md)
 - [IOT Execution](../03-microarchitecture/06-iot-execution.md)
@@ -49,7 +58,7 @@ Those items will be added or refined as later design priorities are resolved.
 - [Memory Interface](../06-memory/02-memory-interface.md)
 - [Timing Architecture](../09-timing/02-timing-architecture.md)
 
-## Core Invariants
+### Core Invariants
 
 - I/O device selection is independent of physical placement.
 - External controllers receive IOA and IOP as separate interfaces.
@@ -58,3 +67,5 @@ Those items will be added or refined as later design priorities are resolved.
 - Only the selected controller may respond to an external IOT.
 - Only the granted DMA controller may drive DMA-owned interfaces.
 - The CPU does not arbitrate among DMA controllers.
+- DEC-compatible controllers reproduce the programmer-visible behavior of the emulated DEC controller.
+- Controller-private physical interfaces do not alter programmer-visible compatibility behavior.

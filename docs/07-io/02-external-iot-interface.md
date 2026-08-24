@@ -87,7 +87,7 @@ Qualification requires:
 
 - the controller is selected
 - IOP identifies the controller's skip operation
-- the skip condition captured at TP3 is true.
+- the controller's registered skip condition is true.
 
 Valid same-TP combinations include:
 

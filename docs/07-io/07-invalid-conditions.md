@@ -22,7 +22,7 @@ The following are invalid:
 - read and AC clear committing at the same TP
 - a phase-specific response unintentionally causing actions at multiple TPs
 - a TP action depending on a result committed at that same TP
-- `IO_SKIP_REQ` based on state not captured by TP3
+- `IO_SKIP_REQ` based on unregistered or unstable controller state
 - `IO_WAIT` asserted by a nonselected controller
 - `IO_WAIT` suppressing, extending, or repeating a TP
 - more than one TSTEP increment on one TCLK rising edge

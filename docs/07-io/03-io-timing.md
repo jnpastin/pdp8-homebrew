@@ -41,7 +41,7 @@ Constraints:
 
 - TP4 sequencing and interrupt decisions must depend only on state and inputs available at completion of TP3.
 - A controller result committed at TP4 cannot affect the sequencing or interrupt decision committed at TP4.
-- A controller may assert INT_REQ during TS4 when the assertion depends only on state available at completion of TP3.
+- A controller may assert `INT_REQ` during TS4 when the assertion depends only on registered controller state available before TP4.
 - DB ownership must end before ownership changes for the following major state.
 
 ## I/O Wait

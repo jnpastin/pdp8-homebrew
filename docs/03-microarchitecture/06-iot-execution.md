@@ -103,7 +103,7 @@ During TS4:
 
 - The selected controller may assert phase-specific read, write, clear, or skip responses.
 - `IO_SKIP_REQ` is valid only during TS4.
-- `IO_SKIP_REQ` is based on a skip condition captured at TP3.
+- `IO_SKIP_REQ` may be generated combinationally from `IOT_ACTIVE`, address match, IOP decode, and stable registered controller state..
 - TP4 device actions and CPU sequencing decisions commit simultaneously from pre-TP4 inputs.
 - A result committed at TP4 cannot affect another action or decision committed at TP4.
 
@@ -120,63 +120,6 @@ During TS4:
 Detailed transaction behavior is defined in [External IOT Interface](../07-io/02-external-iot-interface.md)
 
 Timing behavior is defined in [I/O Timing](../07-io/03-io-timing.md)
-
----
-
-### Data Ingestion Rule
-
-Any data transfer from an I/O device to the CPU must be expressed as:
-
-1. DB_READ_TO_AC (capture from AC)
-2. A subsequent μop that consumes AC
-
-No direct DB → arbitrary register transfer is permitted.
-
-This ensures consistency with the MDB ingestion model and preserves
-the invariant that all bus values are captured through registers.
-
----
-
-### IOA Handling
-  
-IOA is implemented as control signals derived directly from IR.
-
-Properties:
-
-- IOA is populated as part of instruction decode
-- IOA is driven by control, not by a μop
-- IOA does not participate in the datapath
-- IOA is stable during the EXECUTE phase
-
-Constraints:
-
-- No μop may target IOA
-- IOA must reflect the device address encoded in IR
-
----
-
-### Instruction Definition (General)
-
----
-
-#### IR[11:9] = 110
-  
-**Mnemonic (non-normative):** IOT  
-
-TS1:
-- (no μops)  
-
-TS2:
-- (device interaction phase)  
-
-TS3:
-- (device interaction phase)  
-
-TS4:
-- (no μops)  
-
-Note:  
-The transfer direction (device drives DB into AC, or CPU drives AC onto DB) is not determined by IR. It is signaled at runtime by the selected device via device-response inputs, resolved when the I/O subsystem is defined. The generic IOT cycle provides the ordered interaction windows and the bus path; it does not itself select direction.
 
 ---
 

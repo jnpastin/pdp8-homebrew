@@ -1,190 +1,134 @@
-# 11 DMA Interface
+# DMA Interface
 
 ## Purpose
 
-This document defines the architectural interface used for Direct Memory Access (DMA) operations.  On the PDP-8 this mechanism is historically called data break, including its single-cycle and three-cycle variants; this documentation uses the modern term DMA throughout.
+This document defines the architectural signals used for DMA communication among DMA-capable controllers, the external DMA arbiter, CPU control, and memory.
 
-This document defines:
+DMA arbitration and transfer sequencing are defined in:
 
-- DMA interface participants
-- DMA request and grant behavior
-- DMA participation in transport domains
-- DMA memory read operations
-- DMA memory write operations
+- [DMA Arbitration](../07-io/06-dma-arbitration.md)
+- [DMA Interface Timing](../07-io/05-dma-interface.md)
 
-This document does NOT define:
-
-- DMA arbitration
-- timing behavior
-- ownership timing
-- control signal semantics
-- microarchitectural implementation
-
-Bus semantics are defined in:
-
-- [Bus Semantics](./06-bus-semantics.md)
-
-Ownership is defined in:
-
-- [Bus Ownership Matrix](./08-ownership-matrix.md)
-
-Memory arbitration is defined in Section 6.
-
----
-
-## DMA Interface Participants
+## Participants
 
 DMA operations involve:
 
-- DMA Device
-- CPU
-- Memory
-- AB
-- MDB
-- DMA_REQ
-- DMA_GRANT
+- CPU control
+- external DMA arbiter
+- one granted DMA controller
+- memory
 
----
+## Request Interface
 
-## DMA Request Model
+DMA-capable controllers request service through:
 
-A device requests DMA service by asserting DMA_REQ.
+```text
+DMA_REQ[15:0]
+```
 
-DMA_REQ indicates that the requesting device requires direct access to the memory interface.
+Each DMA-capable controller asserts exactly one configured priority-channel request.
 
-DMA request behavior is defined by the control architecture.
+The DMA arbiter produces the aggregate CPU-facing request:
 
----
+```text
+DMA_REQ
+```
 
-## DMA Grant Model
+The aggregate request identifies only that DMA service is pending. It does not identify an individual controller.
 
-DMA service is initiated by DMA_GRANT.
+## CPU Authorization
 
-DMA_GRANT indicates that a requesting DMA device has been granted access to the memory interface.
+CPU control asserts the CPU-facing signal:
 
-Selection of the granted device is determined by memory arbitration.
+```text
+DMA_GRANT
+```
 
-This document does not define arbitration behavior.
+`DMA_GRANT` indicates that the CPU is in `MS = DMA` and has released CPU ownership of the memory interface.
 
----
+CPU-facing `DMA_GRANT` does not identify the selected DMA controller.
 
-## CPU Participation
+## Controller Selection
 
-DMA operations bypass the CPU datapath.
+The DMA arbiter presents:
 
-During DMA operation:
+```text
+DMA_GRANT_ID[3:0]
+```
 
-- the CPU is not an active participant in the DMA transfer
-- DMA accesses memory without CPU data movement
-- memory communication occurs directly between the DMA device and memory
+A DMA-capable controller accepts ownership only when:
 
-CPU interaction with DMA is limited to DMA coordination.
+```text
+DMA_GRANT
+AND
+(DMA_GRANT_ID = CONTROLLER_DMA_PRIORITY)
+```
 
----
+Exactly one controller may accept an active grant.
 
-## Domain Participation
+## Transport Participation
 
-DMA operations use:
+The granted DMA controller supplies:
 
-- Address Domain (AB)
-- Memory Data Domain (MDB)
+- `MFB[2:0]`
+- `AB[11:0]`
+- RD or WR
+- `MDB[11:0]` for a DMA write to memory
 
-Domain definitions are maintained in:
+Memory supplies MDB for a DMA read from memory.
 
-- [Domain Boundaries](./07-domain-boundaries.md)
+## Memory Read
 
-DMA devices participate directly in the Memory Data Domain.
+A DMA memory read transfers data from memory to the granted controller.
 
-DMA operations do not require a DB-to-MDB domain crossing.
+The granted controller:
 
----
+- drives MFB
+- drives AB
+- asserts RD
+- deasserts WR
+- does not drive MDB
 
-## DMA Memory Read Model
+Memory drives MDB.
 
-A DMA memory read transfers data from memory to a DMA device.
+The granted controller captures MDB at TP2.
 
-### Address Domain Participation
+## Memory Write
 
-During a DMA memory read:
+A DMA memory write transfers data from the granted controller to memory.
 
-- The DMA device provides the memory address.
+The granted controller:
 
-### Memory Data Domain Participation
+- drives MFB
+- drives AB
+- asserts WR
+- deasserts RD
+- drives MDB
 
-During a DMA memory read:
+Memory captures MDB at TP2.
 
-- Memory is the MDB producer.
-- The DMA device is the MDB consumer.
+## Ownership
 
-MDB transports the value read from memory.
+During DMA ownership:
 
-### Control Participation
+- CPU control does not drive MFB, AB, MDB, RD, or WR.
+- Only the granted controller may drive DMA-owned controller outputs.
+- Memory is the sole MDB producer during a DMA read.
+- The granted controller is the sole MDB producer during a DMA write.
+- CPU and DMA ownership must not overlap.
 
-DMA_GRANT indicates that DMA memory access is authorized.
+## Arbitration Boundary
 
-Control behavior is defined in Section 4.
+The CPU does not select among DMA-capable controllers.
 
----
+Memory does not arbitrate among DMA-capable controllers.
 
-## DMA Memory Write Model
+Requester selection, fixed priority, bounded bursts, grant identity, CPU fairness, and re-arbitration are defined in [DMA Arbitration](../07-io/06-dma-arbitration.md).
 
-A DMA memory write transfers data from a DMA device to memory.
-
-### Address Domain Participation
-
-During a DMA memory write:
-
-- The DMA device provides the memory address.
-
-### Memory Data Domain Participation
-
-During a DMA memory write:
-
-- The DMA device is the MDB producer.
-- Memory is the MDB consumer.
-
-MDB transports the value written to memory.
-
-DMA devices participate directly in the MDB ownership model.
-
-Authoritative ownership behavior is defined in:
+## Related Documents
 
 - [Bus Ownership Matrix](./08-ownership-matrix.md)
-- [Microarchitectural Control Signals](../04-control/20-control-output-definitions/01-microarchitectural-control-signals.md)
-
-### Control Participation
-
-DMA_GRANT indicates that DMA memory access is authorized.
-
-Control behavior is defined elsewhere.
-
----
-
-## Relationship to Memory Arbitration
-
-Multiple DMA devices may request service simultaneously.
-
-Selection of the DMA device granted memory access is determined by memory arbitration.
-
-This document does not define arbitration behavior.
-
----
-
-## Global Invariants
-
-- DMA operations use AB.
-- DMA operations use MDB.
-- DMA devices participate directly in the Memory Data Domain.
-- DMA operations do not require a DB-to-MDB domain crossing.
-- Memory is the MDB producer during DMA memory reads.
-- DMA devices are the MDB producer during DMA memory writes.
-- DMA devices provide memory addresses during DMA operations.
-- DMA_REQ requests DMA service.
-- DMA_GRANT authorizes DMA service.
-- Arbitration behavior is defined separately.
-
-## Summary
-
-DMA provides direct memory access between DMA devices and memory.
-
-DMA operations use AB for address transport and MDB for data transport. DMA devices participate directly in the Memory Data Domain and exchange data with memory without CPU data movement.
+- [Domain Boundaries](./07-domain-boundaries.md)
+- [Memory Interface](../06-memory/02-memory-interface.md)
+- [DMA Interface](../07-io/05-dma-interface.md)
+- [DMA Arbitration](../07-io/06-dma-arbitration.md)

@@ -65,9 +65,18 @@ Controller-local state changes:
 
 ## Skip Condition
 
-A controller requesting skip during TS4 must base `IO_SKIP_REQ` on the skip condition captured at TP3.
+A controller requesting skip during TS4 must derive `IO_SKIP_REQ` from:
 
-The controller may update or clear the underlying flag at TP4 while the CPU uses the TP3-captured condition for the TP4 skip decision.
+- `IOT_ACTIVE`
+- address match
+- decoded IOP
+- registered controller state
+
+A separate skip-condition register is not required.
+
+The controller may update or clear the underlying condition at TP4 only when the skip request is derived from its pre-TP4 value.
+
+The controller does not perform or control the resulting CPU state change beyond asserting `IO_SKIP_REQ`.
 
 ## I/O Wait
 

@@ -109,7 +109,8 @@ All state changes occur exclusively at TP.
 #### TS4
 
 - The selected controller may assert phase-specific read, write, clear, or skip responses.
-- `IO_SKIP_REQ` uses a skip condition captured at TP3.
+- The selected controller may assert `IO_SKIP_REQ` from stable registered controller state.
+- A separate TP3-captured skip condition is not required..
 - TP4 sequencing and interrupt inputs must be stable before TP4.
 
 #### TP4
