@@ -1,0 +1,217 @@
+<mxfile host="app.diagrams.net" agent="M365 Copilot">
+  <diagram id="io-context" name="I-O Subsystem Context">
+    <mxGraphModel dx="1411" dy="763" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-5" edge="1" parent="1" source="ld4gAUsl70I4UcyXSL3b-1" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=0;rounded=1;jumpStyle=arc;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" target="ld4gAUsl70I4UcyXSL3b-4" value="I/O Command&lt;br&gt;&amp;amp; Timing">
+          <mxGeometry relative="1" x="-0.2258" y="-10" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-10" edge="1" parent="1" source="ld4gAUsl70I4UcyXSL3b-1" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=0;rounded=1;jumpStyle=arc;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" target="ld4gAUsl70I4UcyXSL3b-3" value="DMA&lt;br&gt;Authorization">
+          <mxGeometry relative="1" x="-0.2698" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="360" y="225" />
+              <mxPoint x="360" y="330" />
+              <mxPoint x="260" y="330" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-14" edge="1" parent="1" source="ld4gAUsl70I4UcyXSL3b-1" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=0;rounded=1;jumpStyle=arc;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;startArrow=classic;startFill=1;" target="ld4gAUsl70I4UcyXSL3b-2" value="CPU Memory Access">
+          <mxGeometry relative="1" x="-0.4" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="CPU" vertex="1">
+          <mxGeometry height="60" width="120" x="430" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Memory" vertex="1">
+          <mxGeometry height="60" width="120" x="660" y="362" as="geometry" />
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-9" edge="1" parent="1" source="ld4gAUsl70I4UcyXSL3b-3" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=0;rounded=1;jumpStyle=arc;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" target="ld4gAUsl70I4UcyXSL3b-1" value="DMA Service Request">
+          <mxGeometry relative="1" x="0.3846" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="DMA Arbiter" vertex="1">
+          <mxGeometry height="60" width="120" x="170" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-6" edge="1" parent="1" source="ld4gAUsl70I4UcyXSL3b-4" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=0;rounded=1;jumpStyle=arc;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" target="ld4gAUsl70I4UcyXSL3b-1" value="I/O Response&lt;br&gt;&amp;amp; Interrupt">
+          <mxGeometry relative="1" x="-0.2258" y="-10" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-7" edge="1" parent="1" source="ld4gAUsl70I4UcyXSL3b-4" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=0;rounded=1;jumpStyle=arc;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;startArrow=classic;startFill=1;" target="ld4gAUsl70I4UcyXSL3b-1" value="I/O Data">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-8" edge="1" parent="1" source="ld4gAUsl70I4UcyXSL3b-4" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=0;rounded=1;jumpStyle=arc;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" target="ld4gAUsl70I4UcyXSL3b-3" value="DMA&lt;br&gt;Request">
+          <mxGeometry relative="1" x="0.194" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-13" edge="1" parent="1" source="ld4gAUsl70I4UcyXSL3b-4" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=0;rounded=1;jumpStyle=arc;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;startArrow=classic;startFill=1;" target="ld4gAUsl70I4UcyXSL3b-2" value="DMA Memory Access">
+          <mxGeometry relative="1" x="-0.3846" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="DMA Capable I/O Controller" vertex="1">
+          <mxGeometry height="60" width="120" x="430" y="550" as="geometry" />
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-11" edge="1" parent="1" source="ld4gAUsl70I4UcyXSL3b-1" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=0;rounded=1;jumpStyle=arc;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" target="ld4gAUsl70I4UcyXSL3b-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="360" y="225" />
+              <mxPoint x="360" y="330" />
+              <mxPoint x="410" y="330" />
+              <mxPoint x="410" y="565" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-12" edge="1" parent="1" source="ld4gAUsl70I4UcyXSL3b-3" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=0;rounded=1;jumpStyle=arc;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.827;entryDx=0;entryDy=0;entryPerimeter=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;exitX=1;exitY=0.75;exitDx=0;exitDy=0;" target="ld4gAUsl70I4UcyXSL3b-4" value="DMA&lt;br&gt;Selection">
+          <mxGeometry relative="1" x="-0.1066" y="-10" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="330" y="415" />
+              <mxPoint x="330" y="599.6" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-28" parent="1" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;strokeColor=default;fontSize=16;columnLines=1;resizeLastRow=0;" value="" vertex="1">
+          <mxGeometry height="423.9999999999999" width="300" x="900" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-89" parent="ld4gAUsl70I4UcyXSL3b-28" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=16;" vertex="1">
+          <mxGeometry height="30" width="300" as="geometry" />
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-90" parent="ld4gAUsl70I4UcyXSL3b-89" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=10;" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;&lt;b style=&quot;&quot;&gt;Label&lt;/b&gt;&lt;/font&gt;" vertex="1">
+          <mxGeometry height="30" width="90" as="geometry">
+            <mxRectangle height="30" width="90" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-91" parent="ld4gAUsl70I4UcyXSL3b-89" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=16;fontStyle=1" value="Signals" vertex="1">
+          <mxGeometry height="30" width="210" x="90" as="geometry">
+            <mxRectangle height="30" width="210" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-65" parent="ld4gAUsl70I4UcyXSL3b-28" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=16;" vertex="1">
+          <mxGeometry height="47" width="300" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-66" parent="ld4gAUsl70I4UcyXSL3b-65" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=10;" value="CPU Memory Access" vertex="1">
+          <mxGeometry height="47" width="90" as="geometry">
+            <mxRectangle height="47" width="90" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-67" parent="ld4gAUsl70I4UcyXSL3b-65" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=10;" value="MFB[2:0], AB[11:0], MDB[11:0], RD, WR" vertex="1">
+          <mxGeometry height="47" width="210" x="90" as="geometry">
+            <mxRectangle height="47" width="210" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-68" parent="ld4gAUsl70I4UcyXSL3b-28" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=16;" vertex="1">
+          <mxGeometry height="43" width="300" y="77" as="geometry" />
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-69" parent="ld4gAUsl70I4UcyXSL3b-68" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=10;" value="&lt;div&gt;DMA&lt;/div&gt;&lt;div&gt;Authorization&lt;/div&gt;" vertex="1">
+          <mxGeometry height="43" width="90" as="geometry">
+            <mxRectangle height="43" width="90" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-70" parent="ld4gAUsl70I4UcyXSL3b-68" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=10;" value="DMA_GRANT" vertex="1">
+          <mxGeometry height="43" width="210" x="90" as="geometry">
+            <mxRectangle height="43" width="210" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-71" parent="ld4gAUsl70I4UcyXSL3b-28" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=16;" vertex="1">
+          <mxGeometry height="43" width="300" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-72" parent="ld4gAUsl70I4UcyXSL3b-71" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=10;" value="DMA Memory Access" vertex="1">
+          <mxGeometry height="43" width="90" as="geometry">
+            <mxRectangle height="43" width="90" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-73" parent="ld4gAUsl70I4UcyXSL3b-71" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=10;" value="MFB[2:0], AB[11:0], MDB[11:0], RD, WR" vertex="1">
+          <mxGeometry height="43" width="210" x="90" as="geometry">
+            <mxRectangle height="43" width="210" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-86" parent="ld4gAUsl70I4UcyXSL3b-28" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=16;" vertex="1">
+          <mxGeometry height="44" width="300" y="163" as="geometry" />
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-87" parent="ld4gAUsl70I4UcyXSL3b-86" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=10;" value="&lt;div&gt;DMA&lt;/div&gt;&lt;div&gt;Request&lt;/div&gt;" vertex="1">
+          <mxGeometry height="44" width="90" as="geometry">
+            <mxRectangle height="44" width="90" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-88" parent="ld4gAUsl70I4UcyXSL3b-86" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=10;" value="DMA_REQ[n], where n is 0 through 14" vertex="1">
+          <mxGeometry height="44" width="210" x="90" as="geometry">
+            <mxRectangle height="44" width="210" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-93" parent="ld4gAUsl70I4UcyXSL3b-28" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=16;" vertex="1">
+          <mxGeometry height="44" width="300" y="207" as="geometry" />
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-94" parent="ld4gAUsl70I4UcyXSL3b-93" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=10;" value="DMA Selection" vertex="1">
+          <mxGeometry height="44" width="90" as="geometry">
+            <mxRectangle height="44" width="90" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-95" parent="ld4gAUsl70I4UcyXSL3b-93" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=10;" value="DMA_GRANT_ID[3:0]" vertex="1">
+          <mxGeometry height="44" width="210" x="90" as="geometry">
+            <mxRectangle height="44" width="210" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-83" parent="ld4gAUsl70I4UcyXSL3b-28" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=16;" vertex="1">
+          <mxGeometry height="43" width="300" y="251" as="geometry" />
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-84" parent="ld4gAUsl70I4UcyXSL3b-83" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=10;" value="DMA Service Request" vertex="1">
+          <mxGeometry height="43" width="90" as="geometry">
+            <mxRectangle height="43" width="90" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-85" parent="ld4gAUsl70I4UcyXSL3b-83" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=10;" value="aggregate DMA_REQ" vertex="1">
+          <mxGeometry height="43" width="210" x="90" as="geometry">
+            <mxRectangle height="43" width="210" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-33" parent="ld4gAUsl70I4UcyXSL3b-28" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=16;" value="" vertex="1">
+          <mxGeometry height="43" width="300" y="294" as="geometry" />
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-34" parent="ld4gAUsl70I4UcyXSL3b-33" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=10;" value="I/O Command&lt;br&gt;&amp;amp; Timing" vertex="1">
+          <mxGeometry height="43" width="90" as="geometry">
+            <mxRectangle height="43" width="90" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-35" parent="ld4gAUsl70I4UcyXSL3b-33" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=10;" value="IOT_ACTIVE, IOA[5:0], IOP[2:0],&lt;br&gt;DB_WRITE, TS, TP" vertex="1">
+          <mxGeometry height="43" width="210" x="90" as="geometry">
+            <mxRectangle height="43" width="210" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-62" parent="ld4gAUsl70I4UcyXSL3b-28" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=16;" vertex="1">
+          <mxGeometry height="44" width="300" y="337" as="geometry" />
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-63" parent="ld4gAUsl70I4UcyXSL3b-62" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=10;" value="I/O Data" vertex="1">
+          <mxGeometry height="44" width="90" as="geometry">
+            <mxRectangle height="44" width="90" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-64" parent="ld4gAUsl70I4UcyXSL3b-62" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=10;" value="DB[11:0]" vertex="1">
+          <mxGeometry height="44" width="210" x="90" as="geometry">
+            <mxRectangle height="44" width="210" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-59" parent="ld4gAUsl70I4UcyXSL3b-28" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=16;" vertex="1">
+          <mxGeometry height="43" width="300" y="381" as="geometry" />
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-60" parent="ld4gAUsl70I4UcyXSL3b-59" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=10;" value="&lt;div&gt;I/O Response&lt;/div&gt;&lt;div&gt;&amp;amp; Interrupt&lt;/div&gt;" vertex="1">
+          <mxGeometry height="43" width="90" as="geometry">
+            <mxRectangle height="43" width="90" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ld4gAUsl70I4UcyXSL3b-61" parent="ld4gAUsl70I4UcyXSL3b-59" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=10;" value="IO_READ_REQ, IO_WRITE_REQ, IO_SKIP_REQ, IO_CLEAR_AC_REQ, IO_WAIT, interrupt contribution" vertex="1">
+          <mxGeometry height="43" width="210" x="90" as="geometry">
+            <mxRectangle height="43" width="210" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

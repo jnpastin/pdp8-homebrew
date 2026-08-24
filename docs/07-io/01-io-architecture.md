@@ -29,6 +29,8 @@ External IOT execution uses:
 - `IO_WAIT`
 - shared TS and TP timing signals
 
+![I/O Subsystem Diagram](../../Diagrams/io/io_subsystem/export/io_subsystem.png)
+
 ## Device Addressing
 
 `IOA[5:0]` is the six-bit architectural device address.
