@@ -64,40 +64,45 @@ During a DMA write:
 
 ## DMA Timing
 
-### TS1 and TP1: Arbitration or Grant Continuation
+### TS1 and TP1: Arbitration or Selection Continuation
 
-If no controller-specific grant is active:
+If no controller is selected:
 
 - the DMA arbiter evaluates pending requests during TS1
 - it selects a winner
-- the selected grant commits at TP1
+- the selected DMA_GRANT_ID commits at TP1
 
-If a controller-specific grant remains active for the current burst, TS1 preserves that grant and prepares the next transfer.
+A requesting controller is contractually ready to complete its next DMA word transfer.  
+Selection at TP1 therefore commits the controller to completing exactly one transfer at TP2.
 
+If a controller remains selected for the current burst, TS1 preserves that selection and prepares the next transfer.  
 No memory transfer commits at TP1.
 
 ### TS2 and TP2: Memory Transfer
 
-During TS2, the granted controller presents the complete memory operation.
+During TS2, the selected controller presents one complete memory operation.
 
 At TP2:
 
-- the memory transfer commits
+- exactly one DMA word transfer commits
 - for a read, the controller captures MDB
 - for a write, memory captures MDB
+
+A valid controller selection must not reach TP2 without completing one DMA word transfer.
 
 ### TS3 and TP3: Count Update
 
 At TP3:
 
 - the controller updates its complete-operation address and remaining word count
-- the DMA arbiter increments the active burst count.
+- the DMA arbiter increments the active burst count
 
-These updates describe the word transferred at TP2.
+These updates correspond to the word transferred at TP2.  
+TP3 does not represent an independent transfer or permit accounting for a transfer that did not commit at TP2.
 
 ### TS4 and TP4: Continuation Decision
 
-During TS4, the DMA arbiter determines whether aggregate `DMA_REQ` remains asserted.
+During TS4, the DMA arbiter determines whether aggregate DMA_REQ remains asserted.
 
 At TP4, CPU control commits:
 
@@ -106,13 +111,19 @@ DMA_REQ = 1 -> MS_NEXT = DMA
 DMA_REQ = 0 -> MS_NEXT = FETCH
 ```
 
-The selected controller and arbiter prepare all grant-release and ownership-release decisions before TP4.
+The selected controller and arbiter prepare all selection-release and ownership-release decisions before TP4.
+
+A controller may release early only after completing the current TP2 transfer.  
+If the controller cannot immediately complete another transfer, it must deassert its request before another selection is made.
 
 ## DMA Wait Policy
 
-No DMA wait signal is defined.
-
-A controller should request DMA only when it can complete at least one memory transfer after grant. A controller unable to continue within an active burst releases the grant early and requests service again when ready.
+No DMA wait signal is defined.  
+A controller must prepare the complete next DMA word transfer before asserting DMA_REQ[n].  
+Once selected at TP1, the controller must complete exactly one DMA word transfer at TP2.  
+A slow controller remains unrequested until its next transfer is ready.  
+After completing a transfer, a controller that cannot immediately complete another transfer must deassert DMA_REQ[n] and request service again when the next transfer is prepared.  
+A controller must not extend, suppress, repeat, or delay a DMA TP.
 
 ## Related Documents
 

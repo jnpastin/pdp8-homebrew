@@ -142,7 +142,7 @@ Architecturally distributed timing signals:
 - MCLK, TCLK, TSTEP, and TSEQ remain within the timing-generation and timing-distribution subsystem unless another architectural interface explicitly requires them.
 - TS and TP are architectural timing-distribution signals available to external I/O controllers.
 - TS and TP may appear on the backplane.
-- External controllers must use TS and TP only according to the [I/O Timing Contract](/../07-io/03-io-timing.md).
+- External controllers must use TS and TP only according to the [I/O Timing Contract](../07-io/03-io-timing.md).
 - External controllers must not depend directly on TSTEP or TSEQ.
 - Timing-signal loading, buffering, and electrical distribution belong to the physical implementation documentation.
 

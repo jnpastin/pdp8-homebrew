@@ -29,13 +29,14 @@ Constraints:
 - External inputs must not introduce asynchronous state changes.
 
 ### Signal Classes
- 
+
 External inputs are grouped into:
 
 - Front-Panel Command Inputs
 - Front-Panel Mode Inputs
 - Front-Panel Data Inputs
 - External Request Inputs
+- External IOT Response Inputs
 
 ### Front-Panel Command Inputs
 
@@ -310,9 +311,19 @@ Front-panel data inputs provide externally selected values used by console opera
 
 ### External IOT Response Inputs
 
-External-IOT response inputs originate in the selected external controller.
+External-IOT response inputs originate in the selected external controller and are consumed by CPU control or timing logic.
 
-They participate in EXT and must be stable during the control evaluation window preceding their commit TP.
+Shared properties:
+
+- All external-IOT response inputs are one bit wide.
+- All external-IOT response inputs are active-high.
+- The selected external controller is the only permitted producer.
+- An unselected controller must deassert every external-IOT response input.
+- The idle value of every external-IOT response input is 0.
+- The signals participate in EXT.
+- Phase-specific response signals must be stable during the control-evaluation window preceding their commit TP.
+- A response signal requests CPU or timing behavior and does not directly modify CPU state.
+- Signal behavior must satisfy the [External IOT Interface](../../07-io/02-external-iot-interface./07-io/03-io-timing.md).
 
 #### IO_READ_REQ
 

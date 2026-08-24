@@ -127,14 +127,28 @@ The shared `INT_REQ` signal is the aggregate of all controller interrupt contrib
 A DMA-capable controller asserts exactly one configured DMA_REQ[n] while DMA service remains pending, where n is in the range 0 through 14.  
 DMA priority 15 is reserved as the no-controller-selected encoding and has no corresponding DMA_REQ line.
 
+A controller may assert DMA_REQ[n] only when:
+
+- DMA service remains pending
+- the controller can complete the next DMA word transfer
+- the complete transfer address is prepared
+- the transfer direction is prepared
+- write data is prepared when the controller will write to memory
+- the controller can capture read data when the controller will read from memory
+
+Once selected, the controller must complete exactly one DMA word transfer at TP2.  
+The controller must preserve its readiness from request assertion through completion of the selected transfer.
+
 The request remains asserted until:
 
 - the complete DMA operation finishes
-- the controller temporarily cannot perform another transfer
+- the controller completes the current transfer and cannot immediately complete another transfer
 - the operation is canceled
 - reset clears the operation
 
-A selected controller may keep DMA_REQ[n] asserted across selection termination when additional work remains. Selection termination does not consume the controller request.  
+A selected controller may keep DMA_REQ[n] asserted across selection termination when additional immediately transferable work remains.  
+Selection termination does not consume the controller request.  
+A controller that cannot immediately complete another transfer must deassert DMA_REQ[n] after completing the current transfer and request service again when the next transfer is prepared.  
 The DMA arbiter determines the aggregate CPU-facing DMA_REQ from DMA_REQ[14:0].
 
 ### Receiving-Side Synchronization
@@ -151,11 +165,16 @@ A DMA-capable controller additionally must:
 
 - use exactly one configured DMA priority in the range 0 through 14
 - assert only the corresponding DMA_REQ line
+- assert DMA_REQ only when it can complete the next DMA word transfer
+- preserve transfer readiness from request assertion through TP2
 - recognize ownership only when DMA_GRANT is asserted and DMA_GRANT_ID matches its configured priority
 - reject DMA_GRANT_ID value 15 as the no-controller-selected state
 - drive DMA-owned interfaces only while validly selected
+- complete exactly one DMA word transfer at TP2 after being selected
 - maintain its complete-operation address and remaining word count
-- keep its request asserted while additional service remains pending
+- update its address and remaining word count only for the transfer completed at TP2
+- keep its request asserted while additional immediately transferable service remains pending
+- deassert its request after the current transfer when it cannot immediately complete another transfer
 - tolerate selection termination at the configured arbiter burst boundary
 - resume through normal re-arbitration
 

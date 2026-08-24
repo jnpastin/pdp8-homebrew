@@ -80,7 +80,7 @@ Where:
 
 - All IOT instructions have an opcode of 6
 - Each I/O device has a unique 6 bit address that it responds to, all IOT instructions for other addresses are ignored
-- Each device supports 8 unique instructions, these are custom to the device and are defined in the logic of the device's controller
+- Each device has eight possible IOP encodings. The selected controller defines whether each encoding identifies a supported operation, a combination of operations, or an unsupported operation.
 
 The CPU implements two internal IOT device groups directly. See the [IOT](./04-iot.md) doc for full definitions:
 - Device 0 - processor IOTs (interrupt and flag control)

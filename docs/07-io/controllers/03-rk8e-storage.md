@@ -691,7 +691,8 @@ The project AC-bit numbering is used below.
 | `AC[4]` | Read the lower maintenance-visible data buffer into AC |
 | `AC[1]` | Maintenance data bit used by applicable shift functions |
 
-The exact serial ordering and maintenance-visible results must match the DEC RK8E maintenance definitions.
+The maintenance controls and their programmer-visible effects are defined by this section.  
+Internal serial ordering, shift-path construction, buffer implementation, CRC implementation, and counter implementation are not architecturally defined, except where their effects are explicitly exposed through the documented DMAN behavior.
 
 ## Controller Contract
 
@@ -765,17 +766,21 @@ The priority-configuration mechanism is outside this contract.
 
 ## DMA Request
 
-The controller asserts its configured `DMA_REQ[n]` when:
+The controller asserts its configured DMA_REQ[n] only when:
 
 - an RK8E operation is active
 - at least one word requires transfer
-- the controller can complete the next DMA word transfer
+- the complete next DMA address is prepared
+- the next transfer direction is prepared
+- the next disk word is prepared for a disk-read operation
+- the controller can capture the next memory word for a disk-write operation
 
-The controller keeps its request asserted while additional immediately transferable words remain.
+Once selected, the controller must complete exactly one DMA word transfer at TP2.  
+The controller must preserve its transfer readiness from request assertion through completion of the selected transfer.
 
-The controller may deassert its request when it cannot complete another word transfer.
-
-The controller reasserts its request when another word can be transferred.
+The controller keeps its request asserted while additional immediately transferable words remain.  
+After completing the current transfer, the controller must deassert its request when it cannot immediately complete another word transfer.  
+The controller reasserts its request when another complete word transfer is prepared.
 
 ## Grant Acceptance
 

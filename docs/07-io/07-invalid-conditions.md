@@ -54,6 +54,12 @@ The following are invalid:
 - a controller accepting DMA ownership while DMA_GRANT is deasserted
 - a controller driving DMA-owned interfaces when DMA_GRANT_ID does not match its configured priority
 - DMA_GRANT_ID containing a value other than 15 when no controller is selected
+- a configured DMA burst limit of zero
+- a controller asserting DMA_REQ[n] without being prepared to complete the next DMA word transfer
+- a selected controller failing to complete exactly one DMA word transfer at TP2
+- DMA address, remaining-word-count, or burst-count state updating at TP3 without a corresponding transfer completed at TP2
+- a selected controller releasing before completing the current TP2 transfer
+- a controller attempting to delay, suppress, repeat, or extend a DMA TP
 
 ## Validation Boundary
 

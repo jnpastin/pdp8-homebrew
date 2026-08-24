@@ -23,9 +23,11 @@ Properties:
 - DMA priority identifier 15 is reserved as the no-controller-selected encoding.
 - No DMA_REQ line exists for priority 15.
 - Priority is independent of IOA.
-- Higher and lower numerical priority ordering must be defined consistently by the implementation.
 - The configured priority remains stable while the controller requests service.
 - Two installed controllers must not use the same active priority channel.
+- Lower numerical DMA priority identifiers have higher priority.
+- DMA priority 0 is the highest priority.
+- DMA priority 14 is the lowest assignable priority.
 
 ## Grant Interface
 
@@ -80,28 +82,32 @@ The controller keeps its request line asserted while additional DMA work remains
 
 The DMA arbiter maintains:
 
-- active grant state;
-- active `DMA_GRANT_ID`;
-- per-priority configured burst limit;
-- words completed during the current grant.
+- active controller selection
+- active DMA_GRANT_ID
+- per-priority configured burst limit
+- words completed during the current selection
 
+Every valid controller selection completes exactly one DMA word transfer at TP2.  
 The arbiter burst count increments at TP3 for the word transferred at TP2.
 
-The arbiter terminates the active grant when:
+The arbiter terminates the active controller selection when:
 
-- the selected controller no longer requests service
+- the selected controller no longer requests service after completing the current transfer
 - the configured burst limit is reached
-- the selected controller releases early
+- the selected controller releases early after completing the current transfer
 
-A controller with remaining work keeps its request asserted and competes again after grant release.
+A controller may release early only after completing the transfer for which it was selected.  
+A controller with remaining work keeps its request asserted only while another transfer is immediately ready.  
+Otherwise, it deasserts its request and competes again after the next transfer is prepared.
 
-## Configurable Burst Limits
+### Configurable Burst Limits
 
-Burst limits may differ by priority channel.
-
-The architectural contract requires bounded bursts. Configuration technology, counter width, and absolute maximum burst length belong to the physical implementation specification.
-
-The arbiter, not the requesting controller, enforces the active grant's burst limit.
+Burst limits may differ by priority channel.  
+Each configured burst limit must permit at least one completed DMA word transfer.  
+A burst limit of zero is invalid.  
+The architectural contract requires bounded bursts and forward progress for each valid controller selection.  
+Configuration technology, counter width, and the maximum supported burst length belong to the physical implementation specification.  
+The arbiter, not the requesting controller, enforces the active selection's burst limit.
 
 ## CPU Fairness
 

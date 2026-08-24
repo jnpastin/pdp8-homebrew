@@ -52,7 +52,7 @@ The system defines four buses:
 
 #### Logical Definition
 
-AB = A[11:0]
+AB = AB[11:0]
 
 #### Physical Signals
 
@@ -84,7 +84,7 @@ Examples include:
 
 #### Logical Definition
 
-DB = D[11:0]
+DB = DB[11:0]
 
 #### Physical Signals
 
@@ -144,7 +144,7 @@ MDB is logically independent from DB
 
 #### Logical Definition:
 
-MFB = F[2:0]
+MFB = MFB[2:0]
 
 #### Physical Signals
 

@@ -136,14 +136,15 @@ All state changes occur exclusively at TP.
 
 ### DMA
 
-Each DMA major-state cycle transfers at most one memory word.
+Each DMA major-state cycle with a valid controller selection transfers exactly one memory word at TP2.
 
 #### TS1
 
-If no controller-facing grant is active:
+If no controller is selected:
 
-- the external DMA arbiter evaluates pending request channels;
-- the highest-priority pending requester is selected.
+- the external DMA arbiter evaluates pending request channels
+- the lowest-numbered pending requester is selected
+- the selected DMA_GRANT_ID commits at TP1
 
 If a burst continues:
 
@@ -152,7 +153,7 @@ If a burst continues:
 
 #### TP1
 
-- A new controller-facing grant commits when arbitration was required.
+- A new DMA_GRANT_ID commits when arbitration was required.
 - No memory transfer commits.
 
 #### TS2
@@ -199,8 +200,8 @@ DMA_REQ = 0 -> MS_NEXT = FETCH
 
 At a terminating TP4:
 
-- controller-facing DMA grant ends;
-- the previously granted controller releases MFB, AB, MDB, RD, and WR;
-- CPU ownership resumes during the following FETCH TS1.
+- the previously selected controller releases MFB, AB, MDB, RD, and WR
+- the arbiter sets DMA_GRANT_ID to 15
+- CPU ownership resumes during the following FETCH TS1
 
 Aggregate `DMA_REQ` may be reasserted after entry to FETCH because DMA entry is not evaluated again until the following instruction's EXECUTE TP4.
