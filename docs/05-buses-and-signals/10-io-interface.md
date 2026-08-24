@@ -44,13 +44,13 @@ External IOT communication involves:
 - `IOA[5:0]`
 - `IOP[2:0]`
 - DB
-- `DB_READ`
-- `DB_WRITE`
+- `/DB_READ`
+- `/DB_WRITE`
 - `IO_READ_REQ`
 - `IO_WRITE_REQ`
 - `IO_SKIP_REQ`
 - `IO_CLEAR_AC_REQ`
-- `IO_WAIT`
+- `/IO_WAIT`
 - shared TS signals
 - shared TP signals
 
@@ -72,7 +72,7 @@ The selected controller may assert:
 - `IO_WRITE_REQ`
 - `IO_SKIP_REQ`
 - `IO_CLEAR_AC_REQ`
-- `IO_WAIT`
+- `/IO_WAIT`
 
 Controller responses request CPU behavior. They do not directly modify CPU state.
 
@@ -86,7 +86,7 @@ During an I/O read:
 
 - the CPU provides IOA and IOP;
 - the selected controller asserts `IO_READ_REQ`;
-- CPU control asserts `DB_READ`;
+- CPU control asserts `/DB_READ`;
 - the selected controller is the DB producer;
 - the CPU is the DB consumer;
 - `DB_READ_TO_AC` commits `AC <- AC OR DB` at the applicable TP.
@@ -99,7 +99,7 @@ During an I/O write:
 
 - the CPU provides IOA and IOP;
 - the selected controller asserts `IO_WRITE_REQ`;
-- CPU control asserts `DB_WRITE`;
+- CPU control asserts `/DB_WRITE`;
 - the CPU is the DB producer;
 - the selected controller is the DB consumer;
 - the selected controller captures DB at the applicable TP.
@@ -110,7 +110,7 @@ During an I/O write:
 - IOA and IOP are meaningful only while `IOT_ACTIVE` is asserted.
 - Controller responses are phase-specific.
 - Only the address-matched controller may respond.
-- `DB_READ` and `DB_WRITE` are CPU control outputs describing the active DB operation.
+- `/DB_READ` and `/DB_WRITE` are CPU control outputs describing the active DB operation.
 - `IO_READ_REQ` and `IO_WRITE_REQ` are mutually exclusive.
 - Only one source may drive DB.
 - Controller response signals do not directly modify CPU state.

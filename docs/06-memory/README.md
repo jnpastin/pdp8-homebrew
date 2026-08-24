@@ -52,8 +52,8 @@ The memory subsystem interface consists of:
 - MFB
 - AB
 - MDB
-- RD
-- WR
+- /RD
+- /WR
 
 Memory observes MFB and AB to select a word.
 

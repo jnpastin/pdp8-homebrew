@@ -25,30 +25,30 @@ During a granted DMA operation, the controller supplies:
 
 - `MFB[2:0]`
 - `AB[11:0]`
-- `RD` or `WR`
+- `/RD` or `/WR`
 - `MDB[11:0]` during a write
 
 During a DMA read, memory supplies MDB.
 
-The CPU does not drive MFB, AB, MDB, RD, or WR during DMA ownership.
+The CPU does not drive MFB, AB, MDB, /RD, or /WR during DMA ownership.
 
 ## Addressing
 
 MFB and AB are treated as one DMA-selected memory address interface.
 
-The granted controller supplies both values. MFB and AB must remain stable throughout the active RD or WR window.
+The granted controller supplies both values. MFB and AB must remain stable throughout the active /RD or /WR window.
 
 ## Direction
 
-The granted controller asserts exactly one of RD or WR for a valid transfer.
+The granted controller asserts exactly one of /RD or /WR for a valid transfer.
 
 ### DMA Read
 
 During a DMA read:
 
 - controller drives MFB and AB
-- controller asserts RD
-- controller deasserts WR
+- controller asserts /RD
+- controller deasserts /WR
 - memory drives MDB
 - controller captures MDB at TP2
 
@@ -57,8 +57,8 @@ During a DMA read:
 During a DMA write:
 
 - controller drives MFB and AB
-- controller asserts WR
-- controller deasserts RD
+- controller asserts /WR
+- controller deasserts /RD
 - controller drives MDB
 - memory stores MDB at TP2
 
@@ -102,13 +102,13 @@ TP3 does not represent an independent transfer or permit accounting for a transf
 
 ### TS4 and TP4: Continuation Decision
 
-During TS4, the DMA arbiter determines whether aggregate DMA_REQ remains asserted.
+During TS4, the DMA arbiter determines whether aggregate /DMA_REQ remains asserted.
 
 At TP4, CPU control commits:
 
 ```text
-DMA_REQ = 1 -> MS_NEXT = DMA
-DMA_REQ = 0 -> MS_NEXT = FETCH
+/DMA_REQ = 0 -> MS_NEXT = DMA
+/DMA_REQ = 1 -> MS_NEXT = FETCH
 ```
 
 The selected controller and arbiter prepare all selection-release and ownership-release decisions before TP4.
@@ -119,10 +119,10 @@ If the controller cannot immediately complete another transfer, it must deassert
 ## DMA Wait Policy
 
 No DMA wait signal is defined.  
-A controller must prepare the complete next DMA word transfer before asserting DMA_REQ[n].  
+A controller must prepare the complete next DMA word transfer before asserting /DMA_REQ[n].  
 Once selected at TP1, the controller must complete exactly one DMA word transfer at TP2.  
 A slow controller remains unrequested until its next transfer is ready.  
-After completing a transfer, a controller that cannot immediately complete another transfer must deassert DMA_REQ[n] and request service again when the next transfer is prepared.  
+After completing a transfer, a controller that cannot immediately complete another transfer must deassert /DMA_REQ[n] and request service again when the next transfer is prepared.  
 A controller must not extend, suppress, repeat, or delay a DMA TP.
 
 ## Related Documents

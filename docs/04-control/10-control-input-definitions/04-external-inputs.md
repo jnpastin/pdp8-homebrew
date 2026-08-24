@@ -263,21 +263,22 @@ Front-panel data inputs provide externally selected values used by console opera
 
 ### External Request Inputs
 
-#### DMA_REQ
+#### /DMA_REQ
 
 **Name:** DMA Request  
 **Type:** External Request Input  
 **Bit Width:** 1  
+**Polarity:** Active-low
 
 **Purpose:** Indicates that an external DMA-capable device or device-side DMA arbiter is requesting DMA service.
 
 **Value Encoding:**
-- 0 → no DMA request pending
-- 1 → DMA request pending
+- 0 → DMA request pending
+- 1 → no DMA request pending
 
 **Consumed By:**
 - DMA sequencing control
-- [DMA_GRANT](../20-control-output-definitions/02-architectural-control-signals.md#35-dma_grant)
+- [/DMA_GRANT](../20-control-output-definitions/02-architectural-control-signals.md#35-dma_grant)
 - [MS_NEXT](../20-control-output-definitions/03-sequencing-control-signals.md#31-next-major-state-ms_next)
 
 **Constraints:**
@@ -288,17 +289,18 @@ Front-panel data inputs provide externally selected values used by console opera
 - must not directly assert memory, address, or data bus control
 - must remain asserted while continued DMA service is requested
 
-#### INT_REQ
+#### /INT_REQ
 
 **Name:** Interrupt Request  
 **Type:** External Request Input  
 **Bit Width:** 1
+**Polarity:** Active-low
 
 **Purpose:** Indicates that one or more external devices are requesting interrupt service.
 
 **Value Encoding:**
-- 0 → no interrupt request pending
-- 1 → interrupt request pending
+- 0 → interrupt request pending
+- 1 → no interrupt request pending
 
 **Consumed By:**
 - [Interrupt Request Valid](./03-derived-flags.md#interrupt_request_valid)
@@ -339,7 +341,7 @@ Shared properties:
 
 **Consumed By:**
 
-- `DB_READ`
+- `/DB_READ`
 - `DB_READ_TO_AC`
 
 **Constraints:**
@@ -365,7 +367,7 @@ Shared properties:
 
 **Consumed By:**
 
-- `DB_WRITE`
+- `/DB_WRITE`
 - `DB_WRITE_FROM_AC`
 
 **Constraints:**
@@ -426,17 +428,19 @@ Shared properties:
 - May coincide with `IO_WRITE_REQ`.
 - Must not directly modify AC.
 
-#### IO_WAIT
+#### /IO_WAIT
 
 **Name:** I/O Wait Request  
 **Type:** External Timing Request Input  
 **Bit Width:** 1  
+**Polarity:** Active-low
+
 **Purpose:** Holds the current eligible non-TP setup TSTEP until the selected controller is ready.
 
 **Value Encoding:**
 
-- `0` -> normal TSTEP progression
-- `1` -> hold the current eligible non-TP setup TSTEP
+- `0` -> hold the current eligible non-TP setup TSTEP
+- `1` -> normal TSTEP progression
 
 **Consumed By:**
 

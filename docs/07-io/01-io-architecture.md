@@ -26,7 +26,7 @@ External IOT execution uses:
 - `IO_WRITE_REQ`
 - `IO_SKIP_REQ`
 - `IO_CLEAR_AC_REQ`
-- `IO_WAIT`
+- `/IO_WAIT`
 - shared TS and TP timing signals
 
 ![I/O Subsystem Diagram](../../diagrams/io/io_subsystem/export/io_subsystem.png)

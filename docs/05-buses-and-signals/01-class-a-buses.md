@@ -167,7 +167,7 @@ MFB2
 The following are NOT Class A signals:
 
 - IOA (I/O Address Bus)
-- RD / WR control lines
+- /RD or /WR control lines
 - interrupt signals
 - timing signals (TS/TP/CLK)
 - internal CPU control signals

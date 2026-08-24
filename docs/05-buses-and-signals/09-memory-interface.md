@@ -42,8 +42,8 @@ Memory communication involves:
 - Memory
 - AB
 - MDB
-- RD
-- WR
+- /RD
+- /WR
 
 ### Address Domain
 
@@ -65,8 +65,8 @@ This domain is represented by:
 
 Memory operations are identified by:
 
-- RD
-- WR
+- /RD
+- /WR
 
 Control behavior is defined in:
 
@@ -97,7 +97,7 @@ MDB transports the value read from memory.
 
 ### Control Participation
 
-RD identifies the operation as a memory read.
+/RD identifies the operation as a memory read.
 
 Control behavior and timing are defined elsewhere.
 
@@ -137,7 +137,7 @@ Authoritative source-selection behavior is defined in:
 
 ### Control Participation
 
-WR identifies the operation as a memory write.
+/WR identifies the operation as a memory write.
 
 Control behavior and timing are defined elsewhere.
 
@@ -165,8 +165,8 @@ Domain definitions and isolation requirements are defined in:
 - During normal memory operations, the CPU drives AB from MA and MFB from EA_FIELD.
 - During DMA, an external device drives AB and MFB; the CPU drives neither.
 - AB and MFB together form the physical memory address: {MFB, AB} = {F[2:0], A[11:0]}.
-- RD identifies memory read operations.
-- WR identifies memory write operations.
+- /RD identifies memory read operations.
+- /WR identifies memory write operations.
 - Domain definitions, ownership behavior, timing behavior, and control semantics are defined elsewhere.
 
 ## Summary

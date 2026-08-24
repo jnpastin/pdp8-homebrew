@@ -10,19 +10,19 @@ These rules apply to all signal classes and must be followed by all system modul
 
 ## 1. Signal Polarity
 
-### Active-High Signals
+Signal polarity is selected according to the electrical role of the interface rather than by applying one polarity to all control signals.
 
-- Asserted when logic level is HIGH (1)
-- Used for:
-  - data buses
-  - addresses
+Active-low signals are used when:
 
-### Active-Low Signals
-
-- Asserted when logic level is LOW (0)
-- Used for:
-  - single-driver control signals
-  - multi-source request signals (wired-OR)
+- the receiving component provides an active-low control input
+- the signal is a persistent shared request suitable for open-collector or open-drain aggregation
+- a pull-up establishes the required inactive state during reset, power-up, or disconnection
+ 
+Active-high signals are used for point-to-point qualified actions and authorization signals when active-low operation provides no required electrical or interface benefit.
+ 
+Encoded buses and fields do not have an asserted polarity. Their individual bits represent binary values.
+ 
+Behavioral text should use the terms asserted and deasserted unless the electrical level is specifically relevant.)
 
 ---
 
@@ -43,20 +43,19 @@ These rules apply to all signal classes and must be followed by all system modul
 
 ---
 
-## 3. Signal Classification by Polarity
-
-### Active-High
-
-- AB, DB, MDB
-- IOA[5:0]
-
-### Active-Low
-
-- /RD, /WR
-- /RESET
-- /DB_READ, /DB_WRITE
-- /INT_REQ
-- /DMA_REQ
+## 3. Asserted and Deasserted Levels
+ 
+For an active-low signal:
+ 
+- asserted means electrical value 0
+- deasserted means electrical value 1
+ 
+For an active-high signal:
+ 
+- asserted means electrical value 1
+- deasserted means electrical value 0
+ 
+Expressions that describe electrical values must reflect the defined polarity. Expressions that describe behavior should prefer asserted and deasserted terminology.
 
 ---
 

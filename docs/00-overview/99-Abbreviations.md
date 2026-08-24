@@ -84,17 +84,15 @@ RUN  = [Run state](../01-architecture/01-registers.md#run--run-state)
 ## Global Control Signals (Class B)
 
 
-DMA_REQ = [DMA Request](../04-control/10-control-input-definitions/04-external-inputs.md#dma_req) (wired-OR)
+/DMA_REQ = [DMA Request](../04-control/10-control-input-definitions/04-external-inputs.md#dma_req) (wired-OR)
 
-DMA_GRANT = [DMA Grant](../04-control/20-control-output/02-architectural-control-signals.md#35-dma_grant)
+/DMA_GRANT = [DMA Grant](../04-control/20-control-output/02-architectural-control-signals.md#35-dma_grant)
 
-RD      = [Memory Read](../04-control/20-control-output-definitions/02-architectural-control-signals.md#31-memory-read-rd)
+/RD      = [Memory Read](../04-control/20-control-output-definitions/02-architectural-control-signals.md#31-memory-read-rd)
 
-WR      = [Memory Write](../04-control/20-control-output-definitions/02-architectural-control-signals.md#32-memory-write-wr)
+/WR      = [Memory Write](../04-control/20-control-output-definitions/02-architectural-control-signals.md#32-memory-write-wr)
 
-RESET   = System Reset
-
-INT_REQ = Interrupt Request (wired-OR)
+/INT_REQ = Interrupt Request (wired-OR)
 
 
 ---

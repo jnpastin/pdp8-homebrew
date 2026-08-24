@@ -74,11 +74,11 @@ Permissible source selections are defined in the control architecture.
 
 **Ownership Control**
 
-- DB_WRITE
+- /DB_WRITE
 
 **Purpose**
 
-Determines when the CPU drives DB. The CPU drives DB (source AC) only when DB_WRITE is asserted; otherwise the selected I/O device drives DB, or DB is idle (High-Z). Unlike the other buses, DB has no source-select signal because the CPU has a single DB source (AC).
+Determines when the CPU drives DB. The CPU drives DB (source AC) only when /DB_WRITE is asserted; otherwise the selected I/O device drives DB, or DB is idle (High-Z). Unlike the other buses, DB has no source-select signal because the CPU has a single DB source (AC).
 ---
 
 ### Internal Data Bus (IDB)
@@ -140,10 +140,10 @@ During MS = DMA, CPU control releases normal ownership of:
 - MFB
 - AB
 - MDB
-- RD
-- WR
+- /RD
+- /WR
 
-DMA_GRANT indicates that the CPU has released these interfaces.  
+/DMA_GRANT indicates that the CPU has released these interfaces.  
 The external DMA arbiter selects one controller through DMA_GRANT_ID[3:0].  
 DMA_GRANT_ID values 0 through 14 identify valid controller priority channels.  
 DMA_GRANT_ID value 15 indicates that no controller is selected.
@@ -151,7 +151,7 @@ DMA_GRANT_ID value 15 indicates that no controller is selected.
 A controller owns the DMA interfaces only when:
 
 ```text
-DMA_GRANT = 1
+/DMA_GRANT = 0
 AND
 DMA_GRANT_ID = CONTROLLER_DMA_PRIORITY
 ```
@@ -160,8 +160,8 @@ The selected controller owns:
 
 - MFB
 - AB
-- RD
-- WR
+- /RD
+- /WR
 - MDB during DMA writes
 
 Memory owns MDB during DMA reads.
@@ -169,8 +169,8 @@ Memory owns MDB during DMA reads.
 Ownership rules:
 
 - A controller DMA priority must be in the range 0 through 14.
-- No DMA_REQ line exists for priority 15.
-- No controller may drive a DMA-owned interface unless DMA_GRANT is asserted and DMA_GRANT_ID matches its configured priority.
+- No /DMA_REQ line exists for priority 15.
+- No controller may drive a DMA-owned interface unless /DMA_GRANT is asserted and DMA_GRANT_ID matches its configured priority.
 - No controller may drive a DMA-owned interface while DMA_GRANT_ID is 15.
 - CPU and DMA ownership must not overlap.
 - DMA_GRANT_ID remains stable throughout an active controller selection.

@@ -22,7 +22,7 @@ All state changes occur exclusively at TP.
 
 ### TS2 — Memory Access
 - MA drives AB
-- RD asserted
+- /RD asserted
 - Memory drives MDB
 
 ### TP2
@@ -53,7 +53,7 @@ All state changes occur exclusively at TP.
 ### TS2 — Memory Access
 - MA drives AB
 - MFB_SRC = IF (pointer located in the IF domain)
-- RD asserted
+- /RD asserted
 - Memory drives MDB (pointer value)
 
 ### TP2
@@ -67,7 +67,7 @@ All state changes occur exclusively at TP.
 
 ### TS4 — Resolution
 - MB drives the resolved address
-- if autoindex: WR asserted, MFB_SRC = IF, incremented value written back to the pointer location
+- if autoindex: /WR asserted, MFB_SRC = IF, incremented value written back to the pointer location
 
 ### TP4
 - EA_ADDR loaded from MB (final resolved effective address)
@@ -94,7 +94,7 @@ All state changes occur exclusively at TP.
 - IOP is valid.
 - Controllers evaluate address match.
 - The selected controller decodes IOP.
-- `IO_WAIT` may hold an eligible non-TP setup TSTEP.
+- `/IO_WAIT` may hold an eligible non-TP setup TSTEP.
 
 #### TP1
 
@@ -103,7 +103,7 @@ All state changes occur exclusively at TP.
 #### TS2 and TS3
 
 - The selected controller may assert phase-specific read, write, or clear responses.
-- `IO_WAIT` may hold eligible non-TP setup TSTEPs.
+- `/IO_WAIT` may hold eligible non-TP setup TSTEPs.
 - A response asserted during the TS commits at the following TP.
 
 #### TS4
@@ -162,7 +162,7 @@ The granted controller:
 
 - drives MFB;
 - drives AB;
-- asserts RD or WR;
+- asserts /RD or /WR;
 - drives MDB for a DMA write.
 
 For a DMA read, memory drives MDB.
@@ -187,21 +187,21 @@ For a DMA read, memory drives MDB.
 
 The DMA arbiter determines whether DMA service continues.
 
-- If the current burst continues, aggregate `DMA_REQ` remains asserted.
-- If the current burst ends, aggregate `DMA_REQ` is deasserted.
+- If the current burst continues, aggregate `/DMA_REQ` remains asserted.
+- If the current burst ends, aggregate `/DMA_REQ` is deasserted.
 - Pending controller request lines may remain asserted after a burst ends.
 
 #### TP4
 
 ```text
-DMA_REQ = 1 -> MS_NEXT = DMA
-DMA_REQ = 0 -> MS_NEXT = FETCH
+/DMA_REQ = 0 -> MS_NEXT = DMA
+/DMA_REQ = 1 -> MS_NEXT = FETCH
 ```
 
 At a terminating TP4:
 
-- the previously selected controller releases MFB, AB, MDB, RD, and WR
+- the previously selected controller releases MFB, AB, MDB, /RD, and /WR
 - the arbiter sets DMA_GRANT_ID to 15
 - CPU ownership resumes during the following FETCH TS1
 
-Aggregate `DMA_REQ` may be reasserted after entry to FETCH because DMA entry is not evaluated again until the following instruction's EXECUTE TP4.
+Aggregate `/DMA_REQ` may be reasserted after entry to FETCH because DMA entry is not evaluated again until the following instruction's EXECUTE TP4.

@@ -32,11 +32,11 @@ Every valid memory operation requires:
   - read
   - write
 
-RD and WR must not both be asserted for the same memory operation.
+/RD and /WR must not both be asserted for the same memory operation.
 
 ## Read Operation
 
-A memory read is requested when RD is asserted and WR is not asserted.
+A memory read is requested when /RD is asserted and /WR is not asserted.
 
 During a valid read operation:
 
@@ -50,16 +50,16 @@ The value driven onto MDB is the memory subsystem output for the read operation.
 
 ## Read Data Validity
 
-During a valid read operation, RD defines the active read window.
+During a valid read operation, /RD defines the active read window.
 
-While RD is asserted:
+While /RD is asserted:
 
 - memory must drive MDB
 - MFB must remain stable
 - AB must remain stable
 - MDB must represent the word selected by MEM_ADDR
 
-When RD is not asserted, memory must not drive MDB.
+When /RD is not asserted, memory must not drive MDB.
 
 CPU-side or external capture of MDB is outside the scope of this document.
 
@@ -71,7 +71,7 @@ If the physical memory technology performs internal actions during a read, those
 
 ## Write Operation
 
-A memory write is requested when WR is asserted and RD is not asserted.
+A memory write is requested when /WR is asserted and /RD is not asserted.
 
 During a valid write operation:
 
@@ -101,14 +101,14 @@ No other memory word may be modified by the write operation.
 
 ## Idle Behavior
 
-When neither RD nor WR is asserted:
+When neither /RD nor /WR is asserted:
 
 - memory performs no read operation
 - memory performs no write operation
 - memory does not modify stored contents
 - memory does not drive MDB
 
-MFB and AB may contain values while memory is idle, but those values do not select a completed memory operation unless RD or WR is asserted as part of a valid memory operation.
+MFB and AB may contain values while memory is idle, but those values do not select a completed memory operation unless /RD or /WR is asserted as part of a valid memory operation.
 
 ## Operation Origin
 
@@ -127,10 +127,10 @@ The origin determines how the interface signals are produced. It does not change
 
 The following protocol conditions are invalid:
 
-- RD and WR asserted together
-- RD asserted without a valid MEM_ADDR
-- WR asserted without a valid MEM_ADDR
-- WR asserted without valid write data on MDB
+- /RD and /WR asserted together
+- /RD asserted without a valid MEM_ADDR
+- /WR asserted without a valid MEM_ADDR
+- /WR asserted without valid write data on MDB
 - memory driving MDB during a write
 - memory driving MDB while idle
 - no valid MDB driver during a write
@@ -143,9 +143,9 @@ Invalid protocol conditions are design errors.
 
 ## Invariants
 
-- RD requests a memory read.
-- WR requests a memory write.
-- RD and WR are mutually exclusive for valid memory operations.
+- /RD requests a memory read.
+- /WR requests a memory write.
+- /RD and /WR are mutually exclusive for valid memory operations.
 - Reads use MEM_ADDR = {MFB, AB}.
 - Writes use MEM_ADDR = {MFB, AB}.
 - A valid read returns the word stored at M[MEM_ADDR].

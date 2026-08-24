@@ -37,7 +37,7 @@ Qualification requires:
 During the active TS:
 
 - the selected controller drives DB
-- CPU control asserts `DB_READ`
+- CPU control asserts `/DB_READ`
 - DB remains valid for the required setup and hold interval
 
 At the following TP:
@@ -61,7 +61,7 @@ Qualification requires:
 
 During the active TS:
 
-- CPU control asserts `DB_WRITE`
+- CPU control asserts `/DB_WRITE`
 - the CPU drives AC onto DB
 - DB remains valid for the required setup and hold interval
 
@@ -116,7 +116,7 @@ A controller that is not selected must:
 - not drive DB
 - not capture DB
 - not modify controller state because of the IOT
-- not assert IO_WAIT because of the IOT
+- not assert /IO_WAIT because of the IOT
 
 ## Related Documents
 

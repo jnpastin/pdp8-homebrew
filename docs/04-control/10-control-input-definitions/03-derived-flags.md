@@ -168,7 +168,7 @@ AND EAI
 **Inputs:**
 - IE
 - II
-- INT_REQ
+- /INT_REQ
 
 ---
 
@@ -183,7 +183,7 @@ Determines whether interrupt entry conditions are satisfied.
 INTERRUPT_REQUEST_VALID =
     IE
 AND (II = 0)
-AND INT_REQ
+AND (/INT_REQ = 0)
 ```
 
 ---

@@ -334,7 +334,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 ```
 
 **Constraints:**
-- Drive must be asserted via either RD or WR
+- Drive must be asserted via either /RD or /WR
 
 **Used by μops:**
 - [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb)

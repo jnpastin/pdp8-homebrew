@@ -85,12 +85,12 @@ System-wide control signals that coordinate behavior across modules.
 
 #### Memory Control
 
-- RD (Memory Read)
-- WR (Memory Write)
+- /RD (Memory Read)
+- /WR (Memory Write)
 
 #### Interrupts
 
-- INT_REQ (wired-OR)
+- /INT_REQ (wired-OR of asserted requests)
 
 #### System Control
 
@@ -98,8 +98,8 @@ System-wide control signals that coordinate behavior across modules.
 
 #### DMA
 
-- DMA_REQ
-- DMA_GRANT
+- /DMA_REQ
+- /DMA_GRANT
 
 ### Rules
 

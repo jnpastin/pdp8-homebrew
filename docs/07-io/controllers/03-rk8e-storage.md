@@ -66,8 +66,8 @@ Internal implementation differences are permitted only when they do not change b
 - MFB
 - AB
 - MDB
-- RD
-- WR
+- /RD
+- /WR
 - programmer-visible registers
 - status indications
 - completion behavior
@@ -766,7 +766,7 @@ The priority-configuration mechanism is outside this contract.
 
 ## DMA Request
 
-The controller asserts its configured DMA_REQ[n] only when:
+The controller asserts its configured /DMA_REQ[n] only when:
 
 - an RK8E operation is active
 - at least one word requires transfer
@@ -787,7 +787,7 @@ The controller reasserts its request when another complete word transfer is prep
 The controller accepts DMA ownership only when:
 
 ```text
-DMA_GRANT = 1
+/DMA_GRANT = 0
 AND
 DMA_GRANT_ID = CONTROLLER_DMA_PRIORITY
 ```
@@ -808,8 +808,8 @@ The controller:
 - supplies MFB from the Command Register memory-field bits
 - supplies AB from the incremented Current Address Register
 - drives the next disk word onto MDB
-- asserts WR
-- deasserts RD
+- asserts /WR
+- deasserts /RD
 
 At TP2:
 
@@ -833,8 +833,8 @@ The controller:
 
 - supplies MFB from the Command Register memory-field bits
 - supplies AB from the incremented Current Address Register
-- asserts RD
-- deasserts WR
+- asserts /RD
+- deasserts /WR
 
 Memory drives MDB.
 
@@ -902,8 +902,8 @@ When the controller-facing grant ends:
 - the controller releases MFB
 - the controller releases AB
 - the controller releases MDB when applicable
-- the controller deasserts RD
-- the controller deasserts WR
+- the controller deasserts /RD
+- the controller deasserts /WR
 
 The active RK8E disk operation remains pending when additional words remain.
 
@@ -1040,7 +1040,7 @@ An unsupported operation produces:
 - no DB capture
 - no `IO_CLEAR_AC_REQ`
 - no `IO_SKIP_REQ`
-- no `IO_WAIT`
+- no `/IO_WAIT`
 - no controller state change
 - no register change
 - no interrupt effect

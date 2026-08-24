@@ -58,7 +58,7 @@ M[MEM_ADDR]
 
 During any valid memory operation, MFB must remain stable for the active operation window.
 
-If MFB changes while RD or WR is asserted, the memory operation is invalid.
+If MFB changes while /RD or /WR is asserted, the memory operation is invalid.
 
 ## Field Origin Independence
 

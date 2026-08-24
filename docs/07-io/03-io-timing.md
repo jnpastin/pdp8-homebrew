@@ -41,22 +41,22 @@ Constraints:
 
 - TP4 sequencing and interrupt decisions must depend only on state and inputs available at completion of TP3.
 - A controller result committed at TP4 cannot affect the sequencing or interrupt decision committed at TP4.
-- A controller may assert `INT_REQ` during TS4 when the assertion depends only on registered controller state available before TP4.
+- A controller may assert `/INT_REQ` during TS4 when the assertion depends only on registered controller state available before TP4.
 - DB ownership must end before ownership changes for the following major state.
 
 ## I/O Wait
 
-`IO_WAIT` extends an IOT setup interval for a slower selected controller.
+`/IO_WAIT` extends an IOT setup interval for a slower selected controller.
 
 Properties:
 
-- `IO_WAIT` is distinct from RUN.
-- MCLK continues while `IO_WAIT` is asserted.
-- TCLK continues while `IO_WAIT` is asserted.
-- `IO_WAIT` may inhibit TSTEP advancement only at non-TP setup TSTEPs.
-- `IO_WAIT` is ignored when the current TSTEP is a TP position.
-- A TP cannot be extended, repeated, or suppressed by `IO_WAIT`.
-- The selected controller is contractually responsible for qualifying `IO_WAIT` with `IOT_ACTIVE` and address match.
+- `/IO_WAIT` is distinct from RUN.
+- MCLK continues while `/IO_WAIT` is asserted.
+- TCLK continues while `/IO_WAIT` is asserted.
+- `/IO_WAIT` may inhibit TSTEP advancement only at non-TP setup TSTEPs.
+- `/IO_WAIT` is ignored when the current TSTEP is a TP position.
+- A TP cannot be extended, repeated, or suppressed by `/IO_WAIT`.
+- The selected controller is contractually responsible for qualifying `/IO_WAIT` with `IOT_ACTIVE` and address match.
 
 ## TSTEP Progression Requirement
 
@@ -65,13 +65,13 @@ TSTEP transition logic must:
 - evaluate the pre-edge TSTEP value
 - use mutually exclusive transition branches
 - perform at most one TSTEP increment per TCLK rising edge
-- hold the current non-TP TSTEP while `IO_WAIT` is asserted
-- advance normally when `IO_WAIT` is deasserted
-- advance through a TP position independently of `IO_WAIT`
+- hold the current non-TP TSTEP while `/IO_WAIT` is asserted
+- advance normally when `/IO_WAIT` is deasserted
+- advance through a TP position independently of `/IO_WAIT`
 
 ## Stability During Wait
 
-While a non-TP TSTEP is held by `IO_WAIT`, all signals required for the pending operation must remain stable, including:
+While a non-TP TSTEP is held by `/IO_WAIT`, all signals required for the pending operation must remain stable, including:
 
 - `IOT_ACTIVE`
 - IOA
@@ -107,25 +107,25 @@ Rules:
 
 ## Setup-Hold Request
 
-`IO_WAIT` is a setup-hold request.
+`/IO_WAIT` is a setup-hold request.
 
 Rules:
 
-- `IO_WAIT` is valid only while the controller is selected during an external IOT.
-- `IO_WAIT` may hold only an eligible non-TP setup TSTEP.
-- `IO_WAIT` remains asserted until the controller can satisfy the setup requirements for the pending TP.
-- `IO_WAIT` is ignored at a TP position.
-- `IO_WAIT` does not itself commit an operation or change controller state.
-- Deasserting `IO_WAIT` permits normal TSTEP progression to resume.
+- `/IO_WAIT` is valid only while the controller is selected during an external IOT.
+- `/IO_WAIT` may hold only an eligible non-TP setup TSTEP.
+- `/IO_WAIT` remains asserted until the controller can satisfy the setup requirements for the pending TP.
+- `/IO_WAIT` is ignored at a TP position.
+- `/IO_WAIT` does not itself commit an operation or change controller state.
+- Deasserting `/IO_WAIT` permits normal TSTEP progression to resume.
 
 ## Persistent Service Requests
 
 The following signals represent persistent requests rather than phase-specific actions:
 
 - controller interrupt contribution
-- `DMA_REQ[n]`
-- aggregate `INT_REQ`
-- aggregate `DMA_REQ`
+- `/DMA_REQ[n]`
+- aggregate `/INT_REQ`
+- aggregate `/DMA_REQ`
 
 Rules:
 
@@ -139,10 +139,10 @@ Rules:
 
 The DMA authorization and selection interface consists of:
 
-- DMA_GRANT
+- /DMA_GRANT
 - DMA_GRANT_ID[3:0]
 
-DMA_GRANT is produced by CPU control and indicates that the CPU has released the memory interface during MS = DMA.  
+/DMA_GRANT is produced by CPU control and indicates that the CPU has released the memory interface during MS = DMA.  
 DMA_GRANT_ID is produced by the DMA arbiter and identifies the selected DMA priority channel.
 
 Rules:
@@ -153,7 +153,7 @@ Rules:
 - DMA_GRANT_ID must identify a valid selected controller before that controller drives any DMA-owned interface.
 - DMA_GRANT_ID remains stable for the complete active controller selection.
 - Grant identity must not change during a bounded burst.
-- A controller may act only when DMA_GRANT is asserted and DMA_GRANT_ID matches its configured DMA priority.
+- A controller may act only when /DMA_GRANT is asserted and DMA_GRANT_ID matches its configured DMA priority.
 - No controller may act while DMA_GRANT_ID is 15.
 - Grant withdrawal follows the ownership-release ordering defined in [DMA Arbitration](./06-dma-arbitration.md).
 
@@ -167,11 +167,11 @@ Rules:
 - The value must remain stable through the sampling TP.
 - The controller must maintain the value for the required hold interval after the TP.
 - The controller must release the applicable bus before ownership transfers to another participant.
-- MFB and AB must remain stable for the complete asserted RD or WR interval.
+- MFB and AB must remain stable for the complete asserted /RD or /WR interval.
 
 ## Synchronization Boundary
 
-The physical implementation must synchronize `IO_WAIT` before it influences TSTEP progression. The controller contract must prevent asynchronous state changes or repeated commit events.
+The physical implementation must synchronize `/IO_WAIT` before it influences TSTEP progression. The controller contract must prevent asynchronous state changes or repeated commit events.
 
 ## Related Documents
 

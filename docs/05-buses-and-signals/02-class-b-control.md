@@ -154,8 +154,8 @@ Authoritative definitions are maintained in:
 - `IOT_ACTIVE`
 - `IOA[5:0]`
 - `IOP[2:0]`
-- `DB_READ`
-- `DB_WRITE`
+- `/DB_READ`
+- `/DB_WRITE`
 - TS signals
 - TP signals
 
@@ -165,29 +165,29 @@ Authoritative definitions are maintained in:
 - `IO_WRITE_REQ`
 - `IO_SKIP_REQ`
 - `IO_CLEAR_AC_REQ`
-- `IO_WAIT`
+- `/IO_WAIT`
 
 ### DMA Arbitration Signals
 
 #### DMA Controllers to Arbiter
 
-- DMA_REQ[14:0]
+- /DMA_REQ[14:0]
 
 The request interface provides 15 DMA priority-channel request lines.  
 Each DMA-capable controller asserts exactly one request line corresponding to its configured DMA priority.  
 Valid configured DMA priorities are 0 through 14.  
-DMA priority 15 is reserved as the no-controller-selected encoding and has no corresponding DMA_REQ line.
+DMA priority 15 is reserved as the no-controller-selected encoding and has no corresponding /DMA_REQ line.
 
 #### DMA Arbiter to CPU
 
-- aggregate DMA_REQ
+- aggregate /DMA_REQ
 
 #### CPU to DMA Arbiter and Controllers
 
-- DMA_GRANT
+- /DMA_GRANT
 
-DMA_GRANT indicates that the CPU has entered DMA service and released the memory interface.  
-DMA_GRANT does not identify a selected controller.
+/DMA_GRANT indicates that the CPU has entered DMA service and released the memory interface.  
+/DMA_GRANT does not identify a selected controller.
 
 #### DMA Arbiter to Controllers
 
@@ -199,17 +199,17 @@ DMA_GRANT_ID value 15 indicates that no controller is selected.
 
 ### Signal Responsibilities
 
-- IOA, IOP, IOT_ACTIVE, DB_READ, and DB_WRITE are CPU outputs during external-IOT execution.
-- IO_READ_REQ, IO_WRITE_REQ, IO_SKIP_REQ, IO_CLEAR_AC_REQ, and IO_WAIT are selected-controller outputs and CPU inputs.
-- DMA_REQ[14:0] are controller-to-arbiter priority-channel requests.
-- Aggregate DMA_REQ is the arbiter-to-CPU request.
-- DMA_GRANT is the CPU-generated authorization indicating that the CPU has released the memory interface during MS = DMA.
+- IOA, IOP, IOT_ACTIVE, /DB_READ, and /DB_WRITE are CPU outputs during external-IOT execution.
+- IO_READ_REQ, IO_WRITE_REQ, IO_SKIP_REQ, IO_CLEAR_AC_REQ, and /IO_WAIT are selected-controller outputs and CPU inputs.
+- /DMA_REQ[14:0] are controller-to-arbiter priority-channel requests.
+- Aggregate /DMA_REQ is the arbiter-to-CPU request.
+- /DMA_GRANT is the CPU-generated authorization indicating that the CPU has released the memory interface during MS = DMA.
 - DMA_GRANT_ID[3:0] is the arbiter-generated controller-selection field.
 - DMA_GRANT_ID values 0 through 14 identify valid configured DMA priority channels.
 - DMA_GRANT_ID value 15 indicates that no controller is selected.
-- A controller owns the DMA interfaces only while DMA_GRANT is asserted and DMA_GRANT_ID matches its configured DMA priority.
-- During DMA, only the controller selected by DMA_GRANT and DMA_GRANT_ID may drive RD and WR.
-- During CPU memory operations, CPU control drives RD and WR.
+- A controller owns the DMA interfaces only while /DMA_GRANT is asserted and DMA_GRANT_ID matches its configured DMA priority.
+- During DMA, only the controller selected by /DMA_GRANT and DMA_GRANT_ID may drive /RD and /WR.
+- During CPU memory operations, CPU control drives /RD and /WR.
 
 Detailed I/O behavior is defined in [I/O Architecture](../07-io/01-io-architecture.md).  
 Detailed DMA arbitration is defined in [DMA Arbitration](../07-io/06-dma-arbitration.md).

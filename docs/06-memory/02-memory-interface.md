@@ -13,8 +13,8 @@ The memory subsystem interface consists of:
 - MFB
 - AB
 - MDB
-- RD
-- WR
+- /RD
+- /WR
 
 These signals define the complete memory-facing interface for normal memory operations.
 
@@ -48,25 +48,25 @@ MDB is bidirectional from the memory subsystem perspective:
 
 Only one source may drive MDB during any valid memory operation.
 
-### RD
+### /RD
 
-RD requests a memory read.
+/RD requests a memory read.
 
-From the memory subsystem perspective, RD is an input.
+From the memory subsystem perspective, /RD is an input.
 
-When RD is asserted as part of a valid read operation, memory uses MEM_ADDR to select a word and drives the selected 12-bit value onto MDB.
+When /RD is asserted as part of a valid read operation, memory uses MEM_ADDR to select a word and drives the selected 12-bit value onto MDB.
 
-RD does not define CPU-side capture behavior. It only defines the memory-side read request.
+/RD does not define CPU-side capture behavior. It only defines the memory-side read request.
 
-### WR
+### /WR
 
-WR requests a memory write.
+/WR requests a memory write.
 
-From the memory subsystem perspective, WR is an input.
+From the memory subsystem perspective, /WR is an input.
 
-When WR is asserted as part of a valid write operation, memory uses MEM_ADDR to select a word and stores the 12-bit value presented on MDB.
+When /WR is asserted as part of a valid write operation, memory uses MEM_ADDR to select a word and stores the 12-bit value presented on MDB.
 
-WR does not define the source of write data. It only defines the memory-side write request.
+/WR does not define the source of write data. It only defines the memory-side write request.
 
 ## Memory Address Formation
 
@@ -84,8 +84,8 @@ During a valid read operation:
 
 - MFB is observed by memory
 - AB is observed by memory
-- RD is asserted
-- WR is not asserted
+- /RD is asserted
+- /WR is not asserted
 - memory drives MDB with the selected 12-bit word
 
 Memory is the MDB driver during the read data phase.
@@ -96,8 +96,8 @@ During a valid write operation:
 
 - MFB is observed by memory
 - AB is observed by memory
-- WR is asserted
-- RD is not asserted
+- /WR is asserted
+- /RD is not asserted
 - MDB is driven by a source outside the memory subsystem
 - memory stores the 12-bit value present on MDB
 
@@ -120,7 +120,7 @@ The memory subsystem does not distinguish between CPU-initiated, DMA-initiated, 
 From the memory subsystem perspective, a valid operation is defined only by the memory interface signals:
 
 - MEM_ADDR
-- RD or WR
+- /RD or /WR
 - MDB direction and data validity
 
 The origin of the operation is outside the memory subsystem boundary.
@@ -129,9 +129,9 @@ The origin of the operation is outside the memory subsystem boundary.
 
 The following conditions are invalid unless explicitly defined elsewhere:
 
-- RD and WR asserted at the same time
-- RD asserted while memory is not allowed to drive MDB
-- WR asserted without valid write data on MDB
+- /RD and /WR asserted at the same time
+- /RD asserted while memory is not allowed to drive MDB
+- /WR asserted without valid write data on MDB
 - more than one source driving MDB
 - no source driving MDB during a write
 - unstable MFB during an active memory operation
@@ -145,17 +145,17 @@ Invalid interface conditions are design errors.
 
 - MFB is an input to memory.
 - AB is an input to memory.
-- RD is an input to memory.
-- WR is an input to memory.
+- /RD is an input to memory.
+- /WR is an input to memory.
 - MDB is driven by memory only during reads.
 - MDB is observed by memory during writes.
 - Memory uses MEM_ADDR = {MFB, AB} to select a word.
-- Memory does not choose the source of MFB, AB, MDB, RD, or WR.
+- Memory does not choose the source of MFB, AB, MDB, /RD, or /WR.
 - Memory does not distinguish CPU, DMA, or console access origins.
 - Memory behavior occurs only through the defined memory interface.
 
 ## Summary
 
-The memory interface consists of MFB, AB, MDB, RD, and WR.
+The memory interface consists of MFB, AB, MDB, /RD, and /WR.
 
 Memory observes MFB and AB to form MEM_ADDR. On reads, memory drives MDB with the selected word. On writes, memory observes MDB and stores the presented word. The memory subsystem does not decide where the interface values came from.

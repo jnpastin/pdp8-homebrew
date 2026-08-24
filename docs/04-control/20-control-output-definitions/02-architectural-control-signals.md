@@ -77,10 +77,10 @@ For every TS:
 
 ---
 
-### 3.1 Memory Read (RD)
+### 3.1 Memory Read (/RD)
 
 **Name**  
-RD
+/RD
 
 **Polarity**  
 Active-low externally (`/RD`), active-high internally
@@ -104,7 +104,7 @@ When asserted:
 - memory must satisfy data availability before TP
 
 **Constraints**
-- must not be asserted simultaneously with `WR`
+- must not be asserted simultaneously with `/WR`
 - does not imply data transfer into any register
 - does not define MDB validity or timing behavior
 - does not select the memory address source
@@ -113,10 +113,10 @@ When asserted:
 
 ---
 
-### 3.2 Memory Write (WR)
+### 3.2 Memory Write (/WR)
 
 **Name**  
-WR
+/WR
 
 **Polarity**  
 Active-low externally (`/WR`), active-high internally
@@ -140,7 +140,7 @@ When asserted:
 - data must be stable before TP
 
 **Constraints**
-- must not be asserted simultaneously with `RD`
+- must not be asserted simultaneously with `/RD`
 - does not select the memory address source
 - does not select the MDB data source
 - must be paired with a valid memory-write μop or DMA
@@ -150,7 +150,7 @@ When asserted:
   
 ---
 
-### 3.3 DB_READ
+### 3.3 /DB_READ
 
 **Category:** Architectural Control Signal  
 **Description:** Indicates that the CPU is performing an I/O read operation and will sample the System Data Bus (DB) during this time state.
@@ -166,14 +166,14 @@ When asserted:
 - Devices may drive DB based on device selection (IOA) and internal behavior
 
 **Constraints:**
-- Must not be asserted concurrently with DB_WRITE
+- Must not be asserted concurrently with /DB_WRITE
 - Must not be asserted without DB_READ_TO_AC
-- CPU must not drive DB while DB_READ is asserted
+- CPU must not drive DB while /DB_READ is asserted
 - DB must be driven by at most one external device
 
 ---
 
-### 3.4 DB_WRITE
+### 3.4 /DB_WRITE
 
 **Category:** Architectural Control Signal  
 **Description:** Indicates that the CPU is performing an I/O write operation and will drive the System Data Bus (DB) during this time state.
@@ -189,17 +189,17 @@ When asserted:
 - Selected I/O devices may capture DB during this interval
 
 **Constraints:**
-- Must not be asserted concurrently with DB_READ
+- Must not be asserted concurrently with /DB_READ
 - Must not be asserted without DB_WRITE_FROM_AC
 - CPU is the sole driver of DB when this signal is asserted
 - External devices must not drive DB during this interval
 
 ---
 
-### 3.5 DMA_GRANT
+### 3.5 /DMA_GRANT
 
-**Name** DMA_GRANT  
-**Polarity** Active-high  
+**Name** /DMA_GRANT  
+**Polarity** Active-low  
 **Domain** Architectural  
 
 **Description:** Indicates that the CPU is in `MS = DMA` and has released normal CPU ownership of the memory interface.
@@ -210,13 +210,13 @@ When asserted:
 - normal CPU instruction execution is suspended;
 - CPU-generated memory-cycle requests remain inactive.
 
-`DMA_GRANT` does not identify the selected DMA controller.
+`/DMA_GRANT` does not identify the selected DMA controller.
 
 Controller selection uses the grant identity defined in [DMA Arbitration](../../07-io/06-dma-arbitration.md)
 
 **Preconditions**
 - `MS = DMA`
-- `DMA_REQ = 1`
+- `/DMA_REQ = 0`
 - CPU instruction execution has reached a valid DMA entry boundary
 
 **Timing**
@@ -227,7 +227,7 @@ Controller selection uses the grant identity defined in [DMA Arbitration](../../
 **Constraints**
 - must be generated only by the control word
 - must not be asserted during normal instruction execution
-- must not be asserted concurrently with CPU-initiated `RD` or `WR`
+- must not be asserted concurrently with CPU-initiated `/RD` or `/WR`
 - does not itself define DMA address, data, direction, or device selection
 - does not modify CPU architectural state
 - does not modify `RUN` or `HLT_REQ`
@@ -353,7 +353,7 @@ Identifies execution of an external IOT and qualifies IOA, IOP, controller respo
 
 The following must never occur:
 
-- RD and WR asserted simultaneously
+- /RD and /WR asserted simultaneously
 
 ---
 
@@ -420,9 +420,9 @@ Architectural control signals define the **external behavior of the CPU**.
 
 They:
 
-- initiate memory operations (RD, WR)
+- initiate memory operations (/RD, /WR)
 - select I/O devices (IOA)
-- grant DMA service ('DMA_GRANT')
+- grant DMA service ('/DMA_GRANT')
 
 They do not:
 

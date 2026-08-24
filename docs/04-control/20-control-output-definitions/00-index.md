@@ -99,16 +99,16 @@ Defined in:
 
 ### Memory Interface
 
-- [RD](./02-architectural-control-signals.md#31-memory-read-rd)  
-- [WR](./02-architectural-control-signals.md#32-memory-write-wr)  
-- [DMA_GRANT](./02-architectural-control-signals.md#35-dma_grant)  
+- [/RD](./02-architectural-control-signals.md#31-memory-read-rd)  
+- [/WR](./02-architectural-control-signals.md#32-memory-write-wr)  
+- [/DMA_GRANT](./02-architectural-control-signals.md#35-dma_grant)  
 
 ---
 
 ### I/O Interface
 
-- [DB_READ](./02-architectural-control-signals.md#33-db_read)  
-- [DB_WRITE](./02-architectural-control-signals.md#34-db_write)  
+- [/DB_READ](./02-architectural-control-signals.md#33-db_read)  
+- [/DB_WRITE](./02-architectural-control-signals.md#34-db_write)  
 - [IOA[5:0]](./02-architectural-control-signals.md#36-io-address-bus-ioa50)  
 - [IOP[2:0]](./02-architectural-control-signals.md#37-io-operation-field-iop20)
 - [IOT_ACTIVE](./02-architectural-control-signals.md#38-external-iot-active-iot_active)

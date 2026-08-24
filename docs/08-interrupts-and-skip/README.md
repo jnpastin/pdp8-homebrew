@@ -5,7 +5,7 @@
 Defines interrupt conditions and skip behavior.
 
 ### Interrupts
-- Triggered when IE = 1, II = 0, and INT_REQ is asserted
+- Triggered when IE = 1, II = 0, and /INT_REQ is asserted
 - Recognition timing defined in [Control Model](../04-control/01-control-model.md)
 
 ### Skip

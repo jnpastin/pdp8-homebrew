@@ -28,13 +28,13 @@ The implementation must behave as random-access read/write memory at the memory 
 For every valid memory read:
 
 - the implementation must use MEM_ADDR to select one stored word
-- the implementation must drive the selected 12-bit word onto MDB while RD is asserted
+- the implementation must drive the selected 12-bit word onto MDB while /RD is asserted
 - the implementation must not logically modify memory contents
 
 For every valid memory write:
 
 - the implementation must use MEM_ADDR to select one stored word
-- the implementation must store the 12-bit value presented on MDB while WR is asserted
+- the implementation must store the 12-bit value presented on MDB while /WR is asserted
 - the implementation must modify exactly one selected memory word
 
 ## Logical Word Width
@@ -67,8 +67,8 @@ The selected memory technology must satisfy the memory timing contract.
 
 The implementation must ensure that:
 
-- read data is valid on MDB while RD is asserted
-- write data is captured from MDB while WR is asserted
+- read data is valid on MDB while /RD is asserted
+- write data is captured from MDB while /WR is asserted
 - MFB and AB stability requirements are met
 - the memory device access time fits within the active read window
 - the memory device write requirements fit within the active write window
@@ -156,4 +156,4 @@ These details may be documented in physical or implementation sections if needed
 
 The memory implementation may use any suitable technology that satisfies the Section 6 memory contract.
 
-The physical memory technology must present the required logical behavior: 12-bit random-access reads and writes selected by MEM_ADDR, with timing compatible with RD, WR, MFB, AB, and MDB.
+The physical memory technology must present the required logical behavior: 12-bit random-access reads and writes selected by MEM_ADDR, with timing compatible with /RD, /WR, MFB, AB, and MDB.

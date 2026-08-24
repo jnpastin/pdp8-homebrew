@@ -259,7 +259,7 @@ Implication:
 A memory read operation is defined by the combination of:
 
 - Architectural signal:
-  - RD = 1
+  - /RD = 0
 
 - Micro-operation:
   - MEM_READ_TO_MB
@@ -282,13 +282,13 @@ Where:
 
 The following are invalid and must not occur:
 
-- RD = 1 without MEM_READ_TO_MB or MS = DMA  
+- /RD = 0 without MEM_READ_TO_MB or MS = DMA  
   → external read initiated with no defined data consumption
 
-- MEM_READ_TO_MB without RD = 1  
+- MEM_READ_TO_MB without /RD = 0  
   → MB attempts to capture undefined MDB_input
 
-- RD = 1 without MDB_SRC = Memory
+- /RD = 0 without MDB_SRC = Memory
   → read can only be driven by memory
 ---
 
@@ -297,16 +297,16 @@ The following are invalid and must not occur:
 A memory write operation is defined by the combination of:
 
 - Architectural signal:
-  - WR = 1
+  - /WR = 0
 
 - One of the Micro-operations:
   - MEM_WRITE_FROM_MB
   - MEM_WRITE_FROM_SR
 
 Effective control required for memory writes:
-- WR + MDB_SRC = MB + MEM_WRITE_FROM_MB
-- WR + MDB_SRC = SR + MEM_WRITE_FROM_SR
-- WR + MDB_SRC = DMA + MS = DMA
+- /WR + MDB_SRC = MB + MEM_WRITE_FROM_MB
+- /WR + MDB_SRC = SR + MEM_WRITE_FROM_SR
+- /WR + MDB_SRC = DMA + MS = DMA
 
 
 #### Required Behavior
@@ -325,13 +325,13 @@ Where:
 
 The following are invalid and must not occur:
 
-- WR = 1 without a valid memory-write μop
+- /WR = 0 without a valid memory-write μop
   → external write initiated with no defined data source
 
-- MEM_WRITE_FROM_MB without WR = 1
+- MEM_WRITE_FROM_MB without /WR = 0
   → memory state modified without external coordination
 
-- MEM_WRITE_FROM_SR without WR = 1
+- MEM_WRITE_FROM_SR without /WR = 0
   → memory state modified without external coordination
 
 - MEM_WRITE_FROM_MB with MDB_SRC ≠ MB
@@ -346,8 +346,8 @@ The following are invalid and must not occur:
 
 During external-IOT EXECUTE:
 
-- `IO_READ_REQ` selects `DB_READ` and `DB_READ_TO_AC` for the current phase.
-- `IO_WRITE_REQ` selects `DB_WRITE` and `DB_WRITE_FROM_AC` for the current phase.
+- `IO_READ_REQ` selects `/DB_READ` and `DB_READ_TO_AC` for the current phase.
+- `IO_WRITE_REQ` selects `/DB_WRITE` and `DB_WRITE_FROM_AC` for the current phase.
 - `IO_SKIP_REQ` selects `PC_INC` at TP4.
 - `IO_CLEAR_AC_REQ` selects AC clear at the following TP.
 
@@ -364,16 +364,16 @@ Constraints:
 
 #### I/O Wait Binding
 
-`IO_WAIT` may inhibit TSTEP progression only at eligible non-TP setup positions during external-IOT EXECUTE.
+`/IO_WAIT` may inhibit TSTEP progression only at eligible non-TP setup positions during external-IOT EXECUTE.
 
 Constraints:
 
-- `IO_WAIT` must not alter RUN.
-- `IO_WAIT` must not alter MS.
-- `IO_WAIT` must not directly modify architectural state.
-- `IO_WAIT` must not suppress, extend, or repeat a TP.
+- `/IO_WAIT` must not alter RUN.
+- `/IO_WAIT` must not alter MS.
+- `/IO_WAIT` must not directly modify architectural state.
+- `/IO_WAIT` must not suppress, extend, or repeat a TP.
 - All control outputs and external values required by the pending phase must remain stable while TSTEP is held.
-- TSTEP progression must resume normally when `IO_WAIT` is deasserted.
+- TSTEP progression must resume normally when `/IO_WAIT` is deasserted.
 
 ---
 

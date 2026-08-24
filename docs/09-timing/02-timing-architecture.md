@@ -53,7 +53,7 @@ On each rising edge of TCLK:
 
 - TSTEP advances to the next position unless a defined timing rule holds an eligible setup position.
 - Exactly one TSTEP remains active.
-- A TP position cannot be held by `IO_WAIT`.
+- A TP position cannot be held by `/IO_WAIT`.
 
 ---
 
@@ -213,7 +213,7 @@ The fast/slow mechanism will be modeled after DEC's timing design. The specific 
 
 ## I/O Wait Integration
 
-During external-IOT EXECUTE, the selected controller may assert `IO_WAIT` to extend an eligible non-TP setup interval.
+During external-IOT EXECUTE, the selected controller may assert `/IO_WAIT` to extend an eligible non-TP setup interval.
 
 Properties:
 
@@ -222,20 +222,20 @@ Properties:
 - TSTEP remains at the current eligible setup position.
 - TS remains in the current phase.
 - No state change occurs while the non-TP setup position is held.
-- When `IO_WAIT` is deasserted, TSTEP progression resumes normally.
-- `IO_WAIT` is ignored at TP positions.
+- When `/IO_WAIT` is deasserted, TSTEP progression resumes normally.
+- `/IO_WAIT` is ignored at TP positions.
 - A TP position advances normally and generates exactly one TP event.
 
 Constraints:
 
-- `IO_WAIT` does not modify RUN.
-- `IO_WAIT` does not alter MS.
-- `IO_WAIT` does not directly modify architectural state.
-- `IO_WAIT` must be synchronized before influencing TSTEP progression.
+- `/IO_WAIT` does not modify RUN.
+- `/IO_WAIT` does not alter MS.
+- `/IO_WAIT` does not directly modify architectural state.
+- `/IO_WAIT` must be synchronized before influencing TSTEP progression.
 - All pending-operation inputs must remain stable while waiting.
 - TSTEP transition logic must evaluate the pre-edge TSTEP value.
 - At most one TSTEP increment may occur on a TCLK rising edge.
-- Fast timing must not skip a TSTEP currently held by `IO_WAIT`.
+- Fast timing must not skip a TSTEP currently held by `/IO_WAIT`.
 
 Detailed controller behavior is defined in [I/O Timing](../07-io/03-io-timing.md)
 

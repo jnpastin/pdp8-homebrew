@@ -42,7 +42,7 @@ The selected controller may request:
 - `IO_SKIP_REQ`
 - `IO_CLEAR_AC_REQ`
 
-The selected controller may also assert `IO_WAIT` during eligible setup steps.
+The selected controller may also assert `/IO_WAIT` during eligible setup steps.
 
 The CPU remains responsible for all CPU-local state changes. A controller response does not directly modify CPU state.
 
@@ -95,7 +95,7 @@ During TS2 and TS3:
 
 - The selected controller may assert phase-specific read, write, or clear responses.
 - A response asserted during a TS commits exactly once at the following TP.
-- The selected controller may assert `IO_WAIT` during an eligible non-TP setup step.
+- The selected controller may assert `/IO_WAIT` during an eligible non-TP setup step.
 
 #### TS4
 
@@ -200,7 +200,7 @@ Description:
 - (no μops)
 
   TS2:
-- if INT_REQ: PC_INC
+- if /INT_REQ: PC_INC
 
   TS3:
 - (no μops)
@@ -211,7 +211,7 @@ Description:
 Description:
 
 - Skips the next instruction if an interrupt request is currently asserted
-- INT_REQ is an external input; the skip does not modify interrupt state
+- /INT_REQ is an external input; the skip does not modify interrupt state
 
 ---
 

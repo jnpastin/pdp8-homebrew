@@ -110,7 +110,7 @@ Examples of interactions:
   - result consumed by register load
 
 - memory operation:
-  - enable: RD / WR
+  - enable: /RD or /WR
   - address source: AB_SRC
   - data source: MDB_SRC
 
@@ -241,7 +241,7 @@ When `MS = DMA`, the active `CONTROL_WORD` defines the complete system behavior 
 
 Constraint:
 - `MS = DMA` must have fully defined control words.
-- No datapath behavior may be inferred from `DMA_REQ`.
+- No datapath behavior may be inferred from `/DMA_REQ`.
 - No external mechanism may suppress or rewrite active control signals.
 
 ### 11.2 CPU Datapath Quiescence
@@ -252,9 +252,9 @@ Default DMA service behavior:
 - CPU register load enables inactive
 - `PC_INC` inactive
 - `PC_LOAD` inactive
-- CPU-initiated `RD` inactive
-- CPU-initiated `WR` inactive
-- `DMA_GRANT` asserted
+- CPU-initiated `/RD` inactive
+- CPU-initiated `/WR` inactive
+- `/DMA_GRANT` asserted
 
 Constraint:
 - Any CPU state update during `MS = DMA` must be explicitly defined by `CONTROL_WORD`.
@@ -275,7 +275,7 @@ Constraint:
 
 ### 11.4 External DMA Ownership
 
-`DMA_GRANT` indicates that external DMA service is available.
+`/DMA_GRANT` indicates that external DMA service is available.
 
 Constraint:
 - External DMA ownership must be coordinated by the external device interface or device-side arbiter.
