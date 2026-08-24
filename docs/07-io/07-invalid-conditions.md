@@ -49,6 +49,11 @@ The following are invalid:
 - controller operation state changing outside TP
 - a controller exceeding the arbiter-enforced burst boundary
 - CPU ownership resuming before DMA ownership ends
+- a controller configured with DMA priority 15
+- a controller accepting DMA ownership while DMA_GRANT_ID is 15
+- a controller accepting DMA ownership while DMA_GRANT is deasserted
+- a controller driving DMA-owned interfaces when DMA_GRANT_ID does not match its configured priority
+- DMA_GRANT_ID containing a value other than 15 when no controller is selected
 
 ## Validation Boundary
 

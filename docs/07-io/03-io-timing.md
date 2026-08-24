@@ -80,6 +80,95 @@ While a non-TP TSTEP is held by `IO_WAIT`, all signals required for the pending 
 - DB ownership and source selection when already active
 - controller data required by the pending operation
 
+### External Signal Timing Classes
+
+External I/O signals are classified by how long they remain valid and how the receiving subsystem samples them.
+
+## Phase-Specific Response Signals
+
+The following signals apply only to one assigned TS:
+
+- `IO_READ_REQ`
+- `IO_WRITE_REQ`
+- `IO_CLEAR_AC_REQ`
+- `IO_SKIP_REQ`
+
+Rules:
+
+- A phase-specific response is asserted only during its assigned TS.
+- The response must be stable before the corresponding TP.
+- The response must remain stable through the corresponding TP.
+- The response is released after the required hold interval.
+- A response asserted during one TS does not remain effective during a later TS.
+- A controller must assert the response again if another action is required at a later TP.
+- The response must be derived from stable registered controller state, IOT selection, IOP decode, and the current TS.
+
+`IO_SKIP_REQ` is valid only during TS4.
+
+## Setup-Hold Request
+
+`IO_WAIT` is a setup-hold request.
+
+Rules:
+
+- `IO_WAIT` is valid only while the controller is selected during an external IOT.
+- `IO_WAIT` may hold only an eligible non-TP setup TSTEP.
+- `IO_WAIT` remains asserted until the controller can satisfy the setup requirements for the pending TP.
+- `IO_WAIT` is ignored at a TP position.
+- `IO_WAIT` does not itself commit an operation or change controller state.
+- Deasserting `IO_WAIT` permits normal TSTEP progression to resume.
+
+## Persistent Service Requests
+
+The following signals represent persistent requests rather than phase-specific actions:
+
+- controller interrupt contribution
+- `DMA_REQ[n]`
+- aggregate `INT_REQ`
+- aggregate `DMA_REQ`
+
+Rules:
+
+- A persistent request remains asserted while its underlying request condition remains true.
+- A persistent request is not consumed merely because it is sampled.
+- The owning controller or arbiter deasserts the request only when the condition is cleared, serviced, completed, canceled, or otherwise removed by its contract.
+- Persistent requests may span multiple TS, TP, and major-state boundaries.
+- Aggregate requests remain asserted while at least one contributing request remains asserted.
+
+### Grant Signals
+
+The DMA authorization and selection interface consists of:
+
+- DMA_GRANT
+- DMA_GRANT_ID[3:0]
+
+DMA_GRANT is produced by CPU control and indicates that the CPU has released the memory interface during MS = DMA.  
+DMA_GRANT_ID is produced by the DMA arbiter and identifies the selected DMA priority channel.
+
+Rules:
+
+- DMA_GRANT_ID values 0 through 14 identify valid configured DMA priority channels.
+- DMA_GRANT_ID value 15 indicates that no controller is selected.
+- The arbiter must drive DMA_GRANT_ID to 15 whenever no valid controller selection exists.
+- DMA_GRANT_ID must identify a valid selected controller before that controller drives any DMA-owned interface.
+- DMA_GRANT_ID remains stable for the complete active controller selection.
+- Grant identity must not change during a bounded burst.
+- A controller may act only when DMA_GRANT is asserted and DMA_GRANT_ID matches its configured DMA priority.
+- No controller may act while DMA_GRANT_ID is 15.
+- Grant withdrawal follows the ownership-release ordering defined in [DMA Arbitration](./06-dma-arbitration.md).
+
+## Data and Address Signals
+
+Controller-driven DB, MFB, AB, and MDB values are transfer-specific signals.
+
+Rules:
+
+- A controller-driven value must be valid before the TP that samples it.
+- The value must remain stable through the sampling TP.
+- The controller must maintain the value for the required hold interval after the TP.
+- The controller must release the applicable bus before ownership transfers to another participant.
+- MFB and AB must remain stable for the complete asserted RD or WR interval.
+
 ## Synchronization Boundary
 
 The physical implementation must synchronize `IO_WAIT` before it influences TSTEP progression. The controller contract must prevent asynchronous state changes or repeated commit events.

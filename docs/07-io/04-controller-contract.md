@@ -4,13 +4,13 @@
 
 This document defines the obligations common to all external I/O controllers.
 
-## Address Configuration
+### Address Configuration
 
-Each controller must provide one active configured IOA address.
+Each controller must provide one active configured IOA address for each device interface it implements.  
 
-The architectural behavior does not depend on how that address is physically configured.
+The architectural behavior does not depend on how those addresses are physically configured.  
 
-A DEC-compatible controller must default to the corresponding DEC device address when one is defined. Alternate addresses are permitted but may require software changes.
+A DEC-compatible controller must default each device interface to the corresponding DEC device address when one is defined. Alternate addresses are permitted but may require software changes.
 
 ## Selection Qualification
 
@@ -89,17 +89,74 @@ A controller may assert `IO_WAIT` only:
 
 The controller must deassert `IO_WAIT` when the pending operation is ready to proceed.
 
+## Persistent Service Requests
+
+Controller interrupt contributions and `DMA_REQ[n]` are persistent registered request signals.
+
+Rules:
+
+- A persistent request is derived only from controller state captured at a TP.
+- A persistent request remains asserted while its underlying controller condition remains true.
+- Sampling a persistent request does not clear or consume it.
+- The controller deasserts the request only when the underlying condition is cleared, serviced, completed, canceled, or reset according to the controller-specific contract.
+- A persistent request may remain asserted across multiple TS, TP, instruction, and major-state boundaries.
+- A controller must not generate a transient request pulse that could disappear before the receiving subsystem samples it.
+
+### Interrupt Contribution
+
+A controller interrupt contribution remains asserted while:
+
+```text
+CONTROLLER_INTERRUPT_ENABLE
+AND
+CONTROLLER_INTERRUPT_CONDITION
+```
+
+remains true.
+
+The controller-specific contract defines:
+
+- the interrupt-enable state
+- the interrupt condition
+- the operations that clear the condition
+
+The shared `INT_REQ` signal is the aggregate of all controller interrupt contributions.
+
+### DMA Request
+
+A DMA-capable controller asserts exactly one configured DMA_REQ[n] while DMA service remains pending, where n is in the range 0 through 14.  
+DMA priority 15 is reserved as the no-controller-selected encoding and has no corresponding DMA_REQ line.
+
+The request remains asserted until:
+
+- the complete DMA operation finishes
+- the controller temporarily cannot perform another transfer
+- the operation is canceled
+- reset clears the operation
+
+A selected controller may keep DMA_REQ[n] asserted across selection termination when additional work remains. Selection termination does not consume the controller request.  
+The DMA arbiter determines the aggregate CPU-facing DMA_REQ from DMA_REQ[14:0].
+
+### Receiving-Side Synchronization
+
+Controller interrupt contributions and `DMA_REQ[n]` are registered controller outputs.
+
+Aggregate `INT_REQ` and aggregate `DMA_REQ` must be synchronized before they participate in CPU control decisions.
+
+Synchronization does not change request ownership, persistence, or clearing semantics.
+
 ## DMA-Capable Controllers
 
 A DMA-capable controller additionally must:
 
-- use exactly one configured DMA priority channel
-- assert only the corresponding request line
-- recognize a grant only when `DMA_GRANT` is asserted and `DMA_GRANT_ID` matches its configured priority
-- drive DMA-owned interfaces only while granted
+- use exactly one configured DMA priority in the range 0 through 14
+- assert only the corresponding DMA_REQ line
+- recognize ownership only when DMA_GRANT is asserted and DMA_GRANT_ID matches its configured priority
+- reject DMA_GRANT_ID value 15 as the no-controller-selected state
+- drive DMA-owned interfaces only while validly selected
 - maintain its complete-operation address and remaining word count
 - keep its request asserted while additional service remains pending
-- tolerate grant termination at the configured arbiter burst boundary
+- tolerate selection termination at the configured arbiter burst boundary
 - resume through normal re-arbitration
 
 ## Physical Implementation Boundary
@@ -112,3 +169,42 @@ The following are outside this architectural contract:
 - electrical driver selection
 - connector assignment
 - controller-local counter widths
+
+## Asynchronous Event Boundary
+
+Physical-device events may occur asynchronously relative to system timing.
+
+Each controller must synchronize its physical-device events before those events affect:
+
+- programmer-visible controller state
+- controller flags
+- controller response signals
+- interrupt contribution
+- DMA request state
+
+Programmer-visible controller state changes occur only at TP events.
+
+Controller response signals must be derived only from:
+
+- `IOT_ACTIVE`
+- address match
+- IOP decode
+- the current TS
+- registered controller state
+
+An unsynchronized physical-device signal must not directly drive:
+
+- DB
+- `IO_READ_REQ`
+- `IO_WRITE_REQ`
+- `IO_CLEAR_AC_REQ`
+- `IO_SKIP_REQ`
+- `IO_WAIT`
+- `INT_REQ`
+- `DMA_REQ[n]`
+
+Synchronization of a physical-device event is the responsibility of the controller that interprets that event.
+
+Synchronization of aggregate `INT_REQ`, aggregate `DMA_REQ`, and `IO_WAIT` before use by CPU control or timing remains the responsibility of the receiving CPU-side interface.
+
+The synchronization mechanism and metastability-mitigation implementation belong to the controller or receiving-interface design and are outside this architectural contract.

@@ -133,9 +133,9 @@ Ownership selection values, constraints, and operational behavior are defined in
 
 ---
 
-## DMA Ownership
+### DMA Ownership
 
-During `MS = DMA`, CPU control releases normal ownership of:
+During MS = DMA, CPU control releases normal ownership of:
 
 - MFB
 - AB
@@ -143,9 +143,20 @@ During `MS = DMA`, CPU control releases normal ownership of:
 - RD
 - WR
 
-The external DMA arbiter selects exactly one controller through controller-facing `DMA_GRANT` and `DMA_GRANT_ID[3:0]`.
+DMA_GRANT indicates that the CPU has released these interfaces.  
+The external DMA arbiter selects one controller through DMA_GRANT_ID[3:0].  
+DMA_GRANT_ID values 0 through 14 identify valid controller priority channels.  
+DMA_GRANT_ID value 15 indicates that no controller is selected.
 
-The granted controller owns:
+A controller owns the DMA interfaces only when:
+
+```text
+DMA_GRANT = 1
+AND
+DMA_GRANT_ID = CONTROLLER_DMA_PRIORITY
+```
+
+The selected controller owns:
 
 - MFB
 - AB
@@ -157,17 +168,19 @@ Memory owns MDB during DMA reads.
 
 Ownership rules:
 
-- No controller may drive a DMA-owned interface without a matching active grant.
+- A controller DMA priority must be in the range 0 through 14.
+- No DMA_REQ line exists for priority 15.
+- No controller may drive a DMA-owned interface unless DMA_GRANT is asserted and DMA_GRANT_ID matches its configured priority.
+- No controller may drive a DMA-owned interface while DMA_GRANT_ID is 15.
 - CPU and DMA ownership must not overlap.
-- Grant identity remains stable throughout the active burst.
-- An active grant is non-preemptive.
-- DMA ownership ends at TP4 before CPU ownership resumes in the following FETCH TS1.
+- DMA_GRANT_ID remains stable throughout an active controller selection.
+- An active controller selection is non-preemptive.
+- DMA controller ownership ends at TP4 before CPU ownership resumes in the following FETCH TS1.
 - Memory is the sole MDB producer during a DMA read.
-- The granted controller is the sole MDB producer during a DMA write.
+- The selected controller is the sole MDB producer during a DMA write.
 
-Detailed DMA interface behavior is defined in [DMA Interface](../07-io/05-dma-interface.md)
-
-Arbitration and grant behavior are defined in [DMA Arbitration](../07-io/06-dma-arbitration.md)
+Detailed DMA interface behavior is defined in [DMA Interface](../07-io/05-dma-interface.md).  
+Arbitration and selection behavior are defined in [DMA Arbitration](../07-io/06-dma-arbitration.md).)
 
 ---
 

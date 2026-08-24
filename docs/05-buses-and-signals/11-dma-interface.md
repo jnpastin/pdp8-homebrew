@@ -20,51 +20,43 @@ DMA operations involve:
 
 ## Request Interface
 
-DMA-capable controllers request service through:
+DMA-capable controllers request service through DMA_REQ[14:0].  
+The request interface provides 15 configurable DMA priority-channel request lines.  
+Each DMA-capable controller asserts exactly one configured request line.  
+Valid configured DMA priorities are 0 through 14.  
+DMA priority 15 is reserved as the no-controller-selected encoding and has no corresponding DMA_REQ line.
 
-```text
-DMA_REQ[15:0]
-```
-
-Each DMA-capable controller asserts exactly one configured priority-channel request.
-
-The DMA arbiter produces the aggregate CPU-facing request:
-
-```text
-DMA_REQ
-```
-
+The DMA arbiter produces the aggregate CPU-facing request DMA_REQ.  
 The aggregate request identifies only that DMA service is pending. It does not identify an individual controller.
 
 ## CPU Authorization
 
-CPU control asserts the CPU-facing signal:
-
-```text
-DMA_GRANT
-```
-
-`DMA_GRANT` indicates that the CPU is in `MS = DMA` and has released CPU ownership of the memory interface.
-
-CPU-facing `DMA_GRANT` does not identify the selected DMA controller.
+CPU control asserts DMA_GRANT.  
+DMA_GRANT indicates that the CPU is in MS = DMA and has released CPU ownership of the memory interface.  
+DMA_GRANT does not identify the selected DMA controller.  
+DMA_GRANT is produced by the CPU and is observed by the DMA arbiter and DMA-capable controllers.
 
 ## Controller Selection
 
-The DMA arbiter presents:
+The DMA arbiter presents DMA_GRANT_ID[3:0].
 
-```text
-DMA_GRANT_ID[3:0]
-```
+DMA_GRANT_ID values have the following meanings:
+
+- 0 through 14: selected DMA priority channel
+- 15: no controller selected
 
 A DMA-capable controller accepts ownership only when:
 
 ```text
-DMA_GRANT
+DMA_GRANT = 1
 AND
-(DMA_GRANT_ID = CONTROLLER_DMA_PRIORITY)
+DMA_GRANT_ID = CONTROLLER_DMA_PRIORITY
 ```
 
-Exactly one controller may accept an active grant.
+A controller DMA priority must be in the range 0 through 14.  
+No DMA_REQ line exists for priority 15.  
+No controller accepts ownership while DMA_GRANT_ID is 15.  
+Exactly one controller may accept a valid controller selection.
 
 ## Transport Participation
 

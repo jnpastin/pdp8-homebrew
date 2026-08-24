@@ -31,28 +31,46 @@ Class C signals define the timing structure used by the system.
 
 Class C signals:
 
-- are CPU-local
 - are timing-critical
-- are not visible outside the CPU timing subsystem
-- are not intended for use by independent system modules
 - establish temporal execution structure
+- may be CPU-local or architecturally distributed
 
 Class C signals do not directly define processor behavior.
 
 ---
 
 ## Distribution Scope
+Class C signals have two distribution scopes.
 
-Class C signals remain local to the CPU timing subsystem.
+### CPU-Local Timing Signals
 
-Class C signals:
+The following signals remain within the CPU timing-generation and timing-distribution subsystem:
 
+- MCLK
+- TCLK
+- TSTEP
+- TSEQ
+
+These signals:
 - must not be placed on the backplane
 - must not be relied upon by independent modules
-- must not be exposed as external interfaces
+- must not be exposed as external interfaces unless another architectural interface explicitly requires them
 
 Physical distribution of Class C signals is implementation-dependent.
 
+### Architecturally Distributed Timing Signals
+
+The following signals are distributed to external I/O controllers:
+
+- TS
+- TP
+
+These signals:
+- are available through the external I/O interface
+- may be placed on the backplane
+- may be relied upon by external controllers only as defined by the [I/O Timing Contract](../07-io/03-io-timing.md)
+
+Physical buffering, loading, and distribution are implementation-dependent.
 ---
 
 ## Signal Categories
@@ -112,18 +130,16 @@ Authoritative definitions are maintained in:
 
 ## Global Invariants
 
-- Class C signals are CPU-local.
-- Class C signals must not be placed on the backplane.
-- Class C signals must not be used as external interfaces.
+- MCLK, TCLK, TSTEP, and TSEQ are CPU-local unless another architectural interface explicitly requires them.
+- MCLK, TCLK, TSTEP, and TSEQ must not be relied upon by independent modules.
+- TS and TP are architecturally distributed timing signals.
+- TS and TP are available to external I/O controllers.
+- External controllers may use TS and TP only according to the [I/O Timing Contract](../07-io/03-io-timing.md).
 - Class C signals define timing structure rather than system behavior.
 - Timing behavior is defined by Section 9.
 - Execution behavior is defined by the control system.
 - Major State is part of the control architecture and is not a Class C signal.
-
----
-
-## Summary
-
-Class C signals define the timing framework of the system.
-
-This document classifies timing signals and their organization. Timing definitions, timing behavior, and timing architecture are defined in Section 9.
+ 
+### Summary
+ 
+Class C signals define the timing framework of the system. MCLK, TCLK, TSTEP, and TSEQ remain CPU-local, while TS and TP are architecturally distributed to external I/O controllers. Timing definitions, behavior, and architecture are defined in Section 9 and the applicable external interface contracts.

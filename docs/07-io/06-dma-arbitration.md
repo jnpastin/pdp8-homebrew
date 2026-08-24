@@ -14,16 +14,14 @@ A distinct DMA arbiter subsystem selects the requesting controller. The architec
 
 ## Priority Channels
 
-The DMA interface supports 16 configurable priority channels:
-
-```text
-DMA_REQ[15:0]
-```
-
+The DMA interface provides 15 configurable priority channels through DMA_REQ[14:0].  
 Each DMA-capable controller is configured to assert exactly one request line.
 
 Properties:
 
+- Valid DMA priority identifiers are 0 through 14.
+- DMA priority identifier 15 is reserved as the no-controller-selected encoding.
+- No DMA_REQ line exists for priority 15.
 - Priority is independent of IOA.
 - Higher and lower numerical priority ordering must be defined consistently by the implementation.
 - The configured priority remains stable while the controller requests service.
@@ -31,33 +29,44 @@ Properties:
 
 ## Grant Interface
 
-The arbiter returns:
+CPU control produces DMA_GRANT.  
+DMA_GRANT indicates that the CPU has released the memory interface during MS = DMA.  
+DMA_GRANT does not identify or select an individual controller.
 
-```text
-DMA_GRANT
-DMA_GRANT_ID[3:0]
-```
+The arbiter produces DMA_GRANT_ID[3:0].  
+DMA_GRANT_ID identifies the selected priority channel.
 
-`DMA_GRANT_ID` identifies the selected priority channel.
+DMA_GRANT_ID values have the following meanings:
 
-A controller accepts the grant only when:
+- 0 through 14: valid selected priority channel
+- 15: no controller selected
+
+The arbiter must drive DMA_GRANT_ID to 15 whenever no valid controller selection exists.
+
+A controller accepts DMA ownership only when:
 
 ```text
 DMA_GRANT = 1
-AND DMA_GRANT_ID = CONTROLLER_DMA_PRIORITY
+AND
+DMA_GRANT_ID = CONTROLLER_DMA_PRIORITY
 ```
 
-Exactly one controller may accept an active grant.
+No controller may be configured with priority 15.  
+No controller accepts DMA ownership while DMA_GRANT_ID is 15.  
+Exactly one controller may accept a valid controller selection.
 
 ## Selection Policy
 
-The arbiter uses configurable fixed priority.
+The arbiter uses fixed numerical priority.
 
 Rules:
 
-- The highest-priority asserted request wins.
-- Arbitration occurs only when no controller-specific grant is active.
-- An active grant is non-preemptive.
+- Lower numerical DMA priority identifiers have higher priority.
+- DMA priority 0 is the highest priority.
+- DMA priority 14 is the lowest assignable priority.
+- The lowest-numbered asserted request wins.
+- Arbitration occurs only when no controller is selected.
+- An active controller selection is non-preemptive.
 - A higher-priority request arriving during a burst waits until that burst ends.
 - Priority is reevaluated between bursts.
 
@@ -109,13 +118,14 @@ No CPU control or `MS_NEXT` extension is required. The arbiter implements the fa
 
 ## Grant Release Ordering
 
-When a grant terminates:
+When a controller selection terminates:
 
-1. The arbiter determines termination before TP4.
-2. Controller-facing `DMA_GRANT` becomes inactive at TP4.
-3. The previously granted controller releases MFB, AB, MDB, RD, and WR at the same boundary.
-4. Aggregate `DMA_REQ` is already deasserted for the CPU decision made at TP4.
-5. CPU ownership begins in the following FETCH TS1.
+- The arbiter determines termination before TP4.
+- The previously selected controller releases MFB, AB, MDB, RD, and WR at TP4.
+- The arbiter sets DMA_GRANT_ID to 15 at the same boundary.
+- Aggregate DMA_REQ is already deasserted for the CPU decision made at TP4.
+- CPU control deasserts DMA_GRANT when control exits MS = DMA.
+- CPU ownership begins in the following FETCH TS1.
 
 CPU and DMA ownership must not overlap.
 

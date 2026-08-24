@@ -340,7 +340,7 @@ OR STATUS[8]
 `STATUS[11]` is set when required by RK8E-compatible behavior, including:
 
 - completion of a data transfer
-- completion of a seek-only operation when enabled
+- completion of a seek-only operation when enabled by the Command Register
 - completion of recalibration when enabled
 - an error that terminates an active operation
 
@@ -414,7 +414,7 @@ The Command Register contains the RK8E interrupt-enable bit.
 The controller asserts its interrupt contribution when:
 
 ```text
-COMMAND[3]
+COMMAND[8]
 AND
 (CONTROL_DONE OR ERROR)
 ```
@@ -755,14 +755,12 @@ The operation completes only after the required number of successful word transf
 
 # DMA Participation
 
-## DMA Capability
+### DMA Capability
 
-The RK8E-compatible controller uses DMA.
-
-The controller occupies one configured DMA priority channel.
-
-DMA priority is independent of device address `74`.
-
+The RK8E-compatible controller uses DMA.  
+The controller occupies one configured DMA priority channel in the range 0 through 14.  
+DMA priority 15 is reserved as the no-controller-selected encoding and must not be assigned to the controller.  
+DMA priority is independent of device address 74.  
 The priority-configuration mechanism is outside this contract.
 
 ## DMA Request
@@ -784,12 +782,13 @@ The controller reasserts its request when another word can be transferred.
 The controller accepts DMA ownership only when:
 
 ```text
-DMA_GRANT
+DMA_GRANT = 1
 AND
-(DMA_GRANT_ID = CONTROLLER_DMA_PRIORITY)
+DMA_GRANT_ID = CONTROLLER_DMA_PRIORITY
 ```
 
-The controller must not drive DMA-owned interfaces without a matching active grant.
+The controller does not accept DMA ownership while DMA_GRANT_ID is 15.  
+The controller must not drive DMA-owned interfaces without a matching valid controller selection..
 
 ## DMA Read from Disk to Memory
 

@@ -35,7 +35,7 @@ External IOT execution uses:
 
 Properties:
 
-- Each external controller has one active configured address.
+- Each external controller has one active configured address for each device interface it implements.
 - Address assignment is independent of physical backplane position.
 - A controller compatible with a DEC device defaults to the corresponding DEC device address when one is defined.
 - A compatible controller may be configured to use another nonreserved address.
