@@ -29,7 +29,7 @@ External IOT execution uses:
 - `IO_WAIT`
 - shared TS and TP timing signals
 
-![I/O Subsystem Diagram](../../Diagrams/io/io_subsystem/export/io_subsystem.png)
+![I/O Subsystem Diagram](../../diagrams/io/io_subsystem/export/io_subsystem.png)
 
 ## Device Addressing
 
