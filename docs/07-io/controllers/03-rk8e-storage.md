@@ -484,8 +484,6 @@ DSKP does not clear Control Done or Error.
 
 `DCLR` decodes `AC[1:0]`.
 
-The bit numbering in this document follows the project convention in which `AC[11]` is the most significant bit and `AC[0]` is the least significant bit.
-
 | `AC[1:0]` | Operation | Contract |
 |---:|---|---|
 | `00` | DCLS | Clear Status Register |
@@ -608,7 +606,7 @@ The pre-TP2 AC value is used.
 
 ## Controller Contract
 
-During TS3:
+During TS2:
 
 ```text
 IO_CLEAR_AC_REQ = 1

@@ -14,6 +14,27 @@ All controller-local state changes caused by an IOT occur only at TP events.
 
 ## IOT Phase Allocation
 
+### External-IOT Timing Overview
+
+The following diagram shows representative external-IOT read and write timing without an asserted wait request.
+
+![External IOT Timing](../../diagrams/io/io_timing/export/io_timing.png)
+
+The diagram shows the following sequence:
+
+- `IOT_ACTIVE`, `IOA`, and `IOP` remain valid throughout the external-IOT EXECUTE major state.
+- A selected controller presents `IO_READ_REQ` or `IO_WRITE_REQ` during TS3.
+- CPU control accepts the request at TP3.
+- CPU control asserts `/DB_READ` or `/DB_WRITE` during TS4.
+- DB remains valid through TP4.
+- The requested data transfer commits at TP4.
+- `IO_CLEAR_AC_REQ`, when required, is asserted during TS2 and commits at TP2.
+- `IO_SKIP_REQ`, when its condition is true, is asserted during TS4 and commits at TP4.
+
+Conditional signals are shown asserted. When the corresponding condition is false, the signal remains deasserted for the complete cycle.
+
+The waveform is representative. Device-specific controller documents define which response signals are required by each IOT.
+
 ### TS1: Selection and Decode
 
 During TS1:
@@ -79,6 +100,25 @@ While a non-TP TSTEP is held by `/IO_WAIT`, all signals required for the pending
 - applicable controller response intent
 - DB ownership and source selection when already active
 - controller data required by the pending operation
+
+## External-IOT Timing with Wait
+
+The following diagram shows `/IO_WAIT` holding an eligible non-TP setup step.
+
+![External IOT Timing with WAIT](../../diagrams/io/io_wait_timing/export/io_wait_timing.png)
+
+While `/IO_WAIT` is asserted:
+
+- the current eligible setup TSTEP remains active
+- no TS or TP advancement occurs
+- MCLK and TCLK continue
+- `IOT_ACTIVE`, `IOA`, and `IOP` remain stable
+- the controller response request remains stable
+- data and ownership signals required by the pending operation remain stable
+
+After `/IO_WAIT` is deasserted, normal TSTEP progression resumes. The pending TP occurs exactly once. `/IO_WAIT` does not extend, suppress, or repeat a TP.
+
+The diagram shows a hold during TS3. The same rule applies to any setup TSTEP that the timing contract identifies as eligible for `/IO_WAIT`.
 
 ### External Signal Timing Classes
 

@@ -64,6 +64,29 @@ During a DMA write:
 
 ## DMA Timing
 
+### DMA Timing Overview
+
+The following diagram shows one single-word DMA major-state cycle and the preceding transition from FETCH.
+
+![DMA Timing](../../diagrams/io/dma_timing/export/dma_timing.png)
+
+The diagram shows the following sequence:
+
+- A controller asserts its configured `/DMA_REQ[n]` only after preparing the complete next transfer.
+- The DMA arbiter asserts aggregate `/DMA_REQ` while `DMA_ENABLE` permits DMA service.
+- CPU control enters `MS = DMA` and asserts `/DMA_GRANT`.
+- The arbiter commits the selected `DMA_GRANT_ID` at TP1.
+- The selected controller presents one complete memory operation during TS2.
+- Exactly one word transfers at TP2.
+- The controller transfer state and arbiter burst count update at TP3.
+- During TS4, aggregate `/DMA_REQ` determines whether CPU control remains in DMA or returns to FETCH at TP4.
+- `/DMA_GRANT` remains asserted throughout `MS = DMA` and deasserts when CPU control exits DMA.
+- `DMA_GRANT_ID` returns to octal `17` when no controller is selected.
+
+The DMA-read and DMA-write groups are alternative views of the same transfer phase. They do not occur simultaneously.
+
+No DMA wait state exists. A controller that cannot complete the next transfer keeps its `/DMA_REQ[n]` line deasserted until the complete transfer is prepared.
+
 ### TS1 and TP1: Arbitration or Selection Continuation
 
 If no controller is selected:

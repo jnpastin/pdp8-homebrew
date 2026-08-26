@@ -29,7 +29,20 @@ External IOT execution uses:
 - `/IO_WAIT`
 - shared TS and TP timing signals
 
+## I/O Subsystem Context
+
+The following diagram shows the major I/O subsystem participants and the logical interfaces between them.
+
 ![I/O Subsystem Diagram](../../diagrams/io/io_subsystem/export/io_subsystem.png)
+
+The diagram distinguishes:
+
+- programmed-I/O communication between CPU control and an external controller
+- DMA requester selection performed by the DMA arbiter
+- normal CPU memory access
+- DMA memory access performed by the selected controller
+
+The diagram is an architectural overview. The detailed behavioral, timing, ownership, and signal-polarity rules in the applicable interface documents remain authoritative.
 
 ## Device Addressing
 
