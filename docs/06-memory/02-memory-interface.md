@@ -68,6 +68,23 @@ When /WR is asserted as part of a valid write operation, memory uses MEM_ADDR to
 
 /WR does not define the source of write data. It only defines the memory-side write request.
 
+### Memory Transaction Timing
+
+The following diagram shows representative CPU memory-read and memory-write transactions.
+
+![Memory Timing](../../diagrams/memory/memory_timing/export/memory_timing.png)
+
+For both transaction types:
+
+- CPU control supplies `MFB[2:0]` and `AB[11:0]`.
+- `MFB` and `AB` remain stable while `/RD` or `/WR` is asserted and through the associated commit TP.
+- Exactly one of `/RD` or `/WR` is asserted for a valid memory transaction.
+- During a memory read, memory drives `MDB[11:0]`, and the CPU captures the value at the commit TP.
+- During a memory write, the CPU drives `MDB[11:0]`, and memory captures the value at the commit TP.
+- `MDB` remains valid for the required setup and hold interval around the commit TP.
+
+The diagram uses TS2 and TP2 as a representative transaction phase. The active TS and commit TP depend on the specific memory operation. The signal relationships and stability requirements remain unchanged when a memory transaction occurs during another TS and TP.
+
 ## Memory Address Formation
 
 The memory subsystem forms its memory selection value from MFB and AB.
@@ -102,16 +119,6 @@ During a valid write operation:
 - memory stores the 12-bit value present on MDB
 
 Memory is not the MDB driver during a write.
-
-## Idle Behavior
-
-When no valid memory operation is active:
-
-- memory does not modify stored contents
-- memory does not drive MDB
-- memory does not interpret MFB or AB as a completed memory operation
-
-MFB and AB may have values while memory is idle, but those values do not cause memory behavior without an active memory operation.
 
 ## Source Independence
 

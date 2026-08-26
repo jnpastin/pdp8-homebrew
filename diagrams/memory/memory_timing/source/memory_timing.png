@@ -1,0 +1,34 @@
+{signal: [
+  {name: 'CLK - 20MHz', wave: 'p.............................'},
+  ['CPU Timing',
+    {name: 'TS1', wave: '01.....0.....................1'},
+        {name: 'TP1', wave: '0.....Hl......................'},
+        {name: 'TS2', wave: '0......1........0.............'},
+        {name: 'TP2', wave: '0..............Hl.............'},
+        {name: 'TS3', wave: '0...............1......0......'},
+        {name: 'TP3', wave: '0.....................Hl......'},
+        {name: 'TS4', wave: '10.....................1.....0'},
+        {name: 'TP4', wave: '10..........................Hl'}
+  ],
+  {},
+  ['Read',
+   {name: 'MFB[2:0]', wave: 'x......=........x.............', data: ['Field Valid']},
+   {name: 'AB[11:0]', wave: 'x......=........x.............', data: ['Address Valid']},
+   {name: 'MDB[11:0]', wave: 'x......=........x.............', data: ['Data Valid']},
+   {name: '/RD', wave: '1......0........1.............', data: []},
+  ],
+  {},
+  ['Write',
+   {name: 'MFB[2:0]', wave: 'x......=........x.............', data: ['Field Valid']},
+   {name: 'AB[11:0]', wave: 'x......=........x.............', data: ['Address Valid']},
+   {name: 'MDB[11:0]', wave: 'x......=........x.............', data: ['Data Valid']},
+   {name: '/WR', wave: '1......0........1.............', data: []},
+  ],
+ ],
+
+head:{
+   text:'Memory Timing',
+   tick:-1,
+  every:1},
+foot:{
+    text: 'The active TS and commit TP depend on the specific memory operation. MFB, AB, and write data must remain valid while /RD or /WR is asserted and through the associated commit TP.'}}
