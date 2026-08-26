@@ -68,7 +68,7 @@ When /WR is asserted as part of a valid write operation, memory uses MEM_ADDR to
 
 /WR does not define the source of write data. It only defines the memory-side write request.
 
-### Memory Transaction Timing
+## Memory Transaction Timing
 
 The following diagram shows representative CPU memory-read and memory-write transactions.
 
