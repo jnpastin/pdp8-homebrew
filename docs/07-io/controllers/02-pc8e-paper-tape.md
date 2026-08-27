@@ -255,19 +255,25 @@ RSF does not modify controller state.
 
 ### Controller Contract
 
-During TS2:
+During TS3:
 
-- the controller drives the reader buffer onto DB
 - the controller asserts `IO_READ_REQ`
 
-At TP2:
+At TP3, CPU control accepts the read request.
+
+During TS4:
+
+- CPU control asserts `/DB_READ`
+- the controller drives the reader buffer onto DB
+
+At TP4:
 
 ```text
+AC <- AC OR DB
 READER_FLAG <- 0
 ```
 
-The character represented by the reader buffer is consumed at TP2.
-
+The character represented by the reader buffer is consumed at TP4.  
 RRB does not request AC clear.
 
 ## RFC
@@ -292,23 +298,30 @@ No controller response signal is required.
 
 ### Controller Contract
 
-During TS2:
+During TS3:
 
-- the controller drives the reader buffer onto DB
 - the controller asserts `IO_READ_REQ`
+- the controller accepts the request to acquire the next character
 
-At TP2:
+At TP3:
+
+- CPU control accepts the read request
+- `READER_FLAG <- 0`
+
+During TS4:
+
+- CPU control asserts `/DB_READ`
+- the controller drives the previously visible reader-buffer value onto DB
+
+At TP4:
 
 ```text
-READER_FLAG <- 0
+AC <- AC OR DB
 ```
 
-The character represented by the reader buffer is consumed at TP2.
+The previously visible character is consumed at TP4.
 
-At TP3, the controller accepts the request to acquire the next character.
-
-The reader flag is set later, at a TP event, when the requested character becomes available in the reader buffer.
-
+The reader flag is set later, at a TP event, when the requested next character becomes available in the reader buffer. The controller must preserve the previous reader-buffer value through TP4 even if acquisition of the next character begins at TP3.
 # Punch Interface
 
 ## Punch Buffer
@@ -420,54 +433,64 @@ No controller response signal is required.
 
 ### Controller Contract
 
-During TS2:
+During TS3:
 
-- the controller asserts `IO_WRITE_REQ`
+- the controller asserts `IO_WRITE_REQ` when it can accept a character
 
-At TP2, when the controller can accept a character:
+At TP3, CPU control accepts the write request.
+
+During TS4:
+
+- CPU control asserts `/DB_WRITE`
+- the CPU drives AC onto DB
+
+At TP4, when the request was accepted:
 
 ```text
-PUNCH_BUFFER <- AC[7:0]
+PUNCH_BUFFER <- DB[7:0]
 ```
 
-At TP3, the controller accepts the request to perform the punch operation using the character in the punch buffer.
-
+The accepted character becomes the active programmer-visible punch operation.  
 PPC does not clear the punch flag.
 
 If the controller cannot accept the character:
 
+- it does not assert `IO_WRITE_REQ`
+- no DB transfer occurs
 - the new character is discarded
-- the punch buffer is not changed
-- the active punch operation is not changed
+- the active punch operation is not modified
 
 ## PLS
 
 ### Controller Contract
 
-During TS2:
+During TS3:
 
-- the controller asserts `IO_WRITE_REQ`
+- the controller asserts `IO_WRITE_REQ` when it can accept a character
 
-At TP2, when the controller can accept a character:
+At TP3, CPU control accepts the write request.
+
+During TS4:
+
+- CPU control asserts `/DB_WRITE`
+- the CPU drives AC onto DB
+
+At TP4, when the request was accepted:
 
 ```text
-PUNCH_BUFFER <- AC[7:0]
-```
-
-At TP3, when the character was accepted:
-
-```text
+PUNCH_BUFFER <- DB[7:0]
 PUNCH_FLAG <- 0
 ```
 
-At TP3, the controller accepts the request to perform the punch operation using the character in the punch buffer.
+The accepted character becomes the active programmer-visible punch operation.
 
 If the controller cannot accept the character:
 
+- it does not assert `IO_WRITE_REQ`
+- no DB transfer occurs
 - the new character is discarded
-- the punch buffer is not changed
-- the active punch operation is not changed
-- the punch flag is not cleared as a consequence of the rejected character
+- the active punch operation is not modified
+- the punch flag is not cleared
 
 # Asynchronous Controller Events
 

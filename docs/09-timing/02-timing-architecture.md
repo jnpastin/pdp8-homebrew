@@ -36,12 +36,14 @@ MS (Major State)
 
 ## Signal Polarity Convention
 
-Following DEC PDP-8/e convention:
+TP and TS signals are active-high.
 
-- TP signals are **active-high** (positive pulses)
-- TS signals are **active-low** (asserted low when active)
+- TP signals are positive pulses.
+- TS signals are positive phase windows.
+- A TS signal is asserted high while its corresponding phase is active.
+- A TP signal is asserted high for its corresponding commit event.
 
-The timing diagram reflects electrical states: TS signals are drawn LOW when active, TP signals are drawn HIGH when active.
+The timing diagrams show the actual electrical levels of both signal classes.
 
 ---
 

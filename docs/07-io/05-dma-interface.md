@@ -73,7 +73,8 @@ The following diagram shows one single-word DMA major-state cycle and the preced
 The diagram shows the following sequence:
 
 - A controller asserts its configured `/DMA_REQ[n]` only after preparing the complete next transfer.
-- The DMA arbiter asserts aggregate `/DMA_REQ` while `DMA_ENABLE` permits DMA service.
+- The DMA arbiter establishes `DMA_ENABLE`.
+- Separate combinational aggregation logic continuously derives aggregate `/DMA_REQ` from `DMA_ENABLE` and `/DMA_REQ[14:0]`.
 - CPU control enters `MS = DMA` and asserts `/DMA_GRANT`.
 - The arbiter commits the selected `DMA_GRANT_ID` at TP1.
 - The selected controller presents one complete memory operation during TS2.
@@ -125,9 +126,14 @@ TP3 does not represent an independent transfer or permit accounting for a transf
 
 ### TS4 and TP4: Continuation Decision
 
-During TS4, the DMA arbiter determines whether aggregate /DMA_REQ remains asserted.
+During TS4:
 
-At TP4, CPU control commits:
+- controllers establish their `/DMA_REQ[n]` outputs
+- the arbiter establishes `DMA_ENABLE`
+- combinational aggregation logic continuously derives aggregate `/DMA_REQ`
+- `/DMA_REQ[n]`, `DMA_ENABLE`, and aggregate `/DMA_REQ` settle before TP4
+
+At TP4, CPU control samples aggregate `/DMA_REQ` and commits:
 
 ```text
 /DMA_REQ = 0 -> MS_NEXT = DMA

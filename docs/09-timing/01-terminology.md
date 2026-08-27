@@ -121,8 +121,8 @@ TS ranges are based on DEC timing reference diagrams. See [cpu-timing-overview](
 
 ## 4.3 Properties
 
-- Active-low signals (following DEC convention)
-- Exactly one TS asserted (active-low) at a time
+- Active-high signals
+- Exactly one TS asserted at a time
 - Span multiple TCLK cycles
 - Derived from TSTEP
 
@@ -167,5 +167,5 @@ MS is independent of timing structure.
 | TSTEP | Single timing position | — |
 | TSEQ  | Full timing sequence | — |
 | TP    | Event trigger | Active-high |
-| TS    | Execution phase window | Active-low |
+| TS    | Execution phase window | Active-high |
 | MS    | Instruction control state | — |

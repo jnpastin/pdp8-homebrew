@@ -149,15 +149,21 @@ The request remains asserted until:
 A selected controller may keep /DMA_REQ[n] asserted across selection termination when additional immediately transferable work remains.  
 Selection termination does not consume the controller request.  
 A controller that cannot immediately complete another transfer must deassert /DMA_REQ[n] after completing the current transfer and request service again when the next transfer is prepared.  
-The DMA arbiter determines the aggregate CPU-facing /DMA_REQ from /DMA_REQ[14:0].
+The DMA arbiter produces `DMA_ENABLE`.
+
+Separate combinational aggregation logic continuously derives aggregate CPU-facing `/DMA_REQ` from `DMA_ENABLE` and `/DMA_REQ[14:0]`.
+
+The controller does not generate aggregate `/DMA_REQ`.
 
 ### Receiving-Side Synchronization
 
 Controller interrupt contributions and `/DMA_REQ[n]` are registered controller outputs.
 
-Aggregate `/INT_REQ` and aggregate `/DMA_REQ` must be synchronized before they participate in CPU control decisions.
+Aggregate `/INT_REQ` must satisfy the CPU interrupt-input synchronization requirements before participating in CPU control decisions.
 
-Synchronization does not change request ownership, persistence, or clearing semantics.
+Aggregate `/DMA_REQ` is a combinational CPU input derived from `DMA_ENABLE` and the registered controller `/DMA_REQ[n]` outputs. It is not passed through an additional synchronization stage.
+
+`DMA_ENABLE`, `/DMA_REQ[n]`, and aggregate `/DMA_REQ` must satisfy the applicable setup and hold requirements before CPU control samples aggregate `/DMA_REQ` at TP4.
 
 ## DMA-Capable Controllers
 
@@ -224,6 +230,8 @@ An unsynchronized physical-device signal must not directly drive:
 
 Synchronization of a physical-device event is the responsibility of the controller that interprets that event.
 
-Synchronization of aggregate `/INT_REQ`, aggregate `/DMA_REQ`, and `/IO_WAIT` before use by CPU control or timing remains the responsibility of the receiving CPU-side interface.
+Synchronization of aggregate `/INT_REQ` and `/IO_WAIT` before use by CPU control or timing remains the responsibility of the receiving CPU-side interface.
+
+Aggregate `/DMA_REQ` is not synchronized through an additional stateful stage. It is derived combinationally from `DMA_ENABLE` and registered controller `/DMA_REQ[n]` outputs and must satisfy the CPU’s TP4 setup and hold requirements.
 
 The synchronization mechanism and metastability-mitigation implementation belong to the controller or receiving-interface design and are outside this architectural contract.

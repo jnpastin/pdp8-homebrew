@@ -38,6 +38,8 @@ Defined in:
 - [HLT_REQ](./01-flags.md#hlt_req)
 - [IE](./01-flags.md#ie)  
 - [II](./01-flags.md#ii)  
+- [IOT_READ_PENDING](./01-flags.md#iot_read_pending)
+- [IOT_WRITE_PENDING](./01-flags.md#iot_write_pending)
 - [LZ](./01-flags.md#lz)  
 - [MBZ](./01-flags.md#mbz)  
 - [RUN](./01-flags.md#run)
@@ -157,8 +159,8 @@ Defined in: [External Inputs](./04-external-inputs.md)
 
 ### External IOT Response Inputs
 
-- [I/O_READ](./04-external-inputs.md#io_read_req)
+- [I/O_READ_REQ](./04-external-inputs.md#io_read_req)
 - [I/O_WRITE_REQ](./04-external-inputs.md#io_write_req)
-- [I/O_SKIP_REQ]./04-external-inputs.md#io_skip_req)
+- [I/O_SKIP_REQ](./04-external-inputs.md#io_skip_req)
 - [I/O_CLEAR_AC_REQ](./04-external-inputs.md#io_clear_ac_req)
 - [/I/O_WAIT](./04-external-inputs.md#io_wait)

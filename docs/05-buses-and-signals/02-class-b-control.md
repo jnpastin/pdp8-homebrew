@@ -178,15 +178,29 @@ Each DMA-capable controller asserts exactly one request line corresponding to it
 Valid configured DMA priorities are 0 through 14.  
 DMA priority 15 is reserved as the no-controller-selected encoding and has no corresponding /DMA_REQ line.
 
-#### DMA Arbiter to CPU
+#### DMA Arbiter to Aggregation Logic
 
-- aggregate /DMA_REQ
+- `DMA_ENABLE`
+
+#### DMA Aggregation Logic to CPU
+
+- aggregate `/DMA_REQ`
+
+Aggregate `/DMA_REQ` is continuously derived from `DMA_ENABLE` and `/DMA_REQ[14:0]`. It must settle before CPU control samples it at TP4.
 
 #### CPU to DMA Arbiter and Controllers
 
-- /DMA_GRANT
+- `MS[2:0]`
+- `/DMA_GRANT`
+- shared TS signals
+- shared TP signals
+
+MS provides the current CPU major-state context. The DMA arbiter uses `MS = EXECUTE` and `TS4` to assert combinational `DMA_ENABLE`, allowing pending DMA requests to participate in the TP4 major-state transition decision.
+ 
+`MS` does not grant DMA ownership. DMA ownership requires `/DMA_GRANT` asserted and a matching valid `DMA_GRANT_ID`.
 
 /DMA_GRANT indicates that the CPU has entered DMA service and released the memory interface.  
+
 /DMA_GRANT does not identify a selected controller.
 
 #### DMA Arbiter to Controllers
@@ -202,7 +216,9 @@ DMA_GRANT_ID value 15 indicates that no controller is selected.
 - IOA, IOP, IOT_ACTIVE, /DB_READ, and /DB_WRITE are CPU outputs during external-IOT execution.
 - IO_READ_REQ, IO_WRITE_REQ, IO_SKIP_REQ, IO_CLEAR_AC_REQ, and /IO_WAIT are selected-controller outputs and CPU inputs.
 - /DMA_REQ[14:0] are controller-to-arbiter priority-channel requests.
-- Aggregate /DMA_REQ is the arbiter-to-CPU request.
+- `DMA_ENABLE` is the arbiter-to-aggregation-logic qualification output.
+- Aggregate `/DMA_REQ` is the aggregation-logic-to-CPU request.
+- Aggregate `/DMA_REQ` is continuously derived from `DMA_ENABLE` and `/DMA_REQ[14:0]`.
 - /DMA_GRANT is the CPU-generated authorization indicating that the CPU has released the memory interface during MS = DMA.
 - DMA_GRANT_ID[3:0] is the arbiter-generated controller-selection field.
 - DMA_GRANT_ID values 0 through 14 identify valid configured DMA priority channels.
@@ -210,6 +226,10 @@ DMA_GRANT_ID value 15 indicates that no controller is selected.
 - A controller owns the DMA interfaces only while /DMA_GRANT is asserted and DMA_GRANT_ID matches its configured DMA priority.
 - During DMA, only the controller selected by /DMA_GRANT and DMA_GRANT_ID may drive /RD and /WR.
 - During CPU memory operations, CPU control drives /RD and /WR.
+- `MS[2:0]` is a CPU-generated control field distributed to the DMA arbiter.
+- The DMA arbiter uses `MS = EXECUTE` and `TS4` to assert combinational `DMA_ENABLE`.
+- `DMA_ENABLE` is not stored state.
+- The DMA arbiter must not modify or participate in generating `MS`.
 
 Detailed I/O behavior is defined in [I/O Architecture](../07-io/01-io-architecture.md).  
 Detailed DMA arbitration is defined in [DMA Arbitration](../07-io/06-dma-arbitration.md).

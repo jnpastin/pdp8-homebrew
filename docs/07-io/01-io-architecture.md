@@ -95,7 +95,27 @@ Controller-local state changes do not require a separate CPU response signal. Th
 
 DMA arbitration is external to CPU control.
 
-The CPU observes only the aggregate DMA request. The external DMA arbiter selects a controller and manages controller-facing grant identity, burst limits, and re-arbitration.
+DMA-capable controllers provide individual `/DMA_REQ[n]` request lines to the DMA-request aggregation logic.
+
+The DMA arbiter:
+
+- selects the active DMA controller
+- produces `DMA_GRANT_ID[3:0]`
+- establishes the combinational `DMA_ENABLE` qualification output
+- maintains burst-selection, burst-count, and fairness state
+
+Separate combinational aggregation logic continuously derives aggregate `/DMA_REQ`:
+
+```text
+/DMA_REQ =
+    NOT (
+        DMA_ENABLE
+        AND
+        ANY_CONTROLLER_REQUEST_ASSERTED
+    )
+```
+
+CPU control observes only aggregate `/DMA_REQ`. It does not identify or select an individual DMA controller.
 
 During DMA, the granted controller directly participates in the memory interface and supplies the operation-specific memory-facing signals defined in [DMA Interface](./05-dma-interface.md).
 

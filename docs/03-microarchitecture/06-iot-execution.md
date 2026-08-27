@@ -56,6 +56,52 @@ AC <- AC OR DB_INPUT
 
 No direct DB transfer to another CPU register is defined.
 
+### Pending Transfer State
+
+`IOT_TRANSFER` preserves an accepted DB transfer request for execution during the immediately following TS.
+
+At external-IOT TP2 or TP3:
+
+```text
+if IO_READ_REQ = 1:
+    IOT_TRANSFER <- READ
+else if IO_WRITE_REQ = 1:
+    IOT_TRANSFER <- WRITE
+else if a pending transfer commits at this TP:
+    IOT_TRANSFER <- NONE
+```
+
+`IO_READ_REQ` and `IO_WRITE_REQ` must not both be asserted.
+
+During the transfer TS:
+
+- `IOT_READ_PENDING` selects `/DB_READ` and `DB_READ_TO_AC`.
+- `IOT_WRITE_PENDING` selects `/DB_WRITE` and `DB_WRITE_FROM_AC`.
+- `IOT_TRANSFER = NONE` selects no DB transfer.
+
+Transfer timing is:
+
+```text
+request during TS2
+-> acceptance at TP2
+-> transfer during TS3
+-> commit at TP3
+
+request during TS3
+-> acceptance at TP3
+-> transfer during TS4
+-> commit at TP4
+```
+
+At the commit TP:
+
+- the completed transfer clears to `NONE` when no new request is accepted
+- a newly accepted request replaces the completed transfer when acceptance and completion occur at the same TP
+
+The active transfer depends on committed `IOT_TRANSFER` state, not directly on the current request inputs.
+
+`IOT_TRANSFER` records only transfer direction. It does not contain DB data, identify the selected controller, or independently authorize DB ownership.
+
 ### IOA and IOP Handling
 
 IOA and IOP are derived directly from IR.
@@ -78,34 +124,22 @@ Constraints:
 
 ---
 
-### External IOT Phase Model
+### External IOT Phase Binding
 
-#### TS1
+The phase-by-phase external-IOT schedule is defined in [Major State Timing](../09-timing/03-major-state-timing.md#execute-external-iot)
 
-During TS1:
+This document defines the microarchitectural operations that occur within that timing schedule:
 
-- `IOT_ACTIVE`, IOA, and IOP are valid.
-- Controllers evaluate address match.
-- The selected controller decodes IOP.
-- No external-IOT action commits at TP1.
+- A transfer request accepted at TP2 is recorded in `IOT_TRANSFER` and executes during TS3.
+- A transfer request accepted at TP3 is recorded in `IOT_TRANSFER` and executes during TS4.
+- `IOT_READ_PENDING` selects `/DB_READ` and `DB_READ_TO_AC` during the transfer TS.
+- `IOT_WRITE_PENDING` selects `/DB_WRITE` and `DB_WRITE_FROM_AC` during the transfer TS.
+- The transfer commits at the TP associated with the transfer TS.
+- A completed transfer clears `IOT_TRANSFER` to `NONE` unless another request is accepted at the same TP.
+- When completion and request acceptance occur at the same TP, the newly accepted transfer replaces the completed transfer.
+- `IO_CLEAR_AC_REQ` and `IO_SKIP_REQ` select their corresponding CPU micro-operations according to the timing and combination constraints defined by the external-IOT schedule.
 
-#### TS2 and TS3
-
-During TS2 and TS3:
-
-- The selected controller may assert phase-specific read, write, or clear responses.
-- A response asserted during a TS commits exactly once at the following TP.
-- The selected controller may assert `/IO_WAIT` during an eligible non-TP setup step.
-
-#### TS4
-
-During TS4:
-
-- The selected controller may assert phase-specific read, write, clear, or skip responses.
-- `IO_SKIP_REQ` is valid only during TS4.
-- `IO_SKIP_REQ` may be generated combinationally from `IOT_ACTIVE`, address match, IOP decode, and stable registered controller state..
-- TP4 device actions and CPU sequencing decisions commit simultaneously from pre-TP4 inputs.
-- A result committed at TP4 cannot affect another action or decision committed at TP4.
+The timing document defines when requests may be asserted, accepted, transferred, and committed. This document defines how those events map to CPU state and micro-operations.
 
 ### Response Constraints
 

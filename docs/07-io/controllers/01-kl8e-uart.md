@@ -258,10 +258,22 @@ KCC does not transfer the keyboard receive register.
 
 ### Controller Contract
 
+During TS3:
+
+- the controller asserts `IO_READ_REQ`
+
+At TP3, CPU control accepts the read request.
+
 During TS4:
 
+- CPU control asserts `/DB_READ`
 - the controller drives the keyboard receive register onto DB
-- the controller asserts `IO_READ_REQ`
+
+At TP4:
+
+```text
+AC <- AC OR DB
+```
 
 KRS does not modify controller state.
 
@@ -269,16 +281,24 @@ KRS does not modify controller state.
 
 ### Controller Contract
 
-During TS2:
+During TS3:
 
 - the controller asserts `IO_WRITE_REQ`
 
-At TP2:
+At TP3, CPU control accepts the write request.
+
+During TS4:
+
+- CPU control asserts `/DB_WRITE`
+- the CPU drives AC onto DB
+
+At TP4:
 
 ```text
-INTERRUPT_ENABLE <- AC[0]
+INTERRUPT_ENABLE <- DB[0]
 ```
 
+All other DB bits are ignored.  
 KIE does not request AC clear.
 
 ## KRB
@@ -287,18 +307,29 @@ KIE does not request AC clear.
 
 During TS2:
 
+- the controller asserts `IO_CLEAR_AC_REQ`
+
+At TP2:
+
 ```text
-IO_CLEAR_AC_REQ = 1
+AC <- 0
 ```
+
+During TS3:
+
+- the controller asserts `IO_READ_REQ`
+
+At TP3, CPU control accepts the read request.
 
 During TS4:
 
+- CPU control asserts `/DB_READ`
 - the controller drives the keyboard receive register onto DB
-- the controller asserts `IO_READ_REQ`
 
 At TP4:
 
 ```text
+AC <- AC OR DB
 KEYBOARD_FLAG <- 0
 ```
 
@@ -412,21 +443,32 @@ No controller response signal is required.
 
 ### Controller Contract
 
-During TS2:
+During TS3:
 
-- the controller asserts `IO_WRITE_REQ`
+- the controller asserts `IO_WRITE_REQ` when it can accept a character
 
-At TP2, when the controller can accept a character:
+At TP3, CPU control accepts the write request.
+
+During TS4:
+
+- CPU control asserts `/DB_WRITE`
+- the CPU drives AC onto DB
+
+At TP4, when the request was accepted:
 
 ```text
-TELEPRINTER_TRANSMIT_REGISTER <- AC[7:0]
+TELEPRINTER_TRANSMIT_REGISTER <- DB[7:0]
 ```
 
-The accepted character becomes the active programmer-visible output operation.
-
+The accepted character becomes the active programmer-visible output operation.  
 TPC does not clear the teleprinter flag.
 
-If the controller cannot accept the character, the controller discards the new character and does not modify the active output operation.
+If the controller cannot accept the character:
+
+- it does not assert `IO_WRITE_REQ`
+- no DB transfer occurs
+- the new character is discarded
+- the active output operation is not modified
 
 ## TSK
 
@@ -450,19 +492,21 @@ TSK does not modify controller state.
 
 ### Controller Contract
 
-During TS2:
+During TS3:
 
-- the controller asserts `IO_WRITE_REQ`
+- the controller asserts `IO_WRITE_REQ` when it can accept a character
 
-At TP2, when the controller can accept a character:
+At TP3, CPU control accepts the write request.
+
+During TS4:
+
+- CPU control asserts `/DB_WRITE`
+- the CPU drives AC onto DB
+
+At TP4, when the request was accepted:
 
 ```text
-TELEPRINTER_TRANSMIT_REGISTER <- AC[7:0]
-```
-
-At TP3, when the character was accepted:
-
-```text
+TELEPRINTER_TRANSMIT_REGISTER <- DB[7:0]
 TELEPRINTER_FLAG <- 0
 ```
 
@@ -470,9 +514,11 @@ The accepted character becomes the active programmer-visible output operation.
 
 If the controller cannot accept the character:
 
+- it does not assert `IO_WRITE_REQ`
+- no DB transfer occurs
 - the new character is discarded
-- the active output operation is not changed
-- the teleprinter flag is not cleared as a consequence of the rejected character
+- the active output operation is not modified
+- the teleprinter flag is not cleared
 
 ## Asynchronous Controller Events
 

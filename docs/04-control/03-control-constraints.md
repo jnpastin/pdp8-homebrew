@@ -225,9 +225,9 @@ Constraint:
 
 ---
 
-### 11. Cross-Domain Operation Binding Rules
+## 11. Cross-Domain Operation Binding Rules
 
-#### Purpose
+### Purpose
 
 Defines the required relationship between:
 - architectural control signals (external operations)
@@ -346,21 +346,52 @@ The following are invalid and must not occur:
 
 During external-IOT EXECUTE:
 
-- `IO_READ_REQ` selects `/DB_READ` and `DB_READ_TO_AC` for the current phase.
-- `IO_WRITE_REQ` selects `/DB_WRITE` and `DB_WRITE_FROM_AC` for the current phase.
+- `IO_READ_REQ` requests a device-to-CPU DB transfer during the immediately following phase.
+- `IO_WRITE_REQ` requests a CPU-to-device DB transfer during the immediately following phase.
+- CPU control may accept `IO_READ_REQ` or `IO_WRITE_REQ` at TP2 or TP3.
+- At the acceptance TP, CPU control records the accepted transfer direction in `IOT_TRANSFER`.
+- During the immediately following TS, `IOT_READ_PENDING` selects `/DB_READ` and `DB_READ_TO_AC`.
+- During the immediately following TS, `IOT_WRITE_PENDING` selects `/DB_WRITE` and `DB_WRITE_FROM_AC`.
+- The DB transfer depends on committed `IOT_TRANSFER` state, not directly on the current request inputs.
+- At the transfer commit TP, `IOT_TRANSFER` clears to `NONE` unless a new request is accepted at that TP.
+- When transfer completion and request acceptance occur at the same TP, the newly accepted transfer replaces the completed transfer.
 - `IO_SKIP_REQ` selects `PC_INC` at TP4.
-- `IO_CLEAR_AC_REQ` selects AC clear at the following TP.
+- `IO_CLEAR_AC_REQ` selects AC clear at the TP immediately following the TS in which it is asserted.
+
+Transfer timing:
+
+```text
+request during TS2
+-> acceptance at TP2
+-> transfer during TS3
+-> commit at TP3
+
+request during TS3
+-> acceptance at TP3
+-> transfer during TS4
+-> commit at TP4
+```
 
 Constraints:
 
 - Controller responses are phase-specific.
-- A response asserted during a TS causes exactly one action at the following TP.
-- Read and write are mutually exclusive.
+- `IO_READ_REQ` and `IO_WRITE_REQ` are mutually exclusive.
+- A transfer request must be accepted early enough for its transfer TS and commit TP to remain within the current external-IOT EXECUTE major state.
+- A request accepted at TP2 must produce exactly one corresponding TS3 transfer.
+- A request accepted at TP3 must produce exactly one corresponding TS4 transfer.
+- The selected controller must not drive DB during an `IO_READ_REQ` request phase.
+- The selected controller drives DB only while `/DB_READ` is asserted during the following transfer phase.
+- The CPU drives DB only while `/DB_WRITE` is asserted during the following transfer phase.
 - Read and AC clear must not target AC at the same TP.
+- `IO_CLEAR_AC_REQ` must not be asserted during a transfer TS when `IOT_READ_PENDING` is asserted.
 - Write and AC clear may commit at the same TP using the pre-TP AC value.
 - No TP action may depend on a result committed at that TP.
 - Only the selected external controller may contribute an IOT response.
 - Control does not centrally validate controller compliance with address qualification.
+- `IOT_TRANSFER` must contain exactly one of `NONE`, `READ`, or `WRITE`.
+- `IOT_READ_PENDING` and `IOT_WRITE_PENDING` must never both be asserted.
+- `/DB_READ` and `/DB_WRITE` must be derived from committed pending-transfer state.
+- `IOT_TRANSFER` must not remain pending after its associated transfer commit TP unless replaced by a newly accepted request.
 
 #### I/O Wait Binding
 

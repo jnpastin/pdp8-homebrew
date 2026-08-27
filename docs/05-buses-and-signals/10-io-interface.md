@@ -76,46 +76,72 @@ The selected controller may assert:
 
 Controller responses request CPU behavior. They do not directly modify CPU state.
 
-Responses are phase-specific and must satisfy the timing and combination constraints defined in [External I/O Interface](../07-io/02-external-iot-interface.md)
+`IO_CLEAR_AC_REQ` and `IO_SKIP_REQ` request CPU state changes at the immediately following TP.
+
+`IO_READ_REQ` and `IO_WRITE_REQ` request a DB transfer during the following phase. CPU control accepts the request at the TP following the request phase and asserts `/DB_READ` or `/DB_WRITE` during the next TS.
+
+Responses must satisfy the timing and combination constraints defined in the [External IOT Interface](../07-io/02-external-iot-interface.md).
 
 ## I/O Read Model
 
 An I/O read transfers data from the selected controller to the CPU.
 
-During an I/O read:
+During the request phase:
 
-- the CPU provides IOA and IOP;
-- the selected controller asserts `IO_READ_REQ`;
-- CPU control asserts `/DB_READ`;
-- the selected controller is the DB producer;
-- the CPU is the DB consumer;
-- `DB_READ_TO_AC` commits `AC <- AC OR DB` at the applicable TP.
+- the CPU provides `IOA` and `IOP`
+- the selected controller asserts `IO_READ_REQ`
+- CPU control accepts the request at the following TP
+- the selected controller does not drive DB because of the pending read
+
+During the following transfer phase:
+
+- CPU control asserts `/DB_READ`
+- the selected controller is the DB producer
+- the CPU is the DB consumer
+- the selected controller drives valid data onto DB
+
+At the following TP:
+
+```text
+AC <- AC OR DB
+```
+
+The transfer commits through `DB_READ_TO_AC`.
 
 ## I/O Write Model
 
 An I/O write transfers data from the CPU to the selected controller.
 
-During an I/O write:
+During the request phase:
 
-- the CPU provides IOA and IOP;
-- the selected controller asserts `IO_WRITE_REQ`;
-- CPU control asserts `/DB_WRITE`;
-- the CPU is the DB producer;
-- the selected controller is the DB consumer;
-- the selected controller captures DB at the applicable TP.
+- the CPU provides `IOA` and `IOP`
+- the selected controller asserts `IO_WRITE_REQ`
+- CPU control accepts the request at the following TP
 
-## Global Invariants
+During the following transfer phase:
 
-- IOA and IOP are distinct controller-facing fields.
-- IOA and IOP are meaningful only while `IOT_ACTIVE` is asserted.
+- CPU control asserts `/DB_WRITE`
+- the CPU is the DB producer
+- the selected controller is the DB consumer
+- the CPU drives AC onto DB
+
+At the following TP, the selected controller captures DB.
+
+### Global Invariants
+
+- `IOA` and `IOP` are distinct controller-facing fields.
+- `IOA` and `IOP` are meaningful only while `IOT_ACTIVE` is asserted.
 - Controller responses are phase-specific.
 - Only the address-matched controller may respond.
-- `/DB_READ` and `/DB_WRITE` are CPU control outputs describing the active DB operation.
+- `/DB_READ` and `/DB_WRITE` are CPU control outputs describing the active DB transfer.
 - `IO_READ_REQ` and `IO_WRITE_REQ` are mutually exclusive.
+- `IO_READ_REQ` and `IO_WRITE_REQ` are accepted at the TP following their request phase.
+- `/DB_READ` and `/DB_WRITE` are asserted during the subsequent transfer phase.
+- The associated DB transfer commits at the TP following the transfer phase.
 - Only one source may drive DB.
 - Controller response signals do not directly modify CPU state.
 - All CPU and controller state changes occur only at TP.
-- I/O wait behavior is defined in [I/O Timing](../07-io/03-io-timing.md)
+- I/O wait behavior is defined in [I/O Timing](../07-io/03-io-timing.md).
 
 ## Summary
 

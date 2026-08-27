@@ -164,6 +164,60 @@ FLAGS must:
 
 ---
 
+### IOT_READ_PENDING
+
+**Name:** IOT Read Transfer Pending  
+**Source Register:** `IOT_TRANSFER`  
+**Purpose:** Indicates that an external-IOT read request was accepted at the preceding TP and must execute during the current TS.
+
+**Derivation:**
+
+```text
+IOT_READ_PENDING = (IOT_TRANSFER = 01)
+```
+
+**Value Encoding:**
+
+- 0: no device-to-CPU DB transfer is pending
+- 1: a device-to-CPU DB transfer is pending
+
+**Consumed By:**
+
+- `/DB_READ` generation during the active transfer TS
+- `DB_READ_TO_AC` selection at the associated transfer commit TP
+
+---
+
+### IOT_WRITE_PENDING
+
+**Name:** IOT Write Transfer Pending  
+**Source Register:** `IOT_TRANSFER`  
+**Purpose:** Indicates that an external-IOT write request was accepted at the preceding TP and must execute during the current TS.
+
+**Derivation:**
+
+```text
+IOT_WRITE_PENDING = (IOT_TRANSFER = 10)
+```
+
+**Value Encoding:**
+
+- 0: no CPU-to-device DB transfer is pending
+- 1: a CPU-to-device DB transfer is pending
+
+**Consumed By:**
+
+- `/DB_WRITE` generation during the active transfer TS
+- `DB_WRITE_FROM_AC` selection during the active transfer TS
+
+**Constraints:**
+
+- `IOT_READ_PENDING` and `IOT_WRITE_PENDING` must never both be asserted.
+- Both flags are combinational interpretations of committed `IOT_TRANSFER` state.
+- Neither flag introduces additional stored state.
+
+---
+
 ### LZ
 
 **Name:** L_IS_ZERO  

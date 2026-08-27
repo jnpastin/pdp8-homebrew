@@ -77,9 +77,9 @@ System-wide control signals that coordinate behavior across modules.
 
 ### Characteristics
 
-- Single-bit signals
+- Single-bit control signals or multi-bit encoded control fields
 - Visible to all modules
-- May be single-driver or wired-OR
+- May be single-driver or electrically shared, as defined by the applicable signal contract
 
 ### Signals
 
@@ -92,14 +92,11 @@ System-wide control signals that coordinate behavior across modules.
 
 - /INT_REQ (wired-OR of asserted requests)
 
-#### System Control
-
-- /RESET
-
 #### DMA
 
 - /DMA_REQ
 - /DMA_GRANT
+- MS[2:0]
 
 ### Rules
 

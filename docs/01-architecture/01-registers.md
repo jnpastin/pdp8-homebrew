@@ -35,6 +35,7 @@ All stable values in the system must reside in registers.
 - DIF: [Deferred Instruction Field](#dif--deferred-instruction-field)
 - EA_ADDR: [Effective Address (Address Portion)](#ea_addr--effective-address-address-portion)
 - IB: [Interrupt Buffer](#ib--interrupt-buffer)
+- IOT_TRANSFER: [IOT Transfer Pending](#iot_transfer---pending-external-iot-transfer)
 - MA: [Memory Address](#ma--memory-address)
 - MB: [Memory Buffer](#mb--memory-buffer)
 
@@ -300,6 +301,55 @@ Writers:
 - IOT execution (ION; II_SET μop) 
 - IOT execution (CIF; II_SET μop) 
 - FETCH execution (II_CLEAR μop)
+
+---
+
+### IOT_TRANSFER - Pending External-IOT Transfer
+
+Width: 2 bits  
+Role: Preserves an accepted external-IOT DB transfer request for execution during the immediately following TS.  
+Visibility: Internal
+
+Encoding:
+
+```text
+00 = no pending DB transfer
+01 = pending device-to-CPU read
+10 = pending CPU-to-device write
+11 = invalid
+```
+
+Invariants:
+
+- `IOT_TRANSFER` is loaded at TP2 or TP3 when an external-IOT transfer request is accepted.
+- An accepted `IO_READ_REQ` loads `01`.
+- An accepted `IO_WRITE_REQ` loads `10`.
+- No accepted transfer request loads `00`.
+- Encoding `11` must never be loaded.
+- The value remains stable throughout the following transfer TS.
+- A transfer accepted at TP2 executes during TS3 and commits at TP3.
+- A transfer accepted at TP3 executes during TS4 and commits at TP4.
+- The completed transfer is cleared or replaced at its commit TP.
+
+Constraints:
+
+- `IOT_TRANSFER` records transfer direction only.
+- It does not contain DB data.
+- It does not identify the selected controller.
+- It does not itself assert `/DB_READ` or `/DB_WRITE`.
+- It must not persist beyond the external-IOT EXECUTE major state.
+
+Writers:
+
+- external-IOT request-acceptance control at TP2 or TP3
+- external-IOT completion control at TP3 or TP4
+
+Consumers:
+
+- `/DB_READ` generation during the transfer TS
+- `/DB_WRITE` generation during the transfer TS
+- `DB_READ_TO_AC` selection at the transfer commit TP
+- `DB_WRITE_FROM_AC` selection during the transfer TS
 
 ---
 

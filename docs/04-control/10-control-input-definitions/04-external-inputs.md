@@ -282,12 +282,15 @@ Front-panel data inputs provide externally selected values used by console opera
 - [MS_NEXT](../20-control-output-definitions/03-sequencing-control-signals.md#31-next-major-state-ms_next)
 
 **Constraints:**
-- participates in `EXT`
+
+- participates in EXT
 - contributes to `CTRL_ADDR` formation
-- must be synchronized before use by control
+- is derived combinationally from `DMA_ENABLE` and registered controller `/DMA_REQ[n]` outputs
+- must not pass through an additional stateful synchronization stage
+- must satisfy the applicable setup and hold requirements before CPU control samples it at TP4
 - must not directly modify processor state
-- must not directly assert memory, address, or data bus control
-- must remain asserted while continued DMA service is requested
+- must not directly assert memory, address, or data-bus control
+- may be deasserted while controller `/DMA_REQ[n]` lines remain asserted when `DMA_ENABLE = 0`
 
 #### /INT_REQ
 
@@ -318,10 +321,8 @@ External-IOT response inputs originate in the selected external controller and a
 Shared properties:
 
 - All external-IOT response inputs are one bit wide.
-- All external-IOT response inputs are active-high.
 - The selected external controller is the only permitted producer.
 - An unselected controller must deassert every external-IOT response input.
-- The idle value of every external-IOT response input is 0.
 - The signals participate in EXT.
 - Phase-specific response signals must be stable during the control-evaluation window preceding their commit TP.
 - A response signal requests CPU or timing behavior and does not directly modify CPU state.
@@ -332,51 +333,63 @@ Shared properties:
 **Name:** I/O Read Request  
 **Type:** External IOT Response Input  
 **Bit Width:** 1  
-**Purpose:** Requests a device-to-CPU DB transfer during the current external-IOT phase.
+**Polarity:** Active-high  
+
+**Purpose:** Requests a device-to-CPU DB transfer during the phase following acceptance of the request.
 
 **Value Encoding:**
 
-- `0` -> no read requested
-- `1` -> device-to-CPU read requested
+- 0: no read requested
+- 1: device-to-CPU read requested
 
 **Consumed By:**
 
-- `/DB_READ`
-- `DB_READ_TO_AC`
+- CPU control at the TP following the request TS
+- `/DB_READ` generation during the following TS
+- `DB_READ_TO_AC` at the subsequent TP
 
 **Constraints:**
 
-- Valid only when `IOT_ACTIVE = 1`.
+- Valid only when `IOT_ACTIVE` is asserted.
 - Valid only from the address-matched controller.
 - Phase-specific.
 - Mutually exclusive with `IO_WRITE_REQ`.
-- Must not coincide with `IO_CLEAR_AC_REQ` in the same phase.
+- Must be asserted early enough for the complete DB transfer to occur within the current external-IOT EXECUTE major state.
+- Must be stable before and through the TP at which CPU control accepts the request.
+- Must not cause the controller to drive DB during the request phase.
 - Must not directly modify AC.
+- The selected controller drives DB only while CPU control asserts `/DB_READ` during the following transfer phase.
 
 #### IO_WRITE_REQ
 
 **Name:** I/O Write Request  
 **Type:** External IOT Response Input  
 **Bit Width:** 1  
-**Purpose:** Requests a CPU-to-device DB transfer during the current external-IOT phase.
+**Polarity:** Active-high  
+
+**Purpose:** Requests a CPU-to-device DB transfer during the phase following acceptance of the request.
 
 **Value Encoding:**
 
-- `0` -> no write requested
-- `1` -> CPU-to-device write requested
+- 0: no write requested
+- 1: CPU-to-device write requested
 
 **Consumed By:**
 
-- `/DB_WRITE`
-- `DB_WRITE_FROM_AC`
+- CPU control at the TP following the request TS
+- `/DB_WRITE` generation during the following TS
+- controller DB capture at the subsequent TP
 
 **Constraints:**
 
-- Valid only when `IOT_ACTIVE = 1`.
+- Valid only when `IOT_ACTIVE` is asserted.
 - Valid only from the address-matched controller.
 - Phase-specific.
 - Mutually exclusive with `IO_READ_REQ`.
-- Must not directly cause the controller to capture DB outside the associated TP.
+- Must be asserted early enough for the complete DB transfer to occur within the current external-IOT EXECUTE major state.
+- Must be stable before and through the TP at which CPU control accepts the request.
+- Must not cause the controller to capture DB during the request phase.
+- The selected controller captures DB only at the TP following the transfer phase in which CPU control asserts `/DB_WRITE`.
 
 #### IO_SKIP_REQ
 
@@ -424,7 +437,9 @@ Shared properties:
 - Valid only when `IOT_ACTIVE = 1`.
 - Valid only from the address-matched controller.
 - Phase-specific.
-- Must not coincide with `IO_READ_REQ` in the same phase.
+- May coincide with `IO_READ_REQ` during the read-request TS; AC clear commits when the read request is accepted, and the DB read commits during the following TS and TP.
+- Must not be asserted during the transfer TS following an accepted `IO_READ_REQ`.
+- Must not cause AC clear and `DB_READ_TO_AC` to commit at the same TP.
 - May coincide with `IO_WRITE_REQ`.
 - Must not directly modify AC.
 

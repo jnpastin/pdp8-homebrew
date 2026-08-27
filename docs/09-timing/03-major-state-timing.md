@@ -90,8 +90,7 @@ All state changes occur exclusively at TP.
 #### TS1
 
 - `IOT_ACTIVE` is asserted.
-- IOA is valid.
-- IOP is valid.
+- `IOA` and `IOP` are valid.
 - Controllers evaluate address match.
 - The selected controller decodes IOP.
 - `/IO_WAIT` may hold an eligible non-TP setup TSTEP.
@@ -100,25 +99,63 @@ All state changes occur exclusively at TP.
 
 - No external-IOT action commits.
 
-#### TS2 and TS3
+#### TS2
 
-- The selected controller may assert phase-specific read, write, or clear responses.
-- `/IO_WAIT` may hold eligible non-TP setup TSTEPs.
-- A response asserted during the TS commits at the following TP.
+- The selected controller may assert `IO_READ_REQ` or `IO_WRITE_REQ` for a transfer during TS3.
+- The selected controller may assert `IO_CLEAR_AC_REQ` for an operation assigned to TP2.
+- The selected controller may assert `/IO_WAIT` during an eligible non-TP setup TSTEP.
+
+#### TP2
+
+- CPU control records an accepted read or write direction in `IOT_TRANSFER`.
+- An accepted `IO_CLEAR_AC_REQ` clears AC.
+- Controller-local actions assigned to TP2 commit.
+
+Acceptance of `IO_READ_REQ` or `IO_WRITE_REQ` at TP2 does not transfer DB data at TP2.
+
+#### TS3
+
+- `IOT_READ_PENDING` causes CPU control to assert `/DB_READ`.
+- `IOT_WRITE_PENDING` causes CPU control to assert `/DB_WRITE`.
+- During `/DB_READ`, the selected controller drives valid data onto DB.
+- During `/DB_WRITE`, the CPU drives AC onto DB.
+- The selected controller may assert `IO_READ_REQ` or `IO_WRITE_REQ` for a transfer during TS4.
+- The selected controller may assert `IO_CLEAR_AC_REQ` when it does not conflict with the active transfer.
+- The selected controller may assert `/IO_WAIT` during an eligible non-TP setup TSTEP.
+
+#### TP3
+
+- A pending read commits `DB_READ_TO_AC`.
+- The selected controller captures DB for a pending write.
+- An accepted `IO_CLEAR_AC_REQ` clears AC.
+- Controller-local actions assigned to TP3 commit.
+- A newly accepted read or write request replaces the completed `IOT_TRANSFER`.
+- If no new request is accepted, a completed `IOT_TRANSFER` clears to `NONE`.
+
+Acceptance of a new request at TP3 does not affect the transfer committing at TP3.
 
 #### TS4
 
-- The selected controller may assert phase-specific read, write, clear, or skip responses.
+- `IOT_READ_PENDING` causes CPU control to assert `/DB_READ`.
+- `IOT_WRITE_PENDING` causes CPU control to assert `/DB_WRITE`.
+- During `/DB_READ`, the selected controller drives valid data onto DB.
+- During `/DB_WRITE`, the CPU drives AC onto DB.
+- The selected controller may assert `IO_CLEAR_AC_REQ` only when no read transfer is pending.
 - The selected controller may assert `IO_SKIP_REQ` from stable registered controller state.
-- A separate TP3-captured skip condition is not required..
-- TP4 sequencing and interrupt inputs must be stable before TP4.
+- `/IO_WAIT` may hold an eligible non-TP setup TSTEP.
+- TP4 device actions and CPU sequencing decisions use pre-TP4 inputs.
 
 #### TP4
 
-- Requested device and CPU actions commit.
-- `IO_SKIP_REQ` increments PC when asserted.
-- Interrupt and sequencing decisions use only pre-TP4 inputs.
-- No TP4 result affects another decision committed at TP4.
+- A pending read commits `DB_READ_TO_AC`.
+- The selected controller captures DB for a pending write.
+- An accepted `IO_CLEAR_AC_REQ` clears AC.
+- An accepted `IO_SKIP_REQ` increments PC.
+- `IOT_TRANSFER` clears to `NONE`.
+- Controller-local actions assigned to TP4 commit.
+- Interrupt and sequencing decisions commit simultaneously.
+
+No result committed at a TP may affect another action or decision committed at that same TP.
 
 ---
 
@@ -204,4 +241,15 @@ At a terminating TP4:
 - the arbiter sets DMA_GRANT_ID to 15
 - CPU ownership resumes during the following FETCH TS1
 
-Aggregate `/DMA_REQ` may be reasserted after entry to FETCH because DMA entry is not evaluated again until the following instruction's EXECUTE TP4.
+Aggregate `/DMA_REQ` remains deasserted throughout the intervening FETCH, optional DEFER, and EXECUTE major states while `DMA_ENABLE = 0`.
+
+During EXECUTE TS4:
+
+- controllers establish `/DMA_REQ[n]`
+- the arbiter asserts combinational `DMA_ENABLE`
+- separate combinational aggregation logic continuously derives aggregate `/DMA_REQ`
+- `/DMA_REQ[n]`, `DMA_ENABLE`, and aggregate `/DMA_REQ` settle before TP4
+
+At EXECUTE TP4, CPU control samples aggregate `/DMA_REQ` for the major-state transition decision.
+
+The transition decision uses the aggregate value established during TS4. No value committed at TP4 affects that same TP4 decision.

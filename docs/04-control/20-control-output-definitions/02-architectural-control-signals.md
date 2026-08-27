@@ -215,9 +215,11 @@ When asserted:
 Controller selection uses the grant identity defined in [DMA Arbitration](../../07-io/06-dma-arbitration.md)
 
 **Preconditions**
+
 - `MS = DMA`
-- `/DMA_REQ = 0`
-- CPU instruction execution has reached a valid DMA entry boundary
+- CPU instruction execution entered DMA through a valid major-state transition
+
+`/DMA_REQ` is not required to remain asserted throughout the DMA major state. The arbiter may deassert `/DMA_REQ` during DMA TS4 to select exit to FETCH at TP4 while `/DMA_GRANT` remains asserted until the DMA major state ends.
 
 **Timing**
 - asserted during DMA major-state cycles

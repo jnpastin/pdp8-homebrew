@@ -266,6 +266,7 @@ Constraint:
 - [IE_LOAD](#ie_load)
 - [IF_LOAD](#if_load)
 - [II_LOAD](#ii_load)
+- [IOT_TRANSFER_LOAD](#iot_transfer_load)
 - [IR_LOAD](#ir_load)
 - [L_LOAD](#l_load)
 - [MA_LOAD](#ma_load)
@@ -306,6 +307,7 @@ Constraint:
 - [IF_DF_COMBINED](#if_df_combined)
 - [IF_VAL](#if_val)
 - [II_VAL](#ii_val)
+- [IOT_TRANSFER_VAL](#iot_transfer_val)
 - [MA_VAL](#ma_val)
 - [MDB_INPUT](#mdb_input)
 - [PC_VAL](#pc_val)
@@ -1082,6 +1084,72 @@ IF_IF_COMBINED[5:3]=IF
 **Used by μops:**
 - [II_CLEAR](../../03-microarchitecture/02-micro-operations.md#ii_clear)
 - [II_SET](../../03-microarchitecture/02-micro-operations.md#ii_set)
+
+---
+
+### IOT_TRANSFER_LOAD
+
+**Mnemonic:** `IOT_TRANSFER_LOAD`  
+**Name:** Pending External-IOT Transfer Load  
+**Class:** Enable  
+**Bit Width:** 1  
+
+**Purpose:** Loads the `IOT_TRANSFER` register at TP.
+
+**Encoding:**
+
+```text
+0 = no load
+1 = load IOT_TRANSFER
+```
+
+**Constraints:**
+
+- May be asserted only during external-IOT EXECUTE.
+- At TP2 or TP3, it may capture an accepted transfer request.
+- At the commit TP of a pending transfer, it clears the completed transfer or replaces it with a newly accepted transfer.
+- A transfer accepted at TP2 executes during TS3 and commits at TP3.
+- A transfer accepted at TP3 executes during TS4 and commits at TP4.
+- It uses a direct load path and does not involve the ALU or IDB.
+
+**Used by micro-operations:**
+
+- [IOT_TRANSFER_CAPTURE](../../03-microarchitecture/02-micro-operations.md#iot_transfer_capture)
+- [IOT_TRANSFER_CLEAR](../../03-microarchitecture/02-micro-operations.md#iot_transfer_clear)
+
+---
+
+#### IOT_TRANSFER_VAL
+
+**Mnemonic:** `IOT_TRANSFER_VAL`  
+**Name:** Pending External-IOT Transfer Value  
+**Class:** Data Value  
+**Bit Width:** 2  
+
+**Purpose:** Specifies the value loaded into `IOT_TRANSFER`.
+
+**Encoding:**
+
+```text
+00 = no pending DB transfer
+01 = pending device-to-CPU read
+10 = pending CPU-to-device write
+11 = invalid
+```
+
+**Constraints:**
+
+- `01` is selected when `IO_READ_REQ` is accepted.
+- `10` is selected when `IO_WRITE_REQ` is accepted.
+- `00` is selected when a completed transfer is cleared without replacement.
+- If completion and request acceptance occur at the same TP, the newly accepted direction is selected instead of `00`.
+- Encoding `11` must never be selected.
+- The value has no effect unless `IOT_TRANSFER_LOAD` is asserted.
+
+**Used by micro-operations:**
+
+- [IOT_TRANSFER_CAPTURE](../../03-microarchitecture/02-micro-operations.md#iot_transfer_capture)
+- [IOT_TRANSFER_CLEAR](../../03-microarchitecture/02-micro-operations.md#iot_transfer_clear)
 
 ---
 

@@ -493,19 +493,30 @@ DSKP does not clear Control Done or Error.
 
 ## Controller Contract
 
-During TS2:
+During TS3:
 
-- the controller combinationally decodes `AC[1:0]`
 - the controller asserts `IO_WRITE_REQ`
+
+At TP3, CPU control accepts the write request.
+
+During TS4:
+
+- CPU control asserts `/DB_WRITE`
+- the CPU drives AC onto DB
 - the controller asserts `IO_CLEAR_AC_REQ`
+- the controller decodes `DB[1:0]`
 
-At TP2, the selected operation commits.
+At TP4:
 
+- the selected DCLR operation commits
+- AC clears
+
+The selected operation uses the pre-TP4 DB value.  
 No intermediate selector register is required.
 
-## DCLS
+### DCLS
 
-At TP2:
+At TP4:
 
 ```text
 STATUS_REGISTER <- 0
@@ -517,7 +528,7 @@ DCLS does not abort an active disk operation unless required by a specific RK8E 
 
 ## DCLC
 
-At TP2:
+At TP4:
 
 - the active controller operation is aborted
 - RK8E controller logic is cleared
@@ -537,7 +548,7 @@ No additional error is raised solely because DCLC discarded uncommitted write da
 
 ## DCLD
 
-At TP2:
+At TP4:
 
 - recalibration of the selected drive to cylinder `000` is initiated
 - the controller becomes busy
@@ -557,18 +568,26 @@ No physical head movement is required by this contract.
 
 ## Controller Contract
 
-During TS2:
+During TS3:
 
 - the controller asserts `IO_WRITE_REQ`
+
+At TP3, CPU control accepts the write request.
+
+During TS4:
+
+- CPU control asserts `/DB_WRITE`
+- the CPU drives AC onto DB
 - the controller asserts `IO_CLEAR_AC_REQ`
 
-At TP2, when the controller is idle:
+At TP4, when the controller is idle:
 
 ```text
-DISK_ADDRESS_REGISTER <- AC
+DISK_ADDRESS_REGISTER <- DB
+AC <- 0
 ```
 
-At TP2, the controller also initiates the operation selected by the Command Register.
+The controller also initiates the operation selected by the Command Register.
 
 If the controller is busy:
 
@@ -576,22 +595,31 @@ If the controller is busy:
 - no new operation is started
 - Control Busy Error is set
 - the existing operation continues
+- AC clears
 
-The pre-TP2 AC value is used.
+The pre-TP4 DB value is used.
 
 # DLCA
 
 ## Controller Contract
 
-During TS2:
+During TS3:
 
 - the controller asserts `IO_WRITE_REQ`
+
+At TP3, CPU control accepts the write request.
+
+During TS4:
+
+- CPU control asserts `/DB_WRITE`
+- the CPU drives AC onto DB
 - the controller asserts `IO_CLEAR_AC_REQ`
 
-At TP2, when the controller is idle:
+At TP4, when the controller is idle:
 
 ```text
-CURRENT_ADDRESS_REGISTER <- AC
+CURRENT_ADDRESS_REGISTER <- DB
+AC <- 0
 ```
 
 If the controller is busy:
@@ -599,44 +627,71 @@ If the controller is busy:
 - Current Address Register is not loaded
 - Control Busy Error is set
 - the existing operation continues
+- AC clears
 
-The pre-TP2 AC value is used.
+The pre-TP4 DB value is used.
 
 # DRST
 
 ## Controller Contract
 
-During TS2:
+During TS3:
+
+- the controller asserts `IO_CLEAR_AC_REQ`
+- the controller asserts `IO_READ_REQ`
+
+At TP3:
 
 ```text
-IO_CLEAR_AC_REQ = 1
+AC <- 0
 ```
+
+CPU control also accepts the read request at TP3.
 
 During TS4:
 
+- CPU control asserts `/DB_READ`
 - the controller drives the Status Register onto DB
-- the controller asserts `IO_READ_REQ`
 
-DRST does not modify controller state.
+At TP4:
 
+```text
+AC <- AC OR DB
+```
+
+Because AC was cleared at TP3:
+
+```text
+AC <- DB
+```
+
+DRST does not modify controller state.  
 DRST does not clear the Status Register.
 
 # DLDC
 
 ## Controller Contract
 
-During TS2:
+During TS3:
 
 - the controller asserts `IO_WRITE_REQ`
+
+At TP3, CPU control accepts the write request.
+
+During TS4:
+
+- CPU control asserts `/DB_WRITE`
+- the CPU drives AC onto DB
 - the controller asserts `IO_CLEAR_AC_REQ`
 
-At TP2, when the controller is idle:
+At TP4, when the controller is idle:
 
 ```text
-COMMAND_REGISTER <- AC
+COMMAND_REGISTER <- DB
 STATUS_REGISTER <- 0
 CONTROL_DONE <- 0
 ERROR <- 0
+AC <- 0
 ```
 
 If the controller is busy:
@@ -645,8 +700,9 @@ If the controller is busy:
 - Status Register is not cleared
 - Control Busy Error is set
 - the existing operation continues
+- AC clears
 
-The pre-TP2 AC value is used.
+The pre-TP4 DB value is used.
 
 # DMAN
 
@@ -697,21 +753,41 @@ Internal serial ordering, shift-path construction, buffer implementation, CRC im
 During TS2:
 
 - the controller asserts `IO_WRITE_REQ`
-- the controller asserts `IO_CLEAR_AC_REQ`
-- the controller evaluates the selected maintenance function from the pre-TP2 AC value
 
-At TP2:
+At TP2, CPU control accepts the write request.
+
+During TS3:
+
+- CPU control asserts `/DB_WRITE`
+- the CPU drives AC onto DB
+- the controller evaluates the selected maintenance function from DB
+- the controller asserts `IO_CLEAR_AC_REQ`
+- for the lower-data-buffer read function, the controller asserts `IO_READ_REQ`
+
+At TP3:
 
 - the selected maintenance operation commits or is initiated
-- AC is cleared through the standard CPU response contract
+- AC is cleared
+- CPU control accepts the read request when the lower-data-buffer read function is selected
 
-For the lower-data-buffer read function:
+For the lower-data-buffer read function, during TS4:
 
-- the selected read function is accepted at TP2
-- during TS4, the controller drives the maintenance-visible lower data-buffer value onto DB
-- during TS4, the controller asserts `IO_READ_REQ`
+- CPU control asserts `/DB_READ`
+- the controller drives the maintenance-visible lower data-buffer value onto DB
 
-The controller must preserve the selected read operation through TS4 without exposing any additional programmer-visible state.
+At TP4:
+
+```text
+AC <- AC OR DB
+```
+
+Because AC was cleared at TP3, the resulting value is:
+
+```text
+AC <- DB
+```
+
+The controller must preserve the selected read operation through TP4 without exposing additional programmer-visible state.
 
 ## Unsupported DMAN Combinations
 

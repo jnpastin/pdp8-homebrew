@@ -28,7 +28,8 @@ The diagram shows the following sequence:
 - CPU control asserts `/DB_READ` or `/DB_WRITE` during TS4.
 - DB remains valid through TP4.
 - The requested data transfer commits at TP4.
-- `IO_CLEAR_AC_REQ`, when required, is asserted during TS2 and commits at TP2.
+- The diagram shows a representative `IO_CLEAR_AC_REQ` asserted during TS2 and committed at TP2.
+- Controller-specific operations may instead assert `IO_CLEAR_AC_REQ` during TS3 or TS4, provided AC clear does not commit at the same TP as a pending read transfer.
 - `IO_SKIP_REQ`, when its condition is true, is asserted during TS4 and commits at TP4.
 
 Conditional signals are shown asserted. When the corresponding condition is false, the signal remains deasserted for the complete cycle.
@@ -50,9 +51,26 @@ TS1 is the I/O selection and operation-decode phase.
 
 ### TS2 through TS4: Execution
 
-The selected controller may request actions during TS2, TS3, or TS4, subject to the constraints in [External IOT Interface](./02-external-iot-interface.md).
+The selected controller may request actions during TS2 through TS4, subject to the constraints in [External IOT Interface](./02-external-iot-interface.md).
 
-A response asserted during TS2 commits at TP2. A response asserted during TS3 commits at TP3. A response asserted during TS4 commits at TP4.
+Direct response timing:
+
+- `IO_CLEAR_AC_REQ` asserted during a TS requests AC clear at the following TP.
+- `IO_SKIP_REQ` is valid only during TS4 and requests PC increment at TP4.
+
+DB transfer request timing:
+
+- `IO_READ_REQ` or `IO_WRITE_REQ` asserted during a TS is accepted by CPU control at the following TP.
+- CPU control asserts `/DB_READ` or `/DB_WRITE` during the next TS.
+- The corresponding DB transfer commits at the following TP.
+- A DB transfer request must occur early enough for its transfer phase and commit TP to remain within the current external-IOT EXECUTE major state.
+
+For the standard external-IOT read and write timing:
+
+- the selected controller asserts `IO_READ_REQ` or `IO_WRITE_REQ` during TS3
+- CPU control accepts the request at TP3
+- CPU control asserts `/DB_READ` or `/DB_WRITE` during TS4
+- the DB transfer commits at TP4
 
 ## TP4 Sequencing Boundary
 
@@ -136,14 +154,15 @@ The following signals apply only to one assigned TS:
 Rules:
 
 - A phase-specific response is asserted only during its assigned TS.
-- The response must be stable before the corresponding TP.
-- The response must remain stable through the corresponding TP.
+- The response must be stable before the TP at which CPU control accepts it.
+- The response must remain stable through that TP.
 - The response is released after the required hold interval.
 - A response asserted during one TS does not remain effective during a later TS.
-- A controller must assert the response again if another action is required at a later TP.
-- The response must be derived from stable registered controller state, IOT selection, IOP decode, and the current TS.
-
-`IO_SKIP_REQ` is valid only during TS4.
+- A controller must assert the response again if another action is required during a later phase.
+- A response must be derived from stable registered controller state, IOT selection, IOP decode, and the current TS.
+- `IO_READ_REQ` and `IO_WRITE_REQ` request a DB transfer during the following TS and TP.
+- `IO_CLEAR_AC_REQ` requests AC clear at the immediately following TP.
+- `IO_SKIP_REQ` is valid only during TS4 and requests PC increment at TP4.
 
 ## Setup-Hold Request
 
@@ -165,7 +184,6 @@ The following signals represent persistent requests rather than phase-specific a
 - controller interrupt contribution
 - `/DMA_REQ[n]`
 - aggregate `/INT_REQ`
-- aggregate `/DMA_REQ`
 
 Rules:
 
@@ -173,7 +191,10 @@ Rules:
 - A persistent request is not consumed merely because it is sampled.
 - The owning controller or arbiter deasserts the request only when the condition is cleared, serviced, completed, canceled, or otherwise removed by its contract.
 - Persistent requests may span multiple TS, TP, and major-state boundaries.
-- Aggregate requests remain asserted while at least one contributing request remains asserted.
+- Aggregate `/INT_REQ` remains asserted while at least one controller interrupt contribution remains asserted.
+- Aggregate `/DMA_REQ` is qualified by the combinational arbiter output `DMA_ENABLE`.
+- Aggregate `/DMA_REQ` may be deasserted while one or more controller `/DMA_REQ[n]` lines remain asserted.
+- Separate combinational aggregation logic continuously derives aggregate `/DMA_REQ` from `DMA_ENABLE` and `/DMA_REQ[14:0]`, as defined in [DMA Arbitration](./06-dma-arbitration.md).
 
 ### Grant Signals
 

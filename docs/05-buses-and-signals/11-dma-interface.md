@@ -18,6 +18,14 @@ DMA operations involve:
 - one granted DMA controller
 - memory
 
+The DMA arbiter observes:
+
+- `MS[2:0]`
+- shared TS signals
+- shared TP signals
+
+The arbiter uses this timing context to update its internal arbitration state. Observing `MS` does not authorize bus ownership or permit a controller to drive DMA-owned interfaces.
+
 ## Request Interface
 
 DMA-capable controllers request service through /DMA_REQ[14:0].  
@@ -26,8 +34,22 @@ Each DMA-capable controller asserts exactly one configured request line.
 Valid configured DMA priorities are 0 through 14.  
 DMA priority 15 is reserved as the no-controller-selected encoding and has no corresponding /DMA_REQ line.
 
-The DMA arbiter produces the aggregate CPU-facing request /DMA_REQ.  
-The aggregate request identifies only that DMA service is pending. It does not identify an individual controller.
+The DMA arbiter produces the combinational `DMA_ENABLE` qualification output.
+
+Separate combinational aggregation logic derives the aggregate CPU-facing request:
+
+```text
+/DMA_REQ =
+    NOT (
+        DMA_ENABLE
+        AND
+        ANY_CONTROLLER_REQUEST_ASSERTED
+    )
+```
+
+The aggregate request identifies only that DMA service is eligible and pending. It does not identify an individual controller.
+
+/DMA_REQ[n], DMA_ENABLE, and aggregate /DMA_REQ must settle before the TP at which CPU control samples aggregate /DMA_REQ.
 
 ## CPU Authorization
 

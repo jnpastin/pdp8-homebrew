@@ -125,6 +125,8 @@ No intermediate state or flag storage is created.
 - [IF_CLEAR](#if_clear)
 - [II_CLEAR](#ii_clear)
 - [II_SET](#ii_set)
+- [IOT_TRANSFER_CAPTURE](#iot_transfer_capture)
+- [IOT_TRANSFER_CLEAR](#iot_transfer_clear)
 - [L_CLEAR](#l_clear)
 - [L_COMP](#l_comp)
 - [MA_CLEAR](#ma_clear)
@@ -900,6 +902,64 @@ II ← 1
 
 **Sources:**  
 (none)
+
+---
+
+### IOT_TRANSFER_CAPTURE
+
+**Category:** State Manipulation  
+**Description:** Captures the accepted external-IOT DB transfer direction for use during the following TS.  
+**Target:** `IOT_TRANSFER`
+
+**Expression:**
+
+```text
+if IO_READ_REQ = 1:
+    IOT_TRANSFER <- READ
+else if IO_WRITE_REQ = 1:
+    IOT_TRANSFER <- WRITE
+else:
+    IOT_TRANSFER <- NONE
+```
+
+**Sources:**
+
+- `IO_READ_REQ`
+- `IO_WRITE_REQ`
+
+**Constraints:**
+
+- Valid only at TP2 or TP3 of external-IOT EXECUTE.
+- The accepted request executes during the immediately following transfer TS and commits at its associated TP.
+- `IO_READ_REQ` and `IO_WRITE_REQ` must not both be asserted.
+- The resulting value must be `NONE`, `READ`, or `WRITE`.
+- Encoding `11` must never be produced.
+- When a pending transfer completes at the same TP, `IOT_TRANSFER_CAPTURE` replaces that transfer directly.
+- `IOT_TRANSFER_CLEAR` must not also be selected at that TP.
+
+---
+
+### IOT_TRANSFER_CLEAR
+
+**Category:** State Manipulation  
+**Description:** Clears a completed external-IOT DB transfer at its associated commit TP when no new transfer request is accepted at that TP.  
+**Target:** `IOT_TRANSFER`
+
+**Expression:**
+
+```text
+IOT_TRANSFER <- NONE
+```
+
+**Sources:** none
+
+**Constraints:**
+
+- Valid only at the commit TP of the pending external-IOT transfer.
+- Selected only when a pending transfer completes and no new transfer request is accepted at the same TP.
+- A transfer accepted at TP2 clears at TP3 when it is not replaced by another request accepted at TP3.
+- A transfer accepted at TP3 clears at TP4.
+- Must not be selected concurrently with `IOT_TRANSFER_CAPTURE`.
 
 ---
 

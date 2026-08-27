@@ -19,25 +19,40 @@ Only the selected controller may interpret IOP as an active operation.
 
 Controller responses are phase-specific.
 
-A response asserted during a TS requests exactly one action at the following TP. A controller must assert a response again during a later TS if another action is required at a later TP.
+`IO_CLEAR_AC_REQ` and `IO_SKIP_REQ` request CPU state changes at the TP immediately following the TS in which the response is asserted.
+
+`IO_READ_REQ` and `IO_WRITE_REQ` initiate a two-phase request-and-transfer sequence:
+
+1. The selected controller asserts the request during a TS.
+2. CPU control accepts the request at the following TP.
+3. CPU control asserts the corresponding DB control signal during the next TS.
+4. The DB transfer commits at the following TP.
+
+A controller must assert a response again during a later TS if another action is required.
 
 Responses must not persist across phases unless the controller intentionally requests an action in each phase.
 
 ## I/O Read
 
-`IO_READ_REQ` requests a device-to-CPU transfer.
+`IO_READ_REQ` requests a device-to-CPU DB transfer during the following phase.
 
-Qualification requires:
+Request qualification requires:
 
 - the controller is selected
 - IOP identifies a read operation
-- the controller has valid data available for the current phase
+- the controller will have valid data available during the transfer phase
 - `IO_WRITE_REQ` is not asserted
 
-During the active TS:
+During the request TS:
 
-- the selected controller drives DB
+- the selected controller asserts `IO_READ_REQ`
+- the controller does not drive DB because of the pending read
+- CPU control accepts the request at the following TP
+
+During the following transfer TS:
+
 - CPU control asserts `/DB_READ`
+- the selected controller drives DB
 - DB remains valid for the required setup and hold interval
 
 At the following TP:
@@ -50,16 +65,21 @@ The read occurs through `DB_READ_TO_AC`. No direct DB transfer to another CPU re
 
 ## I/O Write
 
-`IO_WRITE_REQ` requests a CPU-to-device transfer.
+`IO_WRITE_REQ` requests a CPU-to-device DB transfer during the following phase.
 
-Qualification requires:
+Request qualification requires:
 
 - the controller is selected
 - IOP identifies a write operation
-- the controller can accept data during the current phase
+- the controller will be able to accept data during the transfer phase
 - `IO_READ_REQ` is not asserted
 
-During the active TS:
+During the request TS:
+
+- the selected controller asserts `IO_WRITE_REQ`
+- CPU control accepts the request at the following TP
+
+During the following transfer TS:
 
 - CPU control asserts `/DB_WRITE`
 - the CPU drives AC onto DB
