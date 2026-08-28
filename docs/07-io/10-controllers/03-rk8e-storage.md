@@ -1160,7 +1160,50 @@ The controller must not silently substitute zero-filled data for unavailable boo
 
 ---
 
-## 31. Unsupported Operations
+## 31. Interrupt-Service Interface
+
+The RK8E-compatible controller contributes an interrupt request when:
+
+- Command Register interrupt enable is set
+- Control Done or Error is asserted
+
+The interrupt service routine identifies a pending RK8E interrupt condition using DSKP.
+
+DSKP requests a skip when either:
+
+- Control Done is set
+- Error is set
+
+DSKP does not clear Control Done, Error, or the Status Register.
+
+The interrupt service routine may use DRST to read the Status Register and determine the controller state responsible for the request.
+
+DRST does not clear:
+
+- the Status Register
+- Control Done
+- Error
+- the controller interrupt condition
+
+The interrupt condition is removed when the qualifying state is cleared or interrupt generation is disabled through an existing controller operation.
+
+The existing operations that may clear the qualifying state are:
+
+- DCLS clears the Status Register, Control Done, and Error.
+- DCLC clears the controller logic, Command Register, Status Register, Control Done, and Error and aborts the active operation.
+- A successful DLDC loads the Command Register and clears the Status Register, Control Done, and Error.
+
+DCLC is destructive to an active controller operation. It must not be used as a routine interrupt acknowledgement when the active operation must continue.
+
+A successful DLDC also establishes the subsequent controller interrupt-enable state from the newly loaded Command Register. Loading a Command Register value with the interrupt-enable bit clear disables further controller interrupt contribution.
+
+If an operation remains active after status is cleared, later completion or a later error may establish Control Done or Error again. If the Command Register interrupt-enable bit remains set, that condition produces another interrupt request.
+
+This section coordinates the existing controller operations for interrupt-service use. The individual instruction, status, abort, completion, and busy-state definitions remain authoritative for their complete behavior and timing.
+
+----
+
+## 32. Unsupported Operations
 
 `6740` is unsupported.
 
@@ -1180,7 +1223,7 @@ Device addresses `73` and `75` are not part of this controller.
 
 ---
 
-## 32. Implementation Boundary
+## 33. Implementation Boundary
 
 The controller implementation must satisfy this contract but may choose its own:
 

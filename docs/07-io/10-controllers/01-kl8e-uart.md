@@ -586,7 +586,45 @@ The implementation-specific synchronization mechanism is outside this contract.
 
 ---
 
-## 26. Unsupported Operations
+## 26. Interrupt-Service Interface
+
+The KL8E-compatible controller contributes an interrupt request when the shared controller interrupt enable is set and either the keyboard flag or teleprinter flag is set.
+
+The interrupt service routine identifies the requesting interface using the controller's existing skip operations:
+
+- KSF tests the keyboard flag.
+- TSF tests the teleprinter flag.
+- TSK tests whether either the keyboard flag or teleprinter flag is set.
+
+The interrupt service routine clears or services the keyboard interrupt condition using the existing keyboard operations:
+
+- KCF clears the keyboard flag without reading the keyboard receive register.
+- KCC clears the keyboard flag and clears `AC` without reading the keyboard receive register.
+- KRB reads the keyboard receive register and clears the keyboard flag.
+
+KRS reads the keyboard receive register without clearing the keyboard flag. Therefore, KRS alone does not remove a keyboard interrupt condition.
+
+The interrupt service routine clears or services the teleprinter interrupt condition using the existing teleprinter operations:
+
+- TCF clears the teleprinter flag.
+- TLS accepts a new output character and clears the teleprinter flag when the character is accepted.
+
+TPC accepts a new output character without clearing the teleprinter flag. Therefore, TPC alone does not remove a teleprinter interrupt condition.
+
+TFL sets the teleprinter flag and may establish an interrupt condition when the shared controller interrupt enable is set.
+
+KIE controls whether the keyboard and teleprinter flags contribute to the controller interrupt request:
+
+- `AC[0] = 0` disables the controller interrupt contribution.
+- `AC[0] = 1` enables the controller interrupt contribution.
+
+Servicing one flag does not clear the other flag. The controller interrupt contribution remains asserted while the shared interrupt enable is set and either flag remains set.
+
+This section coordinates the existing controller operations for interrupt-service use. The individual instruction definitions remain authoritative for their complete behavior and timing.
+
+---
+
+## 27. Unsupported Operations
 
 Unsupported IOP values are ignored.
 
@@ -611,7 +649,7 @@ An ignored operation produces:
 
 ---
 
-## 27. DMA Behavior
+## 28. DMA Behavior
 
 The KL8E-compatible controller does not use DMA.
 
@@ -619,7 +657,7 @@ Console input and output use programmed I/O and optional interrupts.
 
 ---
 
-## 28. Implementation Boundary
+## 29. Implementation Boundary
 
 The controller implementation must satisfy this contract but may choose its own:
 

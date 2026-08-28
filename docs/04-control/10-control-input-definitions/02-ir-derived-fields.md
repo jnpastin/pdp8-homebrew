@@ -1020,6 +1020,8 @@ IR_RESTORES_IB = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==100) (octal 6
 **Consumed By:**
 - [IB_TO_DF](../../03-microarchitecture/02-micro-operations.md#ib_to_df)
 - [IB_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ib_to_dif)
+- [II_SET](../../03-microarchitecture/02-micro-operations.md#ii_set)
+- [CIFP_SET](../../03-microarchitecture/02-micro-operations.md#cifp_set)
 
 ---
 

@@ -554,7 +554,42 @@ The implementation-specific synchronization mechanism is outside this contract.
 
 ---
 
-## 24. Unsupported Operations
+## 24. Interrupt-Service Interface
+
+The PC8E-compatible controller contributes an interrupt request when the shared controller interrupt enable is set and either the reader flag or punch flag is set.
+
+The interrupt service routine identifies the requesting interface using the controller's existing skip operations:
+
+- RSF tests the reader flag.
+- PSF tests the punch flag.
+
+The interrupt service routine clears or services the reader interrupt condition using the existing reader operations:
+
+- RRB reads the reader buffer and clears the reader flag.
+- RFC clears the reader flag and requests acquisition of the next character.
+- RRB RFC reads the current reader buffer, clears the reader flag, and requests acquisition of the next character.
+
+After RFC or RRB RFC, completion of the requested reader operation sets the reader flag again. If the shared interrupt enable remains set, that completion establishes another controller interrupt condition.
+
+The interrupt service routine clears or services the punch interrupt condition using the existing punch operations:
+
+- PCF clears the punch flag.
+- PLS accepts a new punch character and clears the punch flag when the character is accepted.
+
+PPC accepts a new punch character without clearing the punch flag. Therefore, PPC alone does not remove a punch interrupt condition.
+
+RPE and PCE control whether reader and punch flags contribute to the controller interrupt request:
+
+- RPE enables the shared controller interrupt contribution.
+- PCE disables the shared controller interrupt contribution.
+
+Servicing one flag does not clear the other flag. The controller interrupt contribution remains asserted while the shared interrupt enable is set and either flag remains set.
+
+This section coordinates the existing controller operations for interrupt-service use. The individual instruction definitions remain authoritative for their complete behavior and timing.
+
+---
+
+## 25. Unsupported Operations
 
 Unsupported IOP values are ignored.
 
@@ -581,7 +616,7 @@ An ignored operation produces:
 
 ---
 
-## 25. DMA Behavior
+## 26. DMA Behavior
 
 The PC8E-compatible controller does not use DMA.
 
@@ -589,7 +624,7 @@ Reader and punch operations use programmed I/O and optional interrupts.
 
 ---
 
-## 26. Implementation Boundary
+## 27. Implementation Boundary
 
 The controller implementation must satisfy this contract but may choose its own:
 

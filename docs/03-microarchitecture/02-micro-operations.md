@@ -432,7 +432,7 @@ AC, MB
 State Manipulation
 
 **Description:**  
-Clears the CIF-pending register, releasing the interrupt inhibit established by CIF. Executed at the JMP/JMS that applies the pending field.
+Clears the deferred instruction-field pending register when the next JMP or JMS applies the field staged by CIF or RMF.
 
 **Target:**  
 CIFP
@@ -451,7 +451,7 @@ CIFP ← 0
 State Manipulation
 
 **Description:**  
-Sets the CIF-pending register, marking a deferred instruction-field change and inhibiting interrupt recognition until the next JMP/JMS.
+Sets the CIF-pending register, marking a deferred instruction-field change initiated by CIF or RMF and preserving interrupt inhibition until the field is applied by the next JMP or JMS.
 
 **Target:**  
 CIFP

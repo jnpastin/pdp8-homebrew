@@ -26,6 +26,7 @@ Each controller document must define:
 - programmer-visible registers
 - controller-local flags
 - interrupt behavior
+- interrupt-service identification and interrupt-condition clearing or servicing behavior, when the controller is interrupt-capable
 - reset behavior
 - complete IOT table
 - IOT phase and TP behavior
@@ -37,7 +38,23 @@ Each controller document must define:
 
 ---
 
-## 4. Compatibility Rule
+### 4. Interrupt-Service Documentation
+
+Each interrupt-capable controller document must identify:
+
+- the controller state that produces its interrupt contribution
+- the existing IOT operation or operations used by software to test each interrupt condition
+- the existing IOT operation or operations that clear or service each interrupt condition
+- operations that inspect controller state without clearing the interrupt condition
+- operations that may reestablish the interrupt condition
+- the effect of servicing one condition when multiple controller conditions contribute to the same interrupt request
+- the operation or state that enables or disables the controller interrupt contribution
+
+This documentation coordinates the controller's existing instruction and state definitions for interrupt-service use. It must not create separate instruction semantics or redefine the behavior and timing specified elsewhere in the controller document.
+
+---
+
+## 5. Compatibility Rule
 
 A controller claiming compatibility/equivalency with a DEC interface must reproduce:
 

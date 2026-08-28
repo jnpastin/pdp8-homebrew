@@ -23,7 +23,7 @@ Excludes:
 ## 3. Model Summary
 - Instructions are defined by IR bitfields.
 - Behavior is determined without decoding into symbolic instructions.
-- Skip behavior sets a pending control condition that affects PC update.
+- Skip conditions are evaluated during the instruction-defined execution phase and, when true, select one `PC_INC`; no persistent skip state is created..
 - Addressing model and effective address generation define how operands are located and are used by all MRI instruction semantics.
 
 ---

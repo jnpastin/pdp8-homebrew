@@ -77,11 +77,11 @@ FLAGS must:
 
 **Name:** CIF_PENDING  
 **Source Register:** CIFP  
-**Purpose:** Indicates that a deferred instruction-field change (CIF) is pending, awaiting the next JMP/JMS.
+**Purpose:** Indicates that a deferred instruction-field change initiated by CIF or RMF is pending, awaiting the next JMP or JMS.
 
 **Value Encoding:**
-- 0 → no CIF pending
-- 1 → CIF pending
+- 0 → no deferred instruction-field change pending
+- 1 → deferred instruction-field change pending
 
 **Consumed By:**
 - Control decision:

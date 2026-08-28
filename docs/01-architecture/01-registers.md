@@ -71,22 +71,22 @@ Writers:
 
 Width: 1 bit
 
-Role: Records that a deferred instruction-field change (CIF) is pending, awaiting the next JMP or JMS.
+Role: Records that a deferred instruction-field change is pending, awaiting the next JMP or JMS.  
 
-Visibility: Control-visible
+Visibility: Control-visible  
 
 Invariants:
-- Set from execution of CIF until the field is applied at the next JMP/JMS
-- While set, interrupt recognition is inhibited (holds II set across the CIF-to-branch window)
+- Set from execution of CIF or RMF until the deferred field is applied at the next JMP/JMS
+- While set, interrupt recognition is inhibited by holding `II` set across the deferred-field-change interval  
 
 Constraints:
-- Set only by CIF execution (IR_WRITES_IF)
+- Set only by CIF or RMF execution (`IR_WRITES_IF` or `IR_RESTORES_IB`)
 - Cleared only at the JMP/JMS that applies the pending field (EXECUTE TS4)
-- Must not be directly modified by datapath logic
+- Must not be directly modified by datapath logic  
 
 Writers:
-- IOT execution (CIF; CIFP_SET μop)
-- MRI execution (JMP/JMS; CIFP_CLEAR μop)
+- IOT execution (CIF or RMF; `CIFP_SET` μop)
+- MRI execution (JMP/JMS; `CIFP_CLEAR` μop)
 
 ---
 
@@ -291,15 +291,14 @@ Invariants:
 - Used in conjunction with IE to determine interrupt eligibility  
 - Stable during instruction execution  
 
-Constraints:  
-- Set only by ION and CIF instructions  
-- Cleared during FETCH when no CIF field change is pending (CIFP = 0)
-- Must not be directly modified by control logic  
+Constraints:
+- Set only by ION, CIF, and RMF instructions
+- Cleared during FETCH when no deferred instruction-field change is pending (`CIFP = 0`)
+- Must not be directly modified by datapath logic  
 
-Writers:  
-- IOT execution (ION; II_SET μop) 
-- IOT execution (CIF; II_SET μop) 
-- FETCH execution (II_CLEAR μop)
+Writers:
+- IOT execution (ION, CIF, or RMF; `II_SET` μop)
+- FETCH execution (`II_CLEAR` μop)
 
 ---
 

@@ -206,7 +206,7 @@ TS4:
 
 Description:
 - Turns the interrupt system on (IE_SET)
-- Sets II so interrupt recognition is delayed until after the instruction following ION; FETCH clears II when no CIF field change is pending, realizing the standard one-instruction ION delay
+- Sets II so interrupt recognition is delayed until after the instruction following ION; FETCH clears II when no deferred instruction field change is pending, realizing the standard one-instruction ION delay
 
 ---
 
@@ -242,7 +242,7 @@ Description:
 - (no μops)
 
   TS2:
-- if /INT_REQ: PC_INC
+- if /INT_REQ = 0: PC_INC
 
   TS3:
 - (no μops)
@@ -384,8 +384,10 @@ TS1:
 - (no μops)
 
 TS2:
-- IB_TO_DF
-- IB_TO_DIF
+- `IB_TO_DF`
+- `IB_TO_DIF`
+- `II_SET`
+- `CIFP_SET`
 
 TS3:
 - (no μops)
@@ -394,7 +396,9 @@ TS4:
 - (no μops)
 
 Description:
-- Restores the fields saved in IB: DF <- saved DF (immediate), IF <- saved IF (deferred via DIF; applied at the next JMP/JMS)
+- Restores `DF` from the saved `DF` value in `IB`
+- Stages the saved `IF` value from `IB` in `DIF`
+- Sets `II` and `CIFP` to inhibit interrupt recognition until the deferred instruction-field value is applied by the next JMP or JMS
 
 ---
 

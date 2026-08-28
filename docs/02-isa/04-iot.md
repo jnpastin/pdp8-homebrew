@@ -96,12 +96,12 @@ These are selected by IR[2:0] = 100, with the specific instruction determined by
 | RDF | 6214 | Read Data Field | AC[5:3] <- DF (OR'd into AC; other AC bits unaffected) |
 | RIF | 6224 | Read Instruction Field | AC[5:3] <- IF (OR'd into AC; other AC bits unaffected) |
 | RIB | 6234 | Read Interrupt Buffer | AC[5:3] <- saved IF, AC[2:0] <- saved DF (OR'd into AC; other AC bits unaffected) |
-| RMF | 6244 | Restore Memory Field | IF <- saved IF (deferred), DF <- saved DF |
+| RMF | 6244 | Restore Memory Field | DF <- saved DF immediately; saved IF is staged for application at the next JMP or JMS; interrupt recognition is inhibited until the staged IF is applied |
 
 Semantics:
 - RDF and RIF place the current field into AC[5:3] by OR, so AC is not cleared first. A clean read is obtained by clearing AC (for example, CLA) in a preceding instruction.
 - RIB reads the interrupt-saved fields from the interrupt buffer into AC. It is used within an interrupt service routine to capture the interrupted program's fields.
-- RMF restores IF and DF from the interrupt buffer, typically at the end of an interrupt service routine. The IF restore is deferred to the next JMP or JMS, consistent with CIF.
+- RMF restores DF from the interrupt buffer immediately and stages the saved IF for application at the next JMP or JMS. Interrupt recognition remains inhibited until the staged instruction field is applied, consistent with CIF.
 
 ---
 
