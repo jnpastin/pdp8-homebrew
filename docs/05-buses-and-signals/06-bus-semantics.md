@@ -1,6 +1,6 @@
 # Bus Semantics
 
-## Purpose
+## 1. Purpose
 
 This document defines the semantic behavior of shared system buses.
 
@@ -31,11 +31,11 @@ Operation semantics are defined in:
 
 ---
 
-## Ownership and Validity
+## 2. Ownership and Validity
 
 Ownership and validity are distinct concepts.
 
-### Ownership
+### 2.1 Ownership
 
 Ownership determines which entity is permitted to drive a bus.
 
@@ -45,7 +45,7 @@ Ownership rules are defined in:
 
 This document does not define ownership behavior.
 
-### Bus Validity
+### 2.2 Bus Validity
 
 Bus validity is determined by defined system operations.
 
@@ -63,21 +63,21 @@ Consumers must treat bus values as invalid unless a defined operation specifies 
 
 ---
 
-## Electrical Semantics
+## 3. Electrical Semantics
 
-### Driver Exclusivity
+### 3.1 Driver Exclusivity
 
 At most one device may actively drive a shared bus at any time.
 
 Bus contention is prohibited.
 
-### Inactive Driver Behavior
+### 3.2 Inactive Driver Behavior
 
 A device that is not actively driving a shared bus must present a high-impedance (High-Z) output state.
 
 Inactive devices must not influence bus values.
 
-### Undriven Bus State
+### 3.3 Undriven Bus State
 
 Shared buses shall have a defined value when no active driver is present.
 
@@ -87,15 +87,15 @@ Consumers must not infer operation semantics from this value.
 
 ---
 
-## Consumer Semantics
+## 4. Consumer Semantics
 
-### No Implied Meaning
+### 4.1 No Implied Meaning
 
 The presence of a value on a bus does not imply that an operation is occurring.
 
 Consumers must not infer operational meaning from bus values alone.
 
-### Operation-Defined Interpretation
+### 4.2 Operation-Defined Interpretation
 
 Bus values are interpreted only within the context of defined operations.
 
@@ -103,7 +103,7 @@ Control definitions and operation specifications are authoritative.
 
 Consumers shall act only when required by the operation currently being performed.
 
-### No Implied Data Transfer
+### 4.3 No Implied Data Transfer
 
 The presence of a bus value does not imply:
 
@@ -117,7 +117,7 @@ Such behavior must be explicitly defined by the corresponding operation.
 
 ---
 
-## Domain Awareness
+## 5. Domain Awareness
 
 The system contains multiple independent data domains.
 
@@ -129,7 +129,7 @@ Bus semantics do not define domain membership or crossing behavior.
 
 ---
 
-## Global Invariants
+## 6. Global Invariants
 
 - Ownership and validity are independent concepts.
 - Ownership does not imply validity.
@@ -143,7 +143,7 @@ Bus semantics do not define domain membership or crossing behavior.
 
 ---
 
-## Summary
+## 7. Summary
 
 Bus semantics define how shared bus values are interpreted and consumed throughout the system.
 

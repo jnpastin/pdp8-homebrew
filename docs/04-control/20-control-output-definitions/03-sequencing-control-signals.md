@@ -1,6 +1,6 @@
 # Sequencing Control Signals
 
-## Purpose
+## 1. Purpose
 
 Defines control outputs responsible for **control flow within the CPU**.
 
@@ -23,7 +23,7 @@ Related:
 
 ---
 
-## 1. Scope
+## 2. Scope
 
 Sequencing control signals define **how control transitions between Major States (MS)**.
 
@@ -42,9 +42,9 @@ They do NOT:
 
 ---
 
-## 2. Global Properties
+## 3. Global Properties
 
-### 2.1 Functional Model
+### 3.1 Functional Model
 
 Control is defined as:
 
@@ -60,7 +60,7 @@ Sequencing signals are part of this function.
 
 ---
 
-### 2.2 Determinism
+### 3.2 Determinism
 
 For every tuple:
 
@@ -80,7 +80,7 @@ No ambiguity is permitted.
 
 ---
 
-### 2.3 Timing Independence
+### 3.3 Timing Independence
 
 Sequencing signals:
 
@@ -94,11 +94,11 @@ TS/TP behavior is defined in:
 
 ---
 
-## 3. Signal Definitions
+## 4. Signal Definitions
 
 ---
 
-### 3.1 Next Major State (MS_NEXT)
+### 4.1 Next Major State (MS_NEXT)
 
 **Name**  
 MS_NEXT  
@@ -141,7 +141,7 @@ Specifies the next Major State.
 
 ---
 
-### 3.2 Run State Next Value (RUN_NEXT)
+### 4.2 Run State Next Value (RUN_NEXT)
 
 **Name** RUN_NEXT  
 **Type** Single-bit state-output field  
@@ -177,7 +177,7 @@ Specifies the next value of the RUN state.
 
 ---
 
-### 3.3 Halt Request Next Value (HLT_REQ_NEXT)
+### 4.3 Halt Request Next Value (HLT_REQ_NEXT)
 
 **Name** HLT_REQ_NEXT  
 **Type** Single-bit state-output field  
@@ -212,11 +212,11 @@ Specifies the next value of the halt-request pending state.
 
 ---
 
-## 4. Sequencing Model
+## 5. Sequencing Model
 
 ---
 
-### 4.1 Time State Interpretation
+### 5.1 Time State Interpretation
 
 Time State (TS):
 
@@ -234,7 +234,7 @@ Control:
 
 ---
 
-### 4.2 Major State Transition
+### 5.2 Major State Transition
 
 At TS4:
 
@@ -255,7 +255,7 @@ All transitions must be explicitly defined.
 
 ---
 
-### 4.3 TS Coverage Requirement
+### 5.3 TS Coverage Requirement
 
 Control must define behavior for every:
 
@@ -271,7 +271,7 @@ Implications:
 
 ---
 
-## 5. Skip and Flow Behavior
+## 6. Skip and Flow Behavior
 
 Skip behavior is implemented through datapath control outputs.
 
@@ -288,11 +288,11 @@ Defined in:
 
 ---
 
-## 6. Interaction Rules
+## 7. Interaction Rules
 
 ---
 
-### 6.1 No Implicit Control Flow
+### 7.1 No Implicit Control Flow
 
 All control flow must be:
 
@@ -303,7 +303,7 @@ No implicit transitions are permitted.
 
 ---
 
-### 6.2 Single Effective Decision
+### 7.2 Single Effective Decision
 
 At each TS:
 
@@ -313,7 +313,7 @@ This ensures deterministic behavior.
 
 ---
 
-### 6.3 External Input Usage
+### 7.3 External Input Usage
 
 External signals (EXT):
 
@@ -322,7 +322,7 @@ External signals (EXT):
 
 ---
 
-### 6.4 Separation from Timing Extensions
+### 7.4 Separation from Timing Extensions
 
 Sequencing signals must not interact with:
 
@@ -335,7 +335,7 @@ Those are defined in:
 
 ---
 
-## 7. Summary
+## 8. Summary
 
 Sequencing control signals define **how control progresses between Major States**.
 

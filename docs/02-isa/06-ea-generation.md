@@ -1,6 +1,6 @@
 # Effective Address (EA) Generation Algorithm
 
-## Scope
+## 1. Scope
 
 Applies only to Memory Reference Instructions (MRI).  
 
@@ -10,7 +10,7 @@ See:
 
 ---
 
-## Notation
+## 2. Notation
 
 All final effective addresses are expressed as:
 
@@ -25,7 +25,7 @@ Where:
 
 ---
 
-## Overview
+## 3. Overview
 
 The EA as a logical construct is formed by:
 
@@ -39,7 +39,7 @@ EA_logical = (EA_fld, EA_addr)
 
 ---
 
-## EA_addr Usage by Phase
+## 4. EA_addr Usage by Phase
 
 EA_addr is a phase-dependent working value:
 
@@ -56,7 +56,7 @@ EA_addr must not be assumed to be final prior to EXECUTE
 
 ---
 
-## Inputs
+## 5. Inputs
 
 - IR bits: I, P, offset[6:0]  
 - PC (12-bit)  
@@ -66,7 +66,7 @@ EA_addr must not be assumed to be final prior to EXECUTE
 
 ---
 
-## Step 1: EA_addr Address Formation (IF domain)
+## 6. Step 1: EA_addr Address Formation (IF domain)
 
 The EA_addr address is always initially formed in the IF domain, regardless of addressing mode.
 
@@ -84,7 +84,7 @@ EA_addr = PC[11:7] || offset
 
 ---
 
-## Step 2A: Direct Addressing Path (I = 0)
+## 7. Step 2A: Direct Addressing Path (I = 0)
 
 Direct addressing does not involve indirection.
 
@@ -103,17 +103,17 @@ Properties:
 
 ---
 
-## Step 2B: Indirect Addressing Path (I = 1)
+## 8. Step 2B: Indirect Addressing Path (I = 1)
 
 Indirect addressing resolves a pointer stored in memory.
 
-### Step 2B.1: Pointer Location (IF domain)
+### 8.1 Step 2B.1: Pointer Location (IF domain)
 
 The pointer location is defined by EA_addr in the IF domain.
 
 ---
 
-### Step 2B.2: Auto-Index Handling
+### 8.2 Step 2B.2: Auto-Index Handling
 
 If EA_addr is in the auto-index range:
 
@@ -136,7 +136,7 @@ PTR_value = M[(IF, EA_addr)]
 
 ---
 
-### Step 2B.3: Final EA Formation (DF domain)
+### 8.3 Step 2B.3: Final EA Formation (DF domain)
 
 ```
 EA_field = DF
@@ -148,7 +148,7 @@ STOP
 
 ---
 
-## Invariants
+## 9. Invariants
 
 - EA_addr is always formed using IF  
 - Direct (I = 0) uses IF for final memory access  
@@ -163,7 +163,7 @@ STOP
 
 ---
 
-## Notes
+## 10. Notes
 
 - Pointer location is always addressed in IF  
 - Pointer value is interpreted as an address in DF  

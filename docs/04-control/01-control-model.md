@@ -1,6 +1,6 @@
 # Control Model
 
-## Purpose
+## 1. Purpose
 
 Defines the conceptual model of control in the system.
 
@@ -25,7 +25,7 @@ For definitions of control input signals, see:
 
 ---
 
-## 1. Control as a Function
+## 2. Control as a Function
 
 Control is defined as a deterministic function:
 
@@ -45,11 +45,11 @@ This function selects a control word that determines system behavior.
 
 ---
 
-## 2. Control Inputs
+## 3. Control Inputs
 
 Control depends only on explicitly defined input domains.
 
-### 2.1 Input Domains
+### 3.1 Input Domains
 
 Control inputs are partitioned into:
 
@@ -71,11 +71,11 @@ Each domain is distinct and must not overlap in definition or implementation.
 
 ---
 
-## 3. Control State
+## 4. Control State
 
 Control operates over two orthogonal state dimensions.
 
-### 3.1 Major State (MS)
+### 4.1 Major State (MS)
 
 Defines the high-level execution phase.
 
@@ -93,7 +93,7 @@ Properties:
 
 ---
 
-### 3.2 Time State (TS)
+### 4.2 Time State (TS)
 
 Defines sequencing within a major state.
 
@@ -105,7 +105,7 @@ Properties:
 
 ---
 
-## 4. Instruction Representation
+## 5. Instruction Representation
 
 Control does not operate directly on raw instruction encoding.
 
@@ -113,7 +113,7 @@ Instead, the Instruction Register (IR) is reduced to control-relevant fields.
 
 ---
 
-### 4.1 Instruction Register (IR)
+### 5.1 Instruction Register (IR)
 
 IR holds the current instruction.
 
@@ -124,7 +124,7 @@ Properties:
 
 ---
 
-### 4.2 IR-Derived Fields (IR_FIELDS)
+### 5.2 IR-Derived Fields (IR_FIELDS)
 
 IR is transformed via combinational logic:
 
@@ -160,7 +160,7 @@ Examples:
 
 ---
 
-### 4.3 Properties of IR_FIELDS
+### 5.3 Properties of IR_FIELDS
 
 IR_FIELDS:
 
@@ -171,7 +171,7 @@ IR_FIELDS:
 
 ---
 
-### 4.4 Design Principle
+### 5.4 Design Principle
 
 Instruction information used by control must be expressed as:
 
@@ -181,7 +181,7 @@ control-relevant fields, not raw encoded state
 
 ---
 
-## 5. Condition Representation (FLAGS)
+## 6. Condition Representation (FLAGS)
 
 FLAGS are internal, derived condition signals used as inputs to control.
 
@@ -190,7 +190,7 @@ flags register.
 
 ---
 
-### 5.1 Definition
+### 6.1 Definition
 
 FLAGS are boolean predicates derived from register state.
 
@@ -207,7 +207,7 @@ FLAGS do not imply the existence of a stored aggregate flags register.
 
 ---
 
-### 5.2 Properties
+### 6.2 Properties
 
 - Type: single-bit (per flag)
 - Domain: control input
@@ -219,7 +219,7 @@ FLAGS do not imply the existence of a stored aggregate flags register.
 
 ---
 
-### 5.3 Constraints
+### 6.3 Constraints
 
 - must be derived only from stable register state
 - must not depend on transient datapath signals
@@ -228,7 +228,7 @@ FLAGS do not imply the existence of a stored aggregate flags register.
 
 ---
 
-### 5.4 Definition Source
+### 6.4 Definition Source
 
 Complete definitions of all FLAGS are provided in:
 
@@ -237,7 +237,7 @@ Complete definitions of all FLAGS are provided in:
 
 ---
 
-## 6. External Inputs (EXT)
+## 7. External Inputs (EXT)
 
 EXT represents signals originating outside the CPU.
 
@@ -256,7 +256,7 @@ Defined in:
 
 ---
 
-## 7. Control Structure
+## 8. Control Structure
 
 Control can be understood as three conceptual operations:
 
@@ -266,7 +266,7 @@ Control can be understood as three conceptual operations:
 
 ---
 
-### 7.1 Conceptual Roles
+### 8.1 Conceptual Roles
 
 - input reduction:
   - produces IR_FIELDS and FLAGS
@@ -279,7 +279,7 @@ Control can be understood as three conceptual operations:
 
 ---
 
-### 7.2 Implementation Model
+### 8.2 Implementation Model
 
 These roles are conceptual only.
 
@@ -300,7 +300,7 @@ CTRL_ADDR → CONTROL_WORD
 
 ---
 
-### 7.3 Timing Model
+### 8.3 Timing Model
 
 - At TP(n-1):
   - state is latched
@@ -316,7 +316,7 @@ CTRL_ADDR → CONTROL_WORD
 
 ---
 
-## 8. Persistence of Information
+## 9. Persistence of Information
 
 Control state does not persist across TS.
 
@@ -330,21 +330,21 @@ IR_FIELDS and FLAGS remain stable because their sources are stable.
 
 ---
 
-## 9. Design Principles
+## 10. Design Principles
 
-### 9.1 Decision-Based Representation
+### 10.1 Decision-Based Representation
 
 Control inputs represent decisions, not full state.
 
 ---
 
-### 9.2 Minimality
+### 10.2 Minimality
 
 Only information required to determine control behavior is included.
 
 ---
 
-### 9.3 Separation of Concerns
+### 10.3 Separation of Concerns
 
 - IR decoding determines instruction properties
 - FLAGS represent conditions
@@ -352,13 +352,13 @@ Only information required to determine control behavior is included.
 
 ---
 
-### 9.4 Determinism
+### 10.4 Determinism
 
 Each input combination produces exactly one control outcome.
 
 ---
 
-## 10. Summary
+## 11. Summary
 
 Control is a mapping from reduced machine state to control behavior.
 

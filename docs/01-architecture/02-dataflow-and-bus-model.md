@@ -2,14 +2,14 @@
 
 Buses are defined and described in more detail [here](../05-buses-and-signals/01-class-a-buses.md).
 
-## Core Principle
+## 1. Core Principle
 All data movement follows:
 
 Bus → Register → Consumer
 
 ---
 
-## Address Path
+## 2. Address Path
 
 MA → AB → Memory
 - MA is the authoritative CPU address register
@@ -19,7 +19,7 @@ MA → AB → Memory
 
 ---
 
-## Memory Data Path
+## 3. Memory Data Path
 MDB → MB → CPU
 
 - MDB is transient
@@ -27,7 +27,7 @@ MDB → MB → CPU
 
 ---
 
-## System Data Bus
+## 4. System Data Bus
 DB → Register → Consumer
 
 - DB values must be captured
@@ -49,14 +49,14 @@ Constraints:
 
 ---
 
-## Constraints
+## 5. Constraints
 - Buses are not storage
 - Registers are the only stable sources
 - No component may rely on bus state
 
 ---
 
-## Timing Relationship
+## 6. Timing Relationship
 - TS: stabilization
 - TP: capture
 

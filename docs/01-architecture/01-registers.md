@@ -1,13 +1,13 @@
 # Register Model Specification
 
-## Purpose
+## 1. Purpose
 Defines all system state.
 
 All stable values in the system must reside in registers.
 
 ---
 
-## Architectural Registers
+## 2. Architectural Registers
 - AC: [Accumulator](#ac--accumulator)
 - DF: [Data Field](#df--data-field)
 - IE: [Interrupt Enable](#ie--interrupt-enable)
@@ -20,7 +20,7 @@ All stable values in the system must reside in registers.
 
 ---
 
-## Control-Visible State
+## 3. Control-Visible State
 - CIFP: [Change Instruction Field Pending](#cifp--change-instruction-field-pending)
 - HLT_REQ: [Halt Request](#hlt_req--halt-request)
 - II: [Interrupt Inhibit](#ii--interrupt-inhibit)
@@ -30,7 +30,7 @@ All stable values in the system must reside in registers.
 
 ---
 
-## Internal Registers
+## 4. Internal Registers
 - DIF: [Deferred Instruction Field](#dif--deferred-instruction-field)
 - EA_ADDR: [Effective Address (Address Portion)](#ea_addr--effective-address-address-portion)
 - IB: [Interrupt Buffer](#ib--interrupt-buffer)
@@ -40,7 +40,7 @@ All stable values in the system must reside in registers.
 
 ---
 
-## Register Definitions
+## 5. Register Definitions
 
 ### AC – Accumulator
 Width: 12 bits

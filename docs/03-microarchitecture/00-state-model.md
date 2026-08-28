@@ -1,6 +1,6 @@
 # State Model
 
-## Purpose
+## 1. Purpose
 
 Defines the formal execution state of the processor and the rules governing its evolution over time.
 
@@ -8,7 +8,7 @@ This model provides the only mechanism by which execution progresses.
 
 ---
 
-## Microstate Definition
+## 2. Microstate Definition
 
 Execution state is defined as:
 
@@ -20,7 +20,7 @@ Where:
 
 ---
 
-## State Evolution
+## 3. State Evolution
 
 Execution proceeds as a sequence of discrete transitions:
 
@@ -32,7 +32,7 @@ With:
 
 ---
 
-## Execution Flow
+## 4. Execution Flow
 
 The processor follows this high-level progression:
 
@@ -47,7 +47,7 @@ Properties:
 
 ---
 
-## Major State (MS)
+## 5. Major State (MS)
 
 MS encodes the instruction-level phase of execution.
 
@@ -58,7 +58,7 @@ Valid states:
 - INTERRUPT
 - DMA
 
-### MS Update Rule
+### 5.1 MS Update Rule
 
 
 MS_NEXT is determined by control logic during TS4 and is not represented as a μop.
@@ -76,7 +76,7 @@ Constraints:
 
 ---
 
-## Time State (TS)
+## 6. Time State (TS)
 
 TS defines the execution phase within a major state.
 
@@ -87,7 +87,7 @@ Properties:
 
 ---
 
-## Timing Interaction (Normative)
+## 7. Timing Interaction (Normative)
 
 Execution obeys the following invariant:
 
@@ -105,7 +105,7 @@ Implications:
 
 ---
 
-## Behavioral Model
+## 8. Behavioral Model
 
 All processor behavior must be expressible as a sequence of state updates of the form:
 
@@ -119,7 +119,7 @@ Constraints:
 
 ---
 
-## Flags Model
+## 9. Flags Model
 
 Flags used for execution decisions are not stored independently.
 
@@ -134,7 +134,7 @@ Constraints:
 
 ---
 
-## External Inputs (EXT)
+## 10. External Inputs (EXT)
 
 External inputs are the only non-register inputs that may influence execution.
 
@@ -148,7 +148,7 @@ Constraints:
 
 ---
 
-## State Invariants
+## 11. State Invariants
 
 The following invariants must always hold:
 
@@ -161,9 +161,9 @@ The following invariants must always hold:
 
 ---
 
-## State Transition Constraints
+## 12. State Transition Constraints
 
-### Execution
+### 12.1 Execution
 
 Execution decisions must depend only on stable state.
 
@@ -180,14 +180,14 @@ Disallowed inputs:
 Requirement:
 - Any datapath result must be captured into a register before it can influence future execution
 
-### Control
+### 12.2 Control
 
 Control decisions (including MS_NEXT) are evaluated during TS and committed at TP, subject to the same stability and input constraints as μops.
 
 
 ---
 
-## Relationship to Other Models
+## 13. Relationship to Other Models
 
 [Timing (09)](../09-timing/README.md):
 - Defines TS and TP generation
@@ -201,7 +201,7 @@ Microarchitecture (this section):
 
 ---
 
-## Summary
+## 14. Summary
 
 The system executes as a sequence of discrete, deterministic state transitions driven by:
 

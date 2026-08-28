@@ -1,6 +1,6 @@
 # Memory Field Selection
 
-## Purpose
+## 1. Purpose
 
 This document defines how the memory subsystem interprets the memory field presented on MFB.
 
@@ -8,7 +8,7 @@ The memory subsystem does not choose the memory field. It only observes the fiel
 
 ---
 
-## Field Boundary
+## 2. Field Boundary
 
 MFB provides the memory field value used by the memory subsystem.
 
@@ -20,7 +20,7 @@ MFB is not interpreted as IF, DF, or any other CPU register by the memory subsys
 
 ---
 
-## Field Selection Responsibility
+## 3. Field Selection Responsibility
 
 The rules that determine which value appears on MFB are outside the memory subsystem boundary.
 
@@ -38,7 +38,7 @@ From the memory subsystem perspective, all valid memory operations use the MFB v
 
 ---
 
-## Relationship to IF and DF
+## 4. Relationship to IF and DF
 
 IF and DF are CPU-side field registers.
 
@@ -48,7 +48,7 @@ When a memory operation occurs, memory observes only MFB. If MFB was derived fro
 
 ---
 
-## Fielded Memory Space
+## 5. Fielded Memory Space
 
 MFB selects the memory field.
 
@@ -64,7 +64,7 @@ M[MEM_ADDR]
 
 ---
 
-## Field Stability
+## 6. Field Stability
 
 During any valid memory operation, MFB must remain stable for the active operation window.
 
@@ -72,7 +72,7 @@ If MFB changes while /RD or /WR is asserted, the memory operation is invalid.
 
 ---
 
-## Field Origin Independence
+## 7. Field Origin Independence
 
 The memory subsystem treats the same MFB value identically regardless of operation origin.
 
@@ -87,7 +87,7 @@ Operation origin does not change memory field interpretation.
 
 ---
 
-## Invariants
+## 8. Invariants
 
 - MFB is the memory field input to the memory subsystem.
 - Memory does not choose the value on MFB.
@@ -100,7 +100,7 @@ Operation origin does not change memory field interpretation.
 
 ---
 
-## Summary
+## 9. Summary
 
 The memory subsystem interprets MFB only as the field portion of MEM_ADDR.
 

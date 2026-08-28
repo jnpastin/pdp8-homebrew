@@ -1,6 +1,6 @@
 # Implementation Constraints
 
-## Purpose
+## 1. Purpose
 
 This document defines implementation constraints for the physical memory technology used by the memory subsystem.
 
@@ -8,7 +8,7 @@ It does not select a specific memory technology or memory part.
 
 ---
 
-## Implementation Boundary
+## 2. Implementation Boundary
 
 The memory subsystem may be implemented using any suitable physical memory technology, provided that the implementation satisfies the logical memory behavior defined by Section 6.
 
@@ -25,7 +25,7 @@ The selected technology must be hidden behind the memory subsystem interface.
 
 ---
 
-## Required Interface Behavior
+## 3. Required Interface Behavior
 
 The implementation must behave as random-access read/write memory at the memory interface.
 
@@ -43,7 +43,7 @@ For every valid memory write:
 
 ---
 
-## Logical Word Width
+## 4. Logical Word Width
 
 The memory subsystem stores 12-bit words.
 
@@ -59,7 +59,7 @@ The logical memory word remains 12 bits regardless of physical device width.
 
 ---
 
-## Address Mapping
+## 5. Address Mapping
 
 The implementation must map each MEM_ADDR value to exactly one logical 12-bit memory word.
 
@@ -71,7 +71,7 @@ MEM_ADDR = {MFB, AB}
 
 ---
 
-## Timing Compliance
+## 6. Timing Compliance
 
 The selected memory technology must satisfy the memory timing contract.
 
@@ -100,7 +100,7 @@ These implementation details must not change the logical memory behavior.
 
 ---
 
-## Read Side Effects
+## 7. Read Side Effects
 
 Some physical memory technologies may perform internal actions during a read.
 
@@ -110,7 +110,7 @@ A valid read must not logically change the value returned by later reads unless 
 
 ---
 
-## Write Endurance
+## 8. Write Endurance
 
 If the selected memory technology has finite write endurance, the implementation must account for that limitation.
 
@@ -122,7 +122,7 @@ If such mechanisms are required by the selected technology, they must preserve t
 
 ---
 
-## Volatility and Retention
+## 9. Volatility and Retention
 
 The logical memory model does not require memory contents to persist across power loss.
 
@@ -132,7 +132,7 @@ Volatility or nonvolatility must not affect memory behavior while the system is 
 
 ---
 
-## Power-Up Contents
+## 10. Power-Up Contents
 
 Section 6 does not define memory contents after power-up.
 
@@ -142,7 +142,7 @@ A memory implementation may power up with retained contents, cleared contents, r
 
 ---
 
-## Physical Device Details
+## 11. Physical Device Details
 
 The following are implementation details and are not defined by this document:
 
@@ -161,7 +161,7 @@ These details may be documented in physical or implementation sections if needed
 
 ---
 
-## Invariants
+## 12. Invariants
 
 - The logical memory word width is 12 bits.
 - MEM_ADDR selects one logical memory word.
@@ -176,7 +176,7 @@ These details may be documented in physical or implementation sections if needed
 
 ---
 
-## Summary
+## 13. Summary
 
 The memory implementation may use any suitable technology that satisfies the Section 6 memory contract.
 

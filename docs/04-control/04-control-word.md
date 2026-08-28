@@ -1,6 +1,6 @@
 # Control Word
 
-## Purpose
+## 1. Purpose
 
 Defines the structure and role of the control word (CONTROL_WORD).
 
@@ -24,7 +24,7 @@ Constraints are defined in:
 
 ---
 
-## 1. Control Word Definition
+## 2. Control Word Definition
 
 The control word is the output of the control store:
 
@@ -43,7 +43,7 @@ Constraint:
 
 ---
 
-## 2. Role of the Control Word
+## 3. Role of the Control Word
 
 The control word represents the result of a control decision.
 
@@ -67,7 +67,7 @@ Constraint:
 
 ---
 
-## 3. Control Word Partitioning
+## 4. Control Word Partitioning
 
 The control word is partitioned into categories of signals.
 
@@ -75,7 +75,7 @@ These categories reflect functional roles, not encoding structure.
 
 ---
 
-### 3.1 Microarchitectural Control Signals
+### 4.1 Microarchitectural Control Signals
 
 Control internal datapath behavior.
 
@@ -84,7 +84,7 @@ Defined in:
 
 ---
 
-### 3.2 Architectural Control Signals
+### 4.2 Architectural Control Signals
 
 Control architecturally visible state updates.
 
@@ -93,7 +93,7 @@ Defined in:
 
 ---
 
-### 3.3 Sequencing Control Signals
+### 4.3 Sequencing Control Signals
 
 Control progression of execution.
 
@@ -102,7 +102,7 @@ Defined in:
 
 ---
 
-## 4. Physical Implementation Considerations
+## 5. Physical Implementation Considerations
 
 The control word is physically implemented using ROM devices.
 
@@ -110,7 +110,7 @@ Typical ROM devices provide fixed-width outputs (commonly 8 bits per device).
 
 ---
 
-### 4.1 Width Composition
+### 5.1 Width Composition
 
 A complete CONTROL_WORD may be assembled from multiple ROM devices operating in parallel.
 
@@ -129,7 +129,7 @@ Constraint:
 
 ---
 
-### 4.2 Arbitrary Control Word Width
+### 5.2 Arbitrary Control Word Width
 
 Constraint:
 - CONTROL_WORD width is not required to be a multiple of 8 bits.
@@ -141,7 +141,7 @@ Implication:
 
 ---
 
-### 4.3 Unused Bits
+### 5.3 Unused Bits
 
 Constraint:
 - Unused bits within CONTROL_WORD are permitted.
@@ -152,7 +152,7 @@ Constraint:
 
 ---
 
-### 4.4 Extensibility
+### 5.4 Extensibility
 
 Constraint:
 - CONTROL_WORD must be extensible.
@@ -171,7 +171,7 @@ Constraint:
 
 ---
 
-### 4.5 Device Independence
+### 5.5 Device Independence
 
 Constraint:
 - CONTROL_WORD structure must be independent of physical ROM organization.
@@ -184,9 +184,9 @@ Implication:
 
 ---
 
-## 5. Structural Requirements
+## 6. Structural Requirements
 
-### 5.1 Completeness
+### 6.1 Completeness
 
 Constraint:
 - CONTROL_WORD must include all signals required to:
@@ -196,7 +196,7 @@ Constraint:
 
 ---
 
-### 5.2 Explicitness
+### 6.2 Explicitness
 
 Constraint:
 - All control effects must be explicitly encoded in CONTROL_WORD.
@@ -204,7 +204,7 @@ Constraint:
 
 ---
 
-### 5.3 Non-Redundancy
+### 6.3 Non-Redundancy
 
 Constraint:
 - Signals within CONTROL_WORD must not be redundant.
@@ -212,7 +212,7 @@ Constraint:
 
 ---
 
-### 5.4 Exclusivity
+### 6.4 Exclusivity
 
 Constraint:
 - Each control function must be represented by a single, well-defined signal or encoding.
@@ -220,9 +220,9 @@ Constraint:
 
 ---
 
-## 6. Control Signal Application
+## 7. Control Signal Application
 
-### 6.1 Signal Assertion
+### 7.1 Signal Assertion
 
 Each field in CONTROL_WORD directly drives control signals.
 
@@ -231,7 +231,7 @@ Constraint:
 
 ---
 
-### 6.2 Combinational Effect During TS
+### 7.2 Combinational Effect During TS
 
 Constraint:
 - CONTROL_WORD defines enables, selections, and operations during TS.
@@ -239,7 +239,7 @@ Constraint:
 
 ---
 
-### 6.3 State Update at TP
+### 7.3 State Update at TP
 
 Constraint:
 - State updates occur only at TP.
@@ -247,14 +247,14 @@ Constraint:
 
 ---
 
-### 6.4 No Implicit Behavior
+### 7.4 No Implicit Behavior
 
 Constraint:
 - No operation may occur without explicit CONTROL_WORD signals.
 
 ---
 
-## 7. Control Signal Interpretation Model
+## 8. Control Signal Interpretation Model
 
 Control signals are interpreted according to their functional role.
 
@@ -262,7 +262,7 @@ Control signals fall into three categories:
 
 ---
 
-### 7.1 Enable Signals
+### 8.1 Enable Signals
 
 Enable signals control whether an operation occurs.
 
@@ -279,7 +279,7 @@ Constraint:
 
 ---
 
-### 7.2 Select Signals
+### 8.2 Select Signals
 
 Select signals define parameters of an operation.
 
@@ -298,7 +298,7 @@ Constraint:
 
 ---
 
-### 7.3 State-Output Signals
+### 8.3 State-Output Signals
 
 State-output signals define next-state values.
 
@@ -317,7 +317,7 @@ Constraint:
 
 ---
 
-### 7.4 Interaction of Signal Types
+### 8.4 Interaction of Signal Types
 
 Operations are defined by combinations of enable and select signals.
 
@@ -335,7 +335,7 @@ Constraint:
 
 ---
 
-### 7.5 Inactive Behavior
+### 8.5 Inactive Behavior
 
 Constraint:
 - All control signals must be assigned a defined value in every CONTROL_WORD.
@@ -345,7 +345,7 @@ Constraint:
 
 ---
 
-### 7.6 Deterministic Interpretation
+### 8.6 Deterministic Interpretation
 
 Constraint:
 - Interpretation of CONTROL_WORD must be fully deterministic.
@@ -353,7 +353,7 @@ Constraint:
 
 ---
 
-## 8. Sequencing Responsibility
+## 9. Sequencing Responsibility
 
 Constraint:
 - CONTROL_WORD must define all sequencing state outputs.
@@ -365,7 +365,7 @@ Constraint:
 
 ---
 
-## 9. Isolation from Addressing
+## 10. Isolation from Addressing
 
 Constraint:
 - CONTROL_WORD must not influence CTRL_ADDR formation.
@@ -373,7 +373,7 @@ Constraint:
 
 ---
 
-## 10. Timing Relationship
+## 11. Timing Relationship
 
 Constraint:
 - CONTROL_WORD must be stable during TS.
@@ -381,7 +381,7 @@ Constraint:
 
 ---
 
-## 11. DMA Control Ownership
+## 12. DMA Control Ownership
 
 DMA behavior is represented through normal control input and output mechanisms.
 
@@ -396,7 +396,7 @@ DMA request handling follows the standard control path:
 
 DMA is not an external override of `CONTROL_WORD`.
 
-### 11.1 DMA Request Handling
+### 12.1 DMA Request Handling
 
 `/DMA_REQ` is an external input in the `EXT` domain.
 
@@ -405,7 +405,7 @@ Constraint:
 - `/DMA_REQ` must not directly suppress or modify control signals.
 - `/DMA_REQ` must not directly alter processor state.
 
-### 11.2 DMA Service State
+### 12.2 DMA Service State
 
 When control selects DMA service:
 - `MS_NEXT` selects `DMA`
@@ -416,7 +416,7 @@ Constraint:
 - DMA service must be represented by defined control words.
 - No hidden control suppression mechanism is permitted.
 
-### 11.3 DMA Grant
+### 12.3 DMA Grant
 
 `/DMA_GRANT` represents the externally visible result of DMA service selection.
 
@@ -425,7 +425,7 @@ Constraint:
 - `/DMA_GRANT` must not be generated by external arbitration logic.
 - `/DMA_GRANT` must not alter `CONTROL_WORD`.
 
-#### 11.4 No External Control Masking
+#### 12.4 No External Control Masking
 
 External devices may use `/DMA_GRANT` to determine when DMA service is available.
 
@@ -436,23 +436,23 @@ Constraint:
 
 ---
 
-## 12. Design Principles
+## 13. Design Principles
 
-### 12.1 Outcome Encoding
+### 13.1 Outcome Encoding
 
 Constraint:
 - CONTROL_WORD encodes outcomes only.
 
 ---
 
-### 12.2 Centralization
+### 13.2 Centralization
 
 Constraint:
 - All control behavior must originate from CONTROL_WORD.
 
 ---
 
-### 12.3 Layer Separation
+### 13.3 Layer Separation
 
 Constraint:
 - CONTROL_WORD must not perform:
@@ -462,7 +462,7 @@ Constraint:
 
 ---
 
-## 13. Summary
+## 14. Summary
 
 Definition:
 

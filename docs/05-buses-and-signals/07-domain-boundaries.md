@@ -1,6 +1,6 @@
 # Domain Boundaries
 
-## Purpose
+## 1. Purpose
 
 This document defines the transport domains used throughout the system and the boundaries that separate them.
 
@@ -28,7 +28,7 @@ and related documents.
 
 ---
 
-## Domain Model
+## 2. Domain Model
 
 A transport domain is a collection of signals that participate in a common data or address transport mechanism.
 
@@ -40,9 +40,9 @@ No domain is implicitly connected to any other domain.
 
 ---
 
-## Domain Definitions
+## 3. Domain Definitions
 
-### Address Domain (AB)
+### 3.1 Address Domain (AB)
 
 The Address Domain consists of signals used to transport addresses within the system.
 
@@ -54,7 +54,7 @@ Defined in:
 
 - [Class A - Buses](./01-class-a-buses.md)
 
-### Memory Data Domain (MDB)
+### 3.2 Memory Data Domain (MDB)
 
 The Memory Data Domain consists of signals used to transport memory data.
 
@@ -66,7 +66,7 @@ Defined in:
 
 - [Class A - Buses](./01-class-a-buses.md)
 
-### I/O Data Domain (DB)
+### 3.3 I/O Data Domain (DB)
 
 The I/O Data Domain consists of signals used to transport I/O data.
 
@@ -78,7 +78,7 @@ Defined in:
 
 - [Class A - Buses](./01-class-a-buses.md)
 
-### Internal Data Domain (IDB)
+### 3.4 Internal Data Domain (IDB)
 
 The Internal Data Domain consists of signals used for CPU-internal data transport.
 
@@ -92,7 +92,7 @@ Defined in:
 
 ---
 
-## Domain Isolation
+## 4. Domain Isolation
 
 Domains are independent.
 
@@ -106,7 +106,7 @@ No domain may assume visibility into another domain unless explicitly defined by
 
 ---
 
-## Domain Crossings
+## 5. Domain Crossings
 
 Domain crossings must be explicit.
 
@@ -120,7 +120,7 @@ Authoritative definitions are maintained in Section 4.
 
 ---
 
-## Special Role of IDB
+## 6. Special Role of IDB
 
 IDB differs from the other transport domains.
 
@@ -134,7 +134,7 @@ Despite this distinction, IDB participates in the same domain-isolation and doma
 
 ---
 
-## Global Invariants
+## 7. Global Invariants
 
 - Every transport signal belongs to exactly one domain.
 - Domains are independent architectural constructs.
@@ -147,7 +147,7 @@ Despite this distinction, IDB participates in the same domain-isolation and doma
 
 ---
 
-## Summary
+## 8. Summary
 
 The system is partitioned into independent transport domains.
 

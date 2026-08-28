@@ -1,6 +1,6 @@
 # Documentation
 
-## Purpose
+## 1. Purpose
 This directory contains all human-readable design documentation for the system.
 
 It serves as the authoritative source for:
@@ -10,7 +10,7 @@ It serves as the authoritative source for:
 
 ---
 
-## Structure
+## 2. Structure
 
 - `00-overview` - High-level system overview and goals
 - `01-architecture` - Programmer-visible machine model
@@ -30,9 +30,9 @@ It serves as the authoritative source for:
 
 ---
 
-## Rules
+## 3. Rules
 
-### 1. Separation of Concerns
+### 3.1 Separation of Concerns
 Each section represents a distinct abstraction layer:
 
 - ISA defines observable behavior
@@ -46,7 +46,7 @@ Layers must not be conflated.
 
 ---
 
-### 2. Single Source of Truth
+### 3.2 Single Source of Truth
 Each concept is defined in exactly one location.
 
 - Definitions must not be duplicated

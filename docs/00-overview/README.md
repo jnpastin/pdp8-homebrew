@@ -1,6 +1,6 @@
 # Overview
 
-## Purpose
+## 1. Purpose
 This section provides a high-level overview of the system, including goals, scope, and current design direction.
 
 It is intended as the entry point for understanding:
@@ -10,7 +10,7 @@ It is intended as the entry point for understanding:
 
 ---
 
-## Contents
+## 2. Contents
 
 - [Design Principles](./00-design-principles.md) - Design philosophy and guiding principles
 - [System Overview](./01-system-overview.md) - System goals, scope, and high-level description
@@ -19,7 +19,7 @@ It is intended as the entry point for understanding:
 
 ---
 
-## Notes
+## 3. Notes
 
 This section is incomplete and will evolve as the architecture and design mature.
 

@@ -1,6 +1,6 @@
 # Microoperation Sequencing
 
-## Purpose
+## 1. Purpose
 
 Defines how μops are selected, evaluated, and committed over time.
 
@@ -14,7 +14,7 @@ This document does not define individual instructions or μops.
 
 ---
 
-## Execution Cycle Model
+## 2. Execution Cycle Model
 
 Execution proceeds in discrete steps defined by TS and TP.
 
@@ -29,7 +29,7 @@ For each TSn:
 
 ---
 
-## μop Selection
+## 3. μop Selection
 
 For each TSn:
 
@@ -48,7 +48,7 @@ Constraints:
 
 ---
 
-## Conditional Execution
+## 4. Conditional Execution
 
 Conditions are not μops.
 
@@ -67,7 +67,7 @@ Else:
 
 ---
 
-## Concurrency Model
+## 5. Concurrency Model
 
 Within a single TSn:
 
@@ -81,7 +81,7 @@ Constraint:
 
 ---
 
-### Bus Domain Exclusivity
+### 5.1 Bus Domain Exclusivity
 
 μops that consume external bus domains must not conflict.
 
@@ -95,7 +95,7 @@ Rationale:
 
 ---
 
-## Register Visibility
+## 6. Register Visibility
 
 Register values follow strict timing rules.
 
@@ -111,7 +111,7 @@ Implications:
 
 ---
 
-## State Update Rules
+## 7. State Update Rules
 
 At TPn:
 
@@ -128,7 +128,7 @@ If violated:
 
 ---
 
-## Major State Interaction
+## 8. Major State Interaction
 
 MS is updated separately from μops.
 
@@ -143,7 +143,7 @@ Constraint:
 - μops must not directly modify MS
 
 
-### EXECUTE Phase Invariants
+### 8.1 EXECUTE Phase Invariants
 
 All instruction execution definitions assume:
 
@@ -155,7 +155,7 @@ All instruction execution definitions assume:
 ---
 
 
-## External Inputs (EXT)
+## 9. External Inputs (EXT)
 
 External inputs influence execution only through control decisions.
 
@@ -174,7 +174,7 @@ Constraints:
 
 ---
 
-## Determinism Requirement
+## 10. Determinism Requirement
 
 Execution must satisfy:
 
@@ -191,7 +191,7 @@ Implications:
 
 ---
 
-## Prohibited Behavior
+## 11. Prohibited Behavior
 
 The following are explicitly disallowed:
 
@@ -203,7 +203,7 @@ The following are explicitly disallowed:
 
 ---
 
-## Summary
+## 12. Summary
 
 Execution is defined as:
 

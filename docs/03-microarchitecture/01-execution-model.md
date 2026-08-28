@@ -1,6 +1,6 @@
 # Execution Model
 
-## Purpose
+## 1. Purpose
 
 Defines how processor behavior is expressed and evaluated over time using the state model.
 
@@ -8,9 +8,9 @@ This document establishes the formal abstraction used to describe execution and 
 
 ---
 
-## Terminology and Scope
+## 2. Terminology and Scope
 
-### Microstate (μstate)
+### 2.1 Microstate (μstate)
 
 The complete execution context is:
 
@@ -25,7 +25,7 @@ Constraints:
 
 ---
 
-### TS / TP Execution Model
+### 2.2 TS / TP Execution Model
 
 Execution is defined by two distinct roles:
 
@@ -43,7 +43,7 @@ Constraints:
 
 ---
 
-## Micro-Operation Definition
+## 3. Micro-Operation Definition
 
 A micro-operation (μop) is a single, atomic state update:
 
@@ -57,7 +57,7 @@ Properties:
 
 ---
 
-## Execution Representation
+## 4. Execution Representation
 
 All execution must be expressed as:
 
@@ -73,7 +73,7 @@ Constraints:
 
 ---
 
-## Ordering Semantics
+## 5. Ordering Semantics
 
 Execution ordering is defined exclusively by TS.
 
@@ -88,7 +88,7 @@ Constraint:
 
 ---
 
-## Source Domains
+## 6. Source Domains
 
 μops may use only the following sources:
 
@@ -105,17 +105,17 @@ Constraints:
 
 ---
 
-## Stability Requirements
+## 7. Stability Requirements
 
-### Inputs
+### 7.1 Inputs
 
 All sources used by a μop must be stable for the entire TS during evaluation.
 
-### Outputs
+### 7.2 Outputs
 
 All evaluated results must be stable before the TP that commits them.
 
-### Boundary Behavior
+### 7.3 Boundary Behavior
 
 Values are not assumed to remain stable across TS boundaries.
 
@@ -125,20 +125,20 @@ Implications:
 
 ---
 
-## Micro-Operations vs Control
+## 8. Micro-Operations vs Control
 
-### Micro-Operations
+### 8.1 Micro-Operations
 
 Define required state transitions:
 
     AC <- AC + MB
     PC <- PC + 1
 
-### Control Signals
+### 8.2 Control Signals
 
 Define how the system implements those transitions.
 
-### Relationship
+### 8.3 Relationship
 
     μop
         -> required datapath behavior
@@ -150,7 +150,7 @@ Constraint:
 
 ---
 
-## Determinism and Repeatability
+## 9. Determinism and Repeatability
 
 Execution must satisfy:
 
@@ -167,7 +167,7 @@ Implications:
 
 ---
 
-## State Transition Constraints
+## 10. State Transition Constraints
 
 Execution decisions may depend only on:
 
@@ -183,7 +183,7 @@ Must NOT depend on:
 
 ---
 
-## Relationship to State Model
+## 11. Relationship to State Model
 
 This model operates over [00-state-model](./00-state-model.md):
 
@@ -197,9 +197,9 @@ Constraints:
 
 ---
 
-## Instruction Identification and Execution Conventions
+## 12. Instruction Identification and Execution Conventions
 
-### Purpose
+### 12.1 Purpose
   
 Defines how instructions are identified and how instruction-specific execution
 documents relate to the execution model.
@@ -211,7 +211,7 @@ This section supplements the execution model by establishing:
 
 ---
 
-### Instruction Identification
+### 12.2 Instruction Identification
   
 Instruction behavior is identified strictly by **IR bit fields**.
 
@@ -223,7 +223,7 @@ No symbolic or mnemonic-based decoding is permitted.
 
 ---
 
-### Reference Model
+### 12.3 Reference Model
   
 The authoritative definition of instruction encoding is provided in:
 
@@ -239,7 +239,7 @@ This document must not redefine encoding semantics.
 
 ---
 
-### Identification Rules
+### 12.4 Identification Rules
 
 - Instruction behavior must be defined using IR bit patterns
 - All execution behavior must be expressible as IR masks
@@ -248,7 +248,7 @@ This document must not redefine encoding semantics.
 
 ---
 
-### Instruction-Class Documents
+### 12.5 Instruction-Class Documents
 
 Execution for each instruction class is defined in separate documents:
 
@@ -264,7 +264,7 @@ These documents define:
 
 ---
 
-### Constraints on Instruction Definitions
+### 12.6 Constraints on Instruction Definitions
 
 Instruction-class documents must:
 
@@ -280,7 +280,7 @@ All shared execution behavior is defined in this document.
 
 ---
 
-## Summary
+## 13. Summary
 
 Execution is defined as:
 

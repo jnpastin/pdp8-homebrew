@@ -14,7 +14,7 @@ Prior to the PDP-8/E, any instruction that had bit 8 and bit 0 set was reserved 
 
 ---
 
-## Flag Definition and Timing
+## 1. Flag Definition and Timing
 
 Each flag performs a single operation, these actions will occur at a defined TP during EXECUTE.
 
@@ -28,7 +28,7 @@ When MQA and MQL are combined, the result is the SWP instruction (7521), which e
 
 ---
 
-## Combining Operations
+## 2. Combining Operations
 
  Similar to Group 1, combined operations that happen at different TPs will happen in that order.  `CLA MQL` will clear AC and then move that into MQ, effectively clearing both.  Conversely `CLA MQA` will clear the AC, then OR the MQ into the AC, resulting in AC = MQ.
  

@@ -1,6 +1,6 @@
 # Read/Write Protocol
 
-## Purpose
+## 1. Purpose
 
 This document defines memory read and write behavior at the memory subsystem boundary.
 
@@ -8,7 +8,7 @@ It describes what the memory subsystem does when a valid memory read or write op
 
 ---
 
-## Protocol Boundary
+## 2. Protocol Boundary
 
 The memory subsystem responds to memory interface signals.
 
@@ -25,7 +25,7 @@ Those behaviors are outside the memory subsystem boundary.
 
 ---
 
-## Common Requirements
+## 3. Common Requirements
 
 Every valid memory operation requires:
 
@@ -40,7 +40,7 @@ Every valid memory operation requires:
 
 ---
 
-## Read Operation
+## 4. Read Operation
 
 A memory read is requested when /RD is asserted and /WR is not asserted.
 
@@ -56,7 +56,7 @@ The value driven onto MDB is the memory subsystem output for the read operation.
 
 ---
 
-## Read Data Validity
+## 5. Read Data Validity
 
 During a valid read operation, /RD defines the active read window.
 
@@ -73,7 +73,7 @@ CPU-side or external capture of MDB is outside the scope of this document.
 
 ---
 
-## Read Side Effects
+## 6. Read Side Effects
 
 A valid memory read does not modify the contents of memory.
 
@@ -81,7 +81,7 @@ If the physical memory technology performs internal actions during a read, those
 
 ---
 
-## Write Operation
+## 7. Write Operation
 
 A memory write is requested when /WR is asserted and /RD is not asserted.
 
@@ -97,7 +97,7 @@ The value present on MDB is the memory subsystem input for the write operation.
 
 ---
 
-## Write Data Validity
+## 8. Write Data Validity
 
 During a valid write operation, the source outside the memory subsystem must drive MDB with valid write data for the required write-data validity window.
 
@@ -107,7 +107,7 @@ The memory subsystem does not determine the source of the write data.
 
 ---
 
-## Write Side Effects
+## 9. Write Side Effects
 
 A valid memory write modifies exactly one memory word:
 
@@ -117,7 +117,7 @@ No other memory word may be modified by the write operation.
 
 ---
 
-## Idle Behavior
+## 10. Idle Behavior
 
 When neither /RD nor /WR is asserted:
 
@@ -130,7 +130,7 @@ MFB and AB may contain values while memory is idle, but those values do not sele
 
 ---
 
-## Operation Origin
+## 11. Operation Origin
 
 The memory subsystem does not distinguish the origin of a valid memory operation.
 
@@ -145,7 +145,7 @@ The origin determines how the interface signals are produced. It does not change
 
 ---
 
-## Invalid Protocol Conditions
+## 12. Invalid Protocol Conditions
 
 The following protocol conditions are invalid:
 
@@ -165,7 +165,7 @@ Invalid protocol conditions are design errors.
 
 ---
 
-## Invariants
+## 13. Invariants
 
 - /RD requests a memory read.
 - /WR requests a memory write.
@@ -182,7 +182,7 @@ Invalid protocol conditions are design errors.
 
 ---
 
-## Summary
+## 14. Summary
 
 The memory read/write protocol is defined entirely at the memory interface.
 

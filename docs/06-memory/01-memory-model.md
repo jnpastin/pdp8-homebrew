@@ -1,6 +1,6 @@
 # Memory Model
 
-## Purpose
+## 1. Purpose
 
 This document defines the logical memory model from the perspective of the memory subsystem.
 
@@ -8,7 +8,7 @@ Memory is modeled as storage for 12-bit words. Each word is selected by the fiel
 
 ---
 
-## Scope Boundary
+## 2. Scope Boundary
 
 Section 6 defines memory behavior at the memory subsystem boundary.
 
@@ -16,7 +16,7 @@ It does not define how the CPU, ISA, microarchitecture, or control system produc
 
 ---
 
-## Logical Memory Structure
+## 3. Logical Memory Structure
 
 Memory stores 12-bit words.
 
@@ -29,7 +29,7 @@ The memory subsystem observes those values at its interface and uses them to sel
 
 ---
 
-## Memory Address Terminology
+## 4. Memory Address Terminology
 
 Within Section 6, the term MEM_ADDR refers only to the address as observed by the memory subsystem.
 
@@ -57,7 +57,7 @@ From the memory subsystem perspective, MEM_ADDR is how memory observes an alread
 
 ---
 
-## Relationship to EA
+## 5. Relationship to EA
 
 EA describes how an effective address is produced.
 
@@ -73,7 +73,7 @@ The distinction is:
 
 ---
 
-## Word Selection
+## 6. Word Selection
 
 For any valid memory operation, the selected memory word is:
 
@@ -87,7 +87,7 @@ The memory subsystem uses MEM_ADDR only as a selection value. It does not inspec
 
 ---
 
-## Read Model
+## 7. Read Model
 
 During a valid memory read:
 
@@ -99,7 +99,7 @@ CPU-side capture of the returned value is defined outside this document.
 
 ---
 
-## Write Model
+## 8. Write Model
 
 During a valid memory write:
 
@@ -111,7 +111,7 @@ The source of the write data is defined outside this document.
 
 ---
 
-## Technology Independence
+## 9. Technology Independence
 
 The logical memory model is independent of physical memory technology.
 
@@ -129,7 +129,7 @@ Specific part selection, packaging, board layout, and backplane implementation a
 
 ---
 
-## Invariants
+## 10. Invariants
 
 - Memory stores 12-bit words.
 - Memory is addressed through MEM_ADDR.
@@ -144,7 +144,7 @@ Specific part selection, packaging, board layout, and backplane implementation a
 
 ---
 
-## Summary
+## 11. Summary
 
 The memory subsystem is a bounded storage component.
 

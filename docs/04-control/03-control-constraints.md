@@ -1,6 +1,6 @@
 # Control Constraints
 
-## Purpose
+## 1. Purpose
 
 Defines the formal invariants and constraints governing the control system.
 
@@ -14,7 +14,7 @@ Definitions are provided in:
 
 ---
 
-## 1. Functional Completeness
+## 2. Functional Completeness
 
 Constraint:
 - The system must satisfy:
@@ -32,7 +32,7 @@ Constraint:
 
 ---
 
-## 2. Input Domain Exclusivity
+## 3. Input Domain Exclusivity
 
 Constraint:
 - Control may depend only on the following domains:
@@ -51,7 +51,7 @@ Constraint:
 
 ---
 
-## 3. Determinism
+## 4. Determinism
 
 Constraint:
 - CONTROL must be a deterministic function of its inputs.
@@ -68,7 +68,7 @@ Constraint:
 
 ---
 
-## 4. Separation of Concerns
+## 5. Separation of Concerns
 
 Constraint:
 - The control system must maintain strict separation:
@@ -86,7 +86,7 @@ Constraint:
 
 ---
 
-## 5. IR_FIELDS Constraints
+## 6. IR_FIELDS Constraints
 
 Defined in:
 - [IR Derived Fields](10-control-input-definitions/02-ir-derived-fields.md)
@@ -103,7 +103,7 @@ Constraint:
 
 ---
 
-## 6. FLAGS Constraints
+## 7. FLAGS Constraints
 
 Defined in:
 - [Primitive Flags](10-control-input-definitions/01-flags.md)
@@ -121,14 +121,14 @@ Constraint:
 
 ---
 
-## 7. Control Address Constraints
+## 8. Control Address Constraints
 
 Defined in:
 - [Control Addressing](./02-control-addressing.md)
 
 Additional constraints:
 
-### 7.1 Decision Encoding
+### 8.1 Decision Encoding
 
 Constraint:
 - CTRL_ADDR must encode control decisions only.
@@ -136,7 +136,7 @@ Constraint:
 
 ---
 
-### 7.2 Input Reduction Requirement
+### 8.2 Input Reduction Requirement
 
 Constraint:
 - All information in CTRL_ADDR must originate from:
@@ -151,7 +151,7 @@ Constraint:
 
 ---
 
-### 7.3 PACK Constraints
+### 8.3 PACK Constraints
 
 Constraint:
 - If implemented using PACK:
@@ -174,7 +174,7 @@ Constraint:
 
 ---
 
-## 8. Control Word Constraints
+## 9. Control Word Constraints
 
 Constraint:
 - CONTROL_WORD must define:
@@ -193,7 +193,7 @@ Constraint:
 
 ---
 
-## 9. Sequencing Constraints
+## 10. Sequencing Constraints
 
 Constraint:
 - State transitions must be determined solely by CONTROL_WORD.
@@ -209,7 +209,7 @@ Constraint:
 
 ---
 
-## 10. Timing Constraints
+## 11. Timing Constraints
 
 Constraint:
 - All control inputs must be stable during the evaluation window.
@@ -225,9 +225,9 @@ Constraint:
 
 ---
 
-## 11. Cross-Domain Operation Binding Rules
+## 12. Cross-Domain Operation Binding Rules
 
-### Purpose
+### 12.1 Purpose
 
 Defines the required relationship between:
 - architectural control signals (external operations)
@@ -240,7 +240,7 @@ This section ensures:
 
 ---
 
-### 11.1 General Principle
+### 12.2 General Principle
 
 An externally visible operation is valid only when **both**:
 1. the architectural control signal for that operation is asserted
@@ -254,7 +254,7 @@ Implication:
 
 ---
 
-### 11.2 Memory Read Binding
+### 12.3 Memory Read Binding
 
 A memory read operation is defined by the combination of:
 
@@ -292,7 +292,7 @@ The following are invalid and must not occur:
   → read can only be driven by memory
 ---
 
-### 11.3 Memory Write Binding
+### 12.4 Memory Write Binding
 
 A memory write operation is defined by the combination of:
 
@@ -301,11 +301,11 @@ A memory write operation is defined by the combination of:
 
 - One of the Micro-operations:
   - MEM_WRITE_FROM_MB
-  - MEM_WRITE_FROM_SR
+  - MEM_WRITE_FROM_FP_SR
 
 Effective control required for memory writes:
 - /WR + MDB_SRC = MB + MEM_WRITE_FROM_MB
-- /WR + MDB_SRC = SR + MEM_WRITE_FROM_SR
+- /WR + MDB_SRC = FP_SR + MEM_WRITE_FROM_FP_SR
 - /WR + MDB_SRC = DMA + MS = DMA
 
 
@@ -331,18 +331,18 @@ The following are invalid and must not occur:
 - MEM_WRITE_FROM_MB without /WR = 0
   → memory state modified without external coordination
 
-- MEM_WRITE_FROM_SR without /WR = 0
+- MEM_WRITE_FROM_FP_SR without /WR = 0
   → memory state modified without external coordination
 
 - MEM_WRITE_FROM_MB with MDB_SRC ≠ MB
   → write-source mismatch
 
-- MEM_WRITE_FROM_SR with MDB_SRC ≠ SR
+- MEM_WRITE_FROM_FP_SR with MDB_SRC ≠ FP_SR
   → write-source mismatch
 
 ---
 
-### 11.4 External IOT Response Binding
+### 12.5 External IOT Response Binding
 
 During external-IOT EXECUTE:
 
@@ -408,7 +408,7 @@ Constraints:
 
 ---
 
-### 11.5 Domain Separation Constraint
+### 12.6 Domain Separation Constraint
 
 Binding between architectural signals and μops:
 
@@ -428,7 +428,7 @@ The binding rule is a **consistency requirement**, not a mechanism.
 
 ---
 
-### 11.6 Determinism Requirement
+### 12.7 Determinism Requirement
 
 For any valid execution state:
 
@@ -441,7 +441,7 @@ This ensures:
 
 ---
 
-### 11.7 Extension Rule
+### 12.8 Extension Rule
 
 Any future externally observable operation (e.g., DMA) must define:
 
@@ -453,7 +453,7 @@ No external operation may be defined without such a binding.
 
 ---
 
-## 12. External Inputs (EXT)
+## 13. External Inputs (EXT)
 
 Constraint:
 - EXT must be stable during control evaluation.
@@ -466,7 +466,7 @@ Constraint:
 
 ---
 
-## 13. Control Evolution Constraints
+## 14. Control Evolution Constraints
 
 This section defines constraints governing extension of the control system.
 
@@ -475,7 +475,7 @@ Refer to:
 
 ---
 
-### 13.1 Decision Space Consistency
+### 14.1 Decision Space Consistency
 
 Constraint:
 - CTRL_ADDR must uniquely represent the full input decision space.
@@ -488,7 +488,7 @@ Constraint:
 
 ---
 
-### 13.2 No Decision Relocation
+### 14.2 No Decision Relocation
 
 Constraint:
 - New control decisions must not be implemented by extending CONTROL_WORD alone.
@@ -501,7 +501,7 @@ Constraint:
 
 ---
 
-### 13.3 Output-Only Extensions
+### 14.3 Output-Only Extensions
 
 Constraint:
 - CONTROL_WORD may be extended without modifying CTRL_ADDR only if:
@@ -513,7 +513,7 @@ Constraint:
 
 ---
 
-### 13.4 Backward Compatibility
+### 14.4 Backward Compatibility
 
 Constraint:
 - Extension of CTRL_ADDR or CONTROL_WORD must preserve existing behavior for all previously defined input combinations.
@@ -523,7 +523,7 @@ Constraint:
 
 ---
 
-### 13.5 No Implicit Expansion Mechanisms
+### 14.5 No Implicit Expansion Mechanisms
 
 Constraint:
 - The following are prohibited when extending control:
@@ -542,7 +542,7 @@ Constraint:
 
 ---
 
-### 13.6 External Arbitration Constraints
+### 14.6 External Arbitration Constraints
 
 Constraint:
 - External arbitration mechanisms must not modify CTRL_ADDR formation.
@@ -560,7 +560,7 @@ Constraint:
 
 ---
 
-## 14. Completeness
+## 15. Completeness
 
 Constraint:
 - Every reachable input combination must map to a defined CONTROL_WORD.
@@ -570,7 +570,7 @@ Constraint:
 
 ---
 
-## 15. Non-Aliasing
+## 16. Non-Aliasing
 
 Constraint:
 - Distinct control behaviors must not map to the same CTRL_ADDR unless explicitly intended.
@@ -580,7 +580,7 @@ Constraint:
 
 ---
 
-## 16. No Implicit Behavior
+## 17. No Implicit Behavior
 
 Constraint:
 - All control behavior must be explicitly encoded.
@@ -593,7 +593,7 @@ Constraint:
 
 ---
 
-## 17. Invariant Summary
+## 18. Invariant Summary
 
 Constraint:
 - The control system must operate exclusively as:

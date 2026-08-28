@@ -1,6 +1,6 @@
 # Memory Interface
 
-## Purpose
+## 1. Purpose
 
 This document defines the memory subsystem interface.
 
@@ -8,7 +8,7 @@ The memory interface is the boundary between the memory subsystem and the rest o
 
 ---
 
-## Interface Signals
+## 2. Interface Signals
 
 The memory subsystem interface consists of:
 
@@ -22,9 +22,9 @@ These signals define the complete memory-facing interface for normal memory oper
 
 ---
 
-## Signal Roles
+## 3. Signal Roles
 
-### MFB
+### 3.1 MFB
 
 MFB provides the memory field value.
 
@@ -32,7 +32,7 @@ From the memory subsystem perspective, MFB is an input.
 
 Memory does not determine the source of MFB. Memory only observes the field value presented on MFB during a memory operation.
 
-### AB
+### 3.2 AB
 
 AB provides the 12-bit address value within the selected memory field.
 
@@ -40,7 +40,7 @@ From the memory subsystem perspective, AB is an input.
 
 Memory does not determine the source of AB. Memory only observes the address value presented on AB during a memory operation.
 
-### MDB
+### 3.3 MDB
 
 MDB is the memory data bus.
 
@@ -52,7 +52,7 @@ MDB is bidirectional from the memory subsystem perspective:
 
 Only one source may drive MDB during any valid memory operation.
 
-### /RD
+### 3.4 /RD
 
 /RD requests a memory read.
 
@@ -62,7 +62,7 @@ When /RD is asserted as part of a valid read operation, memory uses MEM_ADDR to 
 
 /RD does not define CPU-side capture behavior. It only defines the memory-side read request.
 
-### /WR
+### 3.5 /WR
 
 /WR requests a memory write.
 
@@ -74,7 +74,7 @@ When /WR is asserted as part of a valid write operation, memory uses MEM_ADDR to
 
 ---
 
-## Memory Transaction Timing
+## 4. Memory Transaction Timing
 
 The following diagram shows representative CPU memory-read and memory-write transactions.
 
@@ -93,7 +93,7 @@ The diagram uses TS2 and TP2 as a representative transaction phase. The active T
 
 ---
 
-## Memory Address Formation
+## 5. Memory Address Formation
 
 The memory subsystem forms its memory selection value from MFB and AB.
 
@@ -105,7 +105,7 @@ The memory subsystem does not inspect the source or history of either signal.
 
 ---
 
-## Read Direction
+## 6. Read Direction
 
 During a valid read operation:
 
@@ -119,7 +119,7 @@ Memory is the MDB driver during the read data phase.
 
 ---
 
-## Write Direction
+## 7. Write Direction
 
 During a valid write operation:
 
@@ -134,7 +134,7 @@ Memory is not the MDB driver during a write.
 
 ---
 
-## Source Independence
+## 8. Source Independence
 
 The memory subsystem does not distinguish between CPU-initiated, DMA-initiated, or console-initiated memory operations.
 
@@ -148,7 +148,7 @@ The origin of the operation is outside the memory subsystem boundary.
 
 ---
 
-## Invalid Interface Conditions
+## 9. Invalid Interface Conditions
 
 The following conditions are invalid unless explicitly defined elsewhere:
 
@@ -166,7 +166,7 @@ Invalid interface conditions are design errors.
 
 ---
 
-## Invariants
+## 10. Invariants
 
 - MFB is an input to memory.
 - AB is an input to memory.
@@ -181,7 +181,7 @@ Invalid interface conditions are design errors.
 
 ---
 
-## Summary
+## 11. Summary
 
 The memory interface consists of MFB, AB, MDB, /RD, and /WR.
 

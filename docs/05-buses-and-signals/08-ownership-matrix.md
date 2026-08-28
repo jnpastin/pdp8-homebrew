@@ -1,6 +1,6 @@
 # Bus Ownership Matrix
 
-## Purpose
+## 1. Purpose
 
 This document defines ownership of system transport mechanisms during normal operation.
 
@@ -30,7 +30,7 @@ DMA-specific ownership behavior is defined in:
 
 ---
 
-## Ownership Model
+## 2. Ownership Model
 
 Ownership determines which source is permitted to drive a transport mechanism.
 
@@ -42,7 +42,7 @@ Permissible ownership selections are defined in Section 4.
 
 ---
 
-### Ownership Activation
+### 2.1 Ownership Activation
 
 Source-selection signals identify the source eligible to drive a transport mechanism.
 
@@ -54,9 +54,9 @@ Authoritative definitions are maintained in Section 4.
 
 ---
 
-## Ownership Matrix
+## 3. Ownership Matrix
 
-### Address Bus (AB)
+### 3.1 Address Bus (AB)
 
 **Ownership Control**
 
@@ -70,7 +70,7 @@ Permissible source selections are defined in the control architecture.
 
 ---
 
-### Data Bus (DB)
+### 3.2 Data Bus (DB)
 
 **Ownership Control**
 
@@ -81,7 +81,7 @@ Permissible source selections are defined in the control architecture.
 Determines when the CPU drives DB. The CPU drives DB (source AC) only when /DB_WRITE is asserted; otherwise the selected I/O device drives DB, or DB is idle (High-Z). Unlike the other buses, DB has no source-select signal because the CPU has a single DB source (AC).
 ---
 
-### Internal Data Bus (IDB)
+### 3.3 Internal Data Bus (IDB)
 
 **Ownership Control**
 
@@ -95,7 +95,7 @@ Permissible source selections are defined in the control architecture.
 
 ---
 
-### Memory Data Bus (MDB)
+### 3.4 Memory Data Bus (MDB)
 
 **Ownership Control**
 
@@ -109,7 +109,7 @@ Permissible source selections are defined in the control architecture.
 
 ---
 
-### Memory Field Bus (MFB)
+### 3.5 Memory Field Bus (MFB)
 
 **Ownership Control**
 
@@ -123,7 +123,7 @@ Permissible source selections are defined in the control architecture.
 
 ---
 
-## Relationship to Control
+## 4. Relationship to Control
 
 Ownership selection is performed by the control system.
 
@@ -133,7 +133,7 @@ Ownership selection values, constraints, and operational behavior are defined in
 
 ---
 
-### DMA Ownership
+### 4.1 DMA Ownership
 
 During MS = DMA, CPU control releases normal ownership of:
 
@@ -184,7 +184,7 @@ Arbitration and selection behavior are defined in [DMA Arbitration](../07-io/06-
 
 ---
 
-## Global Invariants
+## 5. Global Invariants
 
 - Ownership determines which source may drive a transport mechanism.
 - Ownership does not imply validity.
@@ -195,7 +195,7 @@ Arbitration and selection behavior are defined in [DMA Arbitration](../07-io/06-
 
 ---
 
-## Summary
+## 6. Summary
 
 Ownership defines which source is permitted to drive a transport mechanism.
 

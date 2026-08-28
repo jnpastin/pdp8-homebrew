@@ -1,11 +1,11 @@
 # Major State Timing
 
-## Purpose
+## 1. Purpose
 Defines timing behavior of each Major State using TS/TP model.
 
 ---
 
-## Core Model
+## 2. Core Model
 - TS = setup/stabilization window
 - TP = state transition event
 
@@ -13,82 +13,82 @@ All state changes occur exclusively at TP.
 
 ---
 
-## FETCH
+## 3. FETCH
 
-### TS1 — Address Setup
+### 3.1 TS1 — Address Setup
 - MA_SRC = PC (PC selected as MA input)
 
-### TP1
+### 3.2 TP1
 - MA loaded from PC
 
-### TS2 — Memory Access
+### 3.3 TS2 — Memory Access
 - MA drives AB
 - /RD asserted
 - Memory drives MDB
 
-### TP2
+### 3.4 TP2
 - MB loaded from MDB
 
-### TS3 — Instruction Preparation
+### 3.5 TS3 — Instruction Preparation
 - MB stable
 
-### TP3
+### 3.6 TP3
 - IR loaded from MB
 
-### TS4 — Finalization
+### 3.7 TS4 — Finalization
 
-### TP4
+### 3.8 TP4
 - PC increment
 - MS transition decision
 
 ---
 
-## DEFER
+## 4. DEFER
 
-### TS1 — Address Setup
+### 4.1 TS1 — Address Setup
 - MA_SRC = EA_ADDR (pointer location selected as MA input)
 
-### TP1
+### 4.2 TP1
 - MA loaded from EA_ADDR
 
-### TS2 — Memory Access
+### 4.3 TS2 — Memory Access
 - MA drives AB
 - MFB_SRC = IF (pointer located in the IF domain)
 - /RD asserted
 - Memory drives MDB (pointer value)
 
-### TP2
+### 4.4 TP2
 - MB loaded from MDB
 
-### TS3 — Autoindex (conditional)
+### 4.5 TS3 — Autoindex (conditional)
 - if EA_ADDR is within autoindex range: MB incremented
 
-### TP3
+### 4.6 TP3
 - MB updated with incremented value (autoindex only)
 
-### TS4 — Resolution
+### 4.7 TS4 — Resolution
 - MB drives the resolved address
 - if autoindex: /WR asserted, MFB_SRC = IF, incremented value written back to the pointer location
 
-### TP4
+### 4.8 TP4
 - EA_ADDR loaded from MB (final resolved effective address)
 - MS transition to EXECUTE
 
 ---
 
-## EXECUTE
+## 5. EXECUTE
 - Instruction-dependent behavior
 - Uses full TS1–TS4 structure
 
-### TP4
+### 5.1 TP4
 - Interrupt condition evaluated
 - Transition to INTERRUPT or FETCH
 
 ---
 
-### EXECUTE: External IOT
+### 5.2 EXECUTE: External IOT
 
-#### TS1
+#### 5.2.1 TS1
 
 - `IOT_ACTIVE` is asserted.
 - `IOA` and `IOP` are valid.
@@ -96,17 +96,17 @@ All state changes occur exclusively at TP.
 - The selected controller decodes IOP.
 - `/IO_WAIT` may hold an eligible non-TP setup TSTEP.
 
-#### TP1
+#### 5.2.2 TP1
 
 - No external-IOT action commits.
 
-#### TS2
+#### 5.2.3 TS2
 
 - The selected controller may assert `IO_READ_REQ` or `IO_WRITE_REQ` for a transfer during TS3.
 - The selected controller may assert `IO_CLEAR_AC_REQ` for an operation assigned to TP2.
 - The selected controller may assert `/IO_WAIT` during an eligible non-TP setup TSTEP.
 
-#### TP2
+#### 5.2.4 TP2
 
 - CPU control records an accepted read or write direction in `IOT_TRANSFER`.
 - An accepted `IO_CLEAR_AC_REQ` clears AC.
@@ -114,7 +114,7 @@ All state changes occur exclusively at TP.
 
 Acceptance of `IO_READ_REQ` or `IO_WRITE_REQ` at TP2 does not transfer DB data at TP2.
 
-#### TS3
+#### 5.2.5 TS3
 
 - `IOT_READ_PENDING` causes CPU control to assert `/DB_READ`.
 - `IOT_WRITE_PENDING` causes CPU control to assert `/DB_WRITE`.
@@ -124,7 +124,7 @@ Acceptance of `IO_READ_REQ` or `IO_WRITE_REQ` at TP2 does not transfer DB data a
 - The selected controller may assert `IO_CLEAR_AC_REQ` when it does not conflict with the active transfer.
 - The selected controller may assert `/IO_WAIT` during an eligible non-TP setup TSTEP.
 
-#### TP3
+#### 5.2.6 TP3
 
 - A pending read commits `DB_READ_TO_AC`.
 - The selected controller captures DB for a pending write.
@@ -135,7 +135,7 @@ Acceptance of `IO_READ_REQ` or `IO_WRITE_REQ` at TP2 does not transfer DB data a
 
 Acceptance of a new request at TP3 does not affect the transfer committing at TP3.
 
-#### TS4
+#### 5.2.7 TS4
 
 - `IOT_READ_PENDING` causes CPU control to assert `/DB_READ`.
 - `IOT_WRITE_PENDING` causes CPU control to assert `/DB_WRITE`.
@@ -146,7 +146,7 @@ Acceptance of a new request at TP3 does not affect the transfer committing at TP
 - `/IO_WAIT` may hold an eligible non-TP setup TSTEP.
 - TP4 device actions and CPU sequencing decisions use pre-TP4 inputs.
 
-#### TP4
+#### 5.2.8 TP4
 
 - A pending read commits `DB_READ_TO_AC`.
 - The selected controller captures DB for a pending write.
@@ -160,23 +160,23 @@ No result committed at a TP may affect another action or decision committed at t
 
 ---
 
-## INTERRUPT
+## 6. INTERRUPT
 - Sequence defined by control
 
-### TS1–TS4
+### 6.1 TS1–TS4
 - Save PC
 - Load vector
 
-### TP4
+### 6.2 TP4
 - Return to FETCH
 
 ---
 
-## DMA
+## 7. DMA
 
 Each DMA major-state cycle with a valid controller selection transfers exactly one memory word at TP2.
 
-### TS1
+### 7.1 TS1
 
 If no controller is selected:
 
@@ -189,12 +189,12 @@ If a burst continues:
 - the active grant remains selected;
 - arbitration is not repeated.
 
-### TP1
+### 7.2 TP1
 
 - A new DMA_GRANT_ID commits when arbitration was required.
 - No memory transfer commits.
 
-### TS2
+### 7.3 TS2
 
 The granted controller:
 
@@ -205,23 +205,23 @@ The granted controller:
 
 For a DMA read, memory drives MDB.
 
-### TP2
+### 7.4 TP2
 
 - One DMA memory transfer commits.
 - For a read, the granted controller captures MDB.
 - For a write, memory captures MDB.
 
-### TS3
+### 7.5 TS3
 
 - Completion of the TP2 transfer is available to the granted controller and DMA arbiter.
 
-### TP3
+### 7.6 TP3
 
 - The controller updates its complete-operation address.
 - The controller updates its remaining operation word count.
 - The DMA arbiter increments the active burst count.
 
-### TS4
+### 7.7 TS4
 
 The DMA arbiter determines whether DMA service continues.
 
@@ -229,7 +229,7 @@ The DMA arbiter determines whether DMA service continues.
 - If the current burst ends, aggregate `/DMA_REQ` is deasserted.
 - Pending controller request lines may remain asserted after a burst ends.
 
-### TP4
+### 7.8 TP4
 
 ```text
 /DMA_REQ = 0 -> MS_NEXT = DMA

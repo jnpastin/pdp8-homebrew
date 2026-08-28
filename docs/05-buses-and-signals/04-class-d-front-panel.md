@@ -1,6 +1,6 @@
 # Class D - Front Panel Signals
 
-## Purpose
+## 1. Purpose
 
 This document defines Class D signals and their organization within the system.
 
@@ -25,7 +25,7 @@ Authoritative definitions are maintained in the control and front panel architec
 
 ---
 
-## Overview
+## 2. Overview
 
 Class D signals connect the system to the operator interface.
 
@@ -40,7 +40,7 @@ Class D signals:
 
 ---
 
-## Distribution Scope
+## 3. Distribution Scope
 
 Class D signals terminate at a CPU-local front panel interface.
 
@@ -54,9 +54,9 @@ Physical implementation is implementation-dependent.
 
 ---
 
-## Signal Categories
+## 4. Signal Categories
 
-### Input Signals
+### 4.1 Input Signals
 
 Input signals provide operator control of the system.
 
@@ -70,7 +70,7 @@ Authoritative definitions are maintained in:
 
 - [External Inputs](../04-control/10-control-input-definitions/04-external-inputs.md)
 
-### Output Signals
+### 4.2 Output Signals
 
 Output signals provide visibility into processor state.
 
@@ -96,7 +96,7 @@ Displayed values and presentation behavior are defined elsewhere.
 
 ---
 
-## Relationship to Control
+## 5. Relationship to Control
 
 Class D inputs influence system behavior through the control architecture.
 
@@ -106,7 +106,7 @@ Control definitions remain authoritative.
 
 ---
 
-## Global Invariants
+## 6. Global Invariants
 
 - Class D signals are CPU-local.
 - Class D signals terminate at the front panel interface.
@@ -117,7 +117,7 @@ Control definitions remain authoritative.
 
 ---
 
-## Summary
+## 7. Summary
 
 Class D signals define the operator interface of the system.
 

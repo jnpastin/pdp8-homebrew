@@ -1,6 +1,6 @@
 # Signal Classes
 
-## Purpose
+## 1. Purpose
 
 This document defines the formal classification of all signals in the system.
 
@@ -14,7 +14,7 @@ These classifications are normative and must be followed by all subsystems.
 
 ---
 
-## Overview
+## 2. Overview
 
 All signals are classified into one of five categories:
 
@@ -32,34 +32,34 @@ Each class defines:
 
 ---
 
-## Class A — System Buses
+## 3. Class A — System Buses
 
-### Definition
+### 3.1 Definition
 
 Multi-bit shared signal groups used for data and addressing across independent modules.
 
-### Characteristics
+### 3.2 Characteristics
 
 - Multi-drop (present on all slots)
 - Require tri-state drivers
 - Time-multiplexed ownership
 - Electrically significant (fanout and loading)
 
-### Signals
+### 3.3 Signals
 
 - Address Bus: A[11:0]
 - Data Bus: D[11:0]
 - Memory Data Bus: MDB[11:0]
 - Memory Field Bus: MFB[2:0]
 
-### Rules
+### 3.4 Rules
 
 - Must be present on all backplane slots
 - Exactly one driver active at a time
 - All other drivers must be tri-stated
 - Ownership must be explicitly defined
 
-### Notes
+### 3.5 Notes
 
 The system defines two distinct data paths:
 - DB bus for system and I/O transactions
@@ -69,36 +69,36 @@ This separation is required to support DMA functionality.
 
 ---
 
-## Class B — Global Control Lines
+## 4. Class B — Global Control Lines
 
-### Definition
+### 4.1 Definition
 
 System-wide control signals that coordinate behavior across modules.
 
-### Characteristics
+### 4.2 Characteristics
 
 - Single-bit control signals or multi-bit encoded control fields
 - Visible to all modules
 - May be single-driver or electrically shared, as defined by the applicable signal contract
 
-### Signals
+### 4.3 Signals
 
-#### Memory Control
+#### 4.3.1 Memory Control
 
 - /RD (Memory Read)
 - /WR (Memory Write)
 
-#### Interrupts
+#### 4.3.2 Interrupts
 
 - /INT_REQ (wired-OR of asserted requests)
 
-#### DMA
+#### 4.3.3 DMA
 
 - /DMA_REQ
 - /DMA_GRANT
 - MS[2:0]
 
-### Rules
+### 4.4 Rules
 
 - Must be present on all backplane slots
 - Signal ownership must be explicitly defined
@@ -106,19 +106,19 @@ System-wide control signals that coordinate behavior across modules.
 
 ---
 
-## Class C — Timing Signals
+## 5. Class C — Timing Signals
 
-### Definition
+### 5.1 Definition
 
 Signals that define the internal timing model and sequencing of execution.
 
-### Characteristics
+### 5.2 Characteristics
 
 - High fanout
 - Timing-critical
 - Implementation-specific
 
-### Signals
+### 5.3 Signals
 
 CPU-local timing signals:
 
@@ -132,7 +132,7 @@ Architecturally distributed timing signals:
 - TS
 - TP
 
-### Rules
+### 5.4 Rules
 
 - MCLK, TCLK, TSTEP, and TSEQ remain within the timing-generation and timing-distribution subsystem unless another architectural interface explicitly requires them.
 - TS and TP are architectural timing-distribution signals available to external I/O controllers.
@@ -143,21 +143,21 @@ Architecturally distributed timing signals:
 
 ---
 
-## Class D — External Interface Signals (Front Panel)
+## 6. Class D — External Interface Signals (Front Panel)
 
-### Definition
+### 6.1 Definition
 
 Signals connecting the system to the human operator interface.
 
-### Characteristics
+### 6.2 Characteristics
 
 - Asynchronous inputs
 - Low frequency
 - Require synchronization before use
 
-### Signals
+### 6.3 Signals
 
-#### Control Inputs
+#### 6.3.1 Control Inputs
 
 - Start
 - Continue
@@ -168,11 +168,11 @@ Signals connecting the system to the human operator interface.
 - Examine
 - Load Address
 
-#### Data Input
+#### 6.3.2 Data Input
 
 - SR[11:0]
 
-#### Status Outputs
+#### 6.3.3 Status Outputs
 
 - PC
 - AC
@@ -182,7 +182,7 @@ Signals connecting the system to the human operator interface.
 - Link
 - MS indicators
 
-### Rules
+### 6.4 Rules
 
 - Must NOT be placed on the backplane
 - Must terminate at a CPU-local panel interface
@@ -191,19 +191,19 @@ Signals connecting the system to the human operator interface.
 
 ---
 
-## Class E — Local / Internal Signals
+## 7. Class E — Local / Internal Signals
 
-### Definition
+### 7.1 Definition
 
 Signals internal to a module used to implement datapath and control behavior.
 
-### Characteristics
+### 7.2 Characteristics
 
 - Module-local
 - High fanout
 - Timing-sensitive
 
-### Examples
+### 7.3 Examples
 
 - Register load enables (MA load, MB load, etc.)
 - ALU operation selects
@@ -211,7 +211,7 @@ Signals internal to a module used to implement datapath and control behavior.
 - IR field decode signals
 - EA internal paths
 
-### Rules
+### 7.4 Rules
 
 - Must NOT appear on the backplane
 - Must remain entirely within module boundaries
@@ -219,16 +219,16 @@ Signals internal to a module used to implement datapath and control behavior.
 
 ---
 
-## Global Rules
+## 8. Global Rules
 
-### Rule 1 — Backplane Eligibility
+### 8.1 Rule 1 — Backplane Eligibility
 
 A signal may be placed on the backplane only if:
 - It is required by multiple independent modules
 - It is not internal implementation detail
 - It is not timing-critical internal state
 
-### Rule 2 — Ownership Definition
+### 8.2 Rule 2 — Ownership Definition
 
 For all Class A and Class B signals:
 - The driving entity must be defined
@@ -237,7 +237,7 @@ For all Class A and Class B signals:
 
 ---
 
-## Summary
+## 9. Summary
 
 This classification establishes strict boundaries between:
 - architectural interfaces

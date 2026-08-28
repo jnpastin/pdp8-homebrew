@@ -1,6 +1,6 @@
 # Micro-Operations (μops)
 
-## Purpose
+## 1. Purpose
 
 Defines the complete set of atomic state transformations available to the system.
 
@@ -14,7 +14,7 @@ Each μop specifies:
 
 ---
 
-## Usage Rules
+## 2. Usage Rules
 
 - All μops are atomic
 - μops are evaluated during TS and committed at TP
@@ -36,7 +36,7 @@ beyond that TS.  If MB is not consumed in the following TS, its contents are con
 
 ---
 
-## Conditions (Non-μop Concept)
+## 3. Conditions (Non-μop Concept)
 
 Conditions are not μops.
 
@@ -54,19 +54,19 @@ No intermediate state or flag storage is created.
 
 ---
 
-## Index
+## 4. Index
 
 
-### Address Formation
+### 4.1 Address Formation
 - [IR_ADDR_TO_EA_ADDR](#ir_addr_to_ea_addr)
 
-### Arithmetic / Logical
+### 4.2 Arithmetic / Logical
 - [AC_AND_MB](#ac_and_mb)
 - [AC_OR_MQ](#ac_or_mq)
 - [AC_OR_FP_SR](#ac_or_fp_sr)
 - [ADD_AC_MB](#add_ac_mb)
 
-#### Bit Operations
+#### 4.2.1 Bit Operations
 
 - [AC_RAR](#ac_rar)
 - [AC_RAL](#ac_ral)
@@ -74,20 +74,20 @@ No intermediate state or flag storage is created.
 - [AC_RTL](#ac_rtl)
 - [AC_BSW](#ac_bsw)
 
-### Control Flow
+### 4.3 Control Flow
 - [PC_INC](#pc_inc)
 - [PC_LOAD_EA_ADDR](#pc_load_ea_addr)
 
-### Memory Operations
+### 4.4 Memory Operations
 - [MEM_READ_TO_MB](#mem_read_to_mb)
 - [MEM_WRITE_FROM_MB](#mem_write_from_mb)
 - [MEM_WRITE_FROM_FP_SR](#mem_write_from_fp_sr)
 
-### I/O / External
+### 4.5 I/O / External
 - [DB_READ_TO_AC](#db_read_to_ac)
 - [DB_WRITE_FROM_AC](#db_write_from_ac)
 
-### Register Transfer
+### 4.6 Register Transfer
 - [AC_MQ_SWAP](#ac_mq_swap)
 - [AC_TO_MB](#ac_to_mb)
 - [AC_TO_MQ_AND_CLEAR_AC](#ac_to_mq_and_clear_ac)
@@ -112,7 +112,7 @@ No intermediate state or flag storage is created.
 - [PC_TO_MA](#pc_to_ma)
 - [PC_TO_MB](#pc_to_mb)
 
-### State Manipulation
+### 4.7 State Manipulation
 - [AC_CLEAR](#ac_clear)
 - [AC_COMP](#ac_comp)
 - [AC_INC](#ac_inc)
@@ -137,7 +137,7 @@ No intermediate state or flag storage is created.
 
 ---
 
-## μop Definitions (Alphabetical)
+## 5. μop Definitions (Alphabetical)
 
 ---
 
@@ -1355,7 +1355,7 @@ PC
 
 ---
 
-## Notes
+## 6. Notes
 
 - This catalog is closed; all execution must be expressed using these μops.
 - New μops may be introduced only when required for ISA completeness.

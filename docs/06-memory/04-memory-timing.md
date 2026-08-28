@@ -1,6 +1,6 @@
 # Memory Timing
 
-## Purpose
+## 1. Purpose
 
 This document defines the timing contract at the memory subsystem boundary.
 
@@ -8,7 +8,7 @@ It describes when memory interface signals must be stable and how /RD and /WR de
 
 ---
 
-## Timing Boundary
+## 2. Timing Boundary
 
 The memory subsystem does not generate timing states or timing pulses.
 
@@ -16,7 +16,7 @@ The timing system determines when memory interface signals are asserted, sampled
 
 ---
 
-## Active Read Window
+## 3. Active Read Window
 
 /RD defines the active read window.
 
@@ -31,7 +31,7 @@ When /RD is not asserted, memory must not drive MDB.
 
 ---
 
-## Active Write Window
+## 4. Active Write Window
 
 /WR defines the active write window.
 
@@ -46,7 +46,7 @@ When /WR is not asserted, memory must not perform a write.
 
 ---
 
-## Address Stability
+## 5. Address Stability
 
 MFB and AB together define MEM_ADDR.
 
@@ -56,7 +56,7 @@ If MFB or AB changes while /RD or /WR is asserted, the memory operation is inval
 
 ---
 
-## Read Data Stability
+## 6. Read Data Stability
 
 During a valid read operation, memory must drive MDB with the value stored at M[MEM_ADDR] while /RD is asserted and MEM_ADDR remains stable.
 
@@ -64,7 +64,7 @@ Memory is not required to preserve MDB after /RD is deasserted.
 
 ---
 
-## Write Data Stability
+## 7. Write Data Stability
 
 During a valid write operation, MDB must contain the value to be stored while /WR is asserted.
 
@@ -74,7 +74,7 @@ If MDB changes during the active write window, the write operation is invalid un
 
 ---
 
-## Mutual Exclusion
+## 8. Mutual Exclusion
 
 /RD and /WR must not be asserted at the same time.
 
@@ -88,7 +88,7 @@ No combined read/write memory operation is defined.
 
 ---
 
-## Idle Timing
+## 9. Idle Timing
 
 When /RD and /WR are both deasserted:
 
@@ -99,7 +99,7 @@ When /RD and /WR are both deasserted:
 
 ---
 
-## Technology Timing Requirements
+## 10. Technology Timing Requirements
 
 The selected physical memory technology must satisfy the timing contract defined by this section.
 
@@ -107,7 +107,7 @@ Technology-specific timing parameters, such as access time, output enable delay,
 
 ---
 
-## Invariants
+## 11. Invariants
 
 - /RD defines the active read window.
 - /WR defines the active write window.
@@ -121,7 +121,7 @@ Technology-specific timing parameters, such as access time, output enable delay,
 
 ---
 
-## Summary
+## 12. Summary
 
 Memory timing is defined at the memory interface.
 

@@ -1,6 +1,6 @@
 # KL8E-Compatible UART Controller Contract
 
-## Purpose
+## 1. Purpose
 
 This document defines the architectural contract presented by a KL8E-compatible console controller.
 
@@ -15,7 +15,7 @@ This document does not define the controller implementation.
 
 ---
 
-## Scope
+## 2. Scope
 
 This document defines:
 
@@ -47,7 +47,7 @@ Those items belong to the controller design and physical implementation document
 
 ---
 
-## Compatibility Target
+## 3. Compatibility Target
 
 The controller must reproduce the programmer-visible behavior required by the PDP-8/E KL8E console interface.
 
@@ -66,7 +66,7 @@ Internal implementation differences are permitted only when they do not change t
 
 ---
 
-## Device Addresses
+## 4. Device Addresses
 
 | Address | Function |
 |---:|---|
@@ -85,7 +85,7 @@ The address-configuration mechanism is outside this contract.
 
 ---
 
-## Programmer-Visible State
+## 5. Programmer-Visible State
 
 The controller presents the following state:
 
@@ -99,11 +99,11 @@ No additional state is visible through the KL8E-compatible device addresses.
 
 ---
 
-## Character Representation
+## 6. Character Representation
 
 Console characters are eight bits wide.
 
-### Input Character
+### 6.1 Input Character
 
 The keyboard receive register maps to:
 
@@ -122,7 +122,7 @@ For a clear-then-read operation:
 - the resulting value in `AC[11:8]` is zero
 - the resulting value in `AC[7:0]` is the received character
 
-### Output Character
+### 6.2 Output Character
 
 For an output operation:
 
@@ -131,7 +131,7 @@ For an output operation:
 
 ---
 
-## Interrupt Behavior
+## 7. Interrupt Behavior
 
 The input and output interfaces share one controller-local interrupt-enable bit.
 
@@ -155,7 +155,7 @@ The controller does not modify the CPU interrupt-enable state.
 
 ---
 
-## Reset State
+## 8. Reset State
 
 Reset establishes the following programmer-visible state:
 
@@ -174,13 +174,13 @@ Any characters not yet represented by a completed programmer-visible operation m
 
 ---
 
-## Input Interface
+## 9. Input Interface
 
-### Keyboard Receive Register
+### 9.1 Keyboard Receive Register
 
 The keyboard receive register contains the current character available to software.
 
-### Keyboard Flag
+### 9.2 Keyboard Flag
 
 The keyboard flag indicates whether the keyboard receive register contains a valid character.
 
@@ -195,7 +195,7 @@ The keyboard flag is cleared by:
 
 `KRS` does not clear the keyboard flag.
 
-### Input Capacity Contract
+### 9.3 Input Capacity Contract
 
 The controller must preserve a character after setting the keyboard flag until software clears or consumes that character.
 
@@ -209,7 +209,7 @@ No receive-overrun status is visible through the KL8E-compatible interface.
 
 ---
 
-## Device 03 IOT Table
+## 10. Device 03 IOT Table
 
 | IOT | Mnemonic | Contract |
 |---:|---|---|
@@ -224,9 +224,9 @@ No receive-overrun status is visible through the KL8E-compatible interface.
 
 ---
 
-## KCF
+## 11. KCF
 
-### Controller Contract
+### 11.1 Controller Contract
 
 At TP2:
 
@@ -234,15 +234,15 @@ At TP2:
 KEYBOARD_FLAG <- 0
 ```
 
-### Response Signals
+### 11.2 Response Signals
 
 No controller response signal is required.
 
 ---
 
-## KSF
+## 12. KSF
 
-### Controller Contract
+### 12.1 Controller Contract
 
 During TS4, the controller asserts `IO_SKIP_REQ` when:
 
@@ -260,9 +260,9 @@ KSF does not modify controller state.
 
 ---
 
-## KCC
+## 13. KCC
 
-### Controller Contract
+### 13.1 Controller Contract
 
 During TS2:
 
@@ -280,9 +280,9 @@ KCC does not transfer the keyboard receive register.
 
 ---
 
-## KRS
+## 14. KRS
 
-### Controller Contract
+### 14.1 Controller Contract
 
 During TS3:
 
@@ -305,9 +305,9 @@ KRS does not modify controller state.
 
 ---
 
-## KIE
+## 15. KIE
 
-### Controller Contract
+### 15.1 Controller Contract
 
 During TS3:
 
@@ -331,9 +331,9 @@ KIE does not request AC clear.
 
 ---
 
-## KRB
+## 16. KRB
 
-### Controller Contract
+### 16.1 Controller Contract
 
 During TS2:
 
@@ -367,13 +367,13 @@ The character represented by the keyboard receive register is consumed at TP4.
 
 ---
 
-## Output Interface
+## 17. Output Interface
 
-### Teleprinter Transmit Register
+### 17.1 Teleprinter Transmit Register
 
 The teleprinter transmit register contains the character accepted through the most recent valid output operation.
 
-### Teleprinter Flag
+### 17.2 Teleprinter Flag
 
 The teleprinter flag indicates completion of the accepted programmer-visible output operation.
 
@@ -387,7 +387,7 @@ The teleprinter flag is cleared by:
 
 The teleprinter flag may be set directly by `TFL`.
 
-### Output Acceptance Contract
+### 17.3 Output Acceptance Contract
 
 Software is expected to test the teleprinter flag before supplying another character.
 
@@ -402,7 +402,7 @@ The controller must not discard or overwrite a previously accepted character to 
 
 The controller must not set the teleprinter flag for a discarded character.
 
-### Output Completion Contract
+### 17.4 Output Completion Contract
 
 The teleprinter flag must not be set merely because the character was accepted by the controller.
 
@@ -414,7 +414,7 @@ How the controller achieves or detects physical output completion is outside thi
 
 ---
 
-## Device 04 IOT Table
+## 18. Device 04 IOT Table
 
 | IOT | Mnemonic | Contract |
 |---:|---|---|
@@ -429,9 +429,9 @@ How the controller achieves or detects physical output completion is outside thi
 
 ---
 
-## TFL
+## 19. TFL
 
-### Controller Contract
+### 19.1 Controller Contract
 
 At TP2:
 
@@ -439,15 +439,15 @@ At TP2:
 TELEPRINTER_FLAG <- 1
 ```
 
-### Response Signals
+### 19.2 Response Signals
 
 No controller response signal is required.
 
 ---
 
-## TSF
+## 20. TSF
 
-### Controller Contract
+### 20.1 Controller Contract
 
 During TS4, the controller asserts `IO_SKIP_REQ` when:
 
@@ -465,9 +465,9 @@ TSF does not modify controller state.
 
 ---
 
-## TCF
+## 21. TCF
 
-### Controller Contract
+### 21.1 Controller Contract
 
 At TP3:
 
@@ -475,15 +475,15 @@ At TP3:
 TELEPRINTER_FLAG <- 0
 ```
 
-### Response Signals
+### 21.2 Response Signals
 
 No controller response signal is required.
 
 ---
 
-## TPC
+## 22. TPC
 
-### Controller Contract
+### 22.1 Controller Contract
 
 During TS3:
 
@@ -514,9 +514,9 @@ If the controller cannot accept the character:
 
 ---
 
-## TSK
+## 23. TSK
 
-### Controller Contract
+### 23.1 Controller Contract
 
 During TS4, the controller asserts `IO_SKIP_REQ` when:
 
@@ -534,9 +534,9 @@ TSK does not modify controller state.
 
 ---
 
-## TLS
+## 24. TLS
 
-### Controller Contract
+### 24.1 Controller Contract
 
 During TS3:
 
@@ -568,7 +568,7 @@ If the controller cannot accept the character:
 
 ---
 
-## Asynchronous Controller Events
+## 25. Asynchronous Controller Events
 
 Character arrival and output completion may originate outside the system timing domain.
 
@@ -585,7 +585,7 @@ The implementation-specific synchronization mechanism is outside this contract.
 
 ---
 
-## Unsupported Operations
+## 26. Unsupported Operations
 
 Unsupported IOP values are ignored.
 
@@ -610,7 +610,7 @@ An ignored operation produces:
 
 ---
 
-## DMA Behavior
+## 27. DMA Behavior
 
 The KL8E-compatible controller does not use DMA.
 
@@ -618,7 +618,7 @@ Console input and output use programmed I/O and optional interrupts.
 
 ---
 
-## Implementation Boundary
+## 28. Implementation Boundary
 
 The controller implementation must satisfy this contract but may choose its own:
 

@@ -1,12 +1,12 @@
 # I/O Timing
 
-## Purpose
+## 1. Purpose
 
 This document defines external-IOT phase usage, TP commit rules, controller timing participation, and I/O wait behavior.
 
 ---
 
-## Shared Timing Interface
+## 2. Shared Timing Interface
 
 TS and TP signals are exposed to external controllers through the I/O interface.
 
@@ -16,9 +16,9 @@ All controller-local state changes caused by an IOT occur only at TP events.
 
 ---
 
-## IOT Phase Allocation
+## 3. IOT Phase Allocation
 
-### External-IOT Timing Overview
+### 3.1 External-IOT Timing Overview
 
 The following diagram shows representative external-IOT read and write timing without an asserted wait request.
 
@@ -40,7 +40,7 @@ Conditional signals are shown asserted. When the corresponding condition is fals
 
 The waveform is representative. Device-specific controller documents define which response signals are required by each IOT.
 
-### TS1: Selection and Decode
+### 3.2 TS1: Selection and Decode
 
 During TS1:
 
@@ -53,7 +53,7 @@ During TS1:
 
 TS1 is the I/O selection and operation-decode phase.
 
-### TS2 through TS4: Execution
+### 3.3 TS2 through TS4: Execution
 
 The selected controller may request actions during TS2 through TS4, subject to the constraints in [External IOT Interface](./02-external-iot-interface.md).
 
@@ -78,7 +78,7 @@ For the standard external-IOT read and write timing:
 
 ---
 
-## TP4 Sequencing Boundary
+## 4. TP4 Sequencing Boundary
 
 Device actions may commit at TP4 while CPU sequencing and interrupt decisions also commit at TP4.
 
@@ -91,7 +91,7 @@ Constraints:
 
 ---
 
-## I/O Wait
+## 5. I/O Wait
 
 `/IO_WAIT` extends an IOT setup interval for a slower selected controller.
 
@@ -107,7 +107,7 @@ Properties:
 
 ---
 
-## TSTEP Progression Requirement
+## 6. TSTEP Progression Requirement
 
 TSTEP transition logic must:
 
@@ -120,7 +120,7 @@ TSTEP transition logic must:
 
 ---
 
-## Stability During Wait
+## 7. Stability During Wait
 
 While a non-TP TSTEP is held by `/IO_WAIT`, all signals required for the pending operation must remain stable, including:
 
@@ -133,7 +133,7 @@ While a non-TP TSTEP is held by `/IO_WAIT`, all signals required for the pending
 
 ---
 
-## External-IOT Timing with Wait
+## 8. External-IOT Timing with Wait
 
 The following diagram shows `/IO_WAIT` holding an eligible non-TP setup step.
 
@@ -152,13 +152,13 @@ After `/IO_WAIT` is deasserted, normal TSTEP progression resumes. The pending TP
 
 The diagram shows a hold during TS3. The same rule applies to any setup TSTEP that the timing contract identifies as eligible for `/IO_WAIT`.
 
-### External Signal Timing Classes
+### 8.1 External Signal Timing Classes
 
 External I/O signals are classified by how long they remain valid and how the receiving subsystem samples them.
 
 ---
 
-## Phase-Specific Response Signals
+## 9. Phase-Specific Response Signals
 
 The following signals apply only to one assigned TS:
 
@@ -182,7 +182,7 @@ Rules:
 
 ---
 
-## Setup-Hold Request
+## 10. Setup-Hold Request
 
 `/IO_WAIT` is a setup-hold request.
 
@@ -197,7 +197,7 @@ Rules:
 
 ---
 
-## Persistent Service Requests
+## 11. Persistent Service Requests
 
 The following signals represent persistent requests rather than phase-specific actions:
 
@@ -216,7 +216,7 @@ Rules:
 - Aggregate `/DMA_REQ` may be deasserted while one or more controller `/DMA_REQ[n]` lines remain asserted.
 - Separate combinational aggregation logic continuously derives aggregate `/DMA_REQ` from `DMA_ENABLE` and `/DMA_REQ[14:0]`, as defined in [DMA Arbitration](./06-dma-arbitration.md).
 
-### Grant Signals
+### 11.1 Grant Signals
 
 The DMA authorization and selection interface consists of:
 
@@ -240,7 +240,7 @@ Rules:
 
 ---
 
-## Data and Address Signals
+## 12. Data and Address Signals
 
 Controller-driven DB, MFB, AB, and MDB values are transfer-specific signals.
 
@@ -254,13 +254,13 @@ Rules:
 
 ---
 
-## Synchronization Boundary
+## 13. Synchronization Boundary
 
 The physical implementation must synchronize `/IO_WAIT` before it influences TSTEP progression. The controller contract must prevent asynchronous state changes or repeated commit events.
 
 ---
 
-## Related Documents
+## 14. Related Documents
 
 - [Timing Architecture](../09-timing/02-timing-architecture.md)
 - [External IOT Interface](./02-external-iot-interface.md)

@@ -1,12 +1,12 @@
 # I/O Architecture
 
-## Purpose
+## 1. Purpose
 
 This document defines the architectural participants, interfaces, and boundaries of the I/O subsystem.
 
 ---
 
-## Architectural Participants
+## 2. Architectural Participants
 
 The I/O subsystem includes:
 
@@ -18,7 +18,7 @@ The I/O subsystem includes:
 
 ---
 
-## External IOT Interface
+## 3. External IOT Interface
 
 External IOT execution uses:
 
@@ -35,7 +35,7 @@ External IOT execution uses:
 
 ---
 
-## I/O Subsystem Context
+## 4. I/O Subsystem Context
 
 The following diagram shows the major I/O subsystem participants and the logical interfaces between them.
 
@@ -52,7 +52,7 @@ The diagram is an architectural overview. The detailed behavioral, timing, owner
 
 ---
 
-## Device Addressing
+## 5. Device Addressing
 
 `IOA[5:0]` is the six-bit architectural device address.
 
@@ -70,7 +70,7 @@ A nondefault address may require corresponding software or handler changes. Addr
 
 ---
 
-## I/O Operation Field
+## 6. I/O Operation Field
 
 `IOP[2:0]` carries `IR[2:0]` unchanged during an external IOT.
 
@@ -84,7 +84,7 @@ Properties:
 
 ---
 
-## External IOT Validity
+## 7. External IOT Validity
 
 `IOT_ACTIVE` identifies execution of an external IOT.
 
@@ -94,7 +94,7 @@ IOA and IOP are not required to be cleared outside an external IOT.
 
 ---
 
-## CPU-Visible Controller Responses
+## 8. CPU-Visible Controller Responses
 
 The selected controller may request the following CPU-visible actions:
 
@@ -107,7 +107,7 @@ Controller-local state changes do not require a separate CPU response signal. Th
 
 ---
 
-## DMA Boundary
+## 9. DMA Boundary
 
 DMA arbitration is external to CPU control.
 
@@ -137,7 +137,7 @@ During DMA, the granted controller directly participates in the memory interface
 
 ---
 
-## Related Documents
+## 10. Related Documents
 
 - [External IOT Interface](./02-external-iot-interface.md)
 - [I/O Timing](./03-io-timing.md)

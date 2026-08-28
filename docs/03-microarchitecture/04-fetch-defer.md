@@ -1,6 +1,6 @@
 # FETCH and DEFER Execution
 
-## Purpose
+## 1. Purpose
 
 Defines the execution behavior of the FETCH and DEFER major states.
 
@@ -14,7 +14,7 @@ All behavior is expressed using μops (for datapath) and control decisions (for 
 
 ---
 
-## Overview
+## 2. Overview
 
 Execution begins in FETCH for every instruction.
 
@@ -37,9 +37,9 @@ Responsibilities:
 
 ---
 
-## FETCH Execution
+## 3. FETCH Execution
 
-### TS1
+### 3.1 TS1
 
 μops:
 - PC_TO_MA
@@ -53,7 +53,7 @@ Description:
 
 ---
 
-### TS2
+### 3.2 TS2
 
 μops:
 - MEM_READ_TO_MB
@@ -63,7 +63,7 @@ Description:
 
 ---
 
-### TS3
+### 3.3 TS3
 
 μops:
 - MB_TO_IR
@@ -73,7 +73,7 @@ Description:
 
 ---
 
-### TS4
+### 3.4 TS4
 
 μops:
 - PC_INC
@@ -93,16 +93,16 @@ Description:
 
 ---
 
-## DEFER Execution
+## 4. DEFER Execution
 
-### Purpose
+### 4.1 Purpose
 
 Resolves indirect addressing by replacing EA with M[EA].
 Handles autoindex increment when applicable.
 
 ---
 
-### TS1
+### 4.2 TS1
 
 μops:
 - EA_ADDR_TO_MA
@@ -112,7 +112,7 @@ Description:
 
 ---
 
-### TS2
+### 4.3 TS2
 
 μops:
 - MEM_READ_TO_MB
@@ -122,7 +122,7 @@ Description:
 
 ---
 
-### TS3
+### 4.4 TS3
 
 μops (conditional):
 - MB_INC
@@ -131,7 +131,7 @@ Description:
 
 ---
 
-### TS4
+### 4.5 TS4
 
 μops:
 - MB_TO_EA_ADDR
@@ -155,7 +155,7 @@ Description:
 
 ---
 
-## Invariants
+## 5. Invariants
 
 - IR is valid after TP3 of FETCH
 - PC is incremented exactly once per instruction
@@ -165,7 +165,7 @@ Description:
 
 ---
 
-## Execution Boundary Guarantee
+## 6. Execution Boundary Guarantee
 
 All address resolution is completed before entering EXECUTE.
 
@@ -174,7 +174,7 @@ perform any indirect or autoindex handling.
 
 ---
 
-## Summary
+## 7. Summary
 
 FETCH loads the instruction, advances the PC, and forms base addressing.
 DEFER resolves indirection and prepares the final effective address.

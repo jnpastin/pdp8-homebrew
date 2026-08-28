@@ -1,6 +1,6 @@
 # Class E - Local and Internal Signals
 
-## Purpose
+## 1. Purpose
 
 This document defines Class E signals and their organization within the system.
 
@@ -25,7 +25,7 @@ Authoritative signal definitions are maintained in Section 4.
 
 ---
 
-## Overview
+## 2. Overview
 
 Class E signals are local implementation signals used within the CPU.
 
@@ -42,7 +42,7 @@ Class E signals implement CPU behavior but are not part of the system interface.
 
 ---
 
-## Distribution Scope
+## 3. Distribution Scope
 
 Class E signals remain within module boundaries.
 
@@ -57,9 +57,9 @@ Physical implementation is implementation-dependent.
 
 ---
 
-## Signal Categories
+## 4. Signal Categories
 
-### Internal Transport Signals
+### 4.1 Internal Transport Signals
 
 Internal transport signals move information between internal CPU elements.
 
@@ -67,7 +67,7 @@ Examples include:
 
 - Internal Data Bus (IDB)
 
-### Internal Control Signals
+### 4.2 Internal Control Signals
 
 Internal control signals direct datapath behavior.
 
@@ -81,7 +81,7 @@ Authoritative definitions are maintained in:
 
 - [Microarchitectural Control Signals](../04-control/20-control-output-definitions/01-microarchitectural-control-signals.md)
 
-### Internal Decode Signals
+### 4.3 Internal Decode Signals
 
 Internal decode signals represent reduced instruction information used by control.
 
@@ -95,7 +95,7 @@ Authoritative definitions are maintained in:
 
 - [Instruction Register Derived Fields](../04-control/10-control-input-definitions/02-ir-derived-fields.md)
 
-### Internal Derived Signals
+### 4.4 Internal Derived Signals
 
 Internal derived signals represent internally generated conditions used by control.
 
@@ -111,21 +111,21 @@ Authoritative definitions are maintained in:
 
 ---
 
-## Internal Data Bus (IDB)
+## 5. Internal Data Bus (IDB)
 
-### Definition
+### 5.1 Definition
 
 The Internal Data Bus (IDB) is the CPU-internal transport domain used for datapath data movement.
 
-### Width
+### 5.2 Width
 
 - 12 bits
 
-### Purpose
+### 5.3 Purpose
 
 IDB provides a shared transport mechanism for movement of data between CPU registers and functional units.
 
-### Characteristics
+### 5.4 Characteristics
 
 IDB:
 
@@ -136,7 +136,7 @@ IDB:
 - participates in domain-isolation rules
 - is used exclusively for internal datapath transport
 
-### Relationship to Control
+### 5.5 Relationship to Control
 
 IDB operation is controlled through microarchitectural control signals.
 
@@ -148,7 +148,7 @@ This document defines IDB as an architectural transport mechanism only.
 
 ---
 
-## Global Invariants
+## 6. Global Invariants
 
 - Class E signals are local to a CPU subsystem or module.
 - Class E signals must not be placed on the backplane.
@@ -160,7 +160,7 @@ This document defines IDB as an architectural transport mechanism only.
 
 ---
 
-## Summary
+## 7. Summary
 
 Class E signals provide the internal implementation infrastructure of the CPU.
 

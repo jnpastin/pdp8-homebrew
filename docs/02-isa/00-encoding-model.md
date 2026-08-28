@@ -2,13 +2,13 @@
 
 Status: normative
 
-## Purpose
+## 1. Purpose
 
 Defines how IR bits map directly into control behavior for a ROM-based microarchitecture.
 
 ---
 
-## Control Interpretation
+## 2. Control Interpretation
 
 IR must be interpreted strictly as a bitfield.
 
@@ -19,7 +19,7 @@ No instruction decoding into symbolic instructions is permitted.
 
 ---
 
-## IR Structure
+## 3. IR Structure
 
 The contents of the instruction register are interpreted differently based on the opcode. The opcode is contained in the three MSBs (IR[11:9])
 
@@ -29,7 +29,7 @@ The contents of the instruction register are interpreted differently based on th
 
 ---
 
-## MRI Model
+## 4. MRI Model
 
 ```
 ┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┐
@@ -39,7 +39,7 @@ The contents of the instruction register are interpreted differently based on th
 └──────────────┴────┴────┴──────────────────────────────────┘
 ```
 
-### Opcodes
+### 4.1 Opcodes
 
 - 0 - AND Y - AND AC with contents of address Y
 - 1 - TAD Y - Twos Complement Add AC with contents of address Y
@@ -48,13 +48,13 @@ The contents of the instruction register are interpreted differently based on th
 - 4 - JMS Y - Jump to subroutine at address Y, store PC+1 in address Y for return
 - 5 - JMP Y - Jump to address Y
 
-### Flag bits
+### 4.2 Flag bits
 
 - I - Indirect addressing required
 - P - Page bit (0=page 0, 1=current page)
 See the [addressing model](./05-addressing-model.md) doc for more details on address resolution
 
-### Effective Address
+### 4.3 Effective Address
 
 The final effective address is represented as:
 
@@ -66,7 +66,7 @@ Where:
 
 ---
 
-## IOT Model
+## 5. IOT Model
 
 ```
 ┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┐
@@ -88,7 +88,7 @@ The CPU implements two internal IOT device groups directly. See the [IOT](./04-i
 
 ---
 
-## OPR Model
+## 6. OPR Model
 
 There are three groups of OPR instructions, they are distinguished by sentinel bits.  Group two is further divided into an AND group and an OR Group
 
@@ -104,15 +104,15 @@ There are three groups of OPR instructions, they are distinguished by sentinel b
 
 See the pages linked below for full context on each group
 - A=0 - [Group 1](./01-group-1.md)
-- A=1 & B=1 & C=0 - [Group 2 (AND)](./02-group-2.md#and-sub-group-definition-and-timing)
-- A=1 & B=0 & C=0 - [Group 2 (OR)](./02-group-2.md#or-sub-group-definition-and-timing)
+- A=1 & B=1 & C=0 - [Group 2 (AND)](./02-group-2.md#1-and-sub-group-definition-and-timing)
+- A=1 & B=0 & C=0 - [Group 2 (OR)](./02-group-2.md#4-or-sub-group-definition-and-timing)
 - A=1 & C=1 - [Group 3](./03-group-3.md)
 
 Each remaining bit represents an independent operation, these operations may be combined in various ways depending on the rules imposed at the group level
 
 ---
 
-## Execute Time States
+## 7. Execute Time States
 
 TS defines execution ordering within EXECUTE.
 
@@ -120,7 +120,7 @@ Operations assigned to different TS execute in strict order.
 
 ---
 
-## Composition Constraint
+## 8. Composition Constraint
 
 Operations that:
 - target the same register

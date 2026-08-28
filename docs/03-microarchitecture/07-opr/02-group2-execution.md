@@ -1,6 +1,6 @@
 # Group 2 Execution
 
-## Purpose
+## 1. Purpose
   
 Defines execution behavior for OPR Group 2 instructions.  
 This document specifies:
@@ -17,7 +17,7 @@ Execution behavior follows:
 
 ---
 
-## Scope
+## 2. Scope
   
 Applies to instructions where:
 - IR[11:9] = 111
@@ -25,7 +25,7 @@ Applies to instructions where:
 
 ---
 
-## Execution Model
+## 3. Execution Model
   
 Group 2 instructions are composed of:
 - conditional skip operations (TS1)
@@ -45,23 +45,23 @@ All μop selection and condition evaluation are derived directly from IR bits.
 
 ---
 
-## Instruction Definition
+## 4. Instruction Definition
 
-### IR[11:9] = 111 (Group 2)
+### 4.1 IR[11:9] = 111 (Group 2)
 
-### Sub-group selection
+### 4.2 Sub-group selection
   
 - AND sub-group: IR[3] = 1 AND IR[0] = 0  
 - OR sub-group:  IR[3] = 0 AND IR[0] = 0  
 
 ---
 
-### TS1 — Skip Evaluation
+### 4.3 TS1 — Skip Evaluation
 
 Skip behavior is expressed as conditional execution of:
 - PC_INC
 
-#### AND Sub-group (IR[3] = 1)
+#### 4.3.1 AND Sub-group (IR[3] = 1)
 
 Let the active predicate set P be:
 
@@ -94,7 +94,7 @@ Examples:
 
 ---
 
-#### OR Sub-group (IR[3] = 0)
+#### 4.3.2 OR Sub-group (IR[3] = 0)
 
 Let the active predicate set P be:
 
@@ -135,15 +135,15 @@ Notes:
 
 ---
 
-### TS2 — AC Modification
+### 4.4 TS2 — AC Modification
 
 - if IR[bit(CLA)] = 1: AC_CLEAR
 
 ---
 
-### TS3 — Register and Control Operations
+### 4.5 TS3 — Register and Control Operations
 
-- if IR[bit(OSR)] = 1: AC_OR_SR
+- if IR[bit(OSR)] = 1: AC_OR_FP_SR
 
 - if IR[bit(HLT)] = 1:
   - HLT is a meta-instruction
@@ -154,33 +154,33 @@ Notes:
 
 ---
 
-### TS4
+### 4.6 TS4
 
 - (no μops)
 
 ---
 
-## Composition Rules
+## 5. Composition Rules
 
-### Skip Composition
+### 5.1 Skip Composition
 - TS1 conditions are combined per sub-group definition
 - Evaluation produces a single boolean result
 - Result is realized as conditional PC_INC
 
-### TS Ordering
+### 5.2 TS Ordering
 - TS1 executes before TS2 and TS3
 - PC_INC (if taken) occurs before subsequent operations
 
-### Concurrency
+### 5.3 Concurrency
 - μops within a TS execute concurrently
 - No ordering exists within a TS
 
-### Register Conflicts
+### 5.4 Register Conflicts
 - No two μops may write the same register in the same TS
 
 ---
 
-## Notes
+## 6. Notes
 - All behavior is expressed using IR bit selection, μops, and conditions
 - No symbolic instruction interpretation is used
 - Skip behavior is realized solely via PC_INC

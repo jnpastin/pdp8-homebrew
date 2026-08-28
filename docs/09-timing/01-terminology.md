@@ -1,6 +1,6 @@
 # Timing Terminology
 
-## Purpose
+## 1. Purpose
 
 This document defines all timing-related terminology used throughout the system.
 
@@ -8,9 +8,9 @@ All other timing documents must use these terms consistently.
 
 ---
 
-## 1. Clocks
+## 2. Clocks
 
-### 1.1 Master Clock (MCLK)
+### 2.1 Master Clock (MCLK)
 
 Primary system clock source.
 
@@ -19,7 +19,7 @@ Primary system clock source.
 
 ---
 
-### 1.2 Timing Clock (TCLK)
+### 2.2 Timing Clock (TCLK)
 
 Clock that drives the CPU timing sequence.
 
@@ -30,7 +30,7 @@ Note: Multiple TCLK generation options are planned (MCLK source selection, count
 
 ---
 
-### 1.3 Clock Edge
+### 2.3 Clock Edge
 
 All timing behavior is defined on:
 
@@ -38,9 +38,9 @@ TCLK rising edge (CLK↑)
 
 ---
 
-## 2. Timing Sequence
+## 3. Timing Sequence
 
-### 2.1 Timing Step (TSTEP)
+### 3.1 Timing Step (TSTEP)
 
 A single position in the timing sequence.
 
@@ -57,7 +57,7 @@ Properties:
 
 ---
 
-### 2.2 Timing Sequence (TSEQ)
+### 3.2 Timing Sequence (TSEQ)
 
 The ordered progression of timing steps:
 
@@ -69,9 +69,9 @@ Note: TSEQ wrap and reset behavior (end-of-sequence handling, power-on state) is
 
 ---
 
-## 3. Timing Pulses (TP)
+## 4. Timing Pulses (TP)
 
-### 3.1 Definition
+### 4.1 Definition
 
 A Timing Pulse corresponds to a specific timing step:
 
@@ -79,7 +79,7 @@ TPn = (TSTEP == n)
 
 ---
 
-### 3.2 Properties
+### 4.2 Properties
 
 - Active-high.
 - Active for exactly one TCLK cycle.
@@ -91,7 +91,7 @@ TPn = (TSTEP == n)
 
 ---
 
-### 3.3 Role
+### 4.3 Role
 
 TP defines when actions occur.
 
@@ -99,9 +99,9 @@ All state changes are triggered by TP.
 
 ---
 
-## 4. Time States (TS)
+## 5. Time States (TS)
 
-### 4.1 Definition
+### 5.1 Definition
 
 Time States represent execution phases:
 
@@ -109,7 +109,7 @@ TS1, TS2, TS3, TS4
 
 ---
 
-### 4.2 Implementation
+### 5.2 Implementation
 
 Each TS is defined as a group of timing steps:
 
@@ -119,7 +119,7 @@ TS ranges are based on DEC timing reference diagrams. See [cpu-timing-overview](
 
 ---
 
-### 4.3 Properties
+### 5.3 Properties
 
 - Active-high signals
 - Exactly one TS asserted at a time
@@ -128,7 +128,7 @@ TS ranges are based on DEC timing reference diagrams. See [cpu-timing-overview](
 
 ---
 
-### 4.4 Role
+### 5.4 Role
 
 TS defines when operations are allowed.
 
@@ -136,9 +136,9 @@ TS does not trigger state changes.
 
 ---
 
-## 5. Major States (MS)
+## 6. Major States (MS)
 
-### 5.1 Definition
+### 6.1 Definition
 
 Major States represent instruction-level control flow:
 
@@ -150,7 +150,7 @@ DMA
 
 ---
 
-### 5.2 Role
+### 6.2 Role
 
 MS defines what operation is being performed.
 
@@ -158,7 +158,7 @@ MS is independent of timing structure.
 
 ---
 
-## 6. Summary
+## 7. Summary
 
 | Term  | Meaning | Polarity |
 |-------|---------|----------|

@@ -1,6 +1,6 @@
 # DMA and Console Memory Access
 
-## Purpose
+## 1. Purpose
 
 This document defines how the memory subsystem treats memory operations that originate outside normal CPU instruction execution.
 
@@ -14,7 +14,7 @@ The memory subsystem does not define DMA sequencing, DMA arbitration, console se
 
 ---
 
-## Access-Origin Boundary
+## 2. Access-Origin Boundary
 
 The memory subsystem does not distinguish the origin of a valid memory operation.
 
@@ -30,7 +30,7 @@ If those interface values define a valid read or write operation, memory perform
 
 ---
 
-## DMA Memory Access
+## 3. DMA Memory Access
 
 During DMA memory access, the memory subsystem uses the same read/write protocol defined for all memory operations.
 
@@ -65,7 +65,7 @@ Those behaviors are outside the memory subsystem boundary.
 
 ---
 
-## DMA Operation Meaning
+## 4. DMA Operation Meaning
 
 A DMA read returns the word stored at:
 
@@ -79,7 +79,7 @@ DMA does not create a separate memory address space, separate memory data path, 
 
 ---
 
-## Console Examine Access
+## 5. Console Examine Access
 
 Console Examine is a memory read from the memory subsystem perspective.
 
@@ -95,7 +95,7 @@ The memory subsystem does not define how the console operation selects the field
 
 ---
 
-## Console Deposit Access
+## 6. Console Deposit Access
 
 Console Deposit is a memory write from the memory subsystem perspective.
 
@@ -112,7 +112,7 @@ The memory subsystem does not define how the console operation selects the field
 
 ---
 
-## Origin-Independent Behavior
+## 7. Origin-Independent Behavior
 
 The same MFB, AB, /RD, /WR, and MDB values produce the same memory behavior regardless of access origin.
 
@@ -128,7 +128,7 @@ For a write:
 
 ---
 
-## Invalid Conditions
+## 8. Invalid Conditions
 
 The following conditions are invalid during DMA or console memory access:
 
@@ -145,7 +145,7 @@ Invalid conditions are design errors.
 
 ---
 
-## Invariants
+## 9. Invariants
 
 - DMA memory access uses the normal memory interface.
 - Console memory access uses the normal memory interface.
@@ -160,7 +160,7 @@ Invalid conditions are design errors.
 
 ---
 
-## Summary
+## 10. Summary
 
 DMA and console memory accesses are not special memory operations.
 

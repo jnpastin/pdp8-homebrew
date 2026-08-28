@@ -1,12 +1,12 @@
 # DMA Arbitration
 
-## Purpose
+## 1. Purpose
 
 This document defines external DMA requester selection, priority, grant identity, bounded bursts, CPU fairness, and grant release.
 
 ---
 
-## Arbitration Boundary
+## 2. Arbitration Boundary
 
 DMA requester arbitration is external to the CPU.
 
@@ -16,7 +16,7 @@ A distinct DMA arbiter subsystem selects the requesting controller. The architec
 
 ---
 
-## Major-State Visibility
+## 3. Major-State Visibility
 
 The CPU provides `MS[2:0]`, TS, and TP timing context to the DMA arbiter.
 
@@ -45,7 +45,7 @@ DMA_GRANT_ID = CONTROLLER_DMA_PRIORITY
 
 ---
 
-## Arbiter-Local State
+## 4. Arbiter-Local State
 
 The DMA arbiter maintains:
 
@@ -64,7 +64,7 @@ The retained DMA burst-enabled state:
 
 ---
 
-## DMA_ENABLE Output
+## 5. DMA_ENABLE Output
 
 `DMA_ENABLE` is a combinational arbiter output used by the aggregate DMA-request logic.
 
@@ -92,7 +92,7 @@ DMA_ENABLE = 0
 
 ---
 
-## Priority Channels
+## 6. Priority Channels
 
 The DMA interface provides 15 configurable priority channels through /DMA_REQ[14:0].  
 Each DMA-capable controller is configured to assert exactly one request line.
@@ -111,7 +111,7 @@ Properties:
 
 ---
 
-## Aggregate DMA Request
+## 7. Aggregate DMA Request
 
 Each DMA-capable controller provides one active-low request line:
 
@@ -165,7 +165,7 @@ Controller `/DMA_REQ[n]` lines may remain asserted while aggregate `/DMA_REQ` is
 
 ---
 
-## Grant Interface
+## 8. Grant Interface
 
 CPU control produces /DMA_GRANT.  
 /DMA_GRANT indicates that the CPU has released the memory interface during MS = DMA.  
@@ -195,7 +195,7 @@ Exactly one controller may accept a valid controller selection.
 
 ---
 
-## Selection Policy
+## 9. Selection Policy
 
 The arbiter uses fixed numerical priority.
 
@@ -212,7 +212,7 @@ Rules:
 
 ---
 
-## Controller Operation Count
+## 10. Controller Operation Count
 
 Each controller maintains its complete-operation address and remaining word count.
 
@@ -220,7 +220,7 @@ The controller keeps its request line asserted while additional DMA work remains
 
 ---
 
-## Arbiter Burst Count
+## 11. Arbiter Burst Count
 
 The DMA arbiter maintains:
 
@@ -246,7 +246,7 @@ At DMA TP3:
 
 A controller may deassert its request only after completing the transfer for which it was selected. A controller with remaining work keeps its request asserted only while another transfer is immediately ready. Otherwise, it deasserts its request and requests service again when the next transfer is prepared.
 
-### Configurable Burst Limits
+### 11.1 Configurable Burst Limits
 
 Burst limits may differ by priority channel.  
 Each configured burst limit must permit at least one completed DMA word transfer.  
@@ -257,7 +257,7 @@ The arbiter, not the requesting controller, enforces the active selection's burs
 
 ---
 
-## CPU Fairness
+## 12. CPU Fairness
 
 At least one complete CPU instruction executes between completed DMA bursts.
 
@@ -301,7 +301,7 @@ The TP4 transition decision uses the aggregate `/DMA_REQ` value established duri
 
 ---
 
-## Grant Release Ordering
+## 13. Grant Release Ordering
 
 When a controller selection terminates:
 
@@ -318,7 +318,7 @@ CPU and DMA ownership must not overlap.
 
 ---
 
-## Invariants
+## 14. Invariants
 
 - Arbiter state changes only at TP events.
 - Retained DMA burst-enabled state clears at DMA TP3 when the current burst terminates.
@@ -340,7 +340,7 @@ CPU and DMA ownership must not overlap.
 
 ---
 
-## Related Documents
+## 15. Related Documents
 
 - [DMA Interface](./05-dma-interface.md)
 - [Controller Contract](./04-controller-contract.md)

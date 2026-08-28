@@ -1,6 +1,6 @@
 # Datapath Mapping
 
-## Purpose
+## 1. Purpose
 
 Defines how CONTROL_WORD produces datapath and system behavior.
 
@@ -24,7 +24,7 @@ Constraints are defined in:
 
 ---
 
-## 1. Mapping Definition
+## 2. Mapping Definition
 
 System behavior is derived from CONTROL_WORD:
 
@@ -42,7 +42,7 @@ The system includes:
 
 ---
 
-## 2. Control-Centric Execution Model
+## 3. Control-Centric Execution Model
 
 Each CONTROL_WORD defines a complete set of signals.
 
@@ -57,14 +57,14 @@ Constraint:
 
 ---
 
-## 3. Signal Role Application
+## 4. Signal Role Application
 
 Control signals are interpreted according to their roles as defined in:
 - [Control Word](./04-control-word.md)
 
 ---
 
-### 3.1 Enable Signals
+### 4.1 Enable Signals
 
 Constraint:
 - Operations occur only when enable signals are asserted.
@@ -75,7 +75,7 @@ If an enable signal is inactive:
 
 ---
 
-### 3.2 Select Signals
+### 4.2 Select Signals
 
 Constraint:
 - Select signals must always have valid encodings.
@@ -86,7 +86,7 @@ Constraint:
 
 ---
 
-### 3.3 State-Output Signals
+### 4.3 State-Output Signals
 
 Constraint:
 - State-output signals (e.g., MS_NEXT, RUN_NEXT, HLT_REQ_NEXT) are always applied.
@@ -94,7 +94,7 @@ Constraint:
 
 ---
 
-## 4. Datapath Interaction
+## 5. Datapath Interaction
 
 Datapath behavior is produced by interactions of signals.
 
@@ -120,7 +120,7 @@ Constraint:
 
 ---
 
-## 5. Conditional Relevance
+## 6. Conditional Relevance
 
 Not all signals are relevant in all cycles.
 
@@ -133,7 +133,7 @@ Constraint:
 
 ---
 
-## 6. Timing Behavior
+## 7. Timing Behavior
 
 Defined in:
 - [Control Model](./01-control-model.md)
@@ -153,16 +153,16 @@ Constraint:
 
 ---
 
-## 7. Completeness Validation
+## 8. Completeness Validation
 
-### 7.1 Signal Definition
+### 8.1 Signal Definition
 
 Constraint:
 - Every control signal must have a defined semantic effect.
 
 ---
 
-### 7.2 Control Word Coverage
+### 8.2 Control Word Coverage
 
 Constraint:
 - Every CONTROL_WORD must define all control fields.
@@ -172,7 +172,7 @@ Constraint:
 
 ---
 
-### 7.3 Behavior Completeness
+### 8.3 Behavior Completeness
 
 Constraint:
 - All required datapath operations must be realizable via CONTROL_WORD.
@@ -182,7 +182,7 @@ Constraint:
 
 ---
 
-## 8. Non-Redundancy
+## 9. Non-Redundancy
 
 Constraint:
 - No control signal may exist without a defined purpose.
@@ -192,7 +192,7 @@ Constraint:
 
 ---
 
-## 9. Verification Model
+## 10. Verification Model
 
 Verification proceeds per CONTROL_WORD:
 
@@ -206,22 +206,22 @@ Constraint:
 
 ---
 
-## 10. Design Principles
+## 11. Design Principles
 
-### 10.1 Explicit Behavior
+### 11.1 Explicit Behavior
 
 All behavior must be explicitly driven by control signals.
 
 ---
 
-### 10.2 No Implicit Data Movement
+### 11.2 No Implicit Data Movement
 
 Constraint:
 - Data movement must occur only when explicitly enabled.
 
 ---
 
-### 10.3 Separation from Control Logic
+### 11.3 Separation from Control Logic
 
 Constraint:
 - Datapath mapping must not introduce new control decisions.
@@ -229,13 +229,13 @@ Constraint:
 
 ---
 
-## 11. DMA Datapath Behavior
+## 12. DMA Datapath Behavior
 
 DMA is represented as a control-selected major state.
 
 DMA behavior is not implemented by masking control signals or freezing timing state.
 
-### 11.1 DMA Major State
+### 12.1 DMA Major State
 
 When `MS = DMA`, the active `CONTROL_WORD` defines the complete system behavior for the DMA cycle.
 
@@ -244,7 +244,7 @@ Constraint:
 - No datapath behavior may be inferred from `/DMA_REQ`.
 - No external mechanism may suppress or rewrite active control signals.
 
-### 11.2 CPU Datapath Quiescence
+### 12.2 CPU Datapath Quiescence
 
 During DMA service, CPU datapath state changes must occur only if explicitly encoded in the DMA control word.
 
@@ -260,7 +260,7 @@ Constraint:
 - Any CPU state update during `MS = DMA` must be explicitly defined by `CONTROL_WORD`.
 - No implicit datapath suspension mechanism exists outside control.
 
-### 11.3 DMA Sequencing
+### 12.3 DMA Sequencing
 
 DMA sequencing is controlled through `MS_NEXT`.
 
@@ -273,7 +273,7 @@ Constraint:
 - DMA must not inhibit `MS_NEXT`, `RUN_NEXT`, or `HLT_REQ_NEXT`.
 - Sequencing state updates remain controlled by `CONTROL_WORD`.
 
-### 11.4 External DMA Ownership
+### 12.4 External DMA Ownership
 
 `/DMA_GRANT` indicates that external DMA service is available.
 
@@ -284,7 +284,7 @@ Constraint:
 
 ---
 
-## 12. Summary
+## 13. Summary
 
 Datapath mapping defines how control signals are realized.
 

@@ -1,6 +1,6 @@
 # I/O Interface
 
-## Purpose
+## 1. Purpose
 
 This document defines the architectural interface used for I/O communication.
 
@@ -34,7 +34,7 @@ DMA-specific behavior is defined in:
 
 ---
 
-## I/O Interface Participants
+## 2. I/O Interface Participants
 
 External IOT communication involves:
 
@@ -56,7 +56,7 @@ External IOT communication involves:
 
 ---
 
-## I/O Selection Interface
+## 3. I/O Selection Interface
 
 `IOA[5:0]` identifies the target external controller.
 
@@ -66,7 +66,7 @@ IOA and IOP are distinct interfaces and remain stable throughout external-IOT EX
 
 IOA and IOP are meaningful to controllers only while `IOT_ACTIVE` is asserted.
 
-### Controller Response Interface
+### 3.1 Controller Response Interface
 
 The selected controller may assert:
 
@@ -86,7 +86,7 @@ Responses must satisfy the timing and combination constraints defined in the [Ex
 
 ---
 
-## I/O Read Model
+## 4. I/O Read Model
 
 An I/O read transfers data from the selected controller to the CPU.
 
@@ -114,7 +114,7 @@ The transfer commits through `DB_READ_TO_AC`.
 
 ---
 
-## I/O Write Model
+## 5. I/O Write Model
 
 An I/O write transfers data from the CPU to the selected controller.
 
@@ -133,7 +133,9 @@ During the following transfer phase:
 
 At the following TP, the selected controller captures DB.
 
-### Global Invariants
+---
+
+## 6. Global Invariants
 
 - `IOA` and `IOP` are distinct controller-facing fields.
 - `IOA` and `IOP` are meaningful only while `IOT_ACTIVE` is asserted.
@@ -151,7 +153,7 @@ At the following TP, the selected controller captures DB.
 
 ---
 
-## Summary
+## 7. Summary
 
 The I/O interface uses IOA for device selection and DB for data transport.
 

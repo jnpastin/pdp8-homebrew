@@ -1,6 +1,6 @@
 # MRI Execution
 
-## Purpose
+## 1. Purpose
   
 Defines execution behavior for Memory Reference Instructions (MRI) during the EXECUTE major state.
 
@@ -15,7 +15,7 @@ All shared execution semantics are defined in:
 
 ---
 
-## Scope
+## 2. Scope
   
 Applies to instructions where:
 
@@ -23,11 +23,11 @@ IR[11:9] = 000–101
 
 ---
 
-## Instruction Definitions
+## 3. Instruction Definitions
 
 ---
 
-### IR[11:9] = 000
+### 3.1 IR[11:9] = 000
   
 **Mnemonic (non-normative):** AND  
 
@@ -45,7 +45,7 @@ TS4:
 
 ---
 
-### IR[11:9] = 001
+### 3.2 IR[11:9] = 001
   
 **Mnemonic (non-normative):** TAD  
 
@@ -63,7 +63,7 @@ TS4:
 
 ---
 
-### IR[11:9] = 010
+### 3.3 IR[11:9] = 010
   
 **Mnemonic (non-normative):** ISZ  
 
@@ -82,7 +82,7 @@ TS4:
 
 ---
 
-### IR[11:9] = 011
+### 3.4 IR[11:9] = 011
   
 **Mnemonic (non-normative):** DCA  
 
@@ -100,7 +100,7 @@ TS4:
 
 ---
 
-### IR[11:9] = 100
+### 3.5 IR[11:9] = 100
   
 **Mnemonic (non-normative):** JMS  
 
@@ -121,7 +121,7 @@ TS4:
 
 ---
 
-### IR[11:9] = 101
+### 3.6 IR[11:9] = 101
   
 **Mnemonic (non-normative):** JMP  
 
@@ -140,7 +140,7 @@ TS4:
 
 ---
 
-## Summary
+## 4. Summary
   
 MRI execution is defined entirely by:
 

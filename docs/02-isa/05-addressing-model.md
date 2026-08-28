@@ -1,6 +1,6 @@
 # Addressing Modes and Effective Address Model
 
-## Scope
+## 1. Scope
 
 This section applies only to Memory Reference Instructions (MRI).
 
@@ -13,13 +13,13 @@ The addressing concepts in this document do not apply to:
 
 ---
 
-## Address Representation
+## 2. Address Representation
 
-### Logical Address
+### 2.1 Logical Address
 
 All MRI addressing operates on a 12-bit logical address within a field.
 
-### Extended Address Notation
+### 2.2 Extended Address Notation
 
 EA_addr is a phase-dependent working value that becomes the final operand address before EXECUTE.  It contains all of the information that the system requires in order to address the entire memory system.
 
@@ -50,7 +50,7 @@ This notation is used when referring to effective addresses (EA).
 
 ---
 
-## MRI Addressing Fields
+## 3. MRI Addressing Fields
 
 MRI format (see [encoding doc](./00-encoding-model.md)) includes:
 
@@ -62,9 +62,9 @@ These bits define how the initial address is formed.
 
 ---
 
-## Addressing Domains
+## 4. Addressing Domains
 
-### Zero Page
+### 4.1 Zero Page
 
 - Selected when P = 0
 - Base address = 0000
@@ -80,7 +80,7 @@ Properties:
 
 ---
 
-### Current Page
+### 4.2 Current Page
 
 - Selected when P = 1
 - Base address = PC[11:7]
@@ -93,7 +93,7 @@ Properties:
 
 ---
 
-## Instruction Field (IF)
+## 5. Instruction Field (IF)
 
 IF determines:
 
@@ -109,7 +109,7 @@ IF defines the execution context and is always used to form the base address.
 
 ---
 
-## Data Field (DF)
+## 6. Data Field (DF)
 
 DF determines:
 
@@ -119,7 +119,7 @@ DF determines:
 
 ---
 
-## IF vs DF: Correct Architectural Rule
+## 7. IF vs DF: Correct Architectural Rule
 
 The actual field rule is:
 
@@ -138,7 +138,7 @@ Final indirect operand      | DF
 
 ---
 
-## Direct Addressing (I = 0)
+## 8. Direct Addressing (I = 0)
 
 When the indirect bit is clear:
 
@@ -152,18 +152,18 @@ Direct addressing never uses DF.
 
 ---
 
-## Indirect Addressing (I = 1)
+## 9. Indirect Addressing (I = 1)
 
 Indirect addressing is a two-stage process.
 
-### Stage 1: Pointer Location
+### 9.1 Stage 1: Pointer Location
 
 - The base address is formed exactly like direct addressing
 - This uses IF, P, and offset
 
 This address identifies a pointer location in the field defined by IF.
 
-### Stage 2: Pointer Resolution
+### 9.2 Stage 2: Pointer Resolution
 
 - The value stored at the pointer location is read as a 12-bit address
 - This read occurs in DF context
@@ -176,7 +176,7 @@ Indirect addressing always starts in IF and resolves into DF.
 
 ---
 
-## Example: Cross-Field Indirection
+## 10. Example: Cross-Field Indirection
 
 Instruction:
 
@@ -204,7 +204,7 @@ Execution:
 
 ---
 
-## Off-Page Indirection
+## 11. Off-Page Indirection
 
 The pointer value obtained during indirection:
 
@@ -215,7 +215,7 @@ This allows arbitrary addressing within DF.
 
 ---
 
-## Pointer Model
+## 12. Pointer Model
 
 Indirect addressing assumes:
 
@@ -228,7 +228,7 @@ This pointer:
 
 ---
 
-## Auto-Index Registers (0010–0017)
+## 13. Auto-Index Registers (0010–0017)
 
 Locations:
 
@@ -236,14 +236,14 @@ Locations:
 
 Defined per field.
 
-### Behavior
+### 13.1 Behavior
 
 Auto-indexing applies only when:
 
 - I = 1
 - Address in 0010–0017
 
-### Operation
+### 13.2 Operation
 
 1. Pointer location identified via IF
 2. If in range, increment value
@@ -251,14 +251,14 @@ Auto-indexing applies only when:
 4. Use as pointer
 5. Interpret result in DF
 
-### Distinction
+### 13.3 Distinction
 
 - I = 0: normal memory
 - I = 1: auto-increment behavior
 
 ---
 
-## Summary Invariants
+## 14. Summary Invariants
 
 - MRI-only behavior
 - IF defines instruction context and direct access
@@ -269,7 +269,7 @@ Auto-indexing applies only when:
 
 ---
 
-## Transition to EA Generation
+## 15. Transition to EA Generation
 
 This section defines conceptual rules.
 

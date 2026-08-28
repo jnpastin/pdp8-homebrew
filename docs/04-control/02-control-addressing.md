@@ -1,6 +1,6 @@
 # Control Addressing
 
-## Purpose
+## 1. Purpose
 
 Defines the formation of the control address (CTRL_ADDR) used to access the control store.
 
@@ -19,7 +19,7 @@ For constraints and formal rules, see:
 
 ---
 
-## 1. Control Address Definition
+## 2. Control Address Definition
 
 The control system is implemented as a mapping:
 
@@ -40,7 +40,7 @@ Constraint:
 
 ---
 
-## 2. Control Address Function
+## 3. Control Address Function
 
 CTRL_ADDR is defined as a deterministic function:
 
@@ -62,7 +62,7 @@ Constraint:
 
 ---
 
-### 2.1 Predecode and Input Reduction
+### 3.1 Predecode and Input Reduction
 
 Control inputs must be reduced before address formation.
 
@@ -96,7 +96,7 @@ Constraint:
 
 ---
 
-### 2.2 Control Decisions as Address Selection
+### 3.2 Control Decisions as Address Selection
 
 Control logic is conceptually described using conditional statements, but is implemented as address selection.
 
@@ -135,7 +135,7 @@ Constraint:
 
 ---
 
-### 2.3 Role Separation
+### 3.3 Role Separation
 
 The control process is strictly divided:
 
@@ -154,7 +154,7 @@ Constraint:
 
 ---
 
-### 2.4 Valid and Invalid Conditions
+### 3.4 Valid and Invalid Conditions
 
 Valid example:
 
@@ -185,7 +185,7 @@ Constraint:
 
 ---
 
-## 3. Address Composition
+## 4. Address Composition
 
 CTRL_ADDR is formed by combining contributions from each input domain.
 
@@ -212,7 +212,7 @@ Constraint:
 
 ---
 
-### 3.1 Properties of PACK
+### 4.1 Properties of PACK
 
 PACK represents a deterministic encoding of control inputs.
 
@@ -227,7 +227,7 @@ Constraint:
 
 ---
 
-### 3.2 Separation from Input Reduction
+### 4.2 Separation from Input Reduction
 
 PACK operates only on already-reduced inputs.
 
@@ -251,7 +251,7 @@ Constraint:
 
 ---
 
-### 3.3 Prohibited Behavior
+### 4.3 Prohibited Behavior
 
 PACK must not introduce or replicate control logic.
 
@@ -268,7 +268,7 @@ Constraint:
 
 ---
 
-### 3.4 Encoding Nature
+### 4.4 Encoding Nature
 
 PACK is an encoding mechanism, not a decision mechanism.
 
@@ -290,13 +290,13 @@ Constraint:
 
 ---
 
-## 4. Input Contributions
+## 5. Input Contributions
 
 Each input domain contributes to CTRL_ADDR in a strictly defined manner.
 
 ---
 
-### 4.1 Major State Contribution (MS)
+### 5.1 Major State Contribution (MS)
 
 MS selects the high-level execution phase.
 
@@ -309,7 +309,7 @@ Constraint:
 
 ---
 
-### 4.2 Time State Contribution (TS)
+### 5.2 Time State Contribution (TS)
 
 TS defines sequencing within a major state.
 
@@ -322,7 +322,7 @@ Constraint:
 
 ---
 
-### 4.3 Instruction-Derived Contribution (IR_FIELDS)
+### 5.3 Instruction-Derived Contribution (IR_FIELDS)
 
 IR_FIELDS contribute instruction-dependent control decisions.
 
@@ -341,7 +341,7 @@ For definitions, see:
 
 ---
 
-### 4.4 Condition Contribution (FLAGS)
+### 5.4 Condition Contribution (FLAGS)
 
 FLAGS provide conditional control inputs.
 
@@ -360,7 +360,7 @@ For definitions, see:
 
 ---
 
-### 4.5 External Input Contribution (EXT)
+### 5.5 External Input Contribution (EXT)
 
 EXT provides external control influences.
 
@@ -374,13 +374,13 @@ Constraint:
 
 ---
 
-## 5. Encoding Constraints
+## 6. Encoding Constraints
 
 CTRL_ADDR encoding must satisfy the following constraints.
 
 ---
 
-### 5.1 Decision-Based Encoding
+### 6.1 Decision-Based Encoding
 
 CTRL_ADDR encodes control decisions, not full system state.
 
@@ -390,7 +390,7 @@ Constraint:
 
 ---
 
-### 5.2 Prohibited Information
+### 6.2 Prohibited Information
 
 The following must not be encoded in CTRL_ADDR:
 
@@ -405,7 +405,7 @@ Constraint:
 
 ---
 
-### 5.3 Domain Separation
+### 6.3 Domain Separation
 
 Each input domain must remain independent.
 
@@ -415,7 +415,7 @@ Constraint:
 
 ---
 
-### 5.4 Determinism
+### 6.4 Determinism
 
 CTRL_ADDR must be a strictly deterministic function.
 
@@ -425,9 +425,9 @@ Constraint:
 
 ---
 
-## 6. Structural Properties
+## 7. Structural Properties
 
-### 6.1 Completeness
+### 7.1 Completeness
 
 All valid input combinations must map to a defined control word.
 
@@ -436,7 +436,7 @@ Constraint:
 
 ---
 
-### 6.2 Sparsity
+### 7.2 Sparsity
 
 Unused addresses are permitted.
 
@@ -446,7 +446,7 @@ Properties:
 
 ---
 
-### 6.3 Non-Aliasing
+### 7.3 Non-Aliasing
 
 Different control decisions must not collide unless explicitly intended.
 
@@ -455,13 +455,13 @@ Constraint:
 
 ---
 
-## 7. Address Space Evolution
+## 8. Address Space Evolution
 
 This section defines how CTRL_ADDR must evolve when the control system is extended.
 
 ---
 
-### 7.1 Output Extension Without Address Change
+### 8.1 Output Extension Without Address Change
 
 New control signals may be added without modifying CTRL_ADDR when no new control decisions are introduced.
 
@@ -486,7 +486,7 @@ Constraint:
 
 ---
 
-### 7.2 Input Domain Extension
+### 8.2 Input Domain Extension
 
 If new control decisions are introduced, CTRL_ADDR must be extended.
 
@@ -516,7 +516,7 @@ Constraint:
 
 ---
 
-### 7.3 Address Extension Mechanism
+### 8.3 Address Extension Mechanism
 
 Extension is performed by incorporating new input signals into the encoding.
 
@@ -536,7 +536,7 @@ Constraint:
 
 ---
 
-### 7.4 Backward Compatibility
+### 8.4 Backward Compatibility
 
 When extending CTRL_ADDR:
 
@@ -553,7 +553,7 @@ Constraint:
 
 ---
 
-### 7.5 Prohibited Alternatives
+### 8.5 Prohibited Alternatives
 
 The following are prohibited when extending control:
 
@@ -567,7 +567,7 @@ Constraint:
 
 ---
 
-### 7.6 Relationship to CONTROL_WORD
+### 8.6 Relationship to CONTROL_WORD
 
 See:
 - [Control Word](./04-control-word.md)
@@ -585,7 +585,7 @@ Constraint:
 
 ---
 
-## 8. Timing Model
+## 9. Timing Model
 
 CTRL_ADDR is evaluated during each time state.
 
@@ -606,15 +606,15 @@ Constraint:
 
 ---
 
-## 9. Design Principles
+## 10. Design Principles
 
-### 9.1 Reduction Before Encoding
+### 10.1 Reduction Before Encoding
 
 All state must be reduced to control-relevant forms prior to address formation.
 
 ---
 
-### 9.2 Explicit Control Decisions
+### 10.2 Explicit Control Decisions
 
 All control behavior must be explicitly represented in CTRL_ADDR.
 
@@ -623,7 +623,7 @@ Constraint:
 
 ---
 
-### 9.3 Separation of Concerns
+### 10.3 Separation of Concerns
 
 - IR decoding → IR_FIELDS
 - condition evaluation → FLAGS
@@ -634,7 +634,7 @@ Constraint:
 
 ---
 
-### 9.4 Isolation from Datapath
+### 10.4 Isolation from Datapath
 
 Control addressing must not depend on datapath implementation.
 
@@ -643,7 +643,7 @@ Constraint:
 
 ---
 
-## 10. Summary
+## 11. Summary
 
 Control addressing maps reduced system state to a control store index.
 

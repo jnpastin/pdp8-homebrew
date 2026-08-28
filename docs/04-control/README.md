@@ -1,13 +1,13 @@
 # Control
 
-## Purpose
+## 1. Purpose
 Defines the control system: how reduced machine state selects a control word, and how that control word drives datapath, architectural, and sequencing behavior.
 
 It describes the mechanism that produces behavior, not the behavior itself.
 
 ---
 
-## Scope
+## 2. Scope
 Includes:
 - Control as a function: CONTROL = f(MS, TS, IR_FIELDS, FLAGS, EXT)
 - Control address formation and the control store (CTRL_ADDR -> CONTROL_WORD)
@@ -23,7 +23,7 @@ Excludes:
 
 ---
 
-## Model Summary
+## 3. Model Summary
 - Control is a deterministic function of reduced machine state.
 - CTRL_ADDR selects a precomputed CONTROL_WORD from the control store.
 - CONTROL_WORD fully determines datapath, architectural, and sequencing behavior for the cycle.
@@ -31,7 +31,7 @@ Excludes:
 
 ---
 
-## Related Documents
+## 4. Related Documents
 - [01-control-model.md](./01-control-model.md)
 - [02-control-addressing.md](./02-control-addressing.md)
 - [03-control-constraints.md](./03-control-constraints.md)

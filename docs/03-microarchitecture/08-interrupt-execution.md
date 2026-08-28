@@ -1,6 +1,6 @@
 # INTERRUPT Execution
 
-## Purpose
+## 1. Purpose
   
 Defines execution behavior for the INTERRUPT major state.  
 This document specifies:
@@ -15,7 +15,7 @@ Execution behavior follows:
 
 ---
 
-## Scope
+## 2. Scope
   
 Applies when:
 - MS = INTERRUPT  
@@ -29,7 +29,7 @@ Control conditions governing entry are defined in:
 
 ---
 
-## Execution Model
+## 3. Execution Model
   
 INTERRUPT execution is similar to, but not equivalent to:
 
@@ -52,9 +52,9 @@ Properties:
 
 ---
 
-## Execution Sequence
+## 4. Execution Sequence
 
-### TS1 — PC Capture
+### 4.1 TS1 — PC Capture
   
 - PC_TO_MB  
 
@@ -63,7 +63,7 @@ Description:
 
 ---
 
-### TS2 — Address Formation
+### 4.2 TS2 — Address Formation
   
 - MA_CLEAR  
 - IF_DF_TO_IB
@@ -74,7 +74,7 @@ Description:
 
 ---
 
-### TS3 — Save Return Address
+### 4.3 TS3 — Save Return Address
   
 - MEM_WRITE_FROM_MB  
 
@@ -83,7 +83,7 @@ Description:
 
 ---
 
-### TS4 — Control Transfer and State Update
+### 4.4 TS4 — Control Transfer and State Update
   
 - PC_SET_1  
 - IE_CLEAR  
@@ -99,7 +99,7 @@ Description:
 
 ---
 
-## Invariants
+## 5. Invariants
 
 - PC is saved exactly once to memory location 0000
 - Memory write occurs before PC is modified
@@ -113,7 +113,7 @@ Description:
 
 ---
 
-## Execution Boundary Guarantee
+## 6. Execution Boundary Guarantee
   
 Upon completion of INTERRUPT:
 - M[0000] contains the return address
@@ -125,7 +125,7 @@ Upon completion of INTERRUPT:
 
 ---
 
-## Notes
+## 7. Notes
 
 - INTERRUPT execution performs the same memory and control transfer as `JMS 0000`, with additional register updates (IE, IF, DF)
 - Entry point is fixed at address 0001; no vector lookup is performed
@@ -133,13 +133,13 @@ Upon completion of INTERRUPT:
   - JMP I 0000 (defined in ISA)
 - No stack or automatic context save mechanism is provided
 
-### Device Interaction
+### 7.1 Device Interaction
 
 - Interrupting devices are **not acknowledged** during INTERRUPT execution
 - No global interrupt acknowledge (IRQ_ACK) mechanism exists
 - Device interrupt requests remain asserted until cleared
 
-### Software Responsibility
+### 7.2 Software Responsibility
 
 - The interrupt service routine must:
   - identify the interrupting device via IOT skip instructions
@@ -150,7 +150,7 @@ Upon completion of INTERRUPT:
 - Interrupt enable state (IE) is modified by IOT instructions (e.g., ION, IOF), defined in:
   - [IOT Execution](./06-iot-execution.md)
 
-### Interrupt Model
+### 7.3 Interrupt Model
 
 - Interrupt request is the logical OR of device requests
 - Device priority and dispatch are determined by software

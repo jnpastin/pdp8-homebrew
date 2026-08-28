@@ -1,6 +1,6 @@
 # Class A - System Buses
 
-## Purpose
+## 1. Purpose
 
 This document defines all Class A signals: the system buses used for data and address transfer
 between independent modules.
@@ -20,7 +20,7 @@ This document follows the conventions defined in:
 
 ---
 
-## Overview
+## 2. Overview
 
 Class A signals are multi-bit buses that:
 - are present on all backplane slots
@@ -37,7 +37,7 @@ The system defines four buses:
 
 ---
 
-## Bit Ordering and Conventions
+## 3. Bit Ordering and Conventions
 
 - Bit 0 = Least Significant Bit (LSB)
 - Bit 11 = Most Significant Bit (MSB)
@@ -46,15 +46,15 @@ The system defines four buses:
 
 ---
 
-## Bus Definitions
+## 4. Bus Definitions
 
-### Address Bus (AB)
+### 4.1 Address Bus (AB)
 
-#### Logical Definition
+#### 4.1.1 Logical Definition
 
 AB = AB[11:0]
 
-#### Physical Signals
+#### 4.1.2 Physical Signals
 
 A0
 A1
@@ -69,7 +69,7 @@ A9
 A10
 A11
 
-#### Function
+#### 4.1.3 Function
 
 Carries memory addresses for all system memory accesses.
 
@@ -80,13 +80,13 @@ Examples include:
 
 ---
 
-### System Data Bus (DB)
+### 4.2 System Data Bus (DB)
 
-#### Logical Definition
+#### 4.2.1 Logical Definition
 
 DB = DB[11:0]
 
-#### Physical Signals
+#### 4.2.2 Physical Signals
 
 D0
 D1
@@ -101,7 +101,7 @@ D9
 D10
 D11
 
-#### Function
+#### 4.2.3 Function
 
 Carries data for:
 - I/O operations
@@ -109,13 +109,13 @@ Carries data for:
 
 ---
 
-### Memory Data Bus (MDB)
+### 4.3 Memory Data Bus (MDB)
 
-#### Logical Definition
+#### 4.3.1 Logical Definition
 
 MDB = MDB[11:0]
 
-#### Physical Signals
+#### 4.3.2 Physical Signals
 
 MDB0
 MDB1
@@ -130,7 +130,7 @@ MDB9
 MDB10
 MDB11
 
-#### Function
+#### 4.3.3 Function
 
 Carries data for:
 - memory read/write operations
@@ -140,19 +140,19 @@ MDB is logically independent from DB
 
 ---
 
-### MFB — Memory Field Bus
+### 4.4 MFB — Memory Field Bus
 
-#### Logical Definition:
+#### 4.4.1 Logical Definition
 
 MFB = MFB[2:0]
 
-#### Physical Signals
+#### 4.4.2 Physical Signals
 
 MFB0
 MFB1
 MFB2
 
-#### Function
+#### 4.4.3 Function
 
  Carries the field half of the effective address (EA_FIELD) to the memory system, extending the 12-bit AB to a full physical address.
 
@@ -162,7 +162,7 @@ MFB2
 
 ---
 
-## Exclusions
+## 5. Exclusions
 
 The following are NOT Class A signals:
 
@@ -176,7 +176,7 @@ These belong to other signal classes
 
 ---
 
-## Summary
+## 6. Summary
 
 Class A buses provide the fundamental data and address transport mechanisms for the system.
 

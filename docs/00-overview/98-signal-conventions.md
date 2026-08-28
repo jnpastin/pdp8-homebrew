@@ -1,6 +1,6 @@
 # Signal Conventions
 
-## Purpose
+## 1. Purpose
 
 This document defines global conventions for signal polarity, naming, and electrical behavior.
 
@@ -8,7 +8,7 @@ These rules apply to all signal classes and must be followed by all system modul
 
 ---
 
-## 1. Signal Polarity
+## 2. Signal Polarity
 
 Signal polarity is selected according to the electrical role of the interface rather than by applying one polarity to all control signals.
 
@@ -26,9 +26,9 @@ Behavioral text should use the terms asserted and deasserted unless the electric
 
 ---
 
-## 2. Naming Conventions
+## 3. Naming Conventions
 
-### Documentation
+### 3.1 Documentation
 
 - Active-high signals:
   SIGNAL_NAME
@@ -36,14 +36,14 @@ Behavioral text should use the terms asserted and deasserted unless the electric
 - Active-low signals:
   /SIGNAL_NAME
 
-### Schematics
+### 3.2 Schematics
 
 - Active-low signals:
   S̅̅I̅̅G̅̅N̅̅A̅̅L̅̅_̅̅N̅̅A̅̅M̅̅E̅̅ (overbar)
 
 ---
 
-## 3. Asserted and Deasserted Levels
+## 4. Asserted and Deasserted Levels
  
 For an active-low signal:
  
@@ -59,22 +59,22 @@ Expressions that describe electrical values must reflect the defined polarity. E
 
 ---
 
-## 4. High-Impedance (High-Z) State
+## 5. High-Impedance (High-Z) State
 
-### Definition
+### 5.1 Definition
 
 A signal is in High-Z when:
 - the output driver is electrically disconnected
 - the device does not drive logic HIGH or LOW
 
-### Properties
+### 5.2 Properties
 
 - affects output only
 - devices can still read the bus
 
 ---
 
-## 5. Bus Electrical Model
+## 6. Bus Electrical Model
 
 All Class A buses follow this model:
 
@@ -82,7 +82,7 @@ All Class A buses follow this model:
 - all other devices in High-Z
 - weak pull-up defines default state
 
-### Resulting Behavior
+### 6.1 Resulting Behavior
 
 - driven HIGH -> logic 1
 - driven LOW -> logic 0
@@ -90,12 +90,12 @@ All Class A buses follow this model:
 
 ---
 
-## 6. Pull Resistors
+## 7. Pull Resistors
 
 - weak pull-up resistors are used
 - ensure defined HIGH state when bus is undriven
 
-### Rationale
+### 7.1 Rationale
 
 - compatible with wired-OR signals
 - avoids floating nodes
@@ -103,9 +103,9 @@ All Class A buses follow this model:
 
 ---
 
-## 7. Shared Active-Low Request Signals
+## 8. Shared Active-Low Request Signals
 
-### /INT_REQ
+### 8.1 /INT_REQ
 
 `/INT_REQ` is a shared active-low interrupt-request line.
 
@@ -116,7 +116,7 @@ All Class A buses follow this model:
 
 Electrically, the line is wired-AND because it is HIGH only when all controllers release it. Functionally, asserted-low interrupt requests combine as a wired-OR.
 
-### DMA_ENABLE
+### 8.2 DMA_ENABLE
 
 `DMA_ENABLE` is a combinational output from the DMA arbiter to the DMA-request aggregation logic.
 
@@ -126,7 +126,7 @@ Electrically, the line is wired-AND because it is HIGH only when all controllers
 - It is not a controller-facing request line.
 - It is not stored state.
 
-### Aggregate /DMA_REQ
+### 8.3 Aggregate /DMA_REQ
 
 Aggregate `/DMA_REQ` is an active-low combinational output from the DMA-request aggregation logic to the CPU.
 
@@ -149,7 +149,7 @@ Aggregate `/DMA_REQ` is a single-driver signal. It is not a wired-OR or wired-AN
 
 ---
 
-## 8. Global Invariants
+## 9. Global Invariants
 
 - All signals must have explicit polarity
 - No implicit active level is allowed
@@ -158,7 +158,7 @@ Aggregate `/DMA_REQ` is a single-driver signal. It is not a wired-OR or wired-AN
 
 ---
 
-## Summary
+## 10. Summary
 
 This document establishes consistent rules for:
 - signal polarity

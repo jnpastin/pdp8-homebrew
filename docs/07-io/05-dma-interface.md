@@ -1,12 +1,12 @@
 # DMA Interface
 
-## Purpose
+## 1. Purpose
 
 This document defines DMA ownership, memory-interface participation, transfer direction, and per-word timing.
 
 ---
 
-## Architectural Model
+## 2. Architectural Model
 
 DMA uses single-cycle transfer semantics.
 
@@ -23,7 +23,7 @@ Each `MS = DMA` cycle transfers at most one memory word.
 
 ---
 
-## DMA-Owned Interfaces
+## 3. DMA-Owned Interfaces
 
 During a granted DMA operation, the controller supplies:
 
@@ -38,7 +38,7 @@ The CPU does not drive MFB, AB, MDB, /RD, or /WR during DMA ownership.
 
 ---
 
-## Addressing
+## 4. Addressing
 
 MFB and AB are treated as one DMA-selected memory address interface.
 
@@ -46,11 +46,11 @@ The granted controller supplies both values. MFB and AB must remain stable throu
 
 ---
 
-## Direction
+## 5. Direction
 
 The granted controller asserts exactly one of /RD or /WR for a valid transfer.
 
-### DMA Read
+### 5.1 DMA Read
 
 During a DMA read:
 
@@ -60,7 +60,7 @@ During a DMA read:
 - memory drives MDB
 - controller captures MDB at TP2
 
-### DMA Write
+### 5.2 DMA Write
 
 During a DMA write:
 
@@ -72,9 +72,9 @@ During a DMA write:
 
 ---
 
-## DMA Timing
+## 6. DMA Timing
 
-### DMA Timing Overview
+### 6.1 DMA Timing Overview
 
 The following diagram shows one single-word DMA major-state cycle and the preceding transition from FETCH.
 
@@ -98,7 +98,7 @@ The DMA-read and DMA-write groups are alternative views of the same transfer pha
 
 No DMA wait state exists. A controller that cannot complete the next transfer keeps its `/DMA_REQ[n]` line deasserted until the complete transfer is prepared.
 
-### TS1 and TP1: Arbitration or Selection Continuation
+### 6.2 TS1 and TP1: Arbitration or Selection Continuation
 
 If no controller is selected:
 
@@ -112,7 +112,7 @@ Selection at TP1 therefore commits the controller to completing exactly one tran
 If a controller remains selected for the current burst, TS1 preserves that selection and prepares the next transfer.  
 No memory transfer commits at TP1.
 
-### TS2 and TP2: Memory Transfer
+### 6.3 TS2 and TP2: Memory Transfer
 
 During TS2, the selected controller presents one complete memory operation.
 
@@ -124,7 +124,7 @@ At TP2:
 
 A valid controller selection must not reach TP2 without completing one DMA word transfer.
 
-### TS3 and TP3: Count Update
+### 6.4 TS3 and TP3: Count Update
 
 At TP3:
 
@@ -134,7 +134,7 @@ At TP3:
 These updates correspond to the word transferred at TP2.  
 TP3 does not represent an independent transfer or permit accounting for a transfer that did not commit at TP2.
 
-### TS4 and TP4: Continuation Decision
+### 6.5 TS4 and TP4: Continuation Decision
 
 During TS4:
 
@@ -157,7 +157,7 @@ If the controller cannot immediately complete another transfer, it must deassert
 
 ---
 
-## DMA Wait Policy
+## 7. DMA Wait Policy
 
 No DMA wait signal is defined.  
 A controller must prepare the complete next DMA word transfer before asserting /DMA_REQ[n].  
@@ -168,7 +168,7 @@ A controller must not extend, suppress, repeat, or delay a DMA TP.
 
 ---
 
-## Related Documents
+## 8. Related Documents
 
 - [Memory Interface](../06-memory/02-memory-interface.md)
 - [DMA and Console Memory Access](../06-memory/06-dma-and-console-access.md)

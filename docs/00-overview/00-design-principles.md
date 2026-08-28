@@ -1,13 +1,13 @@
 # Design Principles
 
-## Core Principles
+## 1. Core Principles
 
-### 1. Correctness Over Performance
+### 1.1 Correctness Over Performance
 The system must behave correctly according to PDP-8/e semantics before any effort is made to optimize performance.
 
 ---
 
-### 2. Separation of Concerns
+### 1.2 Separation of Concerns
 
 The design must clearly separate:
 
@@ -24,7 +24,7 @@ These layers must not be conflated.
 
 ---
 
-### 3. Incremental Development
+### 1.3 Incremental Development
 
 The system should be built and validated in stages:
 
@@ -36,7 +36,7 @@ The system should be built and validated in stages:
 
 ---
 
-### 4. Observability and Debuggability
+### 1.4 Observability and Debuggability
 
 The system must support detailed inspection of internal state.
 
@@ -48,7 +48,7 @@ Examples:
 
 ---
 
-### 5. Modularity
+### 1.5 Modularity
 
 The system will be divided into independent modules:
 
@@ -61,7 +61,7 @@ Each module should have clearly defined interfaces.
 
 ---
 
-### 6. Conservative Electrical Assumptions
+### 1.6 Conservative Electrical Assumptions
 
 Design decisions should account for:
 
@@ -73,7 +73,7 @@ Clock targets are progressive, not fixed.
 
 ---
 
-### 7. Faithful Behavior, Not Exact Replica
+### 1.7 Faithful Behavior, Not Exact Replica
 
 The system aims to reproduce observed PDP-8 behavior, not exact internal implementation.
 
@@ -84,7 +84,7 @@ Examples:
 
 ---
 
-## Non-Goals
+## 2. Non-Goals
 
 - Exact reproduction of PDP-8 hardware schematics
 - Maximum performance at the expense of clarity
@@ -92,7 +92,7 @@ Examples:
 
 ---
 
-## Open Decisions
+## 3. Open Decisions
 
 The following architectural decisions remain unresolved:
 
@@ -101,7 +101,7 @@ The following architectural decisions remain unresolved:
 
 ---
 
-### Resolved Decisions
+### 3.1 Resolved Decisions
 
 The following architectural decisions are fixed:
 
@@ -114,7 +114,7 @@ The following architectural decisions are fixed:
 
 ---
 
-## Notes
+## 4. Notes
 
 These principles are intended to guide decisions as the project evolves.
 

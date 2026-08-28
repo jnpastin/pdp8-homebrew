@@ -1,12 +1,12 @@
 # I/O Invalid Conditions
 
-## Purpose
+## 1. Purpose
 
 This document identifies architectural I/O and DMA conditions that are design errors.
 
 ---
 
-## External IOT Invalid Conditions
+## 2. External IOT Invalid Conditions
 
 The following are invalid:
 
@@ -31,7 +31,7 @@ The following are invalid:
 
 ---
 
-## DMA Invalid Conditions
+## 3. DMA Invalid Conditions
 
 The following are invalid:
 
@@ -72,7 +72,7 @@ The following are invalid:
 
 ---
 
-## Validation Boundary
+## 4. Validation Boundary
 
 These conditions are architectural design errors.
 
@@ -80,7 +80,7 @@ The architecture does not require centralized runtime validation of controller c
 
 ---
 
-## Related Documents
+## 5. Related Documents
 
 - [External IOT Interface](./02-external-iot-interface.md)
 - [I/O Timing](./03-io-timing.md)

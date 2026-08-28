@@ -1,6 +1,6 @@
 # Abbreviation Dictionary
 
-## Purpose
+## 1. Purpose
 
 This document defines a global dictionary for all abbreviations used throughout the system design.
 
@@ -15,7 +15,7 @@ All documents must reference these abbreviations to prevent ambiguity or collisi
 
 ---
 
-## Naming Rules
+## 2. Naming Rules
 
 - Abbreviations should be 2–4 characters where possible
 - Must be unique across all categories
@@ -24,20 +24,20 @@ All documents must reference these abbreviations to prevent ambiguity or collisi
 
 ---
 
-## Buses (Class A)
+## 3. Buses (Class A)
 
 
-AB   = [Address Bus](../05-buses-and-signals/01-class-a-buses.md#address-bus-ab) (AB[11:0])
+AB   = [Address Bus](../05-buses-and-signals/01-class-a-buses.md#41-address-bus-ab) (AB[11:0])
 
-DB   = [System Data Bus](../05-buses-and-signals/01-class-a-buses.md#system-data-bus-db) (DB[11:0])
+DB   = [System Data Bus](../05-buses-and-signals/01-class-a-buses.md#42-system-data-bus-db) (DB[11:0])
 
-MDB  = [Memory Data Bus](../05-buses-and-signals/01-class-a-buses.md#memory-data-bus-mdb) (MDB[11:0])
+MDB  = [Memory Data Bus](../05-buses-and-signals/01-class-a-buses.md#43-memory-data-bus-mdb) (MDB[11:0])
 
-MFB  = [Memory Field Bus](../05-buses-and-signals/01-class-a-buses.md#mfb--memory-field-bus) (MFB[2:0])
+MFB  = [Memory Field Bus](../05-buses-and-signals/01-class-a-buses.md#44-mfb--memory-field-bus) (MFB[2:0])
 
 ---
 
-## Registers
+## 4. Registers
 
 
 AC   = [Accumulator](../01-architecture/01-registers.md#ac--accumulator)
@@ -81,41 +81,41 @@ RUN  = [Run state](../01-architecture/01-registers.md#run--run-state)
 
 ---
 
-## Global Control Signals (Class B)
+## 5. Global Control Signals (Class B)
 
 
 /DMA_REQ = [DMA Request](../04-control/10-control-input-definitions/04-external-inputs.md#dma_req)
 
-/DMA_GRANT = [DMA Grant](../04-control/20-control-output-definitions/02-architectural-control-signals.md#35-dma_grant)
+/DMA_GRANT = [DMA Grant](../04-control/20-control-output-definitions/02-architectural-control-signals.md#45-dma_grant)
 
-/RD      = [Memory Read](../04-control/20-control-output-definitions/02-architectural-control-signals.md#31-memory-read-rd)
+/RD      = [Memory Read](../04-control/20-control-output-definitions/02-architectural-control-signals.md#41-memory-read-rd)
 
-/WR      = [Memory Write](../04-control/20-control-output-definitions/02-architectural-control-signals.md#32-memory-write-wr)
+/WR      = [Memory Write](../04-control/20-control-output-definitions/02-architectural-control-signals.md#42-memory-write-wr)
 
 /INT_REQ = Interrupt Request (wired-OR)
 
 
 ---
 
-## Timing Signals (Class C)
+## 6. Timing Signals (Class C)
 
 
-MCLK  = [Master Clock](../09-timing/01-terminology.md#11-master-clock-mclk)
+MCLK  = [Master Clock](../09-timing/01-terminology.md#21-master-clock-mclk)
 
-TCLK  = [Timing Clock](../09-timing/01-terminology.md#12-timing-clock-tclk)
+TCLK  = [Timing Clock](../09-timing/01-terminology.md#22-timing-clock-tclk)
 
-TSTEP = [Timing Step](../09-timing/01-terminology.md#21-timing-step-tstep)
+TSTEP = [Timing Step](../09-timing/01-terminology.md#31-timing-step-tstep)
 
-TSEQ  = [Timing Sequence](../09-timing/01-terminology.md#22-timing-sequence-tseq)
+TSEQ  = [Timing Sequence](../09-timing/01-terminology.md#32-timing-sequence-tseq)
 
-TPn   = [Timing Pulse n](../09-timing/01-terminology.md#3-timing-pulses-tp)
+TPn   = [Timing Pulse n](../09-timing/01-terminology.md#4-timing-pulses-tp)
 
-TSn   = [Timing State n](../09-timing/01-terminology.md#4-time-states-ts)
+TSn   = [Timing State n](../09-timing/01-terminology.md#5-time-states-ts)
 
 
 ---
 
-## I/O Signals
+## 7. I/O Signals
 
 
 IOA[5:0] = I/O Device Address Bus
@@ -123,7 +123,7 @@ IOA[5:0] = I/O Device Address Bus
 
 ---
 
-## Front Panel Signals (Class D)
+## 8. Front Panel Signals (Class D)
   
 FP_START     = [Start Switch](../04-control/10-control-input-definitions/04-external-inputs.md#fp_start)
  
@@ -147,7 +147,7 @@ FP_DF        = [Data Field Switches](../04-control/10-control-input-definitions/
 
 ---
 
-## Conventions
+## 9. Conventions
 
 - Bracket notation indicates bus width (e.g., AB[11:0])
 - Uppercase denotes signal-level identifiers
@@ -155,7 +155,7 @@ FP_DF        = [Data Field Switches](../04-control/10-control-input-definitions/
 
 ---
 
-## Constraints
+## 10. Constraints
 
 - New abbreviations must be added here before use
 - Existing abbreviations must not be redefined
@@ -163,7 +163,7 @@ FP_DF        = [Data Field Switches](../04-control/10-control-input-definitions/
 
 ---
 
-## Summary
+## 11. Summary
 
 This dictionary ensures consistency across:
 - architecture definitions

@@ -1,12 +1,12 @@
 # External IOT Interface
 
-## Purpose
+## 1. Purpose
 
 This document defines external-IOT selection, response qualification, DB transfer behavior, AC behavior, and skip behavior.
 
 ---
 
-## Selection
+## 2. Selection
 
 A controller is selected when all of the following are true:
 
@@ -19,7 +19,7 @@ Only the selected controller may interpret IOP as an active operation.
 
 ---
 
-## Phase-Specific Responses
+## 3. Phase-Specific Responses
 
 Controller responses are phase-specific.
 
@@ -38,7 +38,7 @@ Responses must not persist across phases unless the controller intentionally req
 
 ---
 
-## I/O Read
+## 4. I/O Read
 
 `IO_READ_REQ` requests a device-to-CPU DB transfer during the following phase.
 
@@ -71,7 +71,7 @@ The read occurs through `DB_READ_TO_AC`. No direct DB transfer to another CPU re
 
 ---
 
-## I/O Write
+## 5. I/O Write
 
 `IO_WRITE_REQ` requests a CPU-to-device DB transfer during the following phase.
 
@@ -97,7 +97,7 @@ At the following TP, the selected controller captures DB.
 
 ---
 
-## AC Clear
+## 6. AC Clear
 
 `IO_CLEAR_AC_REQ` requests AC clear at the following TP.
 
@@ -111,7 +111,7 @@ Rules:
 
 ---
 
-## Skip
+## 7. Skip
 
 `IO_SKIP_REQ` is valid only during TS4 and causes `PC_INC` at TP4.
 
@@ -135,7 +135,7 @@ The controller never modifies PC directly.
 
 ---
 
-## Same-TP Semantics
+## 8. Same-TP Semantics
 
 CPU and controller actions committed at the same TP use pre-TP state and commit simultaneously.
 
@@ -143,7 +143,7 @@ A result committed at a TP must not affect another decision or action committed 
 
 ---
 
-## Inactive Controllers
+## 9. Inactive Controllers
 
 A controller that is not selected must:
 
@@ -156,7 +156,7 @@ A controller that is not selected must:
 
 ---
 
-## Related Documents
+## 10. Related Documents
 
 - [I/O Architecture](./01-io-architecture.md)
 - [I/O Timing](./03-io-timing.md)

@@ -1,17 +1,17 @@
 # Architecture
 
-## Purpose
+## 1. Purpose
 Defines the programmer-visible machine model. This includes what software can observe and rely on.
 
 ---
 
-## General System Data Path
+## 2. General System Data Path
 
 ![System Datapaths](../../diagrams/architecture/class-a-buses/export/class-a-buses.png)
 
 ---
 
-## Scope
+## 3. Scope
 Includes:
 - Architectural registers (PC, AC, L, MQ, IF, DF, IE)
 - Memory model and addressing (fields, 12-bit addressing)
@@ -24,13 +24,13 @@ Excludes:
 
 ---
 
-## Model Summary
+## 4. Model Summary
 - All state visible to software is represented as registers.
 - Memory is addressed via fielded 12-bit addressing.
 - Interrupts occur when IE is enabled and /INT_REQ is asserted.
 
 ---
 
-## Related Documents
+## 5. Related Documents
 - [01-registers.md](01-registers.md)
 - [02-dataflow-and-bus-model.md](02-dataflow-and-bus-model.md)

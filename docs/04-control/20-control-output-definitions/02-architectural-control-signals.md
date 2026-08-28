@@ -1,6 +1,6 @@
 # Architectural Control Signals
 
-## Purpose
+## 1. Purpose
 
 Defines all control signals that produce externally observable system behavior.
 
@@ -19,7 +19,7 @@ See:
 
 ---
 
-## 1. Scope
+## 2. Scope
 
 Architectural control signals define **when external subsystems perform actions**.
 
@@ -38,9 +38,9 @@ Bus behavior, ownership, and electrical semantics are defined in:
 
 ---
 
-## 2. Global Properties
+## 3. Global Properties
 
-### 2.1 Polarity
+### 3.1 Polarity
 
 - Signals are active-high internally unless specified otherwise
 - External representation may be active-low
@@ -50,7 +50,7 @@ Defined in:
 
 ---
 
-### 2.2 Timing Model
+### 3.2 Timing Model
 
 All architectural signals are level-based.
 
@@ -64,7 +64,7 @@ Timing definitions:
 
 ---
 
-### 2.3 Completeness Requirement
+### 3.3 Completeness Requirement
 
 For every TS:
 
@@ -73,11 +73,11 @@ For every TS:
 
 ---
 
-## 3. Signal Definitions
+## 4. Signal Definitions
 
 ---
 
-### 3.1 Memory Read (/RD)
+### 4.1 Memory Read (/RD)
 
 **Name**  
 /RD
@@ -113,7 +113,7 @@ When asserted:
 
 ---
 
-### 3.2 Memory Write (/WR)
+### 4.2 Memory Write (/WR)
 
 **Name**  
 /WR
@@ -150,7 +150,7 @@ When asserted:
   
 ---
 
-### 3.3 /DB_READ
+### 4.3 /DB_READ
 
 **Category:** Architectural Control Signal  
 **Description:** Indicates that the CPU is performing an I/O read operation and will sample the System Data Bus (DB) during this time state.
@@ -173,7 +173,7 @@ When asserted:
 
 ---
 
-### 3.4 /DB_WRITE
+### 4.4 /DB_WRITE
 
 **Category:** Architectural Control Signal  
 **Description:** Indicates that the CPU is performing an I/O write operation and will drive the System Data Bus (DB) during this time state.
@@ -196,7 +196,7 @@ When asserted:
 
 ---
 
-### 3.5 /DMA_GRANT
+### 4.5 /DMA_GRANT
 
 **Name** /DMA_GRANT  
 **Polarity** Active-low  
@@ -241,7 +241,7 @@ Controller selection uses the grant identity defined in [DMA Arbitration](../../
 
 ---
 
-### 3.6 I/O Address Bus (IOA[5:0])
+### 4.6 I/O Address Bus (IOA[5:0])
 
 **Name**  
 IOA[5:0]
@@ -282,7 +282,7 @@ Defined in:
 
 ---
 
-### 3.7 I/O Operation Field (`IOP[2:0]`)
+### 4.7 I/O Operation Field (`IOP[2:0]`)
 
 **Name:**  
 IOP[2:0]  
@@ -313,7 +313,7 @@ Presents `IR[2:0]` unchanged to external I/O controllers during an external IOT.
 
 - external I/O controllers
 
-### 3.8 External IOT Active (`IOT_ACTIVE`)
+### 4.8 External IOT Active (`IOT_ACTIVE`)
 
 **Name:**  
 IOT_ACTIVE  
@@ -347,11 +347,11 @@ Identifies execution of an external IOT and qualifies IOA, IOP, controller respo
 
 ---
 
-## 4. Interaction Rules
+## 5. Interaction Rules
 
 ---
 
-### 4.1 Mutual Exclusion
+### 5.1 Mutual Exclusion
 
 The following must never occur:
 
@@ -359,7 +359,7 @@ The following must never occur:
 
 ---
 
-### 4.2 Domain Separation
+### 5.2 Domain Separation
 
 Architectural control signals must not:
 
@@ -374,7 +374,7 @@ They may only:
 
 ---
 
-### 4.3 No Implicit Data Movement
+### 5.3 No Implicit Data Movement
 
 Architectural signals:
 
@@ -391,7 +391,7 @@ Defined in:
 
 ---
 
-### 4.4 Control Responsibility
+### 5.4 Control Responsibility
 
 Control must ensure:
 
@@ -401,13 +401,13 @@ Control must ensure:
 
 ---
 
-### 4.5 Cross-Domain Binding Requirement
+### 5.5 Cross-Domain Binding Requirement
 
 Architectural signals participate in externally visible operations only
 when paired with corresponding μops.
 
 Defined in:
-- [Cross-Domain Operation Binding Rules](../03-control-constraints.md#11-cross-domain-operation-binding-rules)
+- [Cross-Domain Operation Binding Rules](../03-control-constraints.md#12-cross-domain-operation-binding-rules)
 
 This ensures:
 
@@ -416,7 +416,7 @@ This ensures:
 
 ---
 
-## 5. Summary
+## 6. Summary
 
 Architectural control signals define the **external behavior of the CPU**.
 

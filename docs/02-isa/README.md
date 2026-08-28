@@ -1,11 +1,11 @@
 # Instruction Set Architecture
 
-## Purpose
+## 1. Purpose
 Defines instruction semantics independent of execution timing or implementation.
 
 ---
 
-## Scope
+## 2. Scope
 Includes:
 - Instruction classes (MRI, OPR, IOT)
 - Operand and result behavior
@@ -20,7 +20,7 @@ Excludes:
 
 ---
 
-## Model Summary
+## 3. Model Summary
 - Instructions are defined by IR bitfields.
 - Behavior is determined without decoding into symbolic instructions.
 - Skip behavior sets a pending control condition that affects PC update.

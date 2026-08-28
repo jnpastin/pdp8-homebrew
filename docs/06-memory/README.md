@@ -1,6 +1,6 @@
 # Memory
 
-## Purpose
+## 1. Purpose
 
 This section defines the memory subsystem.
 
@@ -8,7 +8,7 @@ The memory subsystem is a bounded storage component that stores 12-bit words and
 
 ---
 
-## Scope
+## 2. Scope
 
 Section 6 defines:
 
@@ -34,7 +34,7 @@ Section 6 does not define:
 
 ---
 
-## Model Summary
+## 3. Model Summary
 
 Memory is addressed through the memory-facing address term MEM_ADDR.
 
@@ -51,7 +51,7 @@ MEM_ADDR describes what memory observes at its interface. It is not a replacemen
 
 ---
 
-## Interface Summary
+## 4. Interface Summary
 
 The memory subsystem interface consists of:
 
@@ -69,7 +69,7 @@ During a write, memory observes MDB.
 
 ---
 
-## Technology Independence
+## 5. Technology Independence
 
 The logical memory model is independent of physical memory technology.
 
@@ -77,7 +77,7 @@ The memory subsystem may be implemented using SRAM, MRAM, FRAM, nvSRAM, battery-
 
 ---
 
-## Contents
+## 6. Contents
 
 - [Memory Model](./01-memory-model.md)
 - [Memory Interface](./02-memory-interface.md)
@@ -89,7 +89,7 @@ The memory subsystem may be implemented using SRAM, MRAM, FRAM, nvSRAM, battery-
 
 ---
 
-## Invariants
+## 7. Invariants
 
 - Memory stores 12-bit words.
 - Memory is addressed through MEM_ADDR.
@@ -104,7 +104,7 @@ The memory subsystem may be implemented using SRAM, MRAM, FRAM, nvSRAM, battery-
 
 ---
 
-## Summary
+## 8. Summary
 
 Section 6 defines memory as a technology-independent storage subsystem.
 

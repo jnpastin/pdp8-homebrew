@@ -1,6 +1,6 @@
 # Group 1 Execution
 
-## Purpose
+## 1. Purpose
   
 Defines execution behavior for OPR Group 1 instructions.
 
@@ -19,7 +19,7 @@ Execution behavior follows:
 
 ---
 
-## Scope
+## 2. Scope
   
 Applies to instructions where:
 
@@ -28,7 +28,7 @@ Applies to instructions where:
 
 ---
 
-## Execution Model
+## 3. Execution Model
   
 Group 1 instructions are defined as a set of independent operations selected directly by IR bits.
 
@@ -43,9 +43,9 @@ All μop selection is derived directly from IR bits.
 
 ---
 
-## Instruction Definition
+## 4. Instruction Definition
 
-### IR[11:9] = 111 (Group 1)
+### 4.1 IR[11:9] = 111 (Group 1)
 
 TS1:
 - if IR[bit(CLA)] = 1: AC_CLEAR  
@@ -67,7 +67,7 @@ TS4:
 
 ---
 
-## Composition Rules
+## 5. Composition Rules
   
 - μops in different TS execute in TS order  
 - μops in the same TS execute concurrently  
@@ -81,7 +81,7 @@ Constraints:
 
 ---
 
-## Notes
+## 6. Notes
   
 - All behavior is expressed strictly in μops  
 - No symbolic instruction interpretation is used  

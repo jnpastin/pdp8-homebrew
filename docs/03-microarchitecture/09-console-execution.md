@@ -1,6 +1,6 @@
 # Console Execution
 
-## Purpose
+## 1. Purpose
 
 This document defines the microarchitectural behavior of console operations and halted execution.
 
@@ -20,7 +20,7 @@ Operator-visible behavior is defined in Section 10.
 
 ---
 
-## Run and Halt Modes
+## 2. Run and Halt Modes
 
 The processor operates in one of two modes:
 
@@ -55,7 +55,7 @@ No registers are modified unless explicitly changed by a console operation.
 
 ---
 
-## Console Operation Execution Model
+## 3. Console Operation Execution Model
 
 While halted, console operation switches invoke bounded microoperation sequences.
 
@@ -101,7 +101,7 @@ CONTINUE
 
 ---
 
-## Halt Requests
+## 4. Halt Requests
 
 The processor does not halt immediately when a halt request is generated.
 
@@ -121,7 +121,7 @@ A halt request remains pending until consumed.
 
 ---
 
-## Console Address Context
+## 5. Console Address Context
 
 Console operations update both:
 
@@ -151,7 +151,7 @@ The PC is loaded via the SR, this is then used to drive MA and EA for EXAM and D
 
 ---
 
-## Load Address Operation
+## 6. Load Address Operation
 
 Load Address sets the front panel execution context by reading IF, DF, and PC from the switches
 
@@ -181,7 +181,7 @@ The processor remains halted.
 
 ---
 
-## Examine Operation
+## 7. Examine Operation
 
 Examine sets the address context from the PC, reads memory, and increments the PC
 
@@ -209,7 +209,7 @@ The processor remains halted.
 
 ---
 
-## Deposit Operation
+## 8. Deposit Operation
 
 Deposit sets the address context from the PC, writes the value of the SR to memory, and increments the PC
 
@@ -220,7 +220,7 @@ PC_TO_MA
 PC_TO_EA_ADDR
 PC_INC
 FP_SR_TO_MB
-MEM_WRITE_FROM_SR
+MEM_WRITE_FROM_FP_SR
 ```
 
 Result:
@@ -236,7 +236,7 @@ PC              ← PC + 1
 
 `FP_SR_TO_MB` exists to update the observable MB state for the front panel.
 
-`MEM_WRITE_FROM_SR` exists to avoid an invalid same-TS dependency on the newly loaded MB value.
+`MEM_WRITE_FROM_FP_SR` exists to avoid an invalid same-TS dependency on the newly loaded MB value.
 
 The memory write and MB update both consume SR as their source, allowing the operation to remain a valid single TS-equivalent console transaction.
 
@@ -246,7 +246,7 @@ The processor remains halted.
 
 ---
 
-## Start Operation
+## 9. Start Operation
 
 Start establishes a known processor execution state.
 
@@ -284,7 +284,7 @@ The processor enters the Running state.
 
 ---
 
-## Continue Operation
+## 10. Continue Operation
 
 Continue resumes execution from the preserved processor state.
 
@@ -315,7 +315,7 @@ TS
 
 ---
 
-## Single Instruction Mode
+## 11. Single Instruction Mode
 
 Single Instruction is an execution mode.
 
@@ -349,7 +349,7 @@ It only changes when execution halts.
 
 ---
 
-## Single Step Mode
+## 12. Single Step Mode
 
 Single Step is an execution mode.
 
@@ -403,7 +403,7 @@ CONTINUE
 
 ---
 
-## Timing Relationships
+## 13. Timing Relationships
 
 Console operation switches execute as single TS-equivalent transactions while halted.
 

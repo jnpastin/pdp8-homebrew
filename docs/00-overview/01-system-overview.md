@@ -1,6 +1,6 @@
 # System Overview
 
-## Objective
+## 1. Objective
 
 The goal of this project is to design and build a homebrew computer using discrete logic that is compatible with the PDP-8/e architecture.
 
@@ -9,7 +9,7 @@ Primary target:
 
 ---
 
-## Key Features
+## 2. Key Features
 
 - 12-bit architecture
 - PDP-8/e instruction set compatibility
@@ -20,24 +20,24 @@ Primary target:
 
 ---
 
-## Compatibility Goals
+## 3. Compatibility Goals
 
 The system aims to achieve:
 
-### Required
+### 3.1 Required
 - Correct execution of PDP-8 instructions
 - Compatible instruction encodings
 - Functional support for OS/8
 - DMA
 
-### Not Required (initially)
+### 3.2 Not Required (initially)
 - Full DEC hardware replication
 - Timesharing support (UF not implemented initially)
 
 
 ---
 
-## System Components (Planned)
+## 4. System Components (Planned)
 
 - CPU (may span multiple boards)
 - Memory subsystem (SRAM)
@@ -47,7 +47,7 @@ The system aims to achieve:
 
 ---
 
-### Control Implementation
+### 4.1 Control Implementation
 
 The system uses a ROM-based control store.
 
@@ -65,7 +65,7 @@ All instruction execution behavior is defined by ROM entries.
 
 ---
 
-## Current Status
+## 5. Current Status
 
 Completed:
 - Repository and documentation structure
@@ -85,7 +85,7 @@ Not yet defined:
 
 ---
 
-## Known Gaps
+## 6. Known Gaps
 
 The following areas must be defined before hardware design begins:
 
@@ -94,7 +94,7 @@ The following areas must be defined before hardware design begins:
 
 ---
 
-## Risks
+## 7. Risks
 
 - Control complexity may increase significantly depending on implementation choice
 - Subtle behavioral mismatches (skip, interrupt, indirect addressing) may break OS/8
@@ -102,7 +102,7 @@ The following areas must be defined before hardware design begins:
 
 ---
 
-## Notes
+## 8. Notes
 
 This document describes intent and direction, not final design decisions.
 

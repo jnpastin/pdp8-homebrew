@@ -1,6 +1,6 @@
 # Class C - Timing Signals
 
-## Purpose
+## 1. Purpose
 
 This document defines Class C signals and their organization within the system.
 
@@ -25,7 +25,7 @@ Authoritative timing definitions are maintained in Section 9.
 
 ---
 
-## Overview
+## 2. Overview
 
 Class C signals define the timing structure used by the system.
 
@@ -39,10 +39,10 @@ Class C signals do not directly define processor behavior.
 
 ---
 
-## Distribution Scope
+## 3. Distribution Scope
 Class C signals have two distribution scopes.
 
-### CPU-Local Timing Signals
+### 3.1 CPU-Local Timing Signals
 
 The following signals remain within the CPU timing-generation and timing-distribution subsystem:
 
@@ -58,7 +58,7 @@ These signals:
 
 Physical distribution of Class C signals is implementation-dependent.
 
-### Architecturally Distributed Timing Signals
+### 3.2 Architecturally Distributed Timing Signals
 
 The following signals are distributed to external I/O controllers:
 
@@ -73,14 +73,14 @@ These signals:
 Physical buffering, loading, and distribution are implementation-dependent.
 ---
 
-## Signal Categories
+## 4. Signal Categories
 
 Authoritative definitions are maintained in:
 
 - [Timing Terminology](../09-timing/01-terminology.md)
 - [Timing Architecture](../09-timing/02-timing-architecture.md)
 
-### Clock Signals
+### 4.1 Clock Signals
 
 Clock signals provide the timing source used by the timing system.
 
@@ -89,7 +89,7 @@ Signals:
 - MCLK
 - TCLK
 
-### Timing Sequence Signals
+### 4.2 Timing Sequence Signals
 
 Timing sequence signals define progression through the timing system.
 
@@ -98,7 +98,7 @@ Signals:
 - TSTEP
 - TSEQ
 
-### Timing Execution Signals
+### 4.3 Timing Execution Signals
 
 Timing execution signals define execution windows and execution events.
 
@@ -109,7 +109,7 @@ Signals:
 
 ---
 
-## Relationship to Control
+## 5. Relationship to Control
 
 Class C signals define timing structure.
 
@@ -128,7 +128,7 @@ Authoritative definitions are maintained in:
 
 ---
 
-## Global Invariants
+## 6. Global Invariants
 
 - MCLK, TCLK, TSTEP, and TSEQ are CPU-local unless another architectural interface explicitly requires them.
 - MCLK, TCLK, TSTEP, and TSEQ must not be relied upon by independent modules.
@@ -139,7 +139,9 @@ Authoritative definitions are maintained in:
 - Timing behavior is defined by Section 9.
 - Execution behavior is defined by the control system.
 - Major State is part of the control architecture and is not a Class C signal.
- 
-### Summary
+
+---
+
+## 7. Summary
  
 Class C signals define the timing framework of the system. MCLK, TCLK, TSTEP, and TSEQ remain CPU-local, while TS and TP are architecturally distributed to external I/O controllers. Timing definitions, behavior, and architecture are defined in Section 9 and the applicable external interface contracts.

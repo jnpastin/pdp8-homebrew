@@ -1,6 +1,6 @@
 # Class B - Global Control Signals
 
-## Purpose
+## 1. Purpose
 
 This document defines Class B signals and their organization within the system.
 
@@ -25,7 +25,7 @@ Authoritative signal classifications, constraints, and definitions are maintaine
 
 ---
 
-## Overview
+## 2. Overview
 
 Class B signals communicate control information.
 
@@ -41,9 +41,9 @@ Unlike Class A buses, Class B signals represent control information rather than 
 
 ---
 
-## Distribution Scope
+## 3. Distribution Scope
 
-### CPU-Local
+### 3.1 CPU-Local
 
 CPU-local signals exist entirely within the CPU implementation.
 
@@ -57,7 +57,7 @@ CPU-local classifications are defined in:
 - [Output - Microarchitecture](../04-control/20-control-output-definitions/01-microarchitectural-control-signals.md)
 - [Output - Sequencing](../04-control/20-control-output-definitions/03-sequencing-control-signals.md)
 
-### System-Distributed
+### 3.2 System-Distributed
 
 System-distributed signals are visible outside the CPU boundary.
 
@@ -70,7 +70,7 @@ System-distributed classifications are defined in:
 
 ---
 
-## Input Organization
+## 4. Input Organization
 
 Control inputs are organized into four domains:
 
@@ -81,7 +81,7 @@ Control inputs are organized into four domains:
 
 ---
 
-## Output Organization
+## 5. Output Organization
 
 Control outputs are organized into three domains:
 
@@ -92,15 +92,15 @@ Control outputs are organized into three domains:
 
 ---
 
-## Width Classification
+## 6. Width Classification
 
-### Single-Bit Signals
+### 6.1 Single-Bit Signals
 
 Single-bit Class B signals represent a binary control condition.
 
 Single-bit signals may be either CPU-local or system-distributed.
 
-### Multi-Bit Signals
+### 6.2 Multi-Bit Signals
 
 Multi-bit Class B signals represent encoded control information.
 
@@ -108,17 +108,17 @@ Multi-bit signals may be either CPU-local or system-distributed.
 
 ---
 
-### I/O Address Field (IOA)
+### 6.3 I/O Address Field (IOA)
 
-#### Definition
+#### 6.3.1 Definition
 
 The I/O Address Field (IOA) is a CPU-generated control field used to identify the target I/O device during an I/O operation.
 
-#### Width
+#### 6.3.2 Width
 
 - 6 bits
 
-#### Characteristics
+#### 6.3.3 Characteristics
 
 IOA:
 
@@ -129,13 +129,13 @@ IOA:
 - is not a shared transport bus
 - is not a transport domain
 
-#### Purpose
+#### 6.3.4 Purpose
 
 IOA carries device-selection information used by I/O operations.
 
 The interpretation of IOA values is defined by the addressed device and the active I/O operation.
 
-#### Relationship to Control
+#### 6.3.5 Relationship to Control
 
 IOA generation and usage are defined by the control architecture.
 
@@ -147,9 +147,9 @@ Authoritative definitions are maintained in:
 
 ---
 
-### External IOT Interface Signals
+### 6.4 External IOT Interface Signals
 
-#### CPU to Controllers
+#### 6.4.1 CPU to Controllers
 
 - `IOT_ACTIVE`
 - `IOA[5:0]`
@@ -159,7 +159,7 @@ Authoritative definitions are maintained in:
 - TS signals
 - TP signals
 
-#### Selected Controller to CPU
+#### 6.4.2 Selected Controller to CPU
 
 - `IO_READ_REQ`
 - `IO_WRITE_REQ`
@@ -167,9 +167,9 @@ Authoritative definitions are maintained in:
 - `IO_CLEAR_AC_REQ`
 - `/IO_WAIT`
 
-### DMA Arbitration Signals
+### 6.5 DMA Arbitration Signals
 
-#### DMA Controllers to Arbiter
+#### 6.5.1 DMA Controllers to Arbiter
 
 - /DMA_REQ[14:0]
 
@@ -178,17 +178,17 @@ Each DMA-capable controller asserts exactly one request line corresponding to it
 Valid configured DMA priorities are 0 through 14.  
 DMA priority 15 is reserved as the no-controller-selected encoding and has no corresponding /DMA_REQ line.
 
-#### DMA Arbiter to Aggregation Logic
+#### 6.5.2 DMA Arbiter to Aggregation Logic
 
 - `DMA_ENABLE`
 
-#### DMA Aggregation Logic to CPU
+#### 6.5.3 DMA Aggregation Logic to CPU
 
 - aggregate `/DMA_REQ`
 
 Aggregate `/DMA_REQ` is continuously derived from `DMA_ENABLE` and `/DMA_REQ[14:0]`. It must settle before CPU control samples it at TP4.
 
-#### CPU to DMA Arbiter and Controllers
+#### 6.5.4 CPU to DMA Arbiter and Controllers
 
 - `MS[2:0]`
 - `/DMA_GRANT`
@@ -203,7 +203,7 @@ MS provides the current CPU major-state context. The DMA arbiter uses `MS = EXEC
 
 /DMA_GRANT does not identify a selected controller.
 
-#### DMA Arbiter to Controllers
+#### 6.5.5 DMA Arbiter to Controllers
 
 - DMA_GRANT_ID[3:0]
 
@@ -211,7 +211,7 @@ DMA_GRANT_ID identifies the DMA priority channel selected by the arbiter.
 DMA_GRANT_ID values 0 through 14 identify valid DMA priority channels.  
 DMA_GRANT_ID value 15 indicates that no controller is selected.
 
-### Signal Responsibilities
+### 6.6 Signal Responsibilities
 
 - IOA, IOP, IOT_ACTIVE, /DB_READ, and /DB_WRITE are CPU outputs during external-IOT execution.
 - IO_READ_REQ, IO_WRITE_REQ, IO_SKIP_REQ, IO_CLEAR_AC_REQ, and /IO_WAIT are selected-controller outputs and CPU inputs.
@@ -236,7 +236,7 @@ Detailed DMA arbitration is defined in [DMA Arbitration](../07-io/06-dma-arbitra
 
 ---
 
-## Relationship to Other Signal Classes
+## 7. Relationship to Other Signal Classes
 
 Class A signals provide address and data transport.
 
@@ -244,7 +244,7 @@ Class B signals provide control information.
 
 ---
 
-## Summary
+## 8. Summary
 
 Class B signals comprise the complete control-signal infrastructure of the system.
 

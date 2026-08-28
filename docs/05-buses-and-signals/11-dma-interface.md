@@ -1,6 +1,6 @@
 # DMA Interface
 
-## Purpose
+## 1. Purpose
 
 This document defines the architectural signals used for DMA communication among DMA-capable controllers, the external DMA arbiter, CPU control, and memory.
 
@@ -11,7 +11,7 @@ DMA arbitration and transfer sequencing are defined in:
 
 ---
 
-## Participants
+## 2. Participants
 
 DMA operations involve:
 
@@ -30,7 +30,7 @@ The arbiter uses this timing context to update its internal arbitration state. O
 
 ---
 
-## Request Interface
+## 3. Request Interface
 
 DMA-capable controllers request service through /DMA_REQ[14:0].  
 The request interface provides 15 configurable DMA priority-channel request lines.  
@@ -57,7 +57,7 @@ The aggregate request identifies only that DMA service is eligible and pending. 
 
 ---
 
-## CPU Authorization
+## 4. CPU Authorization
 
 CPU control asserts /DMA_GRANT.  
 /DMA_GRANT indicates that the CPU is in MS = DMA and has released CPU ownership of the memory interface.  
@@ -66,7 +66,7 @@ CPU control asserts /DMA_GRANT.
 
 ---
 
-## Controller Selection
+## 5. Controller Selection
 
 The DMA arbiter presents DMA_GRANT_ID[3:0].
 
@@ -90,7 +90,7 @@ Exactly one controller may accept a valid controller selection.
 
 ---
 
-## Transport Participation
+## 6. Transport Participation
 
 The granted DMA controller supplies:
 
@@ -103,7 +103,7 @@ Memory supplies MDB for a DMA read from memory.
 
 ---
 
-## Memory Read
+## 7. Memory Read
 
 A DMA memory read transfers data from memory to the granted controller.
 
@@ -121,7 +121,7 @@ The granted controller captures MDB at TP2.
 
 ---
 
-## Memory Write
+## 8. Memory Write
 
 A DMA memory write transfers data from the granted controller to memory.
 
@@ -137,7 +137,7 @@ Memory captures MDB at TP2.
 
 ---
 
-## Ownership
+## 9. Ownership
 
 During DMA ownership:
 
@@ -149,7 +149,7 @@ During DMA ownership:
 
 ---
 
-## Arbitration Boundary
+## 10. Arbitration Boundary
 
 The CPU does not select among DMA-capable controllers.
 
@@ -159,7 +159,7 @@ Requester selection, fixed priority, bounded bursts, grant identity, CPU fairnes
 
 ---
 
-## Related Documents
+## 11. Related Documents
 
 - [Bus Ownership Matrix](./08-ownership-matrix.md)
 - [Domain Boundaries](./07-domain-boundaries.md)

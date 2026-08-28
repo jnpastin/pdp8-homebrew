@@ -3,7 +3,7 @@
 Reference Diagram:
 ![High-Level Architecture Diagram](../../diagrams/architecture/High-Level-Architecture/export/High-Level-Architecture.png)
 
-## Purpose
+## 1. Purpose
 
 Defines how ISA behavior is executed over time using the system’s timing and control model.
 
@@ -16,7 +16,7 @@ It describes how behavior occurs, not what the behavior is.
 
 ---
 
-## Scope
+## 2. Scope
 
 Includes:
 - Execution over microstates (MS, TS)
@@ -31,13 +31,13 @@ Excludes:
 
 ---
 
-## General CPU Microarchitecture
+## 3. General CPU Microarchitecture
 
 ![CPU Microarchitecture](../../diagrams/microarchitecture/cpu-architecture/export/CPU_Architecture.png)
 
 ---
 
-## Execution Model
+## 4. Execution Model
 
 ustate = (MS, TS)
 
@@ -55,7 +55,7 @@ Microarchitecture operates directly on EA_addr and selects EA_fld via IF/DF cont
 
 ---
 
-## Relationship to ISA
+## 5. Relationship to ISA
 
 ISA defines the interface that the programmer uses to produce behavior.
 
@@ -66,7 +66,7 @@ Microarchitecture defines how ISA is translated into control mechanisms
 
 ---
 
-## Relationship to Control
+## 6. Relationship to Control
 
 Control defines the mechanism that produces behavior.
 
@@ -77,7 +77,7 @@ Microarchitecture defines how ISA behavior maps to sequences of control actions.
 
 ---
 
-## Relationship to Timing
+## 7. Relationship to Timing
 
 Timing defines when events occur.
 
@@ -88,7 +88,7 @@ Microarchitecture binds control behavior to timing structure.
 
 ---
 
-## Design Constraints
+## 8. Design Constraints
 
 - Behavior must be expressible as:
   (MS, TS, IR_FIELDS, FLAGS, EXT) → CONTROL
@@ -97,6 +97,6 @@ Microarchitecture binds control behavior to timing structure.
 
 ---
 
-## Summary
+## 9. Summary
 
 Microarchitecture defines structured execution as microstate sequences driven by control.

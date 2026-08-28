@@ -1,10 +1,10 @@
 # Controller Contract
 
-## Purpose
+## 1. Purpose
 
 This document defines the obligations common to all external I/O controllers.
 
-### Address Configuration
+### 1.1 Address Configuration
 
 Each controller must provide one active configured IOA address for each device interface it implements.  
 
@@ -14,7 +14,7 @@ A DEC-compatible controller must default each device interface to the correspond
 
 ---
 
-## Selection Qualification
+## 2. Selection Qualification
 
 Every controller action caused by an external IOT must be qualified by:
 
@@ -29,7 +29,7 @@ A controller must not act on incidental IOA, IOP, TS, or TP values outside a sel
 
 ---
 
-## Response Qualification
+## 3. Response Qualification
 
 The controller may assert:
 
@@ -43,7 +43,7 @@ Each assertion must satisfy the definitions in [External IOT Interface](./02-ext
 
 ---
 
-## DB Ownership
+## 4. DB Ownership
 
 For a read:
 
@@ -60,7 +60,7 @@ A controller must never drive DB while unselected.
 
 ---
 
-## Controller-Local State
+## 5. Controller-Local State
 
 Controller-local state changes:
 
@@ -73,7 +73,7 @@ Controller-local state changes:
 
 ---
 
-## Skip Condition
+## 6. Skip Condition
 
 A controller requesting skip during TS4 must derive `IO_SKIP_REQ` from:
 
@@ -90,7 +90,7 @@ The controller does not perform or control the resulting CPU state change beyond
 
 ---
 
-## I/O Wait
+## 7. I/O Wait
 
 A controller may assert `/IO_WAIT` only:
 
@@ -103,7 +103,7 @@ The controller must deassert `/IO_WAIT` when the pending operation is ready to p
 
 ---
 
-## Persistent Service Requests
+## 8. Persistent Service Requests
 
 Controller interrupt contributions and `/DMA_REQ[n]` are persistent registered request signals.
 
@@ -116,7 +116,7 @@ Rules:
 - A persistent request may remain asserted across multiple TS, TP, instruction, and major-state boundaries.
 - A controller must not generate a transient request pulse that could disappear before the receiving subsystem samples it.
 
-### Interrupt Contribution
+### 8.1 Interrupt Contribution
 
 A controller interrupt contribution remains asserted while:
 
@@ -136,7 +136,7 @@ The controller-specific contract defines:
 
 The shared `/INT_REQ` signal is the aggregate of all controller interrupt contributions.
 
-### DMA Request
+### 8.2 DMA Request
 
 A DMA-capable controller asserts exactly one configured /DMA_REQ[n] while DMA service remains pending, where n is in the range 0 through 14.  
 DMA priority 15 is reserved as the no-controller-selected encoding and has no corresponding /DMA_REQ line.
@@ -169,7 +169,7 @@ Separate combinational aggregation logic continuously derives aggregate CPU-faci
 
 The controller does not generate aggregate `/DMA_REQ`.
 
-### Receiving-Side Synchronization
+### 8.3 Receiving-Side Synchronization
 
 Controller interrupt contributions and `/DMA_REQ[n]` are registered controller outputs.
 
@@ -181,7 +181,7 @@ Aggregate `/DMA_REQ` is a combinational CPU input derived from `DMA_ENABLE` and 
 
 ---
 
-## DMA-Capable Controllers
+## 9. DMA-Capable Controllers
 
 A DMA-capable controller additionally must:
 
@@ -202,7 +202,7 @@ A DMA-capable controller additionally must:
 
 ---
 
-## Physical Implementation Boundary
+## 10. Physical Implementation Boundary
 
 The following are outside this architectural contract:
 
@@ -215,7 +215,7 @@ The following are outside this architectural contract:
 
 ---
 
-## Asynchronous Event Boundary
+## 11. Asynchronous Event Boundary
 
 Physical-device events may occur asynchronously relative to system timing.
 

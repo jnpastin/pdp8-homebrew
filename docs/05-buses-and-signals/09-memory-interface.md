@@ -1,6 +1,6 @@
 # Memory Interface
 
-## Purpose
+## 1. Purpose
 
 This document defines the architectural interface used for memory communication.
 
@@ -34,7 +34,7 @@ DMA-specific behavior is defined in:
 
 ---
 
-## Memory Interface Participants
+## 2. Memory Interface Participants
 
 Memory communication involves:
 
@@ -45,7 +45,7 @@ Memory communication involves:
 - /RD
 - /WR
 
-### Address Domain
+### 2.1 Address Domain
 
 The Address Domain provides the address associated with a memory operation.
 
@@ -53,7 +53,7 @@ This domain is represented by:
 
 - AB
 
-### Memory Data Domain
+### 2.2 Memory Data Domain
 
 The Memory Data Domain provides the data associated with a memory operation.
 
@@ -61,7 +61,7 @@ This domain is represented by:
 
 - MDB
 
-### Control Interface
+### 2.3 Control Interface
 
 Memory operations are identified by:
 
@@ -75,18 +75,18 @@ Control behavior is defined in:
 
 ---
 
-## Memory Read Model
+## 3. Memory Read Model
 
 A memory read transfers data from memory to the CPU.
 
-### Address Domain Participation
+### 3.1 Address Domain Participation
 
 During a memory read:
 - The CPU drives AB from MA.
 - The CPU drives MFB from EA_FIELD (IF or DF per MFB_SRC).
 - AB and MFB together carry the physical address to memory.
 
-### Memory Data Domain Participation
+### 3.2 Memory Data Domain Participation
 
 During a memory read:
 
@@ -95,7 +95,7 @@ During a memory read:
 
 MDB transports the value read from memory.
 
-### Control Participation
+### 3.3 Control Participation
 
 /RD identifies the operation as a memory read.
 
@@ -103,18 +103,18 @@ Control behavior and timing are defined elsewhere.
 
 ---
 
-## Memory Write Model
+## 4. Memory Write Model
 
 A memory write transfers data from the CPU to memory.
 
-### Address Domain Participation
+### 4.1 Address Domain Participation
 
 During a memory write:
 - The CPU drives AB from MA.
 - The CPU drives MFB from EA_FIELD (IF or DF per MFB_SRC).
 - AB and MFB together carry the physical address to memory.
 
-### Memory Data Domain Participation
+### 4.2 Memory Data Domain Participation
 
 During a memory write:
 
@@ -135,7 +135,7 @@ Authoritative source-selection behavior is defined in:
 - [Control Model](../04-control/01-control-model.md)
 - [Microarchitectural Control Signals](../04-control/20-control-output-definitions/01-microarchitectural-control-signals.md)
 
-### Control Participation
+### 4.3 Control Participation
 
 /WR identifies the operation as a memory write.
 
@@ -143,7 +143,7 @@ Control behavior and timing are defined elsewhere.
 
 ---
 
-## Domain Participation
+## 5. Domain Participation
 
 Memory operations use:
 
@@ -156,7 +156,7 @@ Domain definitions and isolation requirements are defined in:
 
 ---
 
-## Global Invariants
+## 6. Global Invariants
 - AB participates in all memory operations.
 - MFB participates in all memory operations.
 - MDB participates in all memory operations.
@@ -171,7 +171,7 @@ Domain definitions and isolation requirements are defined in:
 
 ---
 
-## Summary
+## 7. Summary
 
 The memory interface uses AB for address transport and MDB for data transport.
 

@@ -1,6 +1,6 @@
 # IOT Execution
 
-## Purpose
+## 1. Purpose
   
 Defines execution behavior for I/O Transfer Instructions (IOT) during the EXECUTE major state.
 
@@ -17,7 +17,7 @@ All shared execution semantics are defined in:
 
 ---
 
-## Scope
+## 2. Scope
   
 Applies to instructions where:
 
@@ -25,7 +25,7 @@ IR[11:9] = 110
 
 ---
 
-## External IOT Execution Model
+## 3. External IOT Execution Model
 
 External IOT execution uses:
 
@@ -48,7 +48,7 @@ The CPU remains responsible for all CPU-local state changes. A controller respon
 
 ---
 
-## Data Ingestion Rule
+## 4. Data Ingestion Rule
 
 Device-to-CPU data transfer uses `DB_READ_TO_AC`:
 
@@ -60,7 +60,7 @@ No direct DB transfer to another CPU register is defined.
 
 ---
 
-## Pending Transfer State
+## 5. Pending Transfer State
 
 `IOT_TRANSFER` preserves an accepted DB transfer request for execution during the immediately following TS.
 
@@ -108,7 +108,7 @@ The active transfer depends on committed `IOT_TRANSFER` state, not directly on t
 
 ---
 
-## IOA and IOP Handling
+## 6. IOA and IOP Handling
 
 IOA and IOP are derived directly from IR.
 
@@ -130,9 +130,9 @@ Constraints:
 
 ---
 
-## External IOT Phase Binding
+## 7. External IOT Phase Binding
 
-The phase-by-phase external-IOT schedule is defined in [Major State Timing](../09-timing/03-major-state-timing.md#execute-external-iot)
+The phase-by-phase external-IOT schedule is defined in [Major State Timing](../09-timing/03-major-state-timing.md#52-execute-external-iot)
 
 This document defines the microarchitectural operations that occur within that timing schedule:
 
@@ -149,7 +149,7 @@ The timing document defines when requests may be asserted, accepted, transferred
 
 ---
 
-## Response Constraints
+## 8. Response Constraints
 
 - `IO_READ_REQ` and `IO_WRITE_REQ` are mutually exclusive.
 - Read and AC clear must not commit at the same TP.
@@ -165,11 +165,11 @@ Timing behavior is defined in [I/O Timing](../07-io/03-io-timing.md)
 
 ---
 
-## Instruction Definitions (CPU Control - Device 0)
+## 9. Instruction Definitions (CPU Control - Device 0)
 
 ---
 
-### IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 010
+### 9.1 IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 010
 
 **Mnemonic (non-normative):** IOF
 
@@ -187,7 +187,7 @@ TS4:
 
 ---
 
-### IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 001
+### 9.2 IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 001
 
 **Mnemonic (non-normative):** ION
 
@@ -210,7 +210,7 @@ Description:
 
 ---
 
-### IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 000
+### 9.3 IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 000
 
 **Mnemonic (non-normative):** SKON
 
@@ -234,7 +234,7 @@ Description:
 
 ---
 
-### IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 011
+### 9.4 IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 011
 
 **Mnemonic (non-normative):** SRQ
 
@@ -257,11 +257,11 @@ Description:
 
 ---
 
-## Instruction Definitions (Memory Extension Control - Devices 20-27)
+## 10. Instruction Definitions (Memory Extension Control - Devices 20-27)
 
 ---
 
-### IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2] = 0 AND IR[0] = 1
+### 10.1 IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2] = 0 AND IR[0] = 1
 
 **Mnemonic (non-normative):** CDF
 
@@ -286,7 +286,7 @@ Description:
 
 ---
 
-### IR[11:9] = 110 AND IOA = 2n AND IR[2] = 0 AND IR[1] = 1
+### 10.2 IR[11:9] = 110 AND IOA = 2n AND IR[2] = 0 AND IR[1] = 1
   
 **Mnemonic (non-normative):** CIF  
 
@@ -313,7 +313,7 @@ Description:
 
 ---
 
-### IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 001
+### 10.3 IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 001
 
 **Mnemonic (non-normative):** RDF
 
@@ -334,7 +334,7 @@ Description:
 
 ---
 
-### IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 010
+### 10.4 IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 010
 
 **Mnemonic (non-normative):** RIF
 
@@ -355,7 +355,7 @@ Description:
 
 ---
 
-### IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 011
+### 10.5 IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 011
 
 **Mnemonic (non-normative):** RIB
 
@@ -376,7 +376,7 @@ Description:
 
 ---
 
-### IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 100
+### 10.6 IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 100
 
 **Mnemonic (non-normative):** RMF
 
@@ -398,7 +398,7 @@ Description:
 
 ---
 
-## Notes
+## 11. Notes
   
 - DB direction (CPU → device or device → CPU) is device-defined
 - No CPU-visible μops are required unless a device operation transfers data into CPU registers

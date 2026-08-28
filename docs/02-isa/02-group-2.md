@@ -4,7 +4,7 @@ Group 2 is divided into two sub-groups, the AND sub-group and the OR sub-group. 
 
 ---
 
-## AND Sub-Group Definition and Timing
+## 1. AND Sub-Group Definition and Timing
 ```
 ┌────┬────┬─────┬────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
 │ 11 │ 10 │  9  │ 8  │  7  │  6  │  5  │  4  │  3  │  2  │  1  │  0  │
@@ -17,7 +17,7 @@ Group 2 is divided into two sub-groups, the AND sub-group and the OR sub-group. 
 
 ---
 
-## Flag Definition and Timing
+## 2. Flag Definition and Timing
 
 | Mnemonic | TP | Operation |
 |---|---|---|
@@ -30,13 +30,13 @@ Group 2 is divided into two sub-groups, the AND sub-group and the OR sub-group. 
 
 ---
 
-## Combining AND Sub-Group operations
+## 3. Combining AND Sub-Group operations
 
 All operations that happen at TP1 are evaluated as if the conditions are a logical AND.  For example, `SPA SNA` will skip if the AC is non-negative AND non-zero.  Similar to Group 1, combined operations that happen at different TPs will happen in that order (`SNA HLT` will skip if AC is non-zero, updating the PC then halting).
 
 ---
 
-## OR Sub-Group Definition and Timing
+## 4. OR Sub-Group Definition and Timing
 ```
 ┌────┬────┬─────┬────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
 │ 11 │ 10 │  9  │ 8  │  7  │  6  │  5  │  4  │  3  │  2  │  1  │  0  │
@@ -49,7 +49,7 @@ All operations that happen at TP1 are evaluated as if the conditions are a logic
 
 ---
 
-## Flag Definition and Timing
+## 5. Flag Definition and Timing
 
 | Mnemonic | TP | Operation |
 |---|---|---|
@@ -62,12 +62,12 @@ All operations that happen at TP1 are evaluated as if the conditions are a logic
 
 ---
 
-## SKP - Unconditional Skip
+## 6. SKP - Unconditional Skip
 
 SKP (7410) is the AND sub-group with no skip predicates selected (SPA = SNA = SZL = 0). The AND of an empty predicate set is vacuously true, so SKP always skips. The skip is realized as PC_INC at TP1, identical in timing to the predicate skips. SKP may be combined with CLA, OSR, and HLT, which execute at their own TPs.
 
 ---
 
-## Combining OR Sub-Group operations
+## 7. Combining OR Sub-Group operations
 
 All operations that happen at TP1 are evaluated as if the conditions are a logical OR.  For example, `SMA SZA` will skip if the AC is negative OR zero.  Similar to Group 1, combined operations that happen at different TPs will happen in that order (`SZA HLT` will skip if AC is zero, updating the PC then halting).
