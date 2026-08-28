@@ -153,7 +153,7 @@ When asserted:
 ### 4.3 /DB_READ
 
 **Category:** Architectural Control Signal  
-**Description:** Indicates that the CPU is performing an I/O read operation and will sample the System Data Bus (DB) during this time state.
+**Description:** Indicates that the CPU is performing an I/O read operation and will sample the System Data Bus (DB) during this timing state.
 
 **Polarity:** Active-low (/DB_READ)
 
@@ -176,7 +176,7 @@ When asserted:
 ### 4.4 /DB_WRITE
 
 **Category:** Architectural Control Signal  
-**Description:** Indicates that the CPU is performing an I/O write operation and will drive the System Data Bus (DB) during this time state.
+**Description:** Indicates that the CPU is performing an I/O write operation and will drive the System Data Bus (DB) during this timing state.
 
 **Polarity:** Active-low (/DB_WRITE)
 

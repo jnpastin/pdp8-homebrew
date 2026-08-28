@@ -99,11 +99,11 @@ All state changes are triggered by TP.
 
 ---
 
-## 5. Time States (TS)
+## 5. Timing States (TS)
 
 ### 5.1 Definition
 
-Time States represent execution phases:
+Timing States represent execution phases:
 
 TS1, TS2, TS3, TS4
 

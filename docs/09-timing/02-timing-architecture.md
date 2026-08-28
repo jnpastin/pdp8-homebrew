@@ -18,7 +18,7 @@ The CPU timing model is illustrated in the following diagram:
 ![alt text](../../diagrams/timing/cpu-timing/export/cpu-timing-overview.png "CPU Timing Diagram")
 
 This diagram represents the canonical timing structure:
-- Time States (TS) define phase windows
+- Timing States (TS) define phase windows
 - Timing Pulses (TP) define execution events
 - All actions occur at TP events
 
@@ -72,11 +72,11 @@ TP is:
 
 ---
 
-## 5. Time States
+## 5. Timing States
 
 ### 5.1 Structure
 
-Time States are defined as ranges of timing steps:
+Timing States are defined as ranges of timing steps:
 
 TS1 = TSTEP range  
 TS2 = TSTEP range  

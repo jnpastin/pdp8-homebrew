@@ -15,7 +15,7 @@ It serves as the authoritative source for:
 - `00-overview` - High-level system overview and goals
 - `01-architecture` - Programmer-visible machine model
 - `02-isa` - Instruction set architecture
-- `03-microarchitecture` - Execution model and microoperations
+- `03-microarchitecture` - Execution model and micro-operations
 - `04-control` - Control signals and state behavior
 - `05-buses-and-signals` - Bus definitions and signal lists
 - `06-memory` - Memory architecture and access model

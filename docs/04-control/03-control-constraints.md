@@ -202,7 +202,7 @@ Constraint:
 - MS_NEXT, RUN_NEXT and HLT_REQ_NEXT must not be computed outside the control store.
 
 Constraint:
-- RUN and HALT_REQ must not be modified outside defined sequencing state updates.
+- RUN and HLT_REQ must not be modified outside defined sequencing state updates.
 
 Constraint:
 - TS progression must be deterministic and independent of datapath signals.

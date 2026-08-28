@@ -12,7 +12,7 @@ It describes:
 - Single Instruction behavior
 - Single Step behavior
 - Timing relationships
-- Microoperation sequences invoked by console controls
+- Micro-operation sequences invoked by console controls
 
 Control implementation details are defined in Section 4.
 
@@ -57,7 +57,7 @@ No registers are modified unless explicitly changed by a console operation.
 
 ## 3. Console Operation Execution Model
 
-While halted, console operation switches invoke bounded microoperation sequences.
+While halted, console operation switches invoke bounded micro-operation sequences.
 
 Console operations are not executed through the normal instruction sequencing mechanism.
 
@@ -155,7 +155,7 @@ The PC is loaded via FP_SR, this is then used to drive MA and EA for EXAM and DE
 
 Load Address sets the front panel execution context by reading IF, DF, and PC from the switches
 
-Microoperation sequence:
+Micro-operation sequence:
 
 ```text
 CIFP_CLEAR
@@ -185,7 +185,7 @@ The processor remains halted.
 
 Examine sets the address context from the PC, reads memory, and increments the PC
 
-Microoperation sequence:
+Micro-operation sequence:
 
 ```text
 PC_TO_MA
@@ -203,7 +203,7 @@ MB      ← Memory[IF:PC]
 PC      ← PC + 1
 ```
 
-The memory read drives AB from PC and MFB from IF, not MA or EA. This allows all microoperations to occur simultaneously within a single TS. AB_SRC = PC and MFB_SRC = IF, while normal memory operations select AB_SRC and MFB_SRC per the active phase.
+The memory read drives AB from PC and MFB from IF, not MA or EA. This allows all micro-operations to occur simultaneously within a single TS. AB_SRC = PC and MFB_SRC = IF, while normal memory operations select AB_SRC and MFB_SRC per the active phase.
 
 The processor remains halted.
 
@@ -213,7 +213,7 @@ The processor remains halted.
 
 Deposit sets the address context from the PC, writes the value of FP_SR to memory, and increments the PC
 
-Microoperation sequence:
+Micro-operation sequence:
 
 ```text
 PC_TO_MA
@@ -240,7 +240,7 @@ PC              ← PC + 1
 
 The memory write and MB update both consume FP_SR as their source, allowing the operation to remain a valid single TS-equivalent console transaction.
 
-The memory write drives AB from PC and MFB from IF, not MA or EA. This allows all microoperations to occur simultaneously within a single TS. AB_SRC = PC and MFB_SRC = IF, while normal memory operations select AB_SRC and MFB_SRC per the active phase.
+The memory write drives AB from PC and MFB from IF, not MA or EA. This allows all micro-operations to occur simultaneously within a single TS. AB_SRC = PC and MFB_SRC = IF, while normal memory operations select AB_SRC and MFB_SRC per the active phase.
 
 The processor remains halted.
 
@@ -250,7 +250,7 @@ The processor remains halted.
 
 Start establishes a known processor execution state.
 
-Microoperation sequence:
+Micro-operation sequence:
 
 ```text
 AC_CLEAR

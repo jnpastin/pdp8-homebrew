@@ -6,7 +6,7 @@ Defines the execution behavior of the FETCH and DEFER major states.
 
 This includes:
 - instruction fetch
-- base effective address (EA_addr) formation
+- base effective address (EA_ADDR) formation
 - indirect address resolution
 - determination of next major state
 
@@ -27,13 +27,13 @@ Responsibilities:
 - FETCH:
   - load IR
   - increment PC
-  - form EA_addr
+  - form EA_ADDR
   - determine next MS
 
 - DEFER:
   - resolve indirect addressing
   - handle autoindex
-  - finalize EA_addr
+  - finalize EA_ADDR
 
 ---
 

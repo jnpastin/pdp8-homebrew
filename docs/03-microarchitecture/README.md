@@ -42,16 +42,16 @@ Excludes:
 ustate = (MS, TS)
 
 - MS: Major State
-- TS: Time State
+- TS: Timing State
 
 Behavior is evaluated during TS and committed at TP.
 All state changes occur only at TP.
 
 Effective addresses are implemented as:
 
-    EA_logical = (EA_fld, EA_addr)
+    EA_logical = (EA_fld, EA_ADDR)
 
-Microarchitecture operates directly on EA_addr and selects EA_fld via IF/DF control.
+Microarchitecture operates directly on EA_ADDR and selects EA_fld via IF/DF control.
 
 ---
 

@@ -58,10 +58,10 @@ See the [addressing model](./05-addressing-model.md) doc for more details on add
 
 The final effective address is represented as:
 
-    EA_logical = (EA_fld, EA_addr)
+    EA_logical = (EA_fld, EA_ADDR)
 
 Where:
-- EA_addr is derived from offset and page selection
+- EA_ADDR is derived from offset and page selection
 - EA_fld is determined by IF or DF depending on addressing mode
 
 ---
@@ -112,7 +112,7 @@ Each remaining bit represents an independent operation, these operations may be 
 
 ---
 
-## 7. Execute Time States
+## 7. Execute Timing States
 
 TS defines execution ordering within EXECUTE.
 

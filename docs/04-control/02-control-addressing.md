@@ -51,7 +51,7 @@ CTRL_ADDR = f(MS, TS, IR_FIELDS, FLAGS, EXT)
 Where:
 
 - MS: Major State
-- TS: Time State
+- TS: Timing State
 - IR_FIELDS: instruction-derived fields
 - FLAGS: derived condition signals
 - EXT: external inputs
@@ -309,7 +309,7 @@ Constraint:
 
 ---
 
-### 5.2 Time State Contribution (TS)
+### 5.2 Timing State Contribution (TS)
 
 TS defines sequencing within a major state.
 
@@ -587,7 +587,7 @@ Constraint:
 
 ## 9. Timing Model
 
-CTRL_ADDR is evaluated during each time state.
+CTRL_ADDR is evaluated during each timing state.
 
 Behavior:
 

@@ -64,6 +64,7 @@ Defined in:
 ### 4.2 Instruction Detection
 
 - [IR_IS_ISZ](./02-ir-derived-fields.md#ir_is_isz)  
+- [IR_IS_AND](./02-ir-derived-fields.md#ir_is_and)  
 
 ---
 
@@ -159,8 +160,8 @@ Defined in: [External Inputs](./04-external-inputs.md)
 
 ### 6.5 External IOT Response Inputs
 
-- [I/O_READ_REQ](./04-external-inputs.md#io_read_req)
-- [I/O_WRITE_REQ](./04-external-inputs.md#io_write_req)
-- [I/O_SKIP_REQ](./04-external-inputs.md#io_skip_req)
-- [I/O_CLEAR_AC_REQ](./04-external-inputs.md#io_clear_ac_req)
-- [/I/O_WAIT](./04-external-inputs.md#io_wait)
+- [IO_READ_REQ](./04-external-inputs.md#io_read_req)
+- [IO_WRITE_REQ](./04-external-inputs.md#io_write_req)
+- [IO_SKIP_REQ](./04-external-inputs.md#io_skip_req)
+- [IO_CLEAR_AC_REQ](./04-external-inputs.md#io_clear_ac_req)
+- [/IO_WAIT](./04-external-inputs.md#io_wait)

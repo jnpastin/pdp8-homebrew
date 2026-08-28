@@ -37,8 +37,8 @@ Detailed information about the OPR instructions can be found at:
 - [02-group-2.md](./02-group-2.md)
 - [03-group-3.md](./03-group-3.md)
 
-The effective address is represented as (EA_fld, EA_addr).
-EA_addr is a 12-bit value; EA_fld is provided by IF or DF.
+The effective address is represented as (EA_fld, EA_ADDR).
+EA_ADDR is a 12-bit value; EA_fld is provided by IF or DF.
 
 Addressing and effective address behavior is defined in:
 

@@ -35,7 +35,7 @@ They select:
 
 They do NOT:
 
-- advance Time State (TS)
+- advance Timing State (TS)
 - control TP generation
 - move data
 - update registers
@@ -216,9 +216,9 @@ Specifies the next value of the halt-request pending state.
 
 ---
 
-### 5.1 Time State Interpretation
+### 5.1 Timing State Interpretation
 
-Time State (TS):
+Timing State (TS):
 
 - is derived from a one-hot shift register
 - is not controlled by sequencing logic

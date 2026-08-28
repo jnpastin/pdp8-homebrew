@@ -16,7 +16,7 @@ Execution state is defined as:
 
 Where:
 - MS: Major State (instruction-level phase)
-- TS: Time State (phase-local step)
+- TS: Timing State (phase-local step)
 
 ---
 
@@ -76,7 +76,7 @@ Constraints:
 
 ---
 
-## 6. Time State (TS)
+## 6. Timing State (TS)
 
 TS defines the execution phase within a major state.
 

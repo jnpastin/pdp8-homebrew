@@ -110,7 +110,7 @@ TSEQ  = [Timing Sequence](../09-timing/01-terminology.md#32-timing-sequence-tseq
 
 TPn   = [Timing Pulse n](../09-timing/01-terminology.md#4-timing-pulses-tp)
 
-TSn   = [Timing State n](../09-timing/01-terminology.md#5-time-states-ts)
+TSn   = [Timing State n](../09-timing/01-terminology.md#5-timing-states-ts)
 
 
 ---

@@ -960,7 +960,7 @@ external bus value
 00 - 77 (octal)
 WHERE:
 IF_DF_COMBINED[2:0]=DF  and
-IF_IF_COMBINED[5:3]=IF
+IF_DF_COMBINED[5:3]=IF
 ```
 
 **Used by μops:**

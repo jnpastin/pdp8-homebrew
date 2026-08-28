@@ -29,30 +29,30 @@ Where:
 
 The EA as a logical construct is formed by:
 
-1. Selecting a EA_addr address using the page bit (P)
+1. Selecting a EA_ADDR address using the page bit (P)
 2. Resolving direct or indirect addressing (mutually exclusive)
 3. Applying field selection (IF or DF)
 
-EA_logical = (EA_fld, EA_addr)
+EA_logical = (EA_fld, EA_ADDR)
 
 ![A visual representation of the EA generation flowchart](../../diagrams/isa/addressing-model/export/addressing-model.png)
 
 ---
 
-## 4. EA_addr Usage by Phase
+## 4. EA_ADDR Usage by Phase
 
-EA_addr is a phase-dependent working value:
+EA_ADDR is a phase-dependent working value:
 
 - During FETCH:
-  EA_addr holds the current page or zero page address derived from IR and PC
+  EA_ADDR holds the current page or zero page address derived from IR and PC
 
 - During DEFER (if indirect):
-  EA_addr is updated with the resolved pointer value
+  EA_ADDR is updated with the resolved pointer value
 
 - At entry to EXECUTE:
-  EA_addr contains the final operand address
+  EA_ADDR contains the final operand address
 
-EA_addr must not be assumed to be final prior to EXECUTE
+EA_ADDR must not be assumed to be final prior to EXECUTE
 
 ---
 
@@ -66,20 +66,20 @@ EA_addr must not be assumed to be final prior to EXECUTE
 
 ---
 
-## 6. Step 1: EA_addr Address Formation (IF domain)
+## 6. Step 1: EA_ADDR Address Formation (IF domain)
 
-The EA_addr address is always initially formed in the IF domain, regardless of addressing mode.
+The EA_ADDR address is always initially formed in the IF domain, regardless of addressing mode.
 
 If P = 0:
 
 ```
-EA_addr = 0000 || offset
+EA_ADDR = 0000 || offset
 ```
 
 If P = 1:
 
 ```
-EA_addr = PC[11:7] || offset
+EA_ADDR = PC[11:7] || offset
 ```
 
 ---
@@ -90,15 +90,15 @@ Direct addressing does not involve indirection.
 
 ```
 EA_field = IF
-EA_addr  = EA_addr
+EA_ADDR  = EA_ADDR
 
-EA = (EA_field, EA_addr)
+EA = (EA_field, EA_ADDR)
 STOP
 ```
 
 Properties:
 
-- Uses IF for both EA_addr formation and final access  
+- Uses IF for both EA_ADDR formation and final access  
 - No interaction with DF  
 
 ---
@@ -109,13 +109,13 @@ Indirect addressing resolves a pointer stored in memory.
 
 ### 8.1 Step 2B.1: Pointer Location (IF domain)
 
-The pointer location is defined by EA_addr in the IF domain.
+The pointer location is defined by EA_ADDR in the IF domain.
 
 ---
 
 ### 8.2 Step 2B.2: Auto-Index Handling
 
-If EA_addr is in the auto-index range:
+If EA_ADDR is in the auto-index range:
 
 ```
 0010–0017 (octal)
@@ -124,14 +124,14 @@ If EA_addr is in the auto-index range:
 Then:
 
 ```
-M[(IF, EA_addr)] = M[(IF, EA_addr)] + 1
-PTR_value     = M[(IF, EA_addr)]
+M[(IF, EA_ADDR)] = M[(IF, EA_ADDR)] + 1
+PTR_value     = M[(IF, EA_ADDR)]
 ```
 
 Else:
 
 ```
-PTR_value = M[(IF, EA_addr)]
+PTR_value = M[(IF, EA_ADDR)]
 ```
 
 ---
@@ -140,9 +140,9 @@ PTR_value = M[(IF, EA_addr)]
 
 ```
 EA_field = DF
-EA_addr  = PTR_value
+EA_ADDR  = PTR_value
 
-EA = (EA_field, EA_addr)
+EA = (EA_field, EA_ADDR)
 STOP
 ```
 
@@ -150,10 +150,10 @@ STOP
 
 ## 9. Invariants
 
-- EA_addr is always formed using IF  
+- EA_ADDR is always formed using IF  
 - Direct (I = 0) uses IF for final memory access  
 - Indirect (I = 1):
-  - Pointer location is (IF, EA_addr)  
+  - Pointer location is (IF, EA_ADDR)  
   - Final EA is (DF, PTR_value)  
 - Auto-index:
   - Applies only when I = 1  

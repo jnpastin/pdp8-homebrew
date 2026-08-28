@@ -36,7 +36,7 @@ CONTROL = f(MS, TS, IR_FIELDS, FLAGS, EXT)
 Where:
 
 - MS: Major State  
-- TS: Time State  
+- TS: Timing State  
 - IR_FIELDS: instruction-derived fields from IR  
 - FLAGS: internal derived condition signals  
 - EXT: external inputs  
@@ -55,7 +55,7 @@ Control inputs are partitioned into:
 
 - execution state:
   - MS (Major State)
-  - TS (Time State)
+  - TS (Timing State)
 
 - instruction state:
   - IR (Instruction Register)
@@ -93,7 +93,7 @@ Properties:
 
 ---
 
-### 4.2 Time State (TS)
+### 4.2 Timing State (TS)
 
 Defines sequencing within a major state.
 
@@ -137,13 +137,13 @@ IR_FIELDS retain only the information required for control decisions.
 Examples:
 
 - instruction class:
-  - IS_MRI
-  - IS_OPR
-  - IS_IOT
+  - IR_IS_MRI
+  - IR_IS_OPR
+  - IR_IS_IOT
 
 - operation identification:
-  - IS_ISZ
-  - IS_AND
+  - IR_IS_ISZ
+  - IR_IS_AND
 
 - control-relevant bits:
   - indirect bit

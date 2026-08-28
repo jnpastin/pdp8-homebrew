@@ -14,7 +14,7 @@ They are used by:
 
 - control evaluation
 - condition logic
-- μoperation selection
+- micro-operation selection
 
 They do not:
 
@@ -131,6 +131,9 @@ Expose raw IR fields:
 
 ### ISZ Detect
 - [IR_IS_ISZ](#ir_is_isz)
+
+### AND Detect
+- [IR_IS_AND](#ir_is_and)
 
 ### Addressing Mode
 - [IR_INDIRECT](#ir_indirect)
@@ -299,6 +302,30 @@ IR_IOA = IR[8:3]
 
 **Consumed By:**
 - [Architectural Control Signals](../20-control-output-definitions/02-architectural-control-signals.md)
+
+---
+
+### IR_IS_AND
+
+**Mnemonic:** IR_IS_AND
+**Name:** AND Instruction Flag
+**Type:** AND Detect
+**Bit Width:** 1
+
+**Purpose:**
+Indicates that the current instruction is AND
+
+**Derivation:**
+```text
+IR_IS_AND = (IR[11:9] == 000)
+```
+
+**Value Encoding:**
+
+- 0 → not AND
+- 1 → AND
+
+**Consumed By:**
 
 ---
 
