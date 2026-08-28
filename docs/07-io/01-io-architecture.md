@@ -120,16 +120,7 @@ The DMA arbiter:
 - establishes the combinational `DMA_ENABLE` qualification output
 - maintains burst-selection, burst-count, and fairness state
 
-Separate combinational aggregation logic continuously derives aggregate `/DMA_REQ`:
-
-```text
-/DMA_REQ =
-    NOT (
-        DMA_ENABLE
-        AND
-        ANY_CONTROLLER_REQUEST_ASSERTED
-    )
-```
+Separate combinational aggregation logic continuously derives aggregate `/DMA_REQ` from `DMA_ENABLE` and the individual controller request lines, as defined in [DMA Arbitration](./06-dma-arbitration.md).
 
 CPU control observes only aggregate `/DMA_REQ`. It does not identify or select an individual DMA controller.
 

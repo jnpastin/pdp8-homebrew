@@ -92,7 +92,7 @@ The diagram shows the following sequence:
 - The controller transfer state and arbiter burst count update at TP3.
 - During TS4, aggregate `/DMA_REQ` determines whether CPU control remains in DMA or returns to FETCH at TP4.
 - `/DMA_GRANT` remains asserted throughout `MS = DMA` and deasserts when CPU control exits DMA.
-- `DMA_GRANT_ID` returns to octal `17` when no controller is selected.
+- `DMA_GRANT_ID` returns to `15` when no controller is selected.
 
 The DMA-read and DMA-write groups are alternative views of the same transfer phase. They do not occur simultaneously.
 

@@ -46,10 +46,10 @@ Those items belong to the physical implementation documentation.
 
 ## 4. Controller Documents
 
-- [Read Me](./controllers/README.md)
-- [KL8E Equivalent Serial Controller(Teletype keyboard/printer alternative)](./controllers/01-kl8e-uart.md)
-- [PC8E Equivalent Paper-Tape Controller](./controllers/02-pc8e-paper-tape.md)
-- [RK8E Equivalent Disk Controller](./controllers/03-rk8e-storage.md)
+- [Read Me](./10-controllers/README.md)
+- [KL8E Equivalent Serial Controller(Teletype keyboard/printer alternative)](./10-controllers/01-kl8e-uart.md)
+- [PC8E Equivalent Paper-Tape Controller](./10-controllers/02-pc8e-paper-tape.md)
+- [RK8E Equivalent Disk Controller](./10-controllers/03-rk8e-storage.md)
 
 ---
 

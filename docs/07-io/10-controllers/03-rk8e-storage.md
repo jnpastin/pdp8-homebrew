@@ -368,12 +368,12 @@ For a write operation, Control Done must not be set until all accepted write dat
 
 ### 11.4 DSKP Condition
 
+`STATUS[11]` is Control Done (§12) and `STATUS[8:0] != 0` is Error (§13).
+
 During TS4 of `DSKP`, the controller asserts `IO_SKIP_REQ` when:
 
 ```text
-STATUS[11]
-OR
-STATUS[8:0] != 0
+CONTROL_DONE OR ERROR
 ```
 
 `DSKP` does not clear the Status Register.
@@ -385,11 +385,7 @@ The controller asserts its interrupt contribution when:
 ```text
 COMMAND[8]
 AND
-(
-    STATUS[11]
-    OR
-    STATUS[8:0] != 0
-)
+(CONTROL_DONE OR ERROR)
 ```
 
 ### 11.6 Unused Bit

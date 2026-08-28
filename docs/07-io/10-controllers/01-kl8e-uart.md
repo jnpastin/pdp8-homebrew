@@ -273,6 +273,7 @@ IO_CLEAR_AC_REQ = 1
 At TP2:
 
 ```text
+AC <- 0
 KEYBOARD_FLAG <- 0
 ```
 

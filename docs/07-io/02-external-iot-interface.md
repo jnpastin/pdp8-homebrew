@@ -49,19 +49,9 @@ Request qualification requires:
 - the controller will have valid data available during the transfer phase
 - `IO_WRITE_REQ` is not asserted
 
-During the request TS:
+The request-and-transfer phase sequence follows the pattern defined in §3. The controller does not drive DB during the request phase because of the pending read. TS and TP phase allocation is defined in [I/O Timing](./03-io-timing.md).
 
-- the selected controller asserts `IO_READ_REQ`
-- the controller does not drive DB because of the pending read
-- CPU control accepts the request at the following TP
-
-During the following transfer TS:
-
-- CPU control asserts `/DB_READ`
-- the selected controller drives DB
-- DB remains valid for the required setup and hold interval
-
-At the following TP:
+At the transfer commit TP:
 
 ```text
 AC <- AC OR DB
@@ -82,18 +72,9 @@ Request qualification requires:
 - the controller will be able to accept data during the transfer phase
 - `IO_READ_REQ` is not asserted
 
-During the request TS:
+The request-and-transfer phase sequence follows the pattern defined in §3. The CPU drives AC onto DB during the transfer phase. TS and TP phase allocation is defined in [I/O Timing](./03-io-timing.md).
 
-- the selected controller asserts `IO_WRITE_REQ`
-- CPU control accepts the request at the following TP
-
-During the following transfer TS:
-
-- CPU control asserts `/DB_WRITE`
-- the CPU drives AC onto DB
-- DB remains valid for the required setup and hold interval
-
-At the following TP, the selected controller captures DB.
+At the transfer commit TP, the selected controller captures DB.
 
 ---
 

@@ -310,7 +310,7 @@ When a controller selection terminates:
 - combinational `DMA_ENABLE` is deasserted during the following DMA TS4
 - aggregate `/DMA_REQ` is deasserted during DMA TS4
 - the previously selected controller releases MFB, AB, MDB, `/RD`, and `/WR` at DMA TP4
-- the arbiter sets `DMA_GRANT_ID` to octal `17` at DMA TP4
+- the arbiter sets `DMA_GRANT_ID` to `15` at DMA TP4
 - CPU control deasserts `/DMA_GRANT` when control exits `MS = DMA`
 - CPU ownership begins in the following FETCH TS1
 

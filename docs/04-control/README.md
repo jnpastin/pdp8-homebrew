@@ -37,6 +37,7 @@ Excludes:
 - [03-control-constraints.md](./03-control-constraints.md)
 - [04-control-word.md](./04-control-word.md)
 - [05-datapath-mapping.md](./05-datapath-mapping.md)
+- [06-invalid-conditions.md](./06-invalid-conditions.md)
 - Control input definitions:
   - [00-index.md](./10-control-input-definitions/00-index.md)
   - [01-flags.md](./10-control-input-definitions/01-flags.md)

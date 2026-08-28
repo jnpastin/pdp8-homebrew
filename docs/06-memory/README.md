@@ -86,6 +86,7 @@ The memory subsystem may be implemented using SRAM, MRAM, FRAM, nvSRAM, battery-
 - [Memory Field Selection](./05-memory-field-selection.md)
 - [DMA & Console Access](./06-dma-and-console-access.md)
 - [Implementation Constraints](./07-implementation-constraints.md)
+- [Invalid Conditions](./08-invalid-conditions.md)
 
 ---
 

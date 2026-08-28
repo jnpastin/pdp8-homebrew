@@ -152,10 +152,6 @@ After `/IO_WAIT` is deasserted, normal TSTEP progression resumes. The pending TP
 
 The diagram shows a hold during TS3. The same rule applies to any setup TSTEP that the timing contract identifies as eligible for `/IO_WAIT`.
 
-### 8.1 External Signal Timing Classes
-
-External I/O signals are classified by how long they remain valid and how the receiving subsystem samples them.
-
 ---
 
 ## 9. Phase-Specific Response Signals
@@ -216,7 +212,9 @@ Rules:
 - Aggregate `/DMA_REQ` may be deasserted while one or more controller `/DMA_REQ[n]` lines remain asserted.
 - Separate combinational aggregation logic continuously derives aggregate `/DMA_REQ` from `DMA_ENABLE` and `/DMA_REQ[14:0]`, as defined in [DMA Arbitration](./06-dma-arbitration.md).
 
-### 11.1 Grant Signals
+---
+
+## 12. Grant Signals
 
 The DMA authorization and selection interface consists of:
 
@@ -240,7 +238,7 @@ Rules:
 
 ---
 
-## 12. Data and Address Signals
+## 13. Data and Address Signals
 
 Controller-driven DB, MFB, AB, and MDB values are transfer-specific signals.
 
@@ -254,13 +252,13 @@ Rules:
 
 ---
 
-## 13. Synchronization Boundary
+## 14. Synchronization Boundary
 
 The physical implementation must synchronize `/IO_WAIT` before it influences TSTEP progression. The controller contract must prevent asynchronous state changes or repeated commit events.
 
 ---
 
-## 14. Related Documents
+## 15. Related Documents
 
 - [Timing Architecture](../09-timing/02-timing-architecture.md)
 - [External IOT Interface](./02-external-iot-interface.md)

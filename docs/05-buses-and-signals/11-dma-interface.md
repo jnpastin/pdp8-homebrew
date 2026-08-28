@@ -40,16 +40,7 @@ DMA priority 15 is reserved as the no-controller-selected encoding and has no co
 
 The DMA arbiter produces the combinational `DMA_ENABLE` qualification output.
 
-Separate combinational aggregation logic derives the aggregate CPU-facing request:
-
-```text
-/DMA_REQ =
-    NOT (
-        DMA_ENABLE
-        AND
-        ANY_CONTROLLER_REQUEST_ASSERTED
-    )
-```
+Separate combinational aggregation logic derives the aggregate CPU-facing request from `DMA_ENABLE` and the individual controller request lines, as defined in [DMA Arbitration](../07-io/06-dma-arbitration.md).
 
 The aggregate request identifies only that DMA service is eligible and pending. It does not identify an individual controller.
 
