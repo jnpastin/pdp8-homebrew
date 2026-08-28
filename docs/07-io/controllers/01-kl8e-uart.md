@@ -13,6 +13,8 @@ The controller provides:
 
 This document does not define the controller implementation.
 
+---
+
 ## Scope
 
 This document defines:
@@ -43,6 +45,8 @@ This document does not define:
 
 Those items belong to the controller design and physical implementation documentation.
 
+---
+
 ## Compatibility Target
 
 The controller must reproduce the programmer-visible behavior required by the PDP-8/E KL8E console interface.
@@ -59,6 +63,8 @@ Internal implementation differences are permitted only when they do not change t
 - reset
 - controller flags
 - IOT results
+
+---
 
 ## Device Addresses
 
@@ -77,6 +83,8 @@ Alternate addresses are permitted when:
 
 The address-configuration mechanism is outside this contract.
 
+---
+
 ## Programmer-Visible State
 
 The controller presents the following state:
@@ -88,6 +96,8 @@ The controller presents the following state:
 - one shared interrupt-enable bit
 
 No additional state is visible through the KL8E-compatible device addresses.
+
+---
 
 ## Character Representation
 
@@ -119,6 +129,8 @@ For an output operation:
 - the controller accepts `AC[7:0]`
 - `AC[11:8]` is ignored
 
+---
+
 ## Interrupt Behavior
 
 The input and output interfaces share one controller-local interrupt-enable bit.
@@ -141,6 +153,8 @@ AND
 
 The controller does not modify the CPU interrupt-enable state.
 
+---
+
 ## Reset State
 
 Reset establishes the following programmer-visible state:
@@ -157,6 +171,8 @@ Reset establishes the following programmer-visible state:
 Reset cancels any controller operation not yet reported as complete.
 
 Any characters not yet represented by a completed programmer-visible operation may be discarded by reset.
+
+---
 
 ## Input Interface
 
@@ -191,6 +207,8 @@ The method used to limit or control incoming traffic is outside this contract.
 
 No receive-overrun status is visible through the KL8E-compatible interface.
 
+---
+
 ## Device 03 IOT Table
 
 | IOT | Mnemonic | Contract |
@@ -203,6 +221,8 @@ No receive-overrun status is visible through the KL8E-compatible interface.
 | `6035` | KIE | Load shared interrupt enable from `AC[0]` |
 | `6036` | KRB | Clear AC, read keyboard receive register, and clear keyboard flag |
 | `6037` | Undefined | Ignore |
+
+---
 
 ## KCF
 
@@ -217,6 +237,8 @@ KEYBOARD_FLAG <- 0
 ### Response Signals
 
 No controller response signal is required.
+
+---
 
 ## KSF
 
@@ -236,6 +258,8 @@ KEYBOARD_FLAG
 
 KSF does not modify controller state.
 
+---
+
 ## KCC
 
 ### Controller Contract
@@ -253,6 +277,8 @@ KEYBOARD_FLAG <- 0
 ```
 
 KCC does not transfer the keyboard receive register.
+
+---
 
 ## KRS
 
@@ -277,6 +303,8 @@ AC <- AC OR DB
 
 KRS does not modify controller state.
 
+---
+
 ## KIE
 
 ### Controller Contract
@@ -300,6 +328,8 @@ INTERRUPT_ENABLE <- DB[0]
 
 All other DB bits are ignored.  
 KIE does not request AC clear.
+
+---
 
 ## KRB
 
@@ -334,6 +364,8 @@ KEYBOARD_FLAG <- 0
 ```
 
 The character represented by the keyboard receive register is consumed at TP4.
+
+---
 
 ## Output Interface
 
@@ -380,6 +412,8 @@ If output cannot complete, the teleprinter flag may remain clear indefinitely.
 
 How the controller achieves or detects physical output completion is outside this contract.
 
+---
+
 ## Device 04 IOT Table
 
 | IOT | Mnemonic | Contract |
@@ -392,6 +426,8 @@ How the controller achieves or detects physical output completion is outside thi
 | `6045` | TSK | Request skip when keyboard flag or teleprinter flag is set |
 | `6046` | TLS | Accept `AC[7:0]` and clear teleprinter flag |
 | `6047` | Undefined | Ignore |
+
+---
 
 ## TFL
 
@@ -406,6 +442,8 @@ TELEPRINTER_FLAG <- 1
 ### Response Signals
 
 No controller response signal is required.
+
+---
 
 ## TSF
 
@@ -425,6 +463,8 @@ TELEPRINTER_FLAG
 
 TSF does not modify controller state.
 
+---
+
 ## TCF
 
 ### Controller Contract
@@ -438,6 +478,8 @@ TELEPRINTER_FLAG <- 0
 ### Response Signals
 
 No controller response signal is required.
+
+---
 
 ## TPC
 
@@ -470,6 +512,8 @@ If the controller cannot accept the character:
 - the new character is discarded
 - the active output operation is not modified
 
+---
+
 ## TSK
 
 ### Controller Contract
@@ -487,6 +531,8 @@ AND
 ```
 
 TSK does not modify controller state.
+
+---
 
 ## TLS
 
@@ -520,6 +566,8 @@ If the controller cannot accept the character:
 - the active output operation is not modified
 - the teleprinter flag is not cleared
 
+---
+
 ## Asynchronous Controller Events
 
 Character arrival and output completion may originate outside the system timing domain.
@@ -534,6 +582,8 @@ The controller may set:
 - teleprinter flag when the accepted output operation completes
 
 The implementation-specific synchronization mechanism is outside this contract.
+
+---
 
 ## Unsupported Operations
 
@@ -558,11 +608,15 @@ An ignored operation produces:
 - no interrupt-enable change
 - no interrupt effect
 
+---
+
 ## DMA Behavior
 
 The KL8E-compatible controller does not use DMA.
 
 Console input and output use programmed I/O and optional interrupts.
+
+---
 
 ## Implementation Boundary
 

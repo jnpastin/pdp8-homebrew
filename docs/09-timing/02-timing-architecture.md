@@ -24,7 +24,7 @@ This diagram represents the canonical timing structure:
 
 ---
 
-# 1) Timing Model Overview
+## 1. Timing Model Overview
 
 The system uses a layered timing model:
 
@@ -34,7 +34,7 @@ with a separate control layer:
 
 MS (Major State)
 
-## Signal Polarity Convention
+### Signal Polarity Convention
 
 TP and TS signals are active-high.
 
@@ -47,9 +47,9 @@ The timing diagrams show the actual electrical levels of both signal classes.
 
 ---
 
-# 2) Timing Sequence
+## 2. Timing Sequence
 
-## 2.1 Timing Progression
+### 2.1 Timing Progression
 
 On each rising edge of TCLK:
 
@@ -59,7 +59,7 @@ On each rising edge of TCLK:
 
 ---
 
-## 2.2 Timing Pulses
+### 2.2 Timing Pulses
 
 Each TSTEP generates a corresponding TP:
 
@@ -72,9 +72,9 @@ TP is:
 
 ---
 
-# 3) Time States
+## 3. Time States
 
-## 3.1 Structure
+### 3.1 Structure
 
 Time States are defined as ranges of timing steps:
 
@@ -89,7 +89,7 @@ See: [cpu-timing-overview](../../diagrams/timing/cpu-timing/export/cpu-timing-ov
 
 ---
 
-## 3.2 Function
+### 3.2 Function
 
 TS provides:
 
@@ -103,16 +103,16 @@ Transitions of TS do not cause state changes.
 
 ---
 
-# 4) Event Semantics
+## 4. Event Semantics
 
-## 4.1 Core Rule
+### 4.1 Core Rule
 
 TS defines when an operation is allowed  
 TP defines when the operation occurs  
 
 ---
 
-## 4.2 Execution Pattern
+### 4.2 Execution Pattern
 
 TSn:
   data stabilizes
@@ -125,7 +125,7 @@ TS(n+1):
 
 ---
 
-## 4.3 Diagram Interpretation
+### 4.3 Diagram Interpretation
 
 As shown in the CPU timing overview diagram:
 
@@ -136,41 +136,41 @@ As shown in the CPU timing overview diagram:
 
 ---
 
-# 5) State Change Rules
+## 5. State Change Rules
 
-## Rule 1 — Event-Driven Updates
+### Rule 1 — Event-Driven Updates
 
 All state changes occur on TP events.
 
 ---
 
-## Rule 2 — Setup Before Event
+### Rule 2 — Setup Before Event
 
 All inputs must be stable before TP.
 
 ---
 
-## Rule 3 — Phase Transition
+### Rule 3 — Phase Transition
 
 TS transitions occur after TP on the next clock edge.
 
 ---
 
-## Rule 4 — No Level-Driven Behavior
+### Rule 4 — No Level-Driven Behavior
 
 No state changes occur directly from TS levels.
 
 ---
 
-## Rule 5 — No Falling Edge Dependence
+### Rule 5 — No Falling Edge Dependence
 
 Only the TP rising edge is significant.
 
 ---
 
-# 6) Major State Integration
+## 6. Major State Integration
 
-## 6.1 Role of MS
+### 6.1 Role of MS
 
 MS defines:
 - operation type
@@ -178,7 +178,7 @@ MS defines:
 
 ---
 
-## 6.2 Relationship
+### 6.2 Relationship
 
 MS operates over one or more TS/TP cycles:
 
@@ -186,15 +186,15 @@ MS → TS → TP
 
 ---
 
-## 6.3 Transitions
+### 6.3 Transitions
 
 Major State changes occur at defined TP events.
 
 ---
 
-# 7) Fast vs Slow Timing
+## 7. Fast vs Slow Timing
 
-## 7.1 Mechanism
+### 7.1 Mechanism
 
 Timing speed is controlled by modifying TSTEP progression.
 
@@ -205,7 +205,7 @@ The fast/slow mechanism will be modeled after DEC's timing design. The specific 
 
 ---
 
-## 7.2 Effect
+### 7.2 Effect
 
 - TS duration changes as a result of TSTEP changes
 - TP count per cycle changes
@@ -213,7 +213,7 @@ The fast/slow mechanism will be modeled after DEC's timing design. The specific 
 
 ---
 
-## I/O Wait Integration
+### I/O Wait Integration
 
 During external-IOT EXECUTE, the selected controller may assert `/IO_WAIT` to extend an eligible non-TP setup interval.
 
@@ -243,7 +243,7 @@ Detailed controller behavior is defined in [I/O Timing](../07-io/03-io-timing.md
 
 ---
 
-# 8) DMA Integration
+## 8. DMA Integration
 
 DMA does not inhibit timing progression.
 DMA is a control-selected Major State (MS = DMA), sequenced identically to other major states.
@@ -263,7 +263,7 @@ DMA sequencing and datapath behavior are defined in:
 
 ---
 
-# 9) Summary
+## 9. Summary
 
 The system timing model enforces:
 

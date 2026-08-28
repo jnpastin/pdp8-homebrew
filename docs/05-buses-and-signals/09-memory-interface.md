@@ -1,4 +1,4 @@
-# 09 Memory Interface
+# Memory Interface
 
 ## Purpose
 
@@ -168,6 +168,8 @@ Domain definitions and isolation requirements are defined in:
 - /RD identifies memory read operations.
 - /WR identifies memory write operations.
 - Domain definitions, ownership behavior, timing behavior, and control semantics are defined elsewhere.
+
+---
 
 ## Summary
 

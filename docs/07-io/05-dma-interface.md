@@ -4,6 +4,8 @@
 
 This document defines DMA ownership, memory-interface participation, transfer direction, and per-word timing.
 
+---
+
 ## Architectural Model
 
 DMA uses single-cycle transfer semantics.
@@ -19,6 +21,8 @@ The granted controller maintains:
 
 Each `MS = DMA` cycle transfers at most one memory word.
 
+---
+
 ## DMA-Owned Interfaces
 
 During a granted DMA operation, the controller supplies:
@@ -32,11 +36,15 @@ During a DMA read, memory supplies MDB.
 
 The CPU does not drive MFB, AB, MDB, /RD, or /WR during DMA ownership.
 
+---
+
 ## Addressing
 
 MFB and AB are treated as one DMA-selected memory address interface.
 
 The granted controller supplies both values. MFB and AB must remain stable throughout the active /RD or /WR window.
+
+---
 
 ## Direction
 
@@ -61,6 +69,8 @@ During a DMA write:
 - controller deasserts /RD
 - controller drives MDB
 - memory stores MDB at TP2
+
+---
 
 ## DMA Timing
 
@@ -145,6 +155,8 @@ The selected controller and arbiter prepare all selection-release and ownership-
 A controller may release early only after completing the current TP2 transfer.  
 If the controller cannot immediately complete another transfer, it must deassert its request before another selection is made.
 
+---
+
 ## DMA Wait Policy
 
 No DMA wait signal is defined.  
@@ -153,6 +165,8 @@ Once selected at TP1, the controller must complete exactly one DMA word transfer
 A slow controller remains unrequested until its next transfer is ready.  
 After completing a transfer, a controller that cannot immediately complete another transfer must deassert /DMA_REQ[n] and request service again when the next transfer is prepared.  
 A controller must not extend, suppress, repeat, or delay a DMA TP.
+
+---
 
 ## Related Documents
 

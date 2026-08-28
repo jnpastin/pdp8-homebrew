@@ -1,6 +1,6 @@
-## IOT Instruction Detail
+# IOT Instruction Detail
 
-### Purpose
+## Purpose
 
 Defines the CPU-internal IOT instructions decoded directly by the processor.
 
@@ -10,7 +10,9 @@ IOT instructions (opcode 6) fall into two categories:
 
 This document defines encoding and observable semantics only. Micro-operation sequences are defined in [IOT Execution](../03-microarchitecture/06-iot-execution.md).
 
-### Scope
+---
+
+## Scope
 
 Applies to instructions where IR[11:9] = 110 and the device address selects a CPU-internal function:
 - Device 0 - processor IOTs (interrupt and flag control)
@@ -23,7 +25,7 @@ All device-0 and memory-extension instructions listed here are PDP-8/E processor
 
 ---
 
-### Device 0 - Processor IOTs
+## Device 0 - Processor IOTs
 
 These instructions control the interrupt system. They are decoded when IR[11:9] = 110 and IR[8:3] = 000000 (device address 0). The specific operation is selected by the value of IR[2:0].
 
@@ -54,11 +56,11 @@ Semantics:
 
 ---
 
-### Devices 20-27 - Memory Extension Control
+## Devices 20-27 - Memory Extension Control
 
 These instructions manage the instruction field (IF) and data field (DF) for extended memory addressing. They are decoded when IR[11:9] = 110 and IR[8:6] = 010.
 
-#### Field-Change Instructions (CDF, CIF)
+### Field-Change Instructions (CDF, CIF)
 
 The target field n is encoded in IR[5:3], making the device address 2n. The two low operation bits are independent flags: CDF (bit 0) and CIF (bit 1).
 
@@ -85,7 +87,7 @@ Like Group 1 OPR, CDF and CIF are independent flags that may be combined (ORed) 
 
 Where n = IR[5:3] = target field (0-7).
 
-#### Register Read / Restore Instructions
+### Register Read / Restore Instructions
 
 These are selected by IR[2:0] = 100, with the specific instruction determined by IR[5:3].
 
@@ -103,7 +105,7 @@ Semantics:
 
 ---
 
-### External Device Address and Operation Transport
+## External Device Address and Operation Transport
 
 External-device IOT instructions present two distinct controller-facing fields:
 
@@ -122,7 +124,7 @@ Detailed external-IOT behavior is defined in the [IOT interface](../07-io/02-ext
 
 ---
 
-### Deferred Instructions (Planned)
+## Deferred Instructions (Planned)
 
 The following processor IOTs are recognized as part of the PDP-8/E device-0 set but are not yet defined for this system. They are listed here for completeness of the device-0 operation space (IR[2:0] = 100 through 111). Each is deferred pending a design dependency noted below.
 

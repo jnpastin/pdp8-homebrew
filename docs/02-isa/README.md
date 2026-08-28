@@ -1,10 +1,11 @@
+# Instruction Set Architecture
 
-## Instruction Set Architecture
-
-### Purpose
+## Purpose
 Defines instruction semantics independent of execution timing or implementation.
 
-### Scope
+---
+
+## Scope
 Includes:
 - Instruction classes (MRI, OPR, IOT)
 - Operand and result behavior
@@ -17,7 +18,9 @@ Excludes:
 - Microarchitectural execution ([03-microarchitecture/README.md](../03-microarchitecture/README.md))
 - Control implementation ([04-control/README.md](../04-control/README.md))
 
-### Model Summary
+---
+
+## Model Summary
 - Instructions are defined by IR bitfields.
 - Behavior is determined without decoding into symbolic instructions.
 - Skip behavior sets a pending control condition that affects PC update.

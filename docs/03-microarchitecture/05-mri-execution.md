@@ -1,6 +1,6 @@
-## MRI Execution
+# MRI Execution
 
-### Purpose
+## Purpose
   
 Defines execution behavior for Memory Reference Instructions (MRI) during the EXECUTE major state.
 

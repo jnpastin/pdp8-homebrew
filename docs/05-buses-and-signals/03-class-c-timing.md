@@ -1,4 +1,4 @@
-# 03 Class C - Timing Signals
+# Class C - Timing Signals
 
 ## Purpose
 

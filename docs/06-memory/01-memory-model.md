@@ -6,11 +6,15 @@ This document defines the logical memory model from the perspective of the memor
 
 Memory is modeled as storage for 12-bit words. Each word is selected by the field and address values presented at the memory interface.
 
+---
+
 ## Scope Boundary
 
 Section 6 defines memory behavior at the memory subsystem boundary.
 
 It does not define how the CPU, ISA, microarchitecture, or control system produce the field, address, data, or read/write controls presented to memory.
+
+---
 
 ## Logical Memory Structure
 
@@ -22,6 +26,8 @@ A memory word is selected by:
 - a 12-bit address value
 
 The memory subsystem observes those values at its interface and uses them to select a stored word.
+
+---
 
 ## Memory Address Terminology
 
@@ -49,6 +55,8 @@ EA remains the architectural and ISA-level effective-address concept.
 
 From the memory subsystem perspective, MEM_ADDR is how memory observes an already-selected effective address at the memory interface.
 
+---
+
 ## Relationship to EA
 
 EA describes how an effective address is produced.
@@ -63,6 +71,8 @@ The distinction is:
 - MEM_ADDR contains none of that history.
 - MEM_ADDR is only {MFB, AB} at the memory boundary.
 
+---
+
 ## Word Selection
 
 For any valid memory operation, the selected memory word is:
@@ -75,6 +85,8 @@ M[{MFB, AB}]
 
 The memory subsystem uses MEM_ADDR only as a selection value. It does not inspect the source or history of MFB or AB.
 
+---
+
 ## Read Model
 
 During a valid memory read:
@@ -85,6 +97,8 @@ During a valid memory read:
 
 CPU-side capture of the returned value is defined outside this document.
 
+---
+
 ## Write Model
 
 During a valid memory write:
@@ -94,6 +108,8 @@ During a valid memory write:
 - memory stores that value at M[MEM_ADDR]
 
 The source of the write data is defined outside this document.
+
+---
 
 ## Technology Independence
 
@@ -111,6 +127,8 @@ Physical memory technology must not change:
 
 Specific part selection, packaging, board layout, and backplane implementation are outside the scope of this document.
 
+---
+
 ## Invariants
 
 - Memory stores 12-bit words.
@@ -123,6 +141,8 @@ Specific part selection, packaging, board layout, and backplane implementation a
 - Memory does not interpret instruction bits.
 - Memory does not choose field, address, or data sources.
 - Memory does not generate control decisions.
+
+---
 
 ## Summary
 

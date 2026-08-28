@@ -12,6 +12,8 @@ This includes:
 
 The memory subsystem does not define DMA sequencing, DMA arbitration, console sequencing, or front-panel control behavior.
 
+---
+
 ## Access-Origin Boundary
 
 The memory subsystem does not distinguish the origin of a valid memory operation.
@@ -25,6 +27,8 @@ From the memory subsystem perspective, all memory operations are defined by the 
 - /WR
 
 If those interface values define a valid read or write operation, memory performs the corresponding operation regardless of whether the requester is the CPU, DMA logic, or console logic.
+
+---
 
 ## DMA Memory Access
 
@@ -59,6 +63,8 @@ The memory subsystem does not define:
 
 Those behaviors are outside the memory subsystem boundary.
 
+---
+
 ## DMA Operation Meaning
 
 A DMA read returns the word stored at:
@@ -70,6 +76,8 @@ A DMA write stores the value presented on MDB at:
 M[{MFB, AB}]
 
 DMA does not create a separate memory address space, separate memory data path, or separate memory semantics.
+
+---
 
 ## Console Examine Access
 
@@ -84,6 +92,8 @@ During a valid console Examine memory access:
 - memory drives MDB with the word stored at M[{MFB, AB}]
 
 The memory subsystem does not define how the console operation selects the field or address.
+
+---
 
 ## Console Deposit Access
 
@@ -100,6 +110,8 @@ During a valid console Deposit memory access:
 
 The memory subsystem does not define how the console operation selects the field, address, or deposited value.
 
+---
+
 ## Origin-Independent Behavior
 
 The same MFB, AB, /RD, /WR, and MDB values produce the same memory behavior regardless of access origin.
@@ -113,6 +125,8 @@ For a write:
 
 - the selected word is determined only by MFB and AB
 - the stored value is determined only by MDB during the active write window
+
+---
 
 ## Invalid Conditions
 
@@ -129,6 +143,8 @@ The following conditions are invalid during DMA or console memory access:
 
 Invalid conditions are design errors.
 
+---
+
 ## Invariants
 
 - DMA memory access uses the normal memory interface.
@@ -141,6 +157,8 @@ Invalid conditions are design errors.
 - DMA sequencing is outside the memory subsystem boundary.
 - Console sequencing is outside the memory subsystem boundary.
 - Memory behavior is determined only by the memory interface signals.
+
+---
 
 ## Summary
 

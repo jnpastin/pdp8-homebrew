@@ -1,18 +1,20 @@
-## I/O Controller Documentation
+# I/O Controller Documentation
 
-### Purpose
+## Purpose
 
 This folder contains programmer-visible and architecturally relevant definitions for individual I/O controllers.
 
 The common electrical-independent controller contract is defined in [Controller Contract](../04-controller-contract.md).
 
-#### Controller Documents
+### Controller Documents
 
 - [KL8E-Compatible UART Controller](01-kl8e-uart.md)
 - [PC8E-Compatible Paper-Tape Controller](02-pc8e-paper-tape.md)
 - [RK8E-Compatible Storage Controller](03-rk8e-storage.md)
 
-### Required Controller Documentation
+---
+
+## Required Controller Documentation
 
 Each controller document must define:
 
@@ -31,7 +33,9 @@ Each controller document must define:
 - DMA behavior when applicable
 - physical implementation boundary
 
-### Compatibility Rule
+---
+
+## Compatibility Rule
 
 A controller claiming compatibility/equivalency with a DEC interface must reproduce:
 

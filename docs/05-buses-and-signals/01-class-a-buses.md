@@ -1,4 +1,4 @@
-# 01 Class A – System Buses
+# Class A - System Buses
 
 ## Purpose
 

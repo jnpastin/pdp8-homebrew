@@ -1,11 +1,11 @@
-## Buses and Signals
+# Buses and Signals
 
-### Purpose
+## Purpose
 Defines the system's signal classification, bus definitions, bus semantics, domain boundaries, ownership, and the architectural memory, I/O, and DMA interfaces.
 
 ---
 
-### Scope
+## Scope
 Includes:
 - Signal classification (Classes A-E)
 - Class A bus definitions (AB, DB, MDB, MFB)
@@ -20,7 +20,7 @@ Excludes:
 
 ---
 
-### Model Summary
+## Model Summary
 - Signals are partitioned into five classes with distinct visibility, placement, and electrical rules.
 - Class A buses provide address and data transport; ownership is control-selected and mutually exclusive.
 - Transport domains (AB, MDB, DB, IDB) are isolated; crossings are explicit and control-defined.
@@ -28,7 +28,7 @@ Excludes:
 
 ---
 
-### Related Documents
+## Related Documents
 - [00-signal-classes.md](./00-signal-classes.md)
 - [01-class-a-buses.md](./01-class-a-buses.md)
 - [02-class-b-control.md](./02-class-b-control.md)

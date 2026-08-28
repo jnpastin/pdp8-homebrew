@@ -1,3 +1,3 @@
-﻿# 12-verification
+# Verification
 
 Status: draft

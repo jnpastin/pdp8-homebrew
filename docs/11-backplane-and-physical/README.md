@@ -1,3 +1,3 @@
-﻿# 11-backplane-and-physical
+# Backplane and Physical
 
 Status: draft

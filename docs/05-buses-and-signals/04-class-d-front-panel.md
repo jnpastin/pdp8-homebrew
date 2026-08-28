@@ -1,4 +1,4 @@
-# 04 Class D - Front Panel Signals
+# Class D - Front Panel Signals
 
 ## Purpose
 

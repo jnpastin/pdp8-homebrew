@@ -4,6 +4,8 @@
 
 This document identifies architectural I/O and DMA conditions that are design errors.
 
+---
+
 ## External IOT Invalid Conditions
 
 The following are invalid:
@@ -26,6 +28,8 @@ The following are invalid:
 - `/IO_WAIT` asserted by a nonselected controller
 - `/IO_WAIT` suppressing, extending, or repeating a TP
 - more than one TSTEP increment on one TCLK rising edge
+
+---
 
 ## DMA Invalid Conditions
 
@@ -66,11 +70,15 @@ The following are invalid:
 - `DMA_ENABLE`, `/DMA_REQ[n]`, or aggregate `/DMA_REQ` changing too late to satisfy the TP4 setup and hold requirements
 - CPU control using a post-TP4 value of aggregate `/DMA_REQ` for the TP4 major-state transition
 
+---
+
 ## Validation Boundary
 
 These conditions are architectural design errors.
 
 The architecture does not require centralized runtime validation of controller compliance. Optional diagnostics may detect violations, but diagnostic behavior must not participate in normal control, timing, ownership, or sequencing.
+
+---
 
 ## Related Documents
 

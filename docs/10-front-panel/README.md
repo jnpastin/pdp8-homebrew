@@ -1,3 +1,3 @@
-﻿# 10-front-panel
+# Front Panel
 
 Status: draft

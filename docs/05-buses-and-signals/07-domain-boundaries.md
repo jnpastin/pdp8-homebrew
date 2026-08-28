@@ -1,4 +1,4 @@
-# 07 Domain Boundaries
+# Domain Boundaries
 
 ## Purpose
 

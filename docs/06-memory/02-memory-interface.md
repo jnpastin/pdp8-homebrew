@@ -6,6 +6,8 @@ This document defines the memory subsystem interface.
 
 The memory interface is the boundary between the memory subsystem and the rest of the system. Memory observes address, field, control, and write-data signals at this boundary, and drives read data when a valid read operation is requested.
 
+---
+
 ## Interface Signals
 
 The memory subsystem interface consists of:
@@ -17,6 +19,8 @@ The memory subsystem interface consists of:
 - /WR
 
 These signals define the complete memory-facing interface for normal memory operations.
+
+---
 
 ## Signal Roles
 
@@ -68,6 +72,8 @@ When /WR is asserted as part of a valid write operation, memory uses MEM_ADDR to
 
 /WR does not define the source of write data. It only defines the memory-side write request.
 
+---
+
 ## Memory Transaction Timing
 
 The following diagram shows representative CPU memory-read and memory-write transactions.
@@ -85,6 +91,8 @@ For both transaction types:
 
 The diagram uses TS2 and TP2 as a representative transaction phase. The active TS and commit TP depend on the specific memory operation. The signal relationships and stability requirements remain unchanged when a memory transaction occurs during another TS and TP.
 
+---
+
 ## Memory Address Formation
 
 The memory subsystem forms its memory selection value from MFB and AB.
@@ -94,6 +102,8 @@ MEM_ADDR = {MFB, AB}
 MFB and AB must be valid and stable for the duration required by the active memory operation.
 
 The memory subsystem does not inspect the source or history of either signal.
+
+---
 
 ## Read Direction
 
@@ -106,6 +116,8 @@ During a valid read operation:
 - memory drives MDB with the selected 12-bit word
 
 Memory is the MDB driver during the read data phase.
+
+---
 
 ## Write Direction
 
@@ -120,6 +132,8 @@ During a valid write operation:
 
 Memory is not the MDB driver during a write.
 
+---
+
 ## Source Independence
 
 The memory subsystem does not distinguish between CPU-initiated, DMA-initiated, or console-initiated memory operations.
@@ -131,6 +145,8 @@ From the memory subsystem perspective, a valid operation is defined only by the 
 - MDB direction and data validity
 
 The origin of the operation is outside the memory subsystem boundary.
+
+---
 
 ## Invalid Interface Conditions
 
@@ -148,6 +164,8 @@ The following conditions are invalid unless explicitly defined elsewhere:
 
 Invalid interface conditions are design errors.
 
+---
+
 ## Invariants
 
 - MFB is an input to memory.
@@ -160,6 +178,8 @@ Invalid interface conditions are design errors.
 - Memory does not choose the source of MFB, AB, MDB, /RD, or /WR.
 - Memory does not distinguish CPU, DMA, or console access origins.
 - Memory behavior occurs only through the defined memory interface.
+
+---
 
 ## Summary
 

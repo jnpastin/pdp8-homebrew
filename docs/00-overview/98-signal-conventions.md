@@ -1,4 +1,4 @@
-# 98 Signal Conventions
+# Signal Conventions
 
 ## Purpose
 

@@ -1,4 +1,4 @@
-# 10 I/O Interface
+# I/O Interface
 
 ## Purpose
 
@@ -54,6 +54,8 @@ External IOT communication involves:
 - shared TS signals
 - shared TP signals
 
+---
+
 ## I/O Selection Interface
 
 `IOA[5:0]` identifies the target external controller.
@@ -82,6 +84,8 @@ Controller responses request CPU behavior. They do not directly modify CPU state
 
 Responses must satisfy the timing and combination constraints defined in the [External IOT Interface](../07-io/02-external-iot-interface.md).
 
+---
+
 ## I/O Read Model
 
 An I/O read transfers data from the selected controller to the CPU.
@@ -107,6 +111,8 @@ AC <- AC OR DB
 ```
 
 The transfer commits through `DB_READ_TO_AC`.
+
+---
 
 ## I/O Write Model
 
@@ -142,6 +148,8 @@ At the following TP, the selected controller captures DB.
 - Controller response signals do not directly modify CPU state.
 - All CPU and controller state changes occur only at TP.
 - I/O wait behavior is defined in [I/O Timing](../07-io/03-io-timing.md).
+
+---
 
 ## Summary
 

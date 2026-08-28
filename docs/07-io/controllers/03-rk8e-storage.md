@@ -15,6 +15,8 @@ The controller provides:
 
 This document does not define the controller implementation.
 
+---
+
 ## Scope
 
 This document defines:
@@ -50,6 +52,8 @@ This document does not define:
 
 Those items belong to the controller design and physical implementation documentation.
 
+---
+
 ## Compatibility Target
 
 The controller must reproduce the programmer-visible behavior required by the DEC RK8E controller operating with RK05-compatible media.
@@ -78,6 +82,8 @@ The controller implements the RK8E interface only.
 
 The RK8/RK01 instruction family using device addresses `73` through `75` is a different controller interface and is not implemented.
 
+---
+
 ## Device Address
 
 | Address | Function |
@@ -95,6 +101,8 @@ The address-configuration mechanism is outside this contract.
 
 Device addresses `73` and `75` are not assigned to this controller.
 
+---
+
 ## Emulated Drives
 
 The controller presents up to four RK05-compatible drives.
@@ -110,6 +118,8 @@ Drive numbering is:
 The mapping between an emulated drive number and physical storage is outside this contract.
 
 A drive without valid available media must report the corresponding RK8E-compatible not-ready or error state.
+
+---
 
 ## RK05-Compatible Geometry
 
@@ -135,6 +145,8 @@ The controller must reject or report an error for disk addresses outside the RK0
 
 The physical storage organization does not alter the geometry visible to software.
 
+---
+
 ## Programmer-Visible State
 
 The controller presents the following programmer-visible registers:
@@ -157,6 +169,8 @@ The controller also presents the RK8E-defined:
 The widths, bit assignments, and programmer-visible meanings of the Command Register and Status Register must match the DEC RK8E definitions exactly.
 
 No implementation-specific status bits may be exposed through the RK8E Status Register.
+
+---
 
 ## Command Register
 
@@ -247,6 +261,8 @@ When `COMMAND[7]` is set, successful completion of a seek sets Control Done.
 
 The complete disk-address field mapping is defined by the DEC RK8E-compatible Disk Address Register contract.
 
+---
+
 ## Current Address Register
 
 The Current Address Register is 12 bits wide.
@@ -269,6 +285,8 @@ If the Current Address Register contains `7777`, the next DMA transfer uses:
 
 The memory-field value does not increment when the Current Address Register wraps.
 
+---
+
 ## Disk Address Register
 
 The Disk Address Register is 12 bits wide.
@@ -284,6 +302,8 @@ The Disk Address Register, together with the applicable Command Register field, 
 - sector
 
 `DLAG` also initiates the operation selected by the Command Register.
+
+---
 
 ## Status Register
 
@@ -378,6 +398,8 @@ AND
 
 The controller must not expose implementation-specific status through this bit.
 
+---
+
 ## Control Done
 
 Control Done is set when required by RK8E-compatible behavior, including:
@@ -393,6 +415,8 @@ Control Done must not be set before all programmer-visible effects of a successf
 
 For a write operation, Control Done must not be set until all accepted data has been committed to the emulated disk image.
 
+---
+
 ## Error Condition
 
 The Error condition represents the logical OR of the RK8E-defined active error conditions.
@@ -406,6 +430,8 @@ The Error condition is used by:
 The controller must not expose implementation-specific storage errors directly.
 
 An implementation-specific failure must be translated into the closest applicable RK8E-visible status and error condition.
+
+---
 
 ## Interrupt Behavior
 
@@ -422,6 +448,8 @@ AND
 The controller does not modify the CPU interrupt-enable state.
 
 Clearing the RK8E Status Register removes the interrupt contribution when neither Control Done nor another qualifying error remains asserted.
+
+---
 
 ## Busy Behavior
 
@@ -443,6 +471,8 @@ If one of those operations is attempted while the controller is busy:
 
 `DCLC` may abort an active operation.
 
+---
+
 ## Device 74 IOT Table
 
 | IOT | Mnemonic | Contract |
@@ -456,9 +486,11 @@ If one of those operations is attempted while the controller is busy:
 | `6746` | DLDC | Load Command Register, clear AC, and clear Status Register |
 | `6747` | DMAN | Perform one selected maintenance operation and clear AC |
 
-# DSKP
+---
 
-## Controller Contract
+## DSKP
+
+### Controller Contract
 
 Nothing occurs during TS1 through TS3.
 
@@ -478,9 +510,11 @@ DSKP does not modify controller state.
 
 DSKP does not clear Control Done or Error.
 
-# DCLR
+---
 
-## AC Selection
+## DCLR
+
+### AC Selection
 
 `DCLR` decodes `AC[1:0]`.
 
@@ -491,7 +525,7 @@ DSKP does not clear Control Done or Error.
 | `10` | DCLD | Initiate recalibration of the selected drive to cylinder `000` |
 | `11` | DCLS | Clear Status Register |
 
-## Controller Contract
+### Controller Contract
 
 During TS3:
 
@@ -514,7 +548,7 @@ At TP4:
 The selected operation uses the pre-TP4 DB value.  
 No intermediate selector register is required.
 
-### DCLS
+#### DCLS
 
 At TP4:
 
@@ -526,7 +560,7 @@ ERROR <- 0
 
 DCLS does not abort an active disk operation unless required by a specific RK8E status-clearing rule.
 
-## DCLC
+#### DCLC
 
 At TP4:
 
@@ -546,7 +580,7 @@ Data accepted for a write but not yet committed to the emulated disk may be disc
 
 No additional error is raised solely because DCLC discarded uncommitted write data.
 
-## DCLD
+#### DCLD
 
 At TP4:
 
@@ -564,9 +598,11 @@ When recalibration completes:
 
 No physical head movement is required by this contract.
 
-# DLAG
+---
 
-## Controller Contract
+## DLAG
+
+### Controller Contract
 
 During TS3:
 
@@ -599,9 +635,11 @@ If the controller is busy:
 
 The pre-TP4 DB value is used.
 
-# DLCA
+---
 
-## Controller Contract
+## DLCA
+
+### Controller Contract
 
 During TS3:
 
@@ -631,9 +669,11 @@ If the controller is busy:
 
 The pre-TP4 DB value is used.
 
-# DRST
+---
 
-## Controller Contract
+## DRST
+
+### Controller Contract
 
 During TS3:
 
@@ -668,9 +708,11 @@ AC <- DB
 DRST does not modify controller state.  
 DRST does not clear the Status Register.
 
-# DLDC
+---
 
-## Controller Contract
+## DLDC
+
+### Controller Contract
 
 During TS3:
 
@@ -704,9 +746,11 @@ If the controller is busy:
 
 The pre-TP4 DB value is used.
 
-# DMAN
+---
 
-## Purpose
+## DMAN
+
+### Purpose
 
 `DMAN` provides RK8E maintenance behavior.
  
@@ -714,7 +758,7 @@ Maintenance behavior is required only to the extent necessary to reproduce the R
 
 The controller implementation does not need to reproduce the physical RK8E register construction.
 
-## Maintenance Function Selection
+### Maintenance Function Selection
 
 `DMAN` uses the pre-clear AC value as a maintenance control word.
 
@@ -729,7 +773,7 @@ The statement that maintenance functions cannot be microprogrammed is preserved 
 ```text
 One DMAN instruction selects one maintenance function.
 ```
-## Maintenance Controls
+### Maintenance Controls
 
 The project AC-bit numbering is used below.
 
@@ -748,7 +792,7 @@ The project AC-bit numbering is used below.
 The maintenance controls and their programmer-visible effects are defined by this section.  
 Internal serial ordering, shift-path construction, buffer implementation, CRC implementation, and counter implementation are not architecturally defined, except where their effects are explicitly exposed through the documented DMAN behavior.
 
-## Controller Contract
+### Controller Contract
 
 During TS2:
 
@@ -789,7 +833,7 @@ AC <- DB
 
 The controller must preserve the selected read operation through TP4 without exposing additional programmer-visible state.
 
-## Unsupported DMAN Combinations
+### Unsupported DMAN Combinations
 
 A DMAN operation with:
 
@@ -801,7 +845,9 @@ is ignored except for the AC-clear behavior defined for DMAN.
 
 No maintenance operation is performed.
 
-# Asynchronous Disk Operations
+---
+
+## Asynchronous Disk Operations
 
 Disk operations initiated by `DLAG` continue after the IOT completes.
 
@@ -815,7 +861,9 @@ Software determines completion through:
 
 The initiating IOT does not wait for the complete disk operation.
 
-# Transfer Length
+---
+
+## Transfer Length
 
 The Command Register selects a transfer length of:
 
@@ -828,7 +876,9 @@ The operation count persists across multiple DMA grants.
 
 The operation completes only after the required number of successful word transfers has occurred or an RK8E-defined terminating error occurs.
 
-# DMA Participation
+---
+
+## DMA Participation
 
 ### DMA Capability
 
@@ -838,7 +888,7 @@ DMA priority 15 is reserved as the no-controller-selected encoding and must not 
 DMA priority is independent of device address 74.  
 The priority-configuration mechanism is outside this contract.
 
-## DMA Request
+### DMA Request
 
 The controller asserts its configured /DMA_REQ[n] only when:
 
@@ -856,7 +906,7 @@ The controller keeps its request asserted while additional immediately transfera
 After completing the current transfer, the controller must deassert its request when it cannot immediately complete another word transfer.  
 The controller reasserts its request when another complete word transfer is prepared.
 
-## Grant Acceptance
+### Grant Acceptance
 
 The controller accepts DMA ownership only when:
 
@@ -869,7 +919,7 @@ DMA_GRANT_ID = CONTROLLER_DMA_PRIORITY
 The controller does not accept DMA ownership while DMA_GRANT_ID is 15.  
 The controller must not drive DMA-owned interfaces without a matching valid controller selection..
 
-## DMA Read from Disk to Memory
+### DMA Read from Disk to Memory
 
 For an RK8E disk-read operation, data moves:
 
@@ -895,7 +945,7 @@ At TP3:
 - the RK8E operation count advances by one word
 - the transferred word is complete from the RK8E DMA interface perspective
 
-## DMA Write from Memory to Disk
+### DMA Write from Memory to Disk
 
 For an RK8E disk-write operation, data moves:
 
@@ -922,7 +972,7 @@ At TP3:
 - the RK8E operation count advances by one word
 - the accepted word becomes part of the active disk-write operation
 
-## Address Increment
+### Address Increment
 
 For every successful DMA word transfer:
 
@@ -935,7 +985,7 @@ The transfer uses `NEXT_CURRENT_ADDRESS`.
 
 The memory field remains unchanged when the Current Address Register wraps from `7777` to `0000`.
 
-## Bounded DMA Bursts
+### Bounded DMA Bursts
 
 The RK8E operation count and DMA-arbiter burst count are independent.
 
@@ -957,7 +1007,7 @@ When the arbiter terminates a grant because the configured burst limit is reache
 - the controller keeps or later reasserts its DMA request while work remains
 - the controller participates in normal re-arbitration
 
-## DMA Completion
+### DMA Completion
 
 One DMA major-state cycle transfers at most one RK8E word.
 
@@ -969,7 +1019,7 @@ A failed or uncommitted transfer must not advance:
 - RK8E operation count
 - Control Done state
 
-## DMA Grant Loss
+### DMA Grant Loss
 
 When the controller-facing grant ends:
 
@@ -981,7 +1031,9 @@ When the controller-facing grant ends:
 
 The active RK8E disk operation remains pending when additional words remain.
 
-# Write Completion and Data Integrity
+---
+
+## Write Completion and Data Integrity
 
 A disk-write operation is complete only after all accepted words have been committed to the emulated disk.
 
@@ -1000,7 +1052,9 @@ When either destructive operation occurs:
 - uncommitted write data may be discarded
 - no additional error is required solely because the destructive clear discarded the data
 
-# System Initialization
+---
+
+## System Initialization
 
 System initialization occurs during:
 
@@ -1034,7 +1088,9 @@ System initialization is destructive to active operations.
 
 Uncommitted write data may be discarded without an additional error indication.
 
-# DCLC and System Initialization Distinction
+---
+
+## DCLC and System Initialization Distinction
 
 `DCLC` clears RK8E controller state but does not reset the selected emulated RK05 drive-control state.
 
@@ -1045,9 +1101,11 @@ System initialization clears both:
 
 Neither operation erases committed media contents.
 
-# Bootstrap Compatibility
+---
 
-## Default Bootstrap Drive
+## Bootstrap Compatibility
+
+### Default Bootstrap Drive
 
 The standard bootstrap drive is drive `0`.
 
@@ -1055,7 +1113,7 @@ Drive `0` must present valid RK05-compatible media for a successful bootstrap.
 
 The mapping of drive `0` to physical storage is outside this contract.
 
-## Bootstrap Initial State
+### Bootstrap Initial State
 
 After system initialization:
 
@@ -1070,7 +1128,7 @@ The controller is idle.
 
 The controller DMA request is inactive.
 
-## Bootstrap Operation
+### Bootstrap Operation
 
 The standard RK8E bootstrap may issue `DLAG` with:
 
@@ -1096,7 +1154,7 @@ address 0001
 
 The remainder of the sector is transferred into sequential memory locations using the RK8E Current Address rules.
 
-## Bootstrap Completion
+### Bootstrap Completion
 
 Control Done is set only after the required bootstrap transfer has completed successfully.
 
@@ -1104,7 +1162,9 @@ Missing, unavailable, invalid, or unreadable drive-0 media must produce RK8E-com
 
 The controller must not silently substitute zero-filled data for unavailable bootstrap media.
 
-# Unsupported Operations
+---
+
+## Unsupported Operations
 
 `6740` is unsupported.
 
@@ -1122,7 +1182,9 @@ An unsupported operation produces:
 
 Device addresses `73` and `75` are not part of this controller.
 
-# Implementation Boundary
+---
+
+## Implementation Boundary
 
 The controller implementation must satisfy this contract but may choose its own:
 

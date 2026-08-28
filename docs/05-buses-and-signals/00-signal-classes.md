@@ -1,4 +1,4 @@
-# 00 Signal Classes
+# Signal Classes
 
 ## Purpose
 
@@ -133,8 +133,6 @@ Architecturally distributed timing signals:
 - TP
 
 ### Rules
-
-#### Rules
 
 - MCLK, TCLK, TSTEP, and TSEQ remain within the timing-generation and timing-distribution subsystem unless another architectural interface explicitly requires them.
 - TS and TP are architectural timing-distribution signals available to external I/O controllers.

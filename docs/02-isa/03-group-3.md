@@ -1,4 +1,4 @@
-## Group 3 OPR Encoding Model
+# Group 3 OPR Encoding Model
 
 Prior to the PDP-8/E, any instruction that had bit 8 and bit 0 set was reserved for the EAE, and there was no Group 3.  Beginning with the PDP-8/E MQ was included in the system regardless of whether EAE was present or not.  As a result, code that is intended to be portable to older systems should not use these instructions.
 
@@ -12,7 +12,9 @@ Prior to the PDP-8/E, any instruction that had bit 8 and bit 0 set was reserved 
 └───────────────┴────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
 ```
 
-### Flag Definition and Timing
+---
+
+## Flag Definition and Timing
 
 Each flag performs a single operation, these actions will occur at a defined TP during EXECUTE.
 
@@ -24,7 +26,9 @@ Each flag performs a single operation, these actions will occur at a defined TP 
 
 When MQA and MQL are combined, the result is the SWP instruction (7521), which exchanges AC and MQ (AC and MQ each receive the other's prior value).
 
-### Combining Operations
+---
+
+## Combining Operations
 
  Similar to Group 1, combined operations that happen at different TPs will happen in that order.  `CLA MQL` will clear AC and then move that into MQ, effectively clearing both.  Conversely `CLA MQA` will clear the AC, then OR the MQ into the AC, resulting in AC = MQ.
  

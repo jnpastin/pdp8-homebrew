@@ -1,4 +1,4 @@
-﻿# 00 Overview
+# Overview
 
 ## Purpose
 This section provides a high-level overview of the system, including goals, scope, and current design direction.

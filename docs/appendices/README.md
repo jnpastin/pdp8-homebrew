@@ -1,3 +1,3 @@
-﻿# appendices
+# Appendices
 
 Status: draft

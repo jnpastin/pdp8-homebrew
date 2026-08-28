@@ -1,6 +1,6 @@
-## Primitive Flags
+# Primitive Flags
 
-### Purpose
+## 1. Purpose
 
 Defines primitive condition signals (FLAGS) used as inputs to the control function:
 
@@ -12,7 +12,7 @@ FLAGS provide stable, register-derived interpretations of system state.
 
 ---
 
-### Timing Model
+## 2. Timing Model
 
 - Registers are latched at TP(n)
 - Registers are stable during TS(n)
@@ -22,7 +22,7 @@ FLAGS provide stable, register-derived interpretations of system state.
 
 ---
 
-### Constraints
+## 3. Constraints
 
 FLAGS must:
 
@@ -37,7 +37,7 @@ FLAGS must:
 
 ---
 
-## Flag Definitions
+## 4. Flag Definitions
 
 ---
 
@@ -268,7 +268,7 @@ IOT_WRITE_PENDING = (IOT_TRANSFER = 10)
 
 ---
 
-## Summary
+## 5. Summary
 
 This flag set is:
 

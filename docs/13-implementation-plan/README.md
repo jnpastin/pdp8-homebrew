@@ -1,3 +1,3 @@
-﻿# 13-implementation-plan
+# Implementation Plan
 
 Status: draft

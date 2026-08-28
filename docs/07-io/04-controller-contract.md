@@ -12,6 +12,8 @@ The architectural behavior does not depend on how those addresses are physically
 
 A DEC-compatible controller must default each device interface to the corresponding DEC device address when one is defined. Alternate addresses are permitted but may require software changes.
 
+---
+
 ## Selection Qualification
 
 Every controller action caused by an external IOT must be qualified by:
@@ -25,6 +27,8 @@ AND assigned phase
 
 A controller must not act on incidental IOA, IOP, TS, or TP values outside a selected external IOT.
 
+---
+
 ## Response Qualification
 
 The controller may assert:
@@ -36,6 +40,8 @@ The controller may assert:
 - `/IO_WAIT`
 
 Each assertion must satisfy the definitions in [External IOT Interface](./02-external-iot-interface.md) and [I/O Timing](./03-io-timing.md).
+
+---
 
 ## DB Ownership
 
@@ -52,6 +58,8 @@ For a write:
 
 A controller must never drive DB while unselected.
 
+---
+
 ## Controller-Local State
 
 Controller-local state changes:
@@ -62,6 +70,8 @@ Controller-local state changes:
 - use pre-TP state
 - commit simultaneously with CPU actions at the same TP
 - do not depend on a result committed at the same TP
+
+---
 
 ## Skip Condition
 
@@ -78,6 +88,8 @@ The controller may update or clear the underlying condition at TP4 only when the
 
 The controller does not perform or control the resulting CPU state change beyond asserting `IO_SKIP_REQ`.
 
+---
+
 ## I/O Wait
 
 A controller may assert `/IO_WAIT` only:
@@ -88,6 +100,8 @@ A controller may assert `/IO_WAIT` only:
 - when additional setup time is required before the next TP
 
 The controller must deassert `/IO_WAIT` when the pending operation is ready to proceed.
+
+---
 
 ## Persistent Service Requests
 
@@ -165,6 +179,8 @@ Aggregate `/DMA_REQ` is a combinational CPU input derived from `DMA_ENABLE` and 
 
 `DMA_ENABLE`, `/DMA_REQ[n]`, and aggregate `/DMA_REQ` must satisfy the applicable setup and hold requirements before CPU control samples aggregate `/DMA_REQ` at TP4.
 
+---
+
 ## DMA-Capable Controllers
 
 A DMA-capable controller additionally must:
@@ -184,6 +200,8 @@ A DMA-capable controller additionally must:
 - tolerate selection termination at the configured arbiter burst boundary
 - resume through normal re-arbitration
 
+---
+
 ## Physical Implementation Boundary
 
 The following are outside this architectural contract:
@@ -194,6 +212,8 @@ The following are outside this architectural contract:
 - electrical driver selection
 - connector assignment
 - controller-local counter widths
+
+---
 
 ## Asynchronous Event Boundary
 

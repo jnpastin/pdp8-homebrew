@@ -1,4 +1,4 @@
-# 08 Bus Ownership Matrix
+# Bus Ownership Matrix
 
 ## Purpose
 

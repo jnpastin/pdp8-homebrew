@@ -1,4 +1,4 @@
-# 05 Class E - Local and Internal Signals
+# Class E - Local and Internal Signals
 
 ## Purpose
 

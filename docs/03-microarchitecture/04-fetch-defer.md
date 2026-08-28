@@ -1,6 +1,6 @@
-## FETCH and DEFER Execution
+# FETCH and DEFER Execution
 
-### Purpose
+## Purpose
 
 Defines the execution behavior of the FETCH and DEFER major states.
 

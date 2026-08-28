@@ -1,10 +1,12 @@
-# 06 Memory
+# Memory
 
 ## Purpose
 
 This section defines the memory subsystem.
 
 The memory subsystem is a bounded storage component that stores 12-bit words and responds to memory operations presented at the memory interface.
+
+---
 
 ## Scope
 
@@ -30,6 +32,8 @@ Section 6 does not define:
 - DMA sequencing or arbitration
 - physical backplane implementation
 
+---
+
 ## Model Summary
 
 Memory is addressed through the memory-facing address term MEM_ADDR.
@@ -44,6 +48,8 @@ Where:
 - AB provides the 12-bit address value
 
 MEM_ADDR describes what memory observes at its interface. It is not a replacement for EA and is not a general system-wide address term.
+
+---
 
 ## Interface Summary
 
@@ -61,11 +67,15 @@ During a read, memory drives MDB.
 
 During a write, memory observes MDB.
 
+---
+
 ## Technology Independence
 
 The logical memory model is independent of physical memory technology.
 
 The memory subsystem may be implemented using SRAM, MRAM, FRAM, nvSRAM, battery-backed SRAM, or another suitable technology, provided the implementation satisfies the memory-interface behavior defined in this section.
+
+---
 
 ## Contents
 
@@ -77,6 +87,7 @@ The memory subsystem may be implemented using SRAM, MRAM, FRAM, nvSRAM, battery-
 - [DMA & Console Access](./06-dma-and-console-access.md)
 - [Implementation Constraints](./07-implementation-constraints.md)
 
+---
 
 ## Invariants
 
@@ -90,6 +101,8 @@ The memory subsystem may be implemented using SRAM, MRAM, FRAM, nvSRAM, battery-
 - Memory observes MDB during valid writes.
 - Memory behavior is independent of access origin.
 - Physical implementation must not change logical memory behavior.
+
+---
 
 ## Summary
 

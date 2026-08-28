@@ -1,6 +1,6 @@
-## Control Output Signal Index
+# Control Output Signal Index
 
-### Purpose
+## 1. Purpose
 
 Defines the complete and authoritative index of all control output signals. 
 
@@ -12,7 +12,7 @@ All definitions reside in:
 
 ---
 
-## Domain Classification
+## 2. Domain Classification
 
 Signals are partitioned into three strictly disjoint domains:
 
@@ -24,14 +24,14 @@ Each signal appears exactly once in this index.
 
 ---
 
-## Microarchitectural Control Signals
+## 3. Microarchitectural Control Signals
 
 Defined in:
 - [Microarchitectural Control Signals](./01-microarchitectural-control-signals.md)
 
 ---
 
-### Enable Signals
+### 3.1 Enable Signals
 
 - [AC_LOAD](./01-microarchitectural-control-signals.md#ac_load)  
 - [CIFP_LOAD](./01-microarchitectural-control-signals.md#cifp_load)  
@@ -54,7 +54,7 @@ Defined in:
 
 ---
 
-### Select Signals
+### 3.2 Select Signals
 
 - [AB_SRC](./01-microarchitectural-control-signals.md#ab_src)  
 - [AC_SRC](./01-microarchitectural-control-signals.md#ac_src)  
@@ -75,7 +75,7 @@ Defined in:
 
 ---
 
-### Data Value Signals
+### 3.3 Data Value Signals
 
 - [CIFP_VAL](./01-microarchitectural-control-signals.md#cifp_val)  
 - [DB_INPUT](./01-microarchitectural-control-signals.md#db_input)  
@@ -92,14 +92,14 @@ Defined in:
 
 ---
 
-## Architectural Control Signals
+## 4. Architectural Control Signals
 
 Defined in:
 - [Architectural Control Signals](./02-architectural-control-signals.md)
 
 ---
 
-### Memory Interface
+### 4.1 Memory Interface
 
 - [/RD](./02-architectural-control-signals.md#31-memory-read-rd)  
 - [/WR](./02-architectural-control-signals.md#32-memory-write-wr)  
@@ -107,7 +107,7 @@ Defined in:
 
 ---
 
-### I/O Interface
+### 4.2 I/O Interface
 
 - [/DB_READ](./02-architectural-control-signals.md#33-db_read)  
 - [/DB_WRITE](./02-architectural-control-signals.md#34-db_write)  
@@ -117,14 +117,14 @@ Defined in:
 
 ---
 
-## Sequencing Control Signals
+## 5. Sequencing Control Signals
 
 Defined in:
 - [Sequencing Control Signals](./03-sequencing-control-signals.md)
 
 ---
 
-### Control Flow
+### 5.1 Control Flow
 
 - [MS_NEXT](./03-sequencing-control-signals.md#31-next-major-state-ms_next)  
 - [RUN_NEXT](./03-sequencing-control-signals.md#32-run-state-next-value-run_next)  

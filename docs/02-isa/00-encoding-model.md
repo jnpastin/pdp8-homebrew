@@ -1,8 +1,8 @@
-## Instruction Encoding Model
+# Instruction Encoding Model
 
 Status: normative
 
-### Purpose
+## Purpose
 
 Defines how IR bits map directly into control behavior for a ROM-based microarchitecture.
 
@@ -85,6 +85,8 @@ Where:
 The CPU implements two internal IOT device groups directly. See the [IOT](./04-iot.md) doc for full definitions:
 - Device 0 - processor IOTs (interrupt and flag control)
 - Devices 20-27 - memory extension control (field instructions)
+
+---
 
 ## OPR Model
 

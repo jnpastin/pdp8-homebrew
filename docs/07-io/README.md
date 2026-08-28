@@ -1,10 +1,12 @@
-## I/O Subsystem
+# I/O Subsystem
 
-### Purpose
+## Purpose
 
 Section 7 defines the architectural interface between the CPU, external I/O controllers, the DMA arbiter, and memory-facing DMA devices.
 
-### Scope
+---
+
+## Scope
 
 This section defines:
 
@@ -27,7 +29,9 @@ This section does not define:
 
 Those items belong to the physical implementation documentation.
 
-### Common Architecture Documents
+---
+
+## Common Architecture Documents
 
 - [I/O Architecture](./01-io-architecture.md)
 - [External IOT Interface](./02-external-iot-interface.md)
@@ -38,14 +42,18 @@ Those items belong to the physical implementation documentation.
 - [Invalid Conditions](./07-invalid-conditions.md)
 - [Device Address Map](./08-device-address-map.md)
 
-### Controller Documents
+---
+
+## Controller Documents
 
 - [Read Me](./controllers/README.md)
 - [KL8E Equivalent Serial Controller(Teletype keyboard/printer alternative)](./controllers/01-kl8e-uart.md)
 - [PC8E Equivalent Paper-Tape Controller](./controllers/02-pc8e-paper-tape.md)
 - [RK8E Equivalent Disk Controller](./controllers/03-rk8e-storage.md)
 
-### Existing Authoritative Dependencies
+---
+
+## Existing Authoritative Dependencies
 
 - [IOT Instruction Detail](../02-isa/04-iot.md)
 - [IOT Execution](../03-microarchitecture/06-iot-execution.md)
@@ -58,7 +66,9 @@ Those items belong to the physical implementation documentation.
 - [Memory Interface](../06-memory/02-memory-interface.md)
 - [Timing Architecture](../09-timing/02-timing-architecture.md)
 
-### Core Invariants
+---
+
+## Core Invariants
 
 - I/O device selection is independent of physical placement.
 - External controllers receive IOA and IOP as separate interfaces.

@@ -1,6 +1,6 @@
-## Control Input Signal Index
+# Control Input Signal Index
 
-### Purpose
+## 1. Purpose
 
 Defines the complete and authoritative index of all control input signals.
 
@@ -13,7 +13,7 @@ All definitions reside in:
 
 ---
 
-## Domain Classification
+## 2. Domain Classification
 
 Input signals are grouped into four domains:
 
@@ -26,7 +26,7 @@ Each signal appears exactly once.
 
 ---
 
-## Primitive Flags
+## 3. Primitive Flags
 
 Defined in:
 - [Primitive Flags](./01-flags.md)
@@ -46,14 +46,14 @@ Defined in:
 
 ---
 
-## IR-Derived Signals
+## 4. IR-Derived Signals
 
 Defined in:
 - [IR Derived Fields](./02-ir-derived-fields.md)
 
 ---
 
-### IR Class Flags
+### 4.1 IR Class Flags
 
 - [IR_IS_IOT](./02-ir-derived-fields.md#ir_is_iot)  
 - [IR_IS_MRI](./02-ir-derived-fields.md#ir_is_mri)  
@@ -61,20 +61,20 @@ Defined in:
 
 ---
 
-### Instruction Detection
+### 4.2 Instruction Detection
 
 - [IR_IS_ISZ](./02-ir-derived-fields.md#ir_is_isz)  
 
 ---
 
-### Addressing Mode
+### 4.3 Addressing Mode
 
 - [IR_INDIRECT](./02-ir-derived-fields.md#ir_indirect)  
 - [IR_ZERO_PAGE](./02-ir-derived-fields.md#ir_zero_page)  
 
 ---
 
-### OPR Class
+### 4.4 OPR Class
 
 - [IR_OPR_GROUP1](./02-ir-derived-fields.md#ir_opr_group1)  
 - [IR_OPR_GROUP2](./02-ir-derived-fields.md#ir_opr_group2)  
@@ -82,7 +82,7 @@ Defined in:
 
 ---
 
-### OPR Bit Flags
+### 4.5 OPR Bit Flags
 
 - [IR_OPR_BSW](./02-ir-derived-fields.md#ir_opr_bsw)  
 - [IR_OPR_CLA](./02-ir-derived-fields.md#ir_opr_cla)  
@@ -101,7 +101,7 @@ Defined in:
 
 ---
 
-### Memory Management Flags
+### 4.6 Memory Management Flags
 
 - [IR_READS_DF](./02-ir-derived-fields.md#ir_reads_df)  
 - [IR_READS_IB](./02-ir-derived-fields.md#ir_reads_ib)  
@@ -112,7 +112,7 @@ Defined in:
 
 ---
 
-### Field Extraction Signals
+### 4.7 Field Extraction Signals
 
 - [IR_ADDR](./02-ir-derived-fields.md#ir_addr)  
 - [IR_DF](./02-ir-derived-fields.md#ir_df)  
@@ -121,7 +121,7 @@ Defined in:
 
 ---
 
-## Derived Flags
+## 5. Derived Flags
 
 Defined in: [Derived Flags](./03-derived-flags.md)
 
@@ -133,11 +133,11 @@ Defined in: [Derived Flags](./03-derived-flags.md)
 
 ---
 
-## External Inputs
+## 6. External Inputs
 
 Defined in: [External Inputs](./04-external-inputs.md)
 
-### Front Panel Commands
+### 6.1 Front Panel Commands
 - [FP_START](./04-external-inputs.md#fp_start)
 - [FP_CONTINUE](./04-external-inputs.md#fp_continue)
 - [FP_STOP](./04-external-inputs.md#fp_stop)
@@ -145,19 +145,19 @@ Defined in: [External Inputs](./04-external-inputs.md)
 - [FP_EXAMINE](./04-external-inputs.md#fp_examine)
 - [FP_DEPOSIT](./04-external-inputs.md#fp_deposit)
 
-### Front Panel Modes
+### 6.2 Front Panel Modes
 - [FP_SINGLE_INSTRUCTION](./04-external-inputs.md#fp_single_instruction)
 - [FP_SINGLE_STEP](./04-external-inputs.md#fp_single_step)
 
-### Front Panel Data
+### 6.3 Front Panel Data
 - [FP_IF](./04-external-inputs.md#fp_if)
 - [FP_DF](./04-external-inputs.md#fp_df)
 
-### External Requests
+### 6.4 External Requests
 - [/INT_REQ](./04-external-inputs.md#int_req)
 - [/DMA_REQ](./04-external-inputs.md#dma_req)
 
-### External IOT Response Inputs
+### 6.5 External IOT Response Inputs
 
 - [I/O_READ_REQ](./04-external-inputs.md#io_read_req)
 - [I/O_WRITE_REQ](./04-external-inputs.md#io_write_req)

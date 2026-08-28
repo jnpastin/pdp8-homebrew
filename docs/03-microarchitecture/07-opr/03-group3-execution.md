@@ -1,4 +1,4 @@
-## Group 3 Execution
+# Group 3 Execution
 
 ## Purpose
   
@@ -14,11 +14,15 @@ Instruction semantics and encoding details are defined in:
 Execution behavior follows:
 - [Execution Model](../01-execution-model.md)
 
+---
+
 ## Scope
   
 Applies to instructions where:
 - IR[11:9] = 111
 - Group 3 bit pattern is selected (see [Group 3 ISA](../../02-isa/03-group-3.md))
+
+---
 
 ## Execution Model
   
@@ -32,6 +36,8 @@ Properties:
 - μops across TS execute in TS order  
 
 All μop selection is derived directly from IR bits.
+
+---
 
 ## Instruction Definition
 

@@ -1,4 +1,4 @@
-# 09-console-execution.md
+# Console Execution
 
 ## Purpose
 
@@ -20,7 +20,7 @@ Operator-visible behavior is defined in Section 10.
 
 ---
 
-# Run and Halt Modes
+## Run and Halt Modes
 
 The processor operates in one of two modes:
 
@@ -55,7 +55,7 @@ No registers are modified unless explicitly changed by a console operation.
 
 ---
 
-# Console Operation Execution Model
+## Console Operation Execution Model
 
 While halted, console operation switches invoke bounded microoperation sequences.
 
@@ -101,7 +101,7 @@ CONTINUE
 
 ---
 
-# Halt Requests
+## Halt Requests
 
 The processor does not halt immediately when a halt request is generated.
 
@@ -121,7 +121,7 @@ A halt request remains pending until consumed.
 
 ---
 
-# Console Address Context
+## Console Address Context
 
 Console operations update both:
 
@@ -151,7 +151,7 @@ The PC is loaded via the SR, this is then used to drive MA and EA for EXAM and D
 
 ---
 
-# Load Address Operation
+## Load Address Operation
 
 Load Address sets the front panel execution context by reading IF, DF, and PC from the switches
 
@@ -181,7 +181,7 @@ The processor remains halted.
 
 ---
 
-# Examine Operation
+## Examine Operation
 
 Examine sets the address context from the PC, reads memory, and increments the PC
 
@@ -209,7 +209,7 @@ The processor remains halted.
 
 ---
 
-# Deposit Operation
+## Deposit Operation
 
 Deposit sets the address context from the PC, writes the value of the SR to memory, and increments the PC
 
@@ -246,7 +246,7 @@ The processor remains halted.
 
 ---
 
-# Start Operation
+## Start Operation
 
 Start establishes a known processor execution state.
 
@@ -284,7 +284,7 @@ The processor enters the Running state.
 
 ---
 
-# Continue Operation
+## Continue Operation
 
 Continue resumes execution from the preserved processor state.
 
@@ -315,7 +315,7 @@ TS
 
 ---
 
-# Single Instruction Mode
+## Single Instruction Mode
 
 Single Instruction is an execution mode.
 
@@ -349,7 +349,7 @@ It only changes when execution halts.
 
 ---
 
-# Single Step Mode
+## Single Step Mode
 
 Single Step is an execution mode.
 
@@ -403,7 +403,7 @@ CONTINUE
 
 ---
 
-# Timing Relationships
+## Timing Relationships
 
 Console operation switches execute as single TS-equivalent transactions while halted.
 

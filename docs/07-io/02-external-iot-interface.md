@@ -4,6 +4,8 @@
 
 This document defines external-IOT selection, response qualification, DB transfer behavior, AC behavior, and skip behavior.
 
+---
+
 ## Selection
 
 A controller is selected when all of the following are true:
@@ -14,6 +16,8 @@ IOA[5:0] = CONTROLLER_ADDRESS
 ```
 
 Only the selected controller may interpret IOP as an active operation.
+
+---
 
 ## Phase-Specific Responses
 
@@ -31,6 +35,8 @@ Controller responses are phase-specific.
 A controller must assert a response again during a later TS if another action is required.
 
 Responses must not persist across phases unless the controller intentionally requests an action in each phase.
+
+---
 
 ## I/O Read
 
@@ -63,6 +69,8 @@ AC <- AC OR DB
 
 The read occurs through `DB_READ_TO_AC`. No direct DB transfer to another CPU register is defined.
 
+---
+
 ## I/O Write
 
 `IO_WRITE_REQ` requests a CPU-to-device DB transfer during the following phase.
@@ -87,6 +95,8 @@ During the following transfer TS:
 
 At the following TP, the selected controller captures DB.
 
+---
+
 ## AC Clear
 
 `IO_CLEAR_AC_REQ` requests AC clear at the following TP.
@@ -98,6 +108,8 @@ Rules:
 - For a same-TP write and clear, the device captures the pre-TP AC value from DB and AC clears at that TP.
 - An earlier clear followed by a later read produces clear-then-OR behavior.
 - AC clear is permitted at TP2, TP3, or TP4 when the selected controller defines that operation.
+
+---
 
 ## Skip
 
@@ -121,11 +133,15 @@ Skip, read, and clear together are invalid because read and clear both write AC.
 
 The controller never modifies PC directly.
 
+---
+
 ## Same-TP Semantics
 
 CPU and controller actions committed at the same TP use pre-TP state and commit simultaneously.
 
 A result committed at a TP must not affect another decision or action committed at that same TP.
+
+---
 
 ## Inactive Controllers
 
@@ -137,6 +153,8 @@ A controller that is not selected must:
 - not capture DB
 - not modify controller state because of the IOT
 - not assert /IO_WAIT because of the IOT
+
+---
 
 ## Related Documents
 

@@ -9,6 +9,8 @@ DMA arbitration and transfer sequencing are defined in:
 - [DMA Arbitration](../07-io/06-dma-arbitration.md)
 - [DMA Interface Timing](../07-io/05-dma-interface.md)
 
+---
+
 ## Participants
 
 DMA operations involve:
@@ -25,6 +27,8 @@ The DMA arbiter observes:
 - shared TP signals
 
 The arbiter uses this timing context to update its internal arbitration state. Observing `MS` does not authorize bus ownership or permit a controller to drive DMA-owned interfaces.
+
+---
 
 ## Request Interface
 
@@ -51,12 +55,16 @@ The aggregate request identifies only that DMA service is eligible and pending. 
 
 /DMA_REQ[n], DMA_ENABLE, and aggregate /DMA_REQ must settle before the TP at which CPU control samples aggregate /DMA_REQ.
 
+---
+
 ## CPU Authorization
 
 CPU control asserts /DMA_GRANT.  
 /DMA_GRANT indicates that the CPU is in MS = DMA and has released CPU ownership of the memory interface.  
 /DMA_GRANT does not identify the selected DMA controller.  
 /DMA_GRANT is produced by the CPU and is observed by the DMA arbiter and DMA-capable controllers.
+
+---
 
 ## Controller Selection
 
@@ -80,6 +88,8 @@ No /DMA_REQ line exists for priority 15.
 No controller accepts ownership while DMA_GRANT_ID is 15.  
 Exactly one controller may accept a valid controller selection.
 
+---
+
 ## Transport Participation
 
 The granted DMA controller supplies:
@@ -90,6 +100,8 @@ The granted DMA controller supplies:
 - `MDB[11:0]` for a DMA write to memory
 
 Memory supplies MDB for a DMA read from memory.
+
+---
 
 ## Memory Read
 
@@ -107,6 +119,8 @@ Memory drives MDB.
 
 The granted controller captures MDB at TP2.
 
+---
+
 ## Memory Write
 
 A DMA memory write transfers data from the granted controller to memory.
@@ -121,6 +135,8 @@ The granted controller:
 
 Memory captures MDB at TP2.
 
+---
+
 ## Ownership
 
 During DMA ownership:
@@ -131,6 +147,8 @@ During DMA ownership:
 - The granted controller is the sole MDB producer during a DMA write.
 - CPU and DMA ownership must not overlap.
 
+---
+
 ## Arbitration Boundary
 
 The CPU does not select among DMA-capable controllers.
@@ -138,6 +156,8 @@ The CPU does not select among DMA-capable controllers.
 Memory does not arbitrate among DMA-capable controllers.
 
 Requester selection, fixed priority, bounded bursts, grant identity, CPU fairness, and re-arbitration are defined in [DMA Arbitration](../07-io/06-dma-arbitration.md).
+
+---
 
 ## Related Documents
 

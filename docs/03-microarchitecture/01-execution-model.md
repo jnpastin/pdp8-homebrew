@@ -1,6 +1,6 @@
-## Execution Model
+# Execution Model
 
-### Purpose
+## Purpose
 
 Defines how processor behavior is expressed and evaluated over time using the state model.
 

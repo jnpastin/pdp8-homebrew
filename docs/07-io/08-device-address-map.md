@@ -1,12 +1,14 @@
-## Device Address Map
+# Device Address Map
 
-### Purpose
+## Purpose
 
 This document defines the authoritative allocation of six-bit I/O device addresses.
 
 All addresses are expressed in octal.
 
-### Addressing Rules
+---
+
+## Addressing Rules
 
 - Each installed external controller has one active configured address for each device interface it implements.
 - Address configuration is independent of physical backplane position.
@@ -16,7 +18,9 @@ All addresses are expressed in octal.
 - CPU-internal device addresses are unavailable to external controllers.
 - An IOT to an unassigned address is ignored.
 
-### P1 Address Assignments
+---
+
+## P1 Address Assignments
 
 | Address | Controller | Function | Compatibility |
 |---:|---|---|---|
@@ -28,7 +32,9 @@ All addresses are expressed in octal.
 | `20` through `27` | CPU | Memory-extension IOT operations | PDP-8/E |
 | `74` | Storage controller | RK05-compatible disk control | RK8E |
 
-### Unassigned Addresses
+---
+
+## Unassigned Addresses
 
 All addresses not explicitly assigned or reserved in this document are unassigned.
 
@@ -43,7 +49,9 @@ An IOT to an unassigned address produces no controller response:
 - no interrupt effect
 - no DMA effect
 
-### Unsupported Operations
+---
+
+## Unsupported Operations
 
 An unsupported IOP value at an assigned address is ignored and produces the same result as an unassigned address.
 

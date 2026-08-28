@@ -13,6 +13,8 @@ The controller provides:
 
 This document does not define the controller implementation.
 
+---
+
 ## Scope
 
 This document defines:
@@ -44,6 +46,8 @@ This document does not define:
 
 Those items belong to the controller design and physical implementation documentation.
 
+---
+
 ## Compatibility Target
 
 The controller must reproduce the programmer-visible behavior required by the PDP-8/E PC8E high-speed paper-tape interface.
@@ -69,6 +73,8 @@ Internal implementation differences are permitted only when they do not change b
 - controller flags
 - IOT results
 
+---
+
 ## Device Addresses
 
 | Address | Function |
@@ -85,6 +91,8 @@ Alternate addresses are permitted when:
 
 The address-configuration mechanism is outside this contract.
 
+---
+
 ## Programmer-Visible State
 
 The controller presents the following state:
@@ -96,6 +104,8 @@ The controller presents the following state:
 - one shared interrupt-enable bit
 
 No additional state is visible through the PC8E-compatible device addresses.
+
+---
 
 ## Character Representation
 
@@ -121,6 +131,8 @@ For a punch operation:
 - the controller accepts `AC[7:0]`
 - `AC[11:8]` is ignored
 
+---
+
 ## Interrupt Behavior
 
 The reader and punch interfaces share one controller-local interrupt-enable bit.
@@ -138,6 +150,8 @@ AND
 ```
 
 The controller does not modify the CPU interrupt-enable state.
+
+---
 
 ## Reset State
 
@@ -160,13 +174,15 @@ Reset cancels any controller operation not yet reported as complete.
 
 Characters not yet represented by a completed programmer-visible operation may be discarded by reset.
 
-# Reader Interface
+---
 
-## Reader Buffer
+## Reader Interface
+
+### Reader Buffer
 
 The reader buffer contains the current character available to software.
 
-## Reader Flag
+### Reader Flag
 
 The reader flag indicates whether the reader buffer contains a valid character.
 
@@ -179,7 +195,7 @@ The reader flag is cleared by:
 - `RRB RFC`
 - reset
 
-## Reader Capacity Contract
+### Reader Capacity Contract
 
 After setting the reader flag, the controller must preserve the visible reader character until software reads or clears it.
 
@@ -191,7 +207,7 @@ The mechanism used to control or limit physical input is outside this contract.
 
 No reader-overrun status is visible through the PC8E-compatible interface.
 
-## Reader Operation Contract
+### Reader Operation Contract
 
 `RFC` requests acquisition of the next paper-tape character.
 
@@ -203,6 +219,8 @@ When the requested character becomes available:
 - the reader flag is set at a TP event
 
 How the controller acquires the physical character is outside this contract.
+
+---
 
 ## Device 01 IOT Table
 
@@ -216,6 +234,8 @@ How the controller acquires the physical character is outside this contract.
 | `6015` | Undefined | Ignore |
 | `6016` | RRB RFC | OR reader buffer into AC, clear reader flag, and request the next character |
 | `6017` | Undefined | Ignore |
+
+---
 
 ## RPE
 
@@ -232,6 +252,8 @@ INTERRUPT_ENABLE <- 1
 No controller response signal is required.
 
 RPE does not modify AC.
+
+---
 
 ## RSF
 
@@ -250,6 +272,8 @@ READER_FLAG
 ```
 
 RSF does not modify controller state.
+
+---
 
 ## RRB
 
@@ -276,6 +300,8 @@ READER_FLAG <- 0
 The character represented by the reader buffer is consumed at TP4.  
 RRB does not request AC clear.
 
+---
+
 ## RFC
 
 ### Controller Contract
@@ -293,6 +319,8 @@ The reader flag is set later, at a TP event, when the requested character become
 ### Response Signals
 
 No controller response signal is required.
+
+---
 
 ## RRB RFC
 
@@ -322,13 +350,16 @@ AC <- AC OR DB
 The previously visible character is consumed at TP4.
 
 The reader flag is set later, at a TP event, when the requested next character becomes available in the reader buffer. The controller must preserve the previous reader-buffer value through TP4 even if acquisition of the next character begins at TP3.
-# Punch Interface
 
-## Punch Buffer
+---
+
+## Punch Interface
+
+### Punch Buffer
 
 The punch buffer contains the character accepted through the most recent valid `PPC` or `PLS` operation.
 
-## Punch Flag
+### Punch Flag
 
 The punch flag indicates completion of the accepted programmer-visible punch operation.
 
@@ -340,7 +371,7 @@ The punch flag is cleared by:
 - `PLS`
 - reset, followed by the reset-specific set state defined above
 
-## Punch Acceptance Contract
+### Punch Acceptance Contract
 
 Software is expected to test the punch flag before supplying another character.
 
@@ -358,7 +389,7 @@ If the controller cannot accept a character supplied through `PPC` or `PLS`:
 
 The controller must not discard an already accepted character to accept a newer character.
 
-## Punch Completion Contract
+### Punch Completion Contract
 
 The punch flag must not be set merely because the character was accepted by the controller.
 
@@ -367,6 +398,8 @@ The punch flag is set only when the programmer-visible punch operation has compl
 If output cannot complete, the punch flag may remain clear indefinitely.
 
 How the controller performs or detects physical punch completion is outside this contract.
+
+---
 
 ## Device 02 IOT Table
 
@@ -380,6 +413,8 @@ How the controller performs or detects physical punch completion is outside this
 | `6025` | Undefined | Ignore |
 | `6026` | PLS | Accept `AC[7:0]`, clear punch flag, and begin the punch operation |
 | `6027` | Undefined | Ignore |
+
+---
 
 ## PCE
 
@@ -396,6 +431,8 @@ INTERRUPT_ENABLE <- 0
 No controller response signal is required.
 
 PCE does not modify AC.
+
+---
 
 ## PSF
 
@@ -415,6 +452,8 @@ PUNCH_FLAG
 
 PSF does not modify controller state.
 
+---
+
 ## PCF
 
 ### Controller Contract
@@ -428,6 +467,8 @@ PUNCH_FLAG <- 0
 ### Response Signals
 
 No controller response signal is required.
+
+---
 
 ## PPC
 
@@ -459,6 +500,8 @@ If the controller cannot accept the character:
 - no DB transfer occurs
 - the new character is discarded
 - the active punch operation is not modified
+
+---
 
 ## PLS
 
@@ -492,7 +535,9 @@ If the controller cannot accept the character:
 - the active punch operation is not modified
 - the punch flag is not cleared
 
-# Asynchronous Controller Events
+---
+
+## Asynchronous Controller Events
 
 Reader-character availability and punch completion may originate outside the system timing domain.
 
@@ -507,7 +552,9 @@ The controller may set:
 
 The implementation-specific synchronization mechanism is outside this contract.
 
-# Unsupported Operations
+---
+
+## Unsupported Operations
 
 Unsupported IOP values are ignored.
 
@@ -532,13 +579,17 @@ An ignored operation produces:
 - no interrupt-enable change
 - no interrupt effect
 
-# DMA Behavior
+---
+
+## DMA Behavior
 
 The PC8E-compatible controller does not use DMA.
 
 Reader and punch operations use programmed I/O and optional interrupts.
 
-# Implementation Boundary
+---
+
+## Implementation Boundary
 
 The controller implementation must satisfy this contract but may choose its own:
 

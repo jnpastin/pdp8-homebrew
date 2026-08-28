@@ -1,6 +1,6 @@
-## State Model
+# State Model
 
-### Purpose
+## Purpose
 
 Defines the formal execution state of the processor and the rules governing its evolution over time.
 

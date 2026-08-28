@@ -1,4 +1,4 @@
-## INTERRUPT Execution
+# INTERRUPT Execution
 
 ## Purpose
   
@@ -13,6 +13,8 @@ Interrupt semantics and programmer-visible behavior are defined in:
 Execution behavior follows:
 - [Execution Model](./01-execution-model.md)
 
+---
+
 ## Scope
   
 Applies when:
@@ -24,6 +26,8 @@ Entry into INTERRUPT is determined by control based on:
 
 Control conditions governing entry are defined in:
 - [Control Model](../04-control/01-control-model.md)
+
+---
 
 ## Execution Model
   
@@ -48,7 +52,7 @@ Properties:
 
 ---
 
-## INTERRUPT Execution
+## Execution Sequence
 
 ### TS1 — PC Capture
   

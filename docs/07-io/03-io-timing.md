@@ -4,6 +4,8 @@
 
 This document defines external-IOT phase usage, TP commit rules, controller timing participation, and I/O wait behavior.
 
+---
+
 ## Shared Timing Interface
 
 TS and TP signals are exposed to external controllers through the I/O interface.
@@ -11,6 +13,8 @@ TS and TP signals are exposed to external controllers through the I/O interface.
 Controllers use the shared TP events directly. Dedicated I/O commit strobes are not defined.
 
 All controller-local state changes caused by an IOT occur only at TP events.
+
+---
 
 ## IOT Phase Allocation
 
@@ -72,6 +76,8 @@ For the standard external-IOT read and write timing:
 - CPU control asserts `/DB_READ` or `/DB_WRITE` during TS4
 - the DB transfer commits at TP4
 
+---
+
 ## TP4 Sequencing Boundary
 
 Device actions may commit at TP4 while CPU sequencing and interrupt decisions also commit at TP4.
@@ -82,6 +88,8 @@ Constraints:
 - A controller result committed at TP4 cannot affect the sequencing or interrupt decision committed at TP4.
 - A controller may assert `/INT_REQ` during TS4 when the assertion depends only on registered controller state available before TP4.
 - DB ownership must end before ownership changes for the following major state.
+
+---
 
 ## I/O Wait
 
@@ -97,6 +105,8 @@ Properties:
 - A TP cannot be extended, repeated, or suppressed by `/IO_WAIT`.
 - The selected controller is contractually responsible for qualifying `/IO_WAIT` with `IOT_ACTIVE` and address match.
 
+---
+
 ## TSTEP Progression Requirement
 
 TSTEP transition logic must:
@@ -108,6 +118,8 @@ TSTEP transition logic must:
 - advance normally when `/IO_WAIT` is deasserted
 - advance through a TP position independently of `/IO_WAIT`
 
+---
+
 ## Stability During Wait
 
 While a non-TP TSTEP is held by `/IO_WAIT`, all signals required for the pending operation must remain stable, including:
@@ -118,6 +130,8 @@ While a non-TP TSTEP is held by `/IO_WAIT`, all signals required for the pending
 - applicable controller response intent
 - DB ownership and source selection when already active
 - controller data required by the pending operation
+
+---
 
 ## External-IOT Timing with Wait
 
@@ -142,6 +156,8 @@ The diagram shows a hold during TS3. The same rule applies to any setup TSTEP th
 
 External I/O signals are classified by how long they remain valid and how the receiving subsystem samples them.
 
+---
+
 ## Phase-Specific Response Signals
 
 The following signals apply only to one assigned TS:
@@ -164,6 +180,8 @@ Rules:
 - `IO_CLEAR_AC_REQ` requests AC clear at the immediately following TP.
 - `IO_SKIP_REQ` is valid only during TS4 and requests PC increment at TP4.
 
+---
+
 ## Setup-Hold Request
 
 `/IO_WAIT` is a setup-hold request.
@@ -176,6 +194,8 @@ Rules:
 - `/IO_WAIT` is ignored at a TP position.
 - `/IO_WAIT` does not itself commit an operation or change controller state.
 - Deasserting `/IO_WAIT` permits normal TSTEP progression to resume.
+
+---
 
 ## Persistent Service Requests
 
@@ -218,6 +238,8 @@ Rules:
 - No controller may act while DMA_GRANT_ID is 15.
 - Grant withdrawal follows the ownership-release ordering defined in [DMA Arbitration](./06-dma-arbitration.md).
 
+---
+
 ## Data and Address Signals
 
 Controller-driven DB, MFB, AB, and MDB values are transfer-specific signals.
@@ -230,9 +252,13 @@ Rules:
 - The controller must release the applicable bus before ownership transfers to another participant.
 - MFB and AB must remain stable for the complete asserted /RD or /WR interval.
 
+---
+
 ## Synchronization Boundary
 
 The physical implementation must synchronize `/IO_WAIT` before it influences TSTEP progression. The controller contract must prevent asynchronous state changes or repeated commit events.
+
+---
 
 ## Related Documents
 

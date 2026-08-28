@@ -1,6 +1,6 @@
-## OPR Execution
+# OPR Execution
 
-### Purpose
+## Purpose
   
 Defines execution behavior for Operate Instructions (OPR).
 
@@ -8,7 +8,7 @@ OPR instructions differ from other instruction classes in that behavior is deter
 
 ---
 
-### Execution Context
+## Execution Context
   
 Execution follows the general model defined in:
 
@@ -19,7 +19,7 @@ This directory defines only OPR-specific execution behavior.
 
 ---
 
-### OPR Model
+## OPR Model
   
 OPR instructions are identified by:
 
@@ -36,7 +36,7 @@ Properties:
 
 ---
 
-### Group Structure
+## Group Structure
   
 OPR instructions are divided into groups based on IR bit patterns.
 
@@ -54,7 +54,7 @@ Each group defines:
 
 ---
 
-### Constraints
+## Constraints
   
 - All behavior must be expressed as μops
 - Multiple μops may be active within the same TS
@@ -63,7 +63,7 @@ Each group defines:
 
 ---
 
-### Summary
+## Summary
   
 OPR execution is defined as:
 

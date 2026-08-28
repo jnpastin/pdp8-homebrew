@@ -1,6 +1,6 @@
-## Microoperation Sequencing
+# Microoperation Sequencing
 
-### Purpose
+## Purpose
 
 Defines how μops are selected, evaluated, and committed over time.
 

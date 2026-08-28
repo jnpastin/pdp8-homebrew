@@ -1,4 +1,4 @@
-## Group 2 Execution
+# Group 2 Execution
 
 ## Purpose
   
@@ -15,11 +15,15 @@ Instruction semantics and encoding details are defined in:
 Execution behavior follows:
 - [Execution Model](../01-execution-model.md)
 
+---
+
 ## Scope
   
 Applies to instructions where:
 - IR[11:9] = 111
 - Group 2 bit pattern is selected (see [Group 2 ISA](../../02-isa/02-group-2.md))
+
+---
 
 ## Execution Model
   
@@ -38,6 +42,8 @@ Properties:
 - μops execute concurrently within a TS  
 
 All μop selection and condition evaluation are derived directly from IR bits.
+
+---
 
 ## Instruction Definition
 

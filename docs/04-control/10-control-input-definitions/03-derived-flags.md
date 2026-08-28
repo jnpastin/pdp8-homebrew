@@ -1,6 +1,6 @@
-## Derived Flags
+# Derived Flags
 
-### Purpose
+## 1. Purpose
 
 Defines fully pre-decoded control condition signals derived from:
 
@@ -11,7 +11,7 @@ Derived flags are combinational and reduce multi-input control conditions into s
 
 ---
 
-## Derived Flag Definitions
+## 2. Derived Flag Definitions
 
 ---
 
@@ -199,7 +199,7 @@ AND (/INT_REQ = 0)
 
 ---
 
-#### IF_CHANGE_PENDING
+### IF_CHANGE_PENDING
 
 **Inputs:**
 - DIF
@@ -222,7 +222,7 @@ IF_CHANGE_PENDING =
 
 ---
 
-## Summary
+## 3. Summary
 
 Derived flags fully encode all composite control conditions for:
 

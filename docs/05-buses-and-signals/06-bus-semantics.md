@@ -1,4 +1,4 @@
-# 06 Bus Semantics
+# Bus Semantics
 
 ## Purpose
 
@@ -28,6 +28,8 @@ Operation semantics are defined in:
 
 - [Control Constraints](../04-control/03-control-constraints.md)
 - [Architectural Control Signals](../04-control/20-control-output-definitions/02-architectural-control-signals.md)
+
+---
 
 ## Ownership and Validity
 
@@ -138,6 +140,8 @@ Bus semantics do not define domain membership or crossing behavior.
 - Consumers must not infer meaning from bus values alone.
 - Consumers shall act only within the context of defined operations.
 - Domain boundaries remain independent unless explicitly crossed through defined mechanisms.
+
+---
 
 ## Summary
 

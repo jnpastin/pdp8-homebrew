@@ -1,4 +1,4 @@
-# 02 Class B - Global Control Signals
+# Class B - Global Control Signals
 
 ## Purpose
 

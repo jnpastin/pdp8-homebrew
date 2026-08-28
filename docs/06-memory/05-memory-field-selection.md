@@ -6,6 +6,8 @@ This document defines how the memory subsystem interprets the memory field prese
 
 The memory subsystem does not choose the memory field. It only observes the field value presented at the memory interface.
 
+---
+
 ## Field Boundary
 
 MFB provides the memory field value used by the memory subsystem.
@@ -15,6 +17,8 @@ The memory subsystem treats MFB as part of MEM_ADDR:
 MEM_ADDR = {MFB, AB}
 
 MFB is not interpreted as IF, DF, or any other CPU register by the memory subsystem. It is only the field value currently presented to memory.
+
+---
 
 ## Field Selection Responsibility
 
@@ -32,6 +36,8 @@ The memory subsystem does not determine whether MFB came from:
 
 From the memory subsystem perspective, all valid memory operations use the MFB value already present at the memory interface.
 
+---
+
 ## Relationship to IF and DF
 
 IF and DF are CPU-side field registers.
@@ -39,6 +45,8 @@ IF and DF are CPU-side field registers.
 The memory subsystem does not inspect IF or DF directly.
 
 When a memory operation occurs, memory observes only MFB. If MFB was derived from IF, DF, or another source, that selection has already occurred before memory interprets the operation.
+
+---
 
 ## Fielded Memory Space
 
@@ -54,11 +62,15 @@ Equivalently:
 
 M[MEM_ADDR]
 
+---
+
 ## Field Stability
 
 During any valid memory operation, MFB must remain stable for the active operation window.
 
 If MFB changes while /RD or /WR is asserted, the memory operation is invalid.
+
+---
 
 ## Field Origin Independence
 
@@ -73,6 +85,8 @@ A memory access with the same MFB and AB selects the same memory word whether th
 
 Operation origin does not change memory field interpretation.
 
+---
+
 ## Invariants
 
 - MFB is the memory field input to the memory subsystem.
@@ -83,6 +97,8 @@ Operation origin does not change memory field interpretation.
 - AB forms the 12-bit address portion of MEM_ADDR.
 - MEM_ADDR is defined as {MFB, AB}.
 - MFB must remain stable during an active memory operation.
+
+---
 
 ## Summary
 

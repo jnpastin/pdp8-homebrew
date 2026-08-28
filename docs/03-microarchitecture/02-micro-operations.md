@@ -1,6 +1,6 @@
-## Micro-Operations (μops)
+# Micro-Operations (μops)
 
-### Purpose
+## Purpose
 
 Defines the complete set of atomic state transformations available to the system.
 

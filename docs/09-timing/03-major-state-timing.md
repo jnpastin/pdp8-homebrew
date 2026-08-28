@@ -1,10 +1,11 @@
+# Major State Timing
 
-## Major State Timing
-
-### Purpose
+## Purpose
 Defines timing behavior of each Major State using TS/TP model.
 
-### Core Model
+---
+
+## Core Model
 - TS = setup/stabilization window
 - TP = state transition event
 
@@ -171,11 +172,11 @@ No result committed at a TP may affect another action or decision committed at t
 
 ---
 
-### DMA
+## DMA
 
 Each DMA major-state cycle with a valid controller selection transfers exactly one memory word at TP2.
 
-#### TS1
+### TS1
 
 If no controller is selected:
 
@@ -188,12 +189,12 @@ If a burst continues:
 - the active grant remains selected;
 - arbitration is not repeated.
 
-#### TP1
+### TP1
 
 - A new DMA_GRANT_ID commits when arbitration was required.
 - No memory transfer commits.
 
-#### TS2
+### TS2
 
 The granted controller:
 
@@ -204,23 +205,23 @@ The granted controller:
 
 For a DMA read, memory drives MDB.
 
-#### TP2
+### TP2
 
 - One DMA memory transfer commits.
 - For a read, the granted controller captures MDB.
 - For a write, memory captures MDB.
 
-#### TS3
+### TS3
 
 - Completion of the TP2 transfer is available to the granted controller and DMA arbiter.
 
-#### TP3
+### TP3
 
 - The controller updates its complete-operation address.
 - The controller updates its remaining operation word count.
 - The DMA arbiter increments the active burst count.
 
-#### TS4
+### TS4
 
 The DMA arbiter determines whether DMA service continues.
 
@@ -228,7 +229,7 @@ The DMA arbiter determines whether DMA service continues.
 - If the current burst ends, aggregate `/DMA_REQ` is deasserted.
 - Pending controller request lines may remain asserted after a burst ends.
 
-#### TP4
+### TP4
 
 ```text
 /DMA_REQ = 0 -> MS_NEXT = DMA

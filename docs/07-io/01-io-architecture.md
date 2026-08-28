@@ -4,6 +4,8 @@
 
 This document defines the architectural participants, interfaces, and boundaries of the I/O subsystem.
 
+---
+
 ## Architectural Participants
 
 The I/O subsystem includes:
@@ -13,6 +15,8 @@ The I/O subsystem includes:
 - DMA-capable controllers
 - DMA arbiter
 - memory subsystem
+
+---
 
 ## External IOT Interface
 
@@ -29,6 +33,8 @@ External IOT execution uses:
 - `/IO_WAIT`
 - shared TS and TP timing signals
 
+---
+
 ## I/O Subsystem Context
 
 The following diagram shows the major I/O subsystem participants and the logical interfaces between them.
@@ -43,6 +49,8 @@ The diagram distinguishes:
 - DMA memory access performed by the selected controller
 
 The diagram is an architectural overview. The detailed behavioral, timing, ownership, and signal-polarity rules in the applicable interface documents remain authoritative.
+
+---
 
 ## Device Addressing
 
@@ -60,6 +68,8 @@ Properties:
 
 A nondefault address may require corresponding software or handler changes. Address configurability does not alter the required operation semantics of a controller claiming compatibility with a DEC device.
 
+---
+
 ## I/O Operation Field
 
 `IOP[2:0]` carries `IR[2:0]` unchanged during an external IOT.
@@ -72,6 +82,8 @@ Properties:
 - A custom controller may interpret IOP as independent function bits, an encoded operation, or a documented mixture.
 - The conventional status, state-change, and transfer pattern is guidance rather than a system-wide requirement.
 
+---
+
 ## External IOT Validity
 
 `IOT_ACTIVE` identifies execution of an external IOT.
@@ -79,6 +91,8 @@ Properties:
 Controllers must interpret IOA, IOP, controller response signals, and IOT timing behavior only while `IOT_ACTIVE` is asserted.
 
 IOA and IOP are not required to be cleared outside an external IOT.
+
+---
 
 ## CPU-Visible Controller Responses
 
@@ -90,6 +104,8 @@ The selected controller may request the following CPU-visible actions:
 - `IO_CLEAR_AC_REQ`: clear AC
 
 Controller-local state changes do not require a separate CPU response signal. They are defined by the controller and committed at the assigned TP.
+
+---
 
 ## DMA Boundary
 
@@ -118,6 +134,8 @@ Separate combinational aggregation logic continuously derives aggregate `/DMA_RE
 CPU control observes only aggregate `/DMA_REQ`. It does not identify or select an individual DMA controller.
 
 During DMA, the granted controller directly participates in the memory interface and supplies the operation-specific memory-facing signals defined in [DMA Interface](./05-dma-interface.md).
+
+---
 
 ## Related Documents
 

@@ -1,6 +1,6 @@
-### External Inputs
+# External Inputs
 
-#### Purpose
+## 1. Purpose
  
 Defines external input signals (`EXT`) used as inputs to the control function:
  
@@ -17,7 +17,9 @@ Related:
 - [Primitive Flags](./01-flags.md)
 - [Derived Flags](./03-derived-flags.md)
 
-### Timing Model
+---
+
+## 2. Timing Model
 
 External inputs must be stable for the duration of the timing state in which they are evaluated.
 
@@ -28,7 +30,9 @@ Constraints:
 - External inputs must not bypass the control function.
 - External inputs must not introduce asynchronous state changes.
 
-### Signal Classes
+---
+
+## 3. Signal Classes
 
 External inputs are grouped into:
 
@@ -38,7 +42,9 @@ External inputs are grouped into:
 - External Request Inputs
 - External IOT Response Inputs
 
-### Front-Panel Command Inputs
+---
+
+## 4. Front-Panel Command Inputs
 
 Front-panel command inputs are momentary operator commands.
 
@@ -52,7 +58,7 @@ During normal execution, front-panel command inputs are ignored except for `FP_S
 
 During halted execution, front-panel command inputs may select a single console operation.
 
-#### FP_START
+### FP_START
 
 **Name:** Front Panel Start Command  
 **Type:** External Command Input  
@@ -73,7 +79,7 @@ During halted execution, front-panel command inputs may select a single console 
 - meaningful only when `RUN = 0`
 - must be treated as a momentary command input
 
-#### FP_CONTINUE
+### FP_CONTINUE
 
 **Name:** Front Panel Continue Command  
 **Type:** External Command Input  
@@ -94,7 +100,7 @@ During halted execution, front-panel command inputs may select a single console 
 - meaningful only when `RUN = 0`
 - must be treated as a momentary command input
 
-#### FP_STOP
+### FP_STOP
 
 **Name:** Front Panel Stop Command  
 **Type:** External Command Input  
@@ -114,7 +120,7 @@ During halted execution, front-panel command inputs may select a single console 
 - must not halt execution immediately
 - contributes only to halt-request behavior
 
-#### FP_LOAD_ADDRESS
+### FP_LOAD_ADDRESS
 
 **Name:** Front Panel Load Address Command  
 **Type:** External Command Input  
@@ -134,7 +140,7 @@ During halted execution, front-panel command inputs may select a single console 
 - ignored during normal execution
 - must be treated as a momentary command input
 
-#### FP_EXAMINE
+### FP_EXAMINE
 
 **Name:** Front Panel Examine Command  
 **Type:** External Command Input  
@@ -154,7 +160,7 @@ During halted execution, front-panel command inputs may select a single console 
 - ignored during normal execution
 - must be treated as a momentary command input
 
-#### FP_DEPOSIT
+### FP_DEPOSIT
 
 **Name:** Front Panel Deposit Command  
 **Type:** External Command Input  
@@ -174,13 +180,15 @@ During halted execution, front-panel command inputs may select a single console 
 - ignored during normal execution
 - must be treated as a momentary command input
 
-### Front-Panel Mode Inputs
+---
+
+## 5. Front-Panel Mode Inputs
 
 Front-panel mode inputs are persistent operator-selected modes.
 
 These inputs do not initiate execution.
 
-#### FP_SINGLE_INSTRUCTION
+### FP_SINGLE_INSTRUCTION
 
 **Name:** Front Panel Single Instruction Mode  
 **Type:** External Mode Input  
@@ -200,7 +208,7 @@ These inputs do not initiate execution.
 - does not modify instruction behavior
 - affects only run/stop behavior
 
-#### FP_SINGLE_STEP
+### FP_SINGLE_STEP
 
 **Name:** Front Panel Single Step Mode  
 **Type:** External Mode Input  
@@ -220,11 +228,13 @@ These inputs do not initiate execution.
 - does not modify instruction behavior
 - affects only run/stop behavior
 
-### Front-Panel Data Inputs
+---
+
+## 6. Front-Panel Data Inputs
 
 Front-panel data inputs provide externally selected values used by console operations.
 
-#### FP_IF
+### FP_IF
 
 **Name:** Front Panel Instruction Field Input  
 **Type:** External Data Input  
@@ -243,7 +253,7 @@ Front-panel data inputs provide externally selected values used by console opera
 - must be stable when sampled
 - must not directly modify IF
 
-#### FP_DF
+### FP_DF
 
 **Name:** Front Panel Data Field Input  
 **Type:** External Data Input  
@@ -261,9 +271,11 @@ Front-panel data inputs provide externally selected values used by console opera
 - must be stable when sampled
 - must not directly modify DF
 
-### External Request Inputs
+---
 
-#### /DMA_REQ
+## 7. External Request Inputs
+
+### /DMA_REQ
 
 **Name:** DMA Request  
 **Type:** External Request Input  
@@ -292,7 +304,7 @@ Front-panel data inputs provide externally selected values used by console opera
 - must not directly assert memory, address, or data-bus control
 - may be deasserted while controller `/DMA_REQ[n]` lines remain asserted when `DMA_ENABLE = 0`
 
-#### /INT_REQ
+### /INT_REQ
 
 **Name:** Interrupt Request  
 **Type:** External Request Input  
@@ -314,7 +326,7 @@ Front-panel data inputs provide externally selected values used by console opera
 
 ---
 
-### External IOT Response Inputs
+## 8. External IOT Response Inputs
 
 External-IOT response inputs originate in the selected external controller and are consumed by CPU control or timing logic.
 
@@ -326,9 +338,9 @@ Shared properties:
 - The signals participate in EXT.
 - Phase-specific response signals must be stable during the control-evaluation window preceding their commit TP.
 - A response signal requests CPU or timing behavior and does not directly modify CPU state.
-- Signal behavior must satisfy the [External IOT Interface](../../07-io/02-external-iot-interface./07-io/03-io-timing.md).
+- Signal behavior must satisfy the [External IOT Interface](../../07-io/02-external-iot-interface.md).
 
-#### IO_READ_REQ
+### IO_READ_REQ
 
 **Name:** I/O Read Request  
 **Type:** External IOT Response Input  
@@ -360,7 +372,7 @@ Shared properties:
 - Must not directly modify AC.
 - The selected controller drives DB only while CPU control asserts `/DB_READ` during the following transfer phase.
 
-#### IO_WRITE_REQ
+### IO_WRITE_REQ
 
 **Name:** I/O Write Request  
 **Type:** External IOT Response Input  
@@ -391,7 +403,7 @@ Shared properties:
 - Must not cause the controller to capture DB during the request phase.
 - The selected controller captures DB only at the TP following the transfer phase in which CPU control asserts `/DB_WRITE`.
 
-#### IO_SKIP_REQ
+### IO_SKIP_REQ
 
 **Name:** I/O Skip Request  
 **Type:** External IOT Response Input  
@@ -416,7 +428,7 @@ Shared properties:
 - Must not depend on a result committed at TP4.
 - Must not directly modify PC.
 
-#### IO_CLEAR_AC_REQ
+### IO_CLEAR_AC_REQ
 
 **Name:** I/O Clear AC Request  
 **Type:** External IOT Response Input  
@@ -443,7 +455,7 @@ Shared properties:
 - May coincide with `IO_WRITE_REQ`.
 - Must not directly modify AC.
 
-#### /IO_WAIT
+### /IO_WAIT
 
 **Name:** I/O Wait Request  
 **Type:** External Timing Request Input  
@@ -475,7 +487,7 @@ Detailed behavior is defined in [I/O Timing](../../07-io/03-io-timing.md)
 
 ---
 
-### Summary
+## 9. Summary
 
 External inputs define the complete set of non-register inputs available to control.
 
