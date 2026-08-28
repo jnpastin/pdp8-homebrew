@@ -150,7 +150,7 @@ Notes:
   - No datapath μop is performed
   - Behavior is implemented via control signals
   - No register state is modified
-  - Control behavior is defined in [Control Model](../04-control/01-control-model.md)
+  - Control behavior is defined in [Control Model](../../04-control/01-control-model.md)
 
 ---
 

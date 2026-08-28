@@ -425,7 +425,7 @@ IR_IS_OPR = (IR[11:9] == 111)
 - [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr)
 - [AC_BSW](../../03-microarchitecture/02-micro-operations.md#ac_bsw)
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
-- [AC_OR_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_sr)
+- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr)
 - [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
 
 ---
@@ -624,7 +624,7 @@ IR_OPR_GROUP2 = IR_IS_OPR AND IR[8] AND (IR[0] == 0)
 **Consumed By:**
 
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
-- [AC_OR_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_sr)
+- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr)
 - [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
 
 
@@ -732,7 +732,7 @@ IR_OPR_OSR = IR_OPR_GROUP2 AND IR[2]
 
 **Consumed By:**
 
-- [AC_OR_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_sr)
+- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr)
 
 ---
 

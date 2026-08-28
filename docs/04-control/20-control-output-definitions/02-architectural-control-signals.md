@@ -146,7 +146,7 @@ When asserted:
 - must be paired with a valid memory-write μop or DMA
 - valid memory-write μops are:
   - [MEM_WRITE_FROM_MB](../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)
-  - [MEM_WRITE_FROM_SR](../../03-microarchitecture/02-micro-operations.md#mem_write_from_sr)
+  - [MEM_WRITE_FROM_FP_SR](../../03-microarchitecture/02-micro-operations.md#mem_write_from_fp_sr)
   
 ---
 
