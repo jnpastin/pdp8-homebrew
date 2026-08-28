@@ -57,7 +57,7 @@ All operations that happen at TP1 are evaluated as if the conditions are a logic
 | SMA | 1 | Skip on negative AC |
 | SZA | 1 | Skip on zero AC |
 | SNL | 1 | Skip on non-zero L |
-| OSR | 3 | Logical OR SR with AC |
+| OSR | 3 | Logical OR FP_SR with AC |
 | HLT | 3 | Halt |
 
 ---

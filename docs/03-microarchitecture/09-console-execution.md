@@ -147,7 +147,7 @@ EA_ADDR
 
 This allows CONT to reuse existing execution mechanisms.
 
-The PC is loaded via the SR, this is then used to drive MA and EA for EXAM and DEP actions
+The PC is loaded via FP_SR, this is then used to drive MA and EA for EXAM and DEP actions
 
 ---
 
@@ -172,7 +172,7 @@ CIFP ← 0
 DF      ← Front Panel DF
 DIF     ← Front Panel IF
 IF      ← Front Panel IF
-PC      ← SR
+PC      ← FP_SR
 ```
 
 No memory access occurs.
@@ -211,7 +211,7 @@ The processor remains halted.
 
 ## 8. Deposit Operation
 
-Deposit sets the address context from the PC, writes the value of the SR to memory, and increments the PC
+Deposit sets the address context from the PC, writes the value of FP_SR to memory, and increments the PC
 
 Microoperation sequence:
 
@@ -229,8 +229,8 @@ Result:
 
 MA              ← PC
 EA_ADDR         ← PC
-MB              ← SR
-Memory[IF:PC]   ← SR
+MB              ← FP_SR
+Memory[IF:PC]   ← FP_SR
 PC              ← PC + 1
 ```
 
@@ -238,7 +238,7 @@ PC              ← PC + 1
 
 `MEM_WRITE_FROM_FP_SR` exists to avoid an invalid same-TS dependency on the newly loaded MB value.
 
-The memory write and MB update both consume SR as their source, allowing the operation to remain a valid single TS-equivalent console transaction.
+The memory write and MB update both consume FP_SR as their source, allowing the operation to remain a valid single TS-equivalent console transaction.
 
 The memory write drives AB from PC and MFB from IF, not MA or EA. This allows all microoperations to occur simultaneously within a single TS. AB_SRC = PC and MFB_SRC = IF, while normal memory operations select AB_SRC and MFB_SRC per the active phase.
 

@@ -170,7 +170,7 @@ Signals connecting the system to the human operator interface.
 
 #### 6.3.2 Data Input
 
-- SR[11:0]
+- FP_SR[11:0]
 
 #### 6.3.3 Status Outputs
 
