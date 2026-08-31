@@ -19,7 +19,7 @@ This document defines:
 - the distinct roles of `IE` and `II`
 - the relationship between `II` and `CIFP`
 - the interrupt-recognition delay following ION
-- interrupt inhibition across the CIF/RMF-to-JMP/JMS interval
+- interrupt inhibition across the CIF/RMF/RTF-to-JMP/JMS interval
 - the interrupt-related effects of IOF and SKON
 - the conditions under which interrupt recognition becomes eligible
 
@@ -168,6 +168,27 @@ RMF and CIF use the same pending-field and interrupt-inhibit mechanism. They dif
 - CIF stages the instruction field from the current instruction.
 - RMF restores `DF` and stages the saved instruction field from `IB`.
 
+### 10.1 RTF Inhibit Behavior
+  
+RTF restores processor state from the processor flags word and establishes the same deferred instruction-field protection used by CIF and RMF.
+
+RTF:
+- restores L from AC[11]
+- restores DF from AC[2:0]
+- stages the restored IF from AC[5:3] in DIF
+- sets CIFP
+- sets II
+- sets IE
+
+While CIFP remains set:
+- FETCH does not clear II
+- interrupt recognition remains inhibited
+- the restored instruction field remains pending for application by the next JMP or JMS
+
+RTF sets IE regardless of AC[7], matching the defined PDP-8/E behavior. Setting IE does not permit immediate interrupt recognition because RTF also sets II and CIFP.
+
+The instruction-level behavior is defined in [IOT Instruction Detail](../02-isa/04-iot.md#311-rtf), and defined in [IOT Execution](../03-microarchitecture/06-iot-execution.md#96-ir119--110-and-ioa--00-and-ir20--101).
+
 ## 11. Deferred Field Application
 
 The pending instruction-field change is applied by the next JMP or JMS.
@@ -193,7 +214,7 @@ The FETCH execution rule is defined in [Fetch and Defer](../03-microarchitecture
 This conditional clear serves two distinct cases:
 
 - after ION, `CIFP` is clear, so `II` is cleared during the FETCH of the instruction following ION
-- after CIF or RMF, `CIFP` is set, so `II` remains set until the pending field change is applied
+- after CIF, RMF, or RTF, `CIFP` is set, so `II` remains set until the pending field change is applied
 
 FETCH-time inhibit clearing does not:
 
@@ -202,18 +223,15 @@ FETCH-time inhibit clearing does not:
 - acknowledge an interrupting controller
 - itself recognize an interrupt
 
-## 13. Combined ION, CIF, and RMF Effects
-
-`II` may be set by either ION, CIF or RMF.
-
-The architectural effect depends on `CIFP`:
-
-- when `CIFP` is clear, FETCH may clear `II`
-- when `CIFP` is set, FETCH preserves `II`
-
-No separate source identifier is stored for `II`.
-
-The required behavior is determined by the committed `II` and `CIFP` state rather than by remembering which instruction originally set `II`.
+### 13. Combined ION, CIF, RMF, and RTF Effects
+  
+II may be set by ION, CIF, RMF, or RTF.  
+The architectural effect depends on CIFP:
+- when CIFP is clear, FETCH may clear II
+- when CIFP is set, FETCH preserves II
+  
+No separate source identifier is stored for II.  
+The required behavior is determined by the committed II and CIFP state rather than by remembering which instruction originally set II.
 
 ## 14. Relationship to DMA
 
@@ -225,38 +243,33 @@ Therefore, DMA may be selected at an eligible EXECUTE TP4 boundary while interru
 
 - `IE` being clear
 - `II` being set
-- a CIF- or RMF-established deferred instruction-field inhibit interval
+- a CIF-, RMF-, or RTF-established deferred instruction-field inhibit interval
 
 When an interrupt is valid at the same EXECUTE TP4 boundary as DMA, the precedence rule is defined in [Interrupt Recognition and Sequencing](./02-interrupt-recognition-and-sequencing.md#7-interrupt-precedence-over-dma).
 
 ## 15. Invariants
-
+  
 The following invariants apply:
-
-- `IE` and `II` represent distinct interrupt-control functions.
-- `IE` globally enables or disables interrupt eligibility.
-- `II` temporarily prevents recognition without clearing `IE`.
-- Neither `IE` nor `II` clears or acknowledges a controller request.
-- ION sets both `IE` and `II`.
+- IE and II represent distinct interrupt-control functions.
+- IE globally enables or disables interrupt eligibility.
+- II temporarily prevents recognition without clearing IE.
+- Neither IE nor II clears or acknowledges a controller request.
+- ION sets both IE and II.
 - The instruction following ION executes before an interrupt may be recognized.
-- IOF clears `IE` without clearing controller requests.
-- SKON tests the pre-TP `IE` state and clears `IE` at the same TP.
-- CIF sets `II` and `CIFP`.
-- FETCH must not clear `II` while `CIFP` is set.
-- A pending instruction-field change established by CIF or RMF inhibits interrupt recognition until JMP or JMS applies the deferred field.
-- Clearing `CIFP` and applying `DIF` at JMP or JMS does not permit interrupt recognition at that same TP4.
+- IOF clears IE without clearing controller requests.
+- SKON tests the pre-TP IE state and clears IE at the same TP.
+- CIF, RMF, and RTF set II and CIFP.
+- FETCH must not clear II while CIFP is set.
+- A pending instruction-field change established by CIF, RMF, or RTF inhibits interrupt recognition until JMP or JMS applies the deferred field.
+- Clearing CIFP and applying DIF at JMP or JMS does not permit interrupt recognition at that same TP4.
 - Interrupt recognition after a deferred field change may occur only at a later eligible EXECUTE TP4 boundary.
 - Interrupt enable and inhibit state do not control DMA eligibility.
-- All changes to `IE`, `II`, and `CIFP` occur only at TP events.
+- All changes to IE, II, and CIFP occur only at TP events.
 - All same-TP decisions use pre-TP state.
-- RMF sets `II` and `CIFP`.
-- RMF uses the same deferred instruction-field protection mechanism as CIF.
-- FETCH must not clear `II` while an RMF-restored instruction field remains pending.
+- CIF, RMF, and RTF use the same deferred instruction-field protection mechanism.
 
 ## 16. Summary
-
-`IE` provides global interrupt enable, while `II` provides temporary recognition inhibition.
-
-ION sets both states, permitting the following instruction to execute before interrupt recognition. IOF clears global interrupt enable. SKON tests and clears interrupt enable. CIF and RMF set `II` and `CIFP`, preserving the inhibit until the deferred instruction-field change is applied by JMP or JMS.
-
+  
+IE provides global interrupt enable, while II provides temporary recognition inhibition.  
+ION sets both states, permitting the following instruction to execute before interrupt recognition. IOF clears global interrupt enable. SKON tests and clears interrupt enable. CIF, RMF, and RTF set II and CIFP, preserving the inhibit until the deferred instruction-field change is applied by JMP or JMS.  
 These states affect interrupt eligibility only. They do not acknowledge controller requests or control DMA eligibility.

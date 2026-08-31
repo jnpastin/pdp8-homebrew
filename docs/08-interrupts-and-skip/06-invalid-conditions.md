@@ -17,7 +17,7 @@ The following conditions are illegal:
 - interrupt recognition at a timing pulse other than EXECUTE TP4
 - any interrupt-entry state change before entry into the `INTERRUPT` major state
 - `CIFP = 1` and FETCH selecting `II_CLEAR`
-- a pending CIF- or RMF-staged instruction-field change being applied by an instruction other than JMP or JMS
+- a pending instruction-field change staged by CIF, RMF, or RTF being applied by an instruction other than JMP or JMS
 - a JMP or JMS applying a pending instruction-field change without clearing `CIFP`
 - interrupt recognition at the same EXECUTE TP4 that applies a pending instruction-field change
 
@@ -33,6 +33,11 @@ The following conditions are illegal:
 - interrupt entry completing with `DF != 0`
 - interrupt entry completing with `DIF != 0`
 - interrupt entry completing with `CIFP != 0`
+- RTF completing without restoring L from AC[11]
+- RTF completing without restoring DF from AC[2:0]
+- RTF completing without loading AC[5:3] into DIF
+- RTF completing without setting IE, II, and CIFP
+- RTF modifying AC
 - RMF completing without restoring `DF` from `IB`
 - RMF completing without loading the saved `IF` from `IB` into `DIF`
 - RMF completing without setting both `II` and `CIFP`

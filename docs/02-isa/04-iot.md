@@ -47,12 +47,72 @@ Unlike the field instructions and Group 1 OPR, these are distinct operations sel
 | ION | 6001 | 001 | Interrupt On | Enable Interrupts |
 | IOF | 6002 | 010 | Interrupt Off | Disable Interrupts |
 | SRQ | 6003 | 011 | Skip on Interrupt Request | Skip the next instruction if an interrupt request is currently asserted |
+| GTF | 6004 | 100 | Get Flags | Replace AC with the PDP-8/E processor flags word |
+| RTF | 6005 | 101 | Restore Flags | Restore the implemented processor state from the PDP-8/E flags word and enable interrupts |
 
 Semantics:
 - ION turns interrupts on, but the effect is deferred by one instruction: the instruction immediately following ION always executes before any interrupt can be recognized. This lets a routine execute ION followed by a return (for example, JMP I) without being interrupted between the two.
 - IOF turns interrupts off immediately.
 - SKON tests the interrupt state and turns interrupts off in a single instruction. It skips if interrupts were on. This provides a way to save and disable interrupt state together.
 - SRQ tests whether any device is currently requesting an interrupt, without affecting interrupt state. It is used by software polling routines.
+
+### 3.1 Processor Flags Word (GTF, RTF)
+
+GTF and RTF use the PDP-8/E processor flags-word format.
+
+```text
+┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┐
+│ 11 │ 10 │  9 │  8 │  7 │  6 │  5 │  4 │  3 │  2 │  1 │  0 │
+├────┼────┼────┼────┼────┼────┼────┴────┴────┼────┴────┴────┤
+│ L  │ 0  │ IR │ 0  │ IE │ 0  │      IF      │      DF      │
+└────┴────┴────┴────┴────┴────┴──────────────┴──────────────┘
+```
+
+Where:
+- L is the current Link value.
+- IR is 1 when /INT_REQ is asserted and 0 when /INT_REQ is deasserted.
+- IE is the current interrupt-enable value.
+- IF is the current Instruction Field.
+- DF is the current Data Field.
+- Bit 10 is 0 because the EAE Greater-Than flag is not implemented.
+- Bit 8 is 0 because the time-share interrupt-inhibit facility is not implemented.
+- Bit 6 is 0 because user mode is not implemented.
+
+The IR field reports raw interrupt-request presence. It does not report `INTERRUPT_REQUEST_VALID` and is independent of IE and II.
+
+#### 3.1.1 GTF
+
+GTF replaces AC with the processor flags word.
+
+GTF execution:
+- clears AC
+- loads the processor flags word into AC
+- does not require software to clear AC before execution
+- observes /INT_REQ without acknowledging, clearing, or consuming any controller interrupt condition
+- does not modify L, IE, II, IF, DF, DIF, or CIFP
+
+#### 3.1.2 RTF
+
+RTF restores the implemented processor state from the processor flags word.
+
+RTF performs:
+- L <- AC[11]
+- DF <- AC[2:0]
+- DIF <- AC[5:3]
+- CIFP <- 1
+- II <- 1
+- IE <- 1
+
+The restored instruction field is staged in DIF and is applied by the next JMP or JMS through the existing deferred instruction-field-change mechanism.
+
+RTF ignores:
+- AC[10]
+- AC[9]
+- AC[8]
+- AC[7]
+- AC[6]
+
+RTF does not modify AC.
 
 ---
 
@@ -132,12 +192,9 @@ Software targeting the first hardware build must not rely on these instructions.
 
 | Mnemonic | Octal | IR[2:0] | Name | Planned Operation | Blocking Dependency |
 |---|---|---|---|---|---|
-| GTF | 6004 | 100 | Get Flags | Assemble the machine flags word (Link, interrupt state, saved fields, and related status) into AC | Flags-word bit layout not yet defined |
-| RTF | 6005 | 101 | Restore Flags | Restore the machine flags word from AC, re-enabling interrupts | Flags-word bit layout not yet defined; interacts with interrupt state |
 | SGT | 6006 | 110 | Skip if Greater Than | Skip the next instruction if the EAE greater-than flag is set | EAE (Extended Arithmetic Element) not implemented |
 | CAF | 6007 | 111 | Clear All Flags | Clear AC, L, the interrupt system, and all device flags | Requires a system-wide I/O clear (INIT) broadcast, defined with the I/O system in section 07 |
 
 Notes:
-- GTF and RTF are the standard mechanism for saving and restoring full machine state in an interrupt service routine. Their definition is deferred until the flags-word format is specified, since that format depends on interrupt and memory-extension state that is still being finalized.
 - SGT is meaningful only when the EAE option is present. This system does not currently implement the EAE, so SGT has no defined effect.
 - CAF provides a single-instruction reset of processor and device state. Its device-clearing half depends on an I/O INIT broadcast signal that will be defined alongside the I/O system (section 07).

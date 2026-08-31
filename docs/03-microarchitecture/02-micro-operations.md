@@ -88,6 +88,9 @@ No intermediate state or flag storage is created.
 - [DB_WRITE_FROM_AC](#db_write_from_ac)
 
 ### 4.6 Register Transfer
+- [AC_TO_DF](#ac_to_df)
+- [AC_TO_DIF](#ac_to_dif)
+- [AC_TO_L](#ac_to_l)
 - [AC_MQ_SWAP](#ac_mq_swap)
 - [AC_TO_MB](#ac_to_mb)
 - [AC_TO_MQ_AND_CLEAR_AC](#ac_to_mq_and_clear_ac)
@@ -99,6 +102,7 @@ No intermediate state or flag storage is created.
 - [FP_IF_TO_IF](#fp_if_to_if)
 - [FP_SR_TO_MB](#fp_sr_to_mb)
 - [FP_SR_TO_PC](#fp_sr_to_pc)
+- [GTF_FLAGS_TO_AC](#gtf_flags_to_ac)
 - [IB_TO_AC](#ib_to_ac)
 - [IB_TO_DF](#ib_to_df)
 - [IB_TO_DIF](#ib_to_dif)
@@ -368,6 +372,62 @@ AC, L
 
 ---
 
+### AC_TO_DF
+  
+**Category:** 
+Register Transfer  
+
+**Description:** 
+Transfers AC[2:0] into the Data Field register.  
+
+**Target:** 
+DF  
+
+**Expression:** 
+DF ← AC[2:0]  
+
+**Sources:** 
+AC
+
+---
+
+### AC_TO_DIF
+  
+**Category:** 
+Register Transfer  
+
+**Description:** 
+Transfers AC[5:3] into the Deferred Instruction Field register.  
+
+**Target:** 
+DIF  
+
+**Expression:** 
+DIF ← AC[5:3]  
+
+**Sources:** 
+AC
+
+---
+
+### AC_TO_L
+  
+**Category:** 
+Register Transfer  
+
+**Description:** 
+Transfers AC[11] into the Link register without modifying AC.  
+
+**Target:** 
+L  
+
+**Expression:** 
+L ← AC[11]  
+
+**Sources:** 
+AC
+
+
 ### AC_TO_MB
   
 **Category:** 
@@ -451,7 +511,7 @@ CIFP ← 0
 State Manipulation
 
 **Description:**  
-Sets the CIF-pending register, marking a deferred instruction-field change initiated by CIF or RMF and preserving interrupt inhibition until the field is applied by the next JMP or JMS.
+Sets the CIF-pending register, marking a deferred instruction-field change initiated by CIF, RMF, or RTF and preserving interrupt inhibition until the field is applied by the next JMP or JMS.
 
 **Target:**  
 CIFP
@@ -705,6 +765,41 @@ PC ← FP_SR
 
 **Sources:**  
 FP_SR
+
+---
+
+### GTF_FLAGS_TO_AC
+  
+**Category:** 
+Register Transfer  
+
+**Description:** 
+Assembles the implemented PDP-8/E processor flags word and ORs it into AC.  
+
+**Target:** 
+AC  
+
+**Expression:**
+
+AC[11] ← AC[11] OR L  
+AC[10] ← AC[10]  
+AC[9] ← AC[9] OR (/INT_REQ = 0)  
+AC[8] ← AC[8]  
+AC[7] ← AC[7] OR IE  
+AC[6] ← AC[6]  
+AC[5:3] ← AC[5:3] OR IF  
+AC[2:0] ← AC[2:0] OR DF
+
+**Sources:** 
+AC, L, /INT_REQ, IE, IF, DF  
+
+**Preconditions:**
+- AC was cleared by AC_CLEAR at the preceding TP.
+- /INT_REQ is synchronized and stable during the active TS.
+
+**Constraints:**
+- Bits 10, 8, and 6 remain clear because AC was cleared at the preceding TP and this micro-operation does not set them.
+- Observing /INT_REQ does not acknowledge, clear, or consume any controller interrupt condition.
 
 ---
 

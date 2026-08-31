@@ -20,7 +20,7 @@ Section 8 defines:
 
 - the architectural interrupt flow
 - the boundary between interrupt eligibility, recognition, and entry
-- the relationship among `IE`, `II`, `CIFP`, CIF, RMF, and ION
+- the relationship among `IE`, `II`, `CIFP`, CIF, RMF, RTF, and ION
 - interrupt entry and software-controlled return
 - software identification and servicing of interrupt sources
 - interrupt precedence over DMA at EXECUTE TP4
@@ -43,7 +43,7 @@ Section 8 does not define:
 
 - [Interrupt Model](./01-interrupt-model.md) defines the system-level interrupt flow, hardware and software responsibilities, controller dispatch policy, and the relationship between interrupts and DMA.
 - [Interrupt Recognition and Sequencing](./02-interrupt-recognition-and-sequencing.md) defines the interrupt-recognition boundary, next-major-state selection, and interrupt precedence over DMA.
-- [Interrupt Enable and Inhibit](./03-interrupt-enable-and-inhibit.md) coordinates `IE`, `II`, `CIFP`, ION, IOF, SKON, CIF, RMF, and deferred instruction-field application.
+- [Interrupt Enable and Inhibit](./03-interrupt-enable-and-inhibit.md) coordinates `IE`, `II`, `CIFP`, ION, IOF, SKON, CIF, RMF, RTF, and deferred instruction-field application.
 - [Interrupt Entry and Return](./04-interrupt-entry-and-return.md) defines the architectural relationships among interrupt entry, preserved state, interrupt-service execution, field restoration, interrupt re-enabling, and return.
 - [Skip Model](./05-skip-model.md) defines the common architectural result and invariants shared by Group 2 OPR, ISZ, CPU-internal IOT, and external-controller IOT skips.
 - [Interrupt and Skip Invalid Conditions](./06-invalid-conditions.md) identifies illegal conditions defined by the Section 8 coordination model.
@@ -68,7 +68,7 @@ A taken skip increments `PC` exactly once in addition to the normal FETCH increm
 - Interrupt recognition and entry do not identify, acknowledge, service, or clear an interrupting controller.
 - Interrupt-controller priority and dispatch are controlled by software.
 - ION delays interrupt recognition until the following instruction completes.
-- CIF and RMF inhibit interrupt recognition until the staged instruction field is applied by JMP or JMS.
+- CIF, RMF, RTF inhibit interrupt recognition until the staged instruction field is applied by JMP or JMS.
 - `IE`, `II`, and `CIFP` do not control DMA eligibility.
 - Every taken skip produces exactly one additional `PC_INC`.
 - No persistent skip state exists.

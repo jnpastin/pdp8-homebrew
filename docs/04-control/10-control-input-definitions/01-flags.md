@@ -77,7 +77,7 @@ FLAGS must:
 
 **Name:** CIF_PENDING  
 **Source Register:** CIFP  
-**Purpose:** Indicates that a deferred instruction-field change initiated by CIF or RMF is pending, awaiting the next JMP or JMS.
+Indicates that a deferred instruction-field change initiated by CIF, RMF, or RTF is pending, awaiting the next JMP or JMS.
 
 **Value Encoding:**
 - 0 → no deferred instruction-field change pending
@@ -85,7 +85,7 @@ FLAGS must:
 
 **Consumed By:**
 - Control decision:
-  - Interrupt inhibit gating (holds II across the CIF/RMF staged instruction field is pending)
+  - Interrupt inhibit gating while the staged instruction field is pending
   - FETCH II_CLEAR selection (II_CLEAR is selected only when CIFP = 0)
 - Modified by:
   - [CIFP_SET](../../03-microarchitecture/02-micro-operations.md#cifp_set)

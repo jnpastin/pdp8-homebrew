@@ -65,6 +65,8 @@ Defined in:
 
 - [IR_IS_ISZ](./02-ir-derived-fields.md#ir_is_isz)  
 - [IR_IS_AND](./02-ir-derived-fields.md#ir_is_and)  
+- [IR_IS_GTF](./02-ir-derived-fields.md#ir_is_gtf)
+- [IR_IS_RTF](./02-ir-derived-fields.md#ir_is_rtf)
 
 ---
 

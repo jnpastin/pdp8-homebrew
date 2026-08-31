@@ -319,6 +319,7 @@ Front-panel data inputs provide externally selected values used by console opera
 
 **Consumed By:**
 - [Interrupt Request Valid](./03-derived-flags.md#interrupt_request_valid)
+- [GTF_FLAGS](../20-control-output-definitions/01-microarchitectural-control-signals.md#gtf_flags)
 
 **Constraints:**
 - must be synchronized before use by control

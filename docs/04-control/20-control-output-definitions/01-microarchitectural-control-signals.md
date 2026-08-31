@@ -303,6 +303,7 @@ Constraint:
 - [CIFP_VAL](#cifp_val)
 - [DB_INPUT](#db_input)
 - [DF_VAL](#df_val)
+- [GTF_FLAGS](#gtf_flags)
 - [IE_VAL](#ie_val)
 - [IF_DF_COMBINED](#if_df_combined)
 - [IF_VAL](#if_val)
@@ -339,6 +340,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 - Drive must be asserted via either /RD or /WR
 
 **Used by μops:**
+- [GTF_FLAGS_TO_AC](../../03-microarchitecture/02-micro-operations.md#gtf_flags_to_ac)
 - [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb)
 - [MEM_WRITE_FROM_MB](../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)
 - [MEM_WRITE_FROM_FP_SR](../../03-microarchitecture/02-micro-operations.md#mem_write_from_fp_sr)
@@ -379,6 +381,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb)
 - [DB_READ_TO_AC](../../03-microarchitecture/02-micro-operations.md#db_read_to_ac)
 - [DF_TO_AC](../../03-microarchitecture/02-micro-operations.md#df_to_ac)
+- [GTF_FLAGS_TO_AC](../../03-microarchitecture/02-micro-operations.md#gtf_flags_to_ac)
 - [IB_TO_AC](../../03-microarchitecture/02-micro-operations.md#ib_to_ac)
 - [IF_TO_AC](../../03-microarchitecture/02-micro-operations.md#if_to_ac)
 
@@ -401,7 +404,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 03 → DF (field-merge)
 04 → IB (field-merge)
 05 → MQ
-06 → reserved
+06 → GTF_FLAGS
 07 → reserved
 ```
 
@@ -413,6 +416,7 @@ All numeric encodings in this section are octal unless otherwise noted.
   - IF, DF → AC[5:3]
   - IB → AC[5:3] (saved IF), AC[2:0] (saved DF)
 - MQ replaces AC in full (AC ← MQ), not a merge or OR; used by AC_MQ_SWAP
+- GTF_FLAGS is ORed into AC and is used only after AC_CLEAR has committed at the preceding TP.
 
 **Used by μops:**
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb)
@@ -645,6 +649,7 @@ external bus value
 - Uses direct load path (no ALU or IDB involvement)
 
 **Used by μops:**
+- [AC_TO_DF](../../03-microarchitecture/02-micro-operations.md#ac_to_df)
 - [IB_TO_DF](../../03-microarchitecture/02-micro-operations.md#ib_to_df)
 - [DF_CLEAR](../../03-microarchitecture/02-micro-operations.md#df_clear)
 - [IR_DF_TO_DF](../../03-microarchitecture/02-micro-operations.md#ir_df_to_df)
@@ -666,10 +671,11 @@ external bus value
 0 → Control
 1 → IB
 2 → FP_DF
-3 → reserved
+3 → AC[2:0]
 ```
 
 **Used by μops:**
+- [AC_TO_DF](../../03-microarchitecture/02-micro-operations.md#ac_to_df)
 - [IB_TO_DF](../../03-microarchitecture/02-micro-operations.md#ib_to_df)
 - [DF_CLEAR](../../03-microarchitecture/02-micro-operations.md#df_clear)
 - [IR_DF_TO_DF](../../03-microarchitecture/02-micro-operations.md#ir_df_to_df)
@@ -719,6 +725,7 @@ external bus value
 - Uses direct load path (no ALU or IDB involvement)
 
 **Used by μops:**
+- [AC_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ac_to_dif)
 - [DIF_CLEAR](../../03-microarchitecture/02-micro-operations.md#dif_clear)
 - [FP_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#fp_if_to_dif)
 - [IB_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ib_to_dif)
@@ -731,7 +738,7 @@ external bus value
 **Mnemonic:** DIF_SRC  
 **Name:** DIF Source Select  
 **Class:** Select  
-**Bit Width:** 2  
+**Bit Width:** 3  
 
 **Purpose:** Selects the source input for DIF.
 
@@ -741,9 +748,14 @@ external bus value
 1 → IR
 2 → Control (hardwired 0)
 3 → FP_IF
+4 → AC[5:3]
+5 → reserved
+6 → reserved
+7 → reserved
 ```
 
 **Used by μops:**
+- [AC_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ac_to_dif)
 - [DIF_CLEAR](../../03-microarchitecture/02-micro-operations.md#dif_clear)
 - [FP_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#fp_if_to_dif)
 - [IB_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ib_to_dif)
@@ -799,6 +811,48 @@ external bus value
 - [IR_ADDR_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#ir_addr_to_ea_addr)
 - [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr)
 - [PC_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_to_ea_addr)
+
+---
+
+### GTF_FLAGS
+  
+**Mnemonic:** GTF_FLAGS  
+**Name:** Processor Flags Word  
+**Class:** Data Value  
+**Bit Width:** 12  
+*
+*Purpose:** Provides the implemented PDP-8/E processor flags word to the AC input path.  
+
+**Value:**
+
+```text
+GTF_FLAGS[11]  = L
+GTF_FLAGS[10]  = 0
+GTF_FLAGS[9]   = (/INT_REQ = 0)
+GTF_FLAGS[8]   = 0
+GTF_FLAGS[7]   = IE
+GTF_FLAGS[6]   = 0
+GTF_FLAGS[5:3] = IF
+GTF_FLAGS[2:0] = DF
+```
+
+**Sources:**
+- L
+- /INT_REQ
+- IE
+- IF
+- DF
+
+**Constraints:**
+- GTF_FLAGS is a combinational datapath value and is not stored state.
+- /INT_REQ must be synchronized and stable when GTF_FLAGS is consumed.
+- GTF_FLAGS has no effect unless AC_SRC selects GTF_FLAGS and AC_LOAD is asserted.
+- GTF_FLAGS is ORed into AC.
+- AC must have been cleared at the preceding TP when GTF_FLAGS is consumed by GTF.
+- Observing /INT_REQ does not acknowledge, clear, or consume any controller interrupt condition.
+
+**Used by μops:**
+- [GTF_FLAGS_TO_AC](../../03-microarchitecture/02-micro-operations.md#gtf_flags_to_ac)
 
 ---
 
@@ -1200,6 +1254,7 @@ IF_DF_COMBINED[5:3]=IF
 - [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral)
 - [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr)
 - [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl)
+- [AC_TO_L](../../03-microarchitecture/02-micro-operations.md#ac_to_l)
 - [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
 - [L_CLEAR](../../03-microarchitecture/02-micro-operations.md#l_clear)
 - [L_COMP](../../03-microarchitecture/02-micro-operations.md#l_comp)
@@ -1220,14 +1275,16 @@ IF_DF_COMBINED[5:3]=IF
 00 → CLEAR
 01 → COMP
 02 → ALU_CARRY
-03 → Reserved
+03 → AC[11]
 ```
 
 **Constraints:**
 - Must be valid every cycle  
 - ALU_CARRY only valid during ALU operations producing carry  
+- AC[11] loads the pre-TP value of AC[11] into L without modifying AC.
 
 **Used by μops:**
+- [AC_TO_L](../../03-microarchitecture/02-micro-operations.md#ac_to_l)
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb)
 - [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
 - [L_CLEAR](../../03-microarchitecture/02-micro-operations.md#l_clear)

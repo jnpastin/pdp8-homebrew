@@ -257,6 +257,60 @@ Description:
 
 ---
 
+### 9.5 IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 100
+  
+**Mnemonic (non-normative):** GTF 
+ 
+  TS1:
+- AC_CLEAR  
+
+  TS2:
+- GTF_FLAGS_TO_AC  
+
+  TS3:
+- (no μops)  
+
+  TS4:
+- (no μops)  
+
+Description:
+- Clears AC at TP1.
+- Assembles the processor flags word into AC at TP2.
+- The processor flags word is defined in [Processor Flags](../02-isa/04-iot.md#31-processor-flags-word-gtf-rtf).
+- Software does not need to clear AC before executing GTF.
+- GTF does not acknowledge, clear, or consume /INT_REQ.
+
+### 9.6 IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 101
+  
+**Mnemonic (non-normative):** RTF  
+
+  TS1:
+- (no μops)  
+
+  TS2:
+- AC_TO_L
+- AC_TO_DF
+- AC_TO_DIF
+- IE_SET
+- II_SET
+- CIFP_SET  
+
+  TS3:
+- (no μops)  
+
+  TS4:
+- (no μops)  
+
+Description:
+- Restores L from AC[11].
+- Restores DF from AC[2:0].
+- Stages AC[5:3] in DIF for application to IF by the next JMP or JMS.
+- Sets IE, II, and CIFP.
+- All TS2 μops observe the same pre-TP2 AC value and commit concurrently.
+- AC is not modified.
+
+---
+
 ## 10. Instruction Definitions (Memory Extension Control - Devices 20-27)
 
 ---

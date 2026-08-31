@@ -111,7 +111,17 @@ Matches:
 
 ---
 
-### 2.6 Field Extraction Signals
+### 2.6 Processor IOT Detection
+  
+Represents evaluation of device-0 processor IOT instructions.
+
+Matches:
+- GTF
+- RTF
+
+---
+
+### 2.7 Field Extraction Signals
 
 Expose raw IR fields:
 
@@ -167,6 +177,10 @@ Expose raw IR fields:
 - [IR_RESTORES_IB](#ir_restores_ib)
 - [IR_WRITES_DF](#ir_writes_df)
 - [IR_WRITES_IF](#ir_writes_if)
+
+### Processor IOT Detection
+- [IR_IS_GTF](#ir_is_gtf)
+- [IR_IS_RTF](#ir_is_rtf)
 
 ### Fields
 - [IR_ADDR](#ir_addr)
@@ -329,6 +343,34 @@ IR_IS_AND = (IR[11:9] == 000)
 
 ---
 
+### IR_IS_GTF
+  
+**Mnemonic:** IR_IS_GTF  
+**Name:** Get Flags Instruction Flag  
+**Type:** Processor IOT Detection  
+**Bit Width:** 1  
+
+**Purpose:** 
+Indicates that the current instruction is GTF.  
+
+**Derivation:**
+```text
+IR_IS_GTF =
+    IR_IS_IOT
+AND (IR_IOA == 000000)
+AND (IR[2:0] == 100)
+```
+
+**Value Encoding:**
+- 0 → not GTF
+- 1 → GTF
+
+**Consumed By:**
+- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
+- [GTF_FLAGS_TO_AC](../../03-microarchitecture/02-micro-operations.md#gtf_flags_to_ac)
+
+---
+
 ### IR_IS_IOT
 
 **Mnemonic:** IR_IS_IOT  
@@ -454,6 +496,37 @@ IR_IS_OPR = (IR[11:9] == 111)
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
 - [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr)
 - [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
+
+---
+
+### IR_IS_RTF
+  
+**Mnemonic:** IR_IS_RTF  
+**Name:** Restore Flags Instruction Flag  
+**Type:** Processor IOT Detection  
+**Bit Width:** 1  
+
+**Purpose:** Indicates that the current instruction is RTF.  
+**Derivation:**
+
+```text
+IR_IS_RTF =
+    IR_IS_IOT
+AND (IR_IOA == 000000)
+AND (IR[2:0] == 101)
+```
+
+**Value Encoding:**
+- 0 → not RTF
+- 1 → RTF
+
+**Consumed By:**
+- [AC_TO_DF](../../03-microarchitecture/02-micro-operations.md#ac_to_df)
+- [AC_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ac_to_dif)
+- [AC_TO_L](../../03-microarchitecture/02-micro-operations.md#ac_to_l)
+- [CIFP_SET](../../03-microarchitecture/02-micro-operations.md#cifp_set)
+- [IE_SET](../../03-microarchitecture/02-micro-operations.md#ie_set)
+- [II_SET](../../03-microarchitecture/02-micro-operations.md#ii_set)
 
 ---
 

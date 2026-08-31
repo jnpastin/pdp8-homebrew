@@ -64,6 +64,7 @@ Writers:
 - Shift/rotate network (AC:L)
 - OPR control operations (CLA, CMA, IAC)
 - MQ transfer path
+- IOT execution (GTF)
 
 ---
 
@@ -76,19 +77,19 @@ Role: Records that a deferred instruction-field change is pending, awaiting the 
 Visibility: Control-visible  
 
 Invariants:
-- Set from execution of CIF or RMF until the deferred field is applied at the next JMP/JMS
+- Set from execution of CIF, RMF, or RTF until the deferred field is applied at the next JMP/JMS
 - While set, interrupt recognition is inhibited by holding `II` set across the deferred-field-change interval  
 
 Constraints:
-- Set only by CIF or RMF execution (`IR_WRITES_IF` or `IR_RESTORES_IB`)
+- Set only by CIF, RMF, or RTF execution
 - Cleared when JMP or JMS applies the pending field, during interrupt entry, or by Load Address
-- Must not be directly modified by datapath logic
+- Must not be directly modified by datapath logic  
 
 Writers:
-- IOT execution (CIF or RMF; `CIFP_SET` micro-operation)
-- MRI execution (JMP/JMS; `CIFP_CLEAR` micro-operation)
-- Interrupt entry (`CIFP_CLEAR` micro-operation)
-- Console Load Address (`CIFP_CLEAR` micro-operation)
+- IOT execution (CIF, RMF, or RTF; CIFP_SET micro-operation)
+- MRI execution (JMP/JMS; CIFP_CLEAR micro-operation)
+- Interrupt entry (CIFP_CLEAR micro-operation)
+- Console Load Address (CIFP_CLEAR micro-operation)
 
 ---
 
@@ -105,11 +106,15 @@ Invariants:
 - May differ from IF
 
 Constraints:
-- Modified only by field control instructions
-- Must remain stable during a memory access sequence
+- Modified only by field-control and processor-state restoration instructions
+- Must remain stable during a memory access sequence  
 
 Writers:
-- Field instruction control logic
+- IOT execution (CDF; IR_DF_TO_DF)
+- IOT execution (RMF; IB_TO_DF)
+- IOT execution (RTF; AC_TO_DF)
+- Console Load Address (FP_DF_TO_DF)
+- Interrupt entry (DF_CLEAR)
 
 ---
 
@@ -117,7 +122,7 @@ Writers:
   
 Width: 3 bits  
 
-Role: Holds a pending instruction field value awaiting transfer to IF at the next JMP or JMS.  This register implements the deferred field-change behavior required for CIF and RMF.  
+Role: Holds a pending instruction field value awaiting transfer to IF at the next JMP or JMS.  This register implements the deferred field-change behavior required for CIF, RMF, and RTF.  
 
 Visibility: Internal (control-managed)  
 
@@ -126,14 +131,16 @@ Invariants:
 - When a deferred instruction-field change is pending, its value is applied to `IF` at the next JMP or JMS
 
 Constraints:
-- Loaded by CIF (from IR), RMF (from IB), Load Address (from FP_IF), and cleared at interrupt entry
-- Applied to IF only at the JMP/JMS that concludes a pending deferred field change
+- Loaded by CIF from IR, RMF from IB, RTF from AC[5:3], and Load Address from FP_IF
+- Cleared at interrupt entry
+- Applied to IF only at the JMP or JMS that concludes a pending deferred field change
 - Must not change during FETCH, DEFER, or EXECUTE except at the defined load, clear, and apply points  
 
 Writers:
-- IOT execution (CIF; IR_IF_TO_DIF)
+- IOT execution (CDF; IR_IF_TO_DIF)
 - IOT execution (RMF; IB_TO_DIF)
-- Console (Load Address; FP_IF_TO_DIF)
+- IOT execution (RTF; AC_TO_DIF)
+- Console Load Address (FP_IF_TO_DIF)
 - Interrupt entry (DIF_CLEAR)
 
 ---
@@ -252,13 +259,14 @@ Invariants:
 - Stable during instruction execution
 
 Constraints:
-- Set only by ION
+- Set only by ION or RTF
 - Cleared by IOF, SKON, and interrupt entry
-- Changes only at defined TP events
+- Changes only at defined TP events  
 
 Writers:
-- IOT execution (ION, IOF, or SKON; `IE_SET` or `IE_CLEAR` micro-operation)
-- Interrupt entry (`IE_CLEAR` micro-operation)
+- IOT execution (ION or RTF; IE_SET micro-operation)
+- IOT execution (IOF or SKON; IE_CLEAR micro-operation)
+- Interrupt entry (IE_CLEAR micro-operation)
 
 ---
 
@@ -295,13 +303,13 @@ Invariants:
 - Stable during instruction execution  
 
 Constraints:
-- Set only by ION, CIF, and RMF instructions
-- Cleared during FETCH when no deferred instruction-field change is pending (`CIFP = 0`)
+- Set only by ION, CIF, RMF, and RTF instructions
+- Cleared during FETCH when no deferred instruction-field change is pending (CIFP = 0)
 - Must not be directly modified by datapath logic  
 
 Writers:
-- IOT execution (ION, CIF, or RMF; `II_SET` μop)
-- FETCH execution (`II_CLEAR` μop)
+- IOT execution (ION, CIF, RMF, or RTF; II_SET micro-operation)
+- FETCH execution (II_CLEAR micro-operation)
 
 ---
 
@@ -392,12 +400,14 @@ Constraints:
   - ALU carry/borrow
   - Shift/rotate operations
   - Explicit OPR instructions (CLL, CML, STL)
+  - RTF processor-state restoration
 - Multiple updates must follow defined micro-op ordering
 
 Writers:
 - ALU carry-out path
 - Shift/rotate network
 - OPR control logic
+- IOT execution (RTF; AC_TO_L)
 
 ---
 
