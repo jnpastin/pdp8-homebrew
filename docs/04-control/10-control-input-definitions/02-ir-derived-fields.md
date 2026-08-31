@@ -1072,6 +1072,8 @@ IR_WRITES_IF = (IR[11:6] == 110010 AND IR[2]==0 AND IR[1]==1)
 
 **Consumed By:**
 - [IR_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_dif)
+- [II_SET](../../03-microarchitecture/02-micro-operations.md#ii_set)
+- [CIFP_SET](../../03-microarchitecture/02-micro-operations.md#cifp_set)
 
 ---
 

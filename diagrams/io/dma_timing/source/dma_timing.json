@@ -16,7 +16,7 @@
   {name: '/DMA_REQ[n]', wave: '10............................1.......', data: []},
   {name: '/DMA_REQ', wave: '10............................1.......', data: []},
   {name: '/DMA_GRANT', wave: '1........0...........................1', data: []},
-   {name: 'DMA_GRANT_ID[3:0]', wave: '=..............=.....................=', data: ['17(Octal)','DMA Priority ID Valid']},],
+   {name: 'DMA_GRANT_ID[3:0]', wave: '=..............=.....................=', data: ['0-14(Decimal)','DMA Priority ID Valid']},],
   {},
   ['DMA Read',
    {name: 'MFB[2:0]', wave: 'x..............=........x.............', data: ['Field Valid']},
