@@ -19,7 +19,7 @@ This document defines:
 - the distinct roles of `IE` and `II`
 - the relationship between `II` and `CIFP`
 - the interrupt-recognition delay following ION
-- interrupt inhibition across the CIF-to-JMP/JMS interval
+- interrupt inhibition across the CIF/RMF-to-JMP/JMS interval
 - the interrupt-related effects of IOF and SKON
 - the conditions under which interrupt recognition becomes eligible
 
@@ -202,7 +202,7 @@ FETCH-time inhibit clearing does not:
 - acknowledge an interrupting controller
 - itself recognize an interrupt
 
-## 13. Combined ION and CIF Effects
+## 13. Combined ION, CIF, and RMF Effects
 
 `II` may be set by either ION, CIF or RMF.
 
@@ -225,7 +225,7 @@ Therefore, DMA may be selected at an eligible EXECUTE TP4 boundary while interru
 
 - `IE` being clear
 - `II` being set
-- the CIF-to-JMP/JMS inhibit interval
+- a CIF- or RMF-established deferred instruction-field inhibit interval
 
 When an interrupt is valid at the same EXECUTE TP4 boundary as DMA, the precedence rule is defined in [Interrupt Recognition and Sequencing](./02-interrupt-recognition-and-sequencing.md#7-interrupt-precedence-over-dma).
 
@@ -243,7 +243,7 @@ The following invariants apply:
 - SKON tests the pre-TP `IE` state and clears `IE` at the same TP.
 - CIF sets `II` and `CIFP`.
 - FETCH must not clear `II` while `CIFP` is set.
-- A pending CIF inhibits interrupt recognition until its JMP or JMS applies the deferred field.
+- A pending instruction-field change established by CIF or RMF inhibits interrupt recognition until JMP or JMS applies the deferred field.
 - Clearing `CIFP` and applying `DIF` at JMP or JMS does not permit interrupt recognition at that same TP4.
 - Interrupt recognition after a deferred field change may occur only at a later eligible EXECUTE TP4 boundary.
 - Interrupt enable and inhibit state do not control DMA eligibility.
@@ -257,6 +257,6 @@ The following invariants apply:
 
 `IE` provides global interrupt enable, while `II` provides temporary recognition inhibition.
 
-ION sets both states, permitting the following instruction to execute before interrupt recognition. IOF clears global interrupt enable. SKON tests and clears interrupt enable. CIF sets `II` and `CIFP`, preserving the inhibit until the deferred field change is applied by JMP or JMS.
+ION sets both states, permitting the following instruction to execute before interrupt recognition. IOF clears global interrupt enable. SKON tests and clears interrupt enable. CIF and RMF set `II` and `CIFP`, preserving the inhibit until the deferred instruction-field change is applied by JMP or JMS.
 
 These states affect interrupt eligibility only. They do not acknowledge controller requests or control DMA eligibility.

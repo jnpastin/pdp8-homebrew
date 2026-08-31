@@ -32,6 +32,7 @@ The following conditions are illegal:
 - interrupt entry completing with `IF != 0`
 - interrupt entry completing with `DF != 0`
 - interrupt entry completing with `DIF != 0`
+- interrupt entry completing with `CIFP != 0`
 - RMF completing without restoring `DF` from `IB`
 - RMF completing without loading the saved `IF` from `IB` into `DIF`
 - RMF completing without setting both `II` and `CIFP`

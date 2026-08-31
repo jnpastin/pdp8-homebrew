@@ -432,7 +432,7 @@ AC, MB
 State Manipulation
 
 **Description:**  
-Clears the deferred instruction-field pending register when the next JMP or JMS applies the field staged by CIF or RMF.
+Clears the deferred instruction-field pending register when the pending field is applied by JMP or JMS, discarded during interrupt entry, or reset by Load Address.
 
 **Target:**  
 CIFP
@@ -581,7 +581,7 @@ AC, DF
 Register Transfer
 
 **Description:**  
-Applies the pending deferred instruction field by transferring DIF into IF. Executed at the JMP/JMS that concludes a CIF, gated by IF_CHANGE_PENDING.
+Applies the pending deferred instruction field by transferring `DIF` into `IF` at the next JMP or JMS, gated by `CIFP`.
 
 **Target:**  
 IF

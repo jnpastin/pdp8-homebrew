@@ -85,7 +85,7 @@ FLAGS must:
 
 **Consumed By:**
 - Control decision:
-  - Interrupt inhibit gating (holds II across the CIF-to-branch window)
+  - Interrupt inhibit gating (holds II across the CIF/RMF staged instruction field is pending)
   - FETCH II_CLEAR selection (II_CLEAR is selected only when CIFP = 0)
 - Modified by:
   - [CIFP_SET](../../03-microarchitecture/02-micro-operations.md#cifp_set)

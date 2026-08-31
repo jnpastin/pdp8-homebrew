@@ -101,6 +101,7 @@ During interrupt entry:
 - `IF` is cleared
 - `DF` is cleared
 - `DIF` is cleared
+- `CIFP` is cleared
 
 The detailed timing and micro-operations producing these changes are defined in [Interrupt Execution](../03-microarchitecture/08-interrupt-execution.md).
 
@@ -135,9 +136,9 @@ The saved `PC` resides in memory location field 0, address `0000`.
 
 ## 8. Deferred Field State
 
-Interrupt entry clears `DIF`.
+Interrupt entry clears `DIF` and `CIFP`.
 
-This prevents a deferred instruction-field value from remaining active as the interrupt service routine begins.
+This removes both the staged instruction-field value and the state indicating that a deferred instruction-field change is pending as the interrupt service routine begins.
 
 Interrupt entry does not define an independent saved copy of `DIF`.
 
@@ -300,7 +301,7 @@ The following invariants apply:
 - The return `PC` is stored in memory location field 0, address `0000`.
 - The interrupted `IF` and `DF` values are preserved in `IB`.
 - `PC` becomes `0001` before the following FETCH begins.
-- `IE`, `IF`, `DF`, and `DIF` are cleared during interrupt entry.
+- `IE`, `IF`, `DF`, `DIF`, and `CIFP` are cleared during interrupt entry.
 - Interrupt entry does not identify or acknowledge an interrupting controller.
 - Interrupt entry does not clear controller state.
 - Controller requests remain governed by their underlying controller conditions.

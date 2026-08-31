@@ -202,20 +202,18 @@ AND (/INT_REQ = 0)
 ### IF_CHANGE_PENDING
 
 **Inputs:**
-- DIF
-- IF
+- CIFP
 
-**Purpose:** Indicates that the deferred instruction field (DIF) differs from the current instruction field (IF), i.e., a pending field value is staged for application. Gates the DIF_TO_IF apply at JMP/JMS.
+**Purpose:** Indicates that a pending field value is staged for application. Gates the DIF_TO_IF apply at JMP/JMS.
 
 **Expression:** 
 ```
-IF_CHANGE_PENDING =
-    (DIF ≠ IF)
+IF_CHANGE_PENDING = CIFP
 ```
 
 **Value Encoding:**
-- 0 → DIF = IF (no pending field to apply)
-- 1 → DIF ≠ IF (pending field to apply)
+- 0 → CIFP=0 (no pending field to apply)
+- 1 → CIFP=1 (pending field to apply)
 
 **Used By μops:**
 - [DIF_TO_IF](../../03-microarchitecture/02-micro-operations.md#dif_to_if)

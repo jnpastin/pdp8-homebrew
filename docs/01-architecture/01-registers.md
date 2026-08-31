@@ -81,12 +81,14 @@ Invariants:
 
 Constraints:
 - Set only by CIF or RMF execution (`IR_WRITES_IF` or `IR_RESTORES_IB`)
-- Cleared only at the JMP/JMS that applies the pending field (EXECUTE TS4)
-- Must not be directly modified by datapath logic  
+- Cleared when JMP or JMS applies the pending field, during interrupt entry, or by Load Address
+- Must not be directly modified by datapath logic
 
 Writers:
-- IOT execution (CIF or RMF; `CIFP_SET` μop)
-- MRI execution (JMP/JMS; `CIFP_CLEAR` μop)
+- IOT execution (CIF or RMF; `CIFP_SET` micro-operation)
+- MRI execution (JMP/JMS; `CIFP_CLEAR` micro-operation)
+- Interrupt entry (`CIFP_CLEAR` micro-operation)
+- Console Load Address (`CIFP_CLEAR` micro-operation)
 
 ---
 
@@ -115,18 +117,18 @@ Writers:
   
 Width: 3 bits  
 
-Role: Holds a pending instruction field value awaiting transfer to IF at the next JMP or JMS.  This register implements the deferred field-change behavior required for CIF.  
+Role: Holds a pending instruction field value awaiting transfer to IF at the next JMP or JMS.  This register implements the deferred field-change behavior required for CIF and RMF.  
 
 Visibility: Internal (control-managed)  
 
 Invariants:
-- Equal to IF except while a field change is pending (between a CIF and the applying JMP/JMS)
-- When DIF differs from IF (IF_CHANGE_PENDING), the value is applied to IF at the next JMP/JMS  
+- Equal to `IF` except while a deferred instruction-field change is pending
+- When a deferred instruction-field change is pending, its value is applied to `IF` at the next JMP or JMS
 
 Constraints:
 - Loaded by CIF (from IR), RMF (from IB), Load Address (from FP_IF), and cleared at interrupt entry
-- Applied to IF only at the JMP/JMS that concludes a pending CIF, gated by IF_CHANGE_PENDING
-- Must not change during FETCH, DEFER, or EXECUTE except at the defined load/apply points  
+- Applied to IF only at the JMP/JMS that concludes a pending deferred field change
+- Must not change during FETCH, DEFER, or EXECUTE except at the defined load, clear, and apply points  
 
 Writers:
 - IOT execution (CIF; IR_IF_TO_DIF)
@@ -249,13 +251,14 @@ Invariants:
 - Determines whether interrupts are recognized
 - Stable during instruction execution
 
-
 Constraints:
-- Modified only by ION/IOF instructions
-- Effective change occurs only after EXECUTE completes
+- Set only by ION
+- Cleared by IOF, SKON, and interrupt entry
+- Changes only at defined TP events
 
 Writers:
-- Interrupt control logic
+- IOT execution (ION, IOF, or SKON; `IE_SET` or `IE_CLEAR` micro-operation)
+- Interrupt entry (`IE_CLEAR` micro-operation)
 
 ---
 

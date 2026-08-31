@@ -43,6 +43,8 @@ Additional behavior (not present in JMS):
 - IE ← 0  
 - IF ← 0   
 - DF ← 0   
+- DIF ← 0
+- CIFP ← 0
 
 Properties:
 - No IR decoding occurs during this state
@@ -90,12 +92,13 @@ Description:
 - IF_CLEAR  
 - DF_CLEAR  
 - DIF_CLEAR  
+- CIFP_CLEAR
 
 Description:
 - Loads PC with address 0001  
 - Clears interrupt enable state  
 - Forces instruction and data fields to 0  
-- Clears the deferred instruction field (DIF) so the ISR starts with no pending field change
+- Clears `DIF` and `CIFP` so the ISR starts with no pending deferred instruction-field change
 
 ---
 
@@ -107,7 +110,7 @@ Description:
 - IF and DF are saved into IB before they are cleared
 - IE is cleared during interrupt entry
 - IF and DF are cleared during interrupt entry
-- DIF is cleared during interrupt entry, so no field change is pending in the ISR
+- DIF and CIFP are cleared during interrupt entry, so no field change is pending in the ISR
 - No IR-dependent behavior occurs during this state
 - No device interrupt state is modified during this state
 
@@ -121,13 +124,14 @@ Upon completion of INTERRUPT:
 - PC = 0001
 - IE = 0
 - IF = 0 and DF = 0
-- DIF = 0 (no pending field change)
+- DIF = 0 
+- CIFP = 0
 
 ---
 
 ## 7. Notes
 
-- INTERRUPT execution performs the same memory and control transfer as `JMS 0000`, with additional register updates (IE, IF, DF)
+- INTERRUPT execution performs the same memory and control transfer as `JMS 0000`, with additional register updates (IE, IF, DF, DIF, CIFP)
 - Entry point is fixed at address 0001; no vector lookup is performed
 - Return from interrupt is performed via:
   - JMP I 0000 (defined in ISA)
