@@ -369,7 +369,7 @@ AND (IR[2:0] == 111)
 - 1 -> CAF
 
 **Consumed By:**
-- [Initialize](../20-control-output-definitions/02-architectural-control-signals.md#initialize)
+- [System Initialization](../20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize)
 
 ---
 

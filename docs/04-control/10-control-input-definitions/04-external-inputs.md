@@ -105,6 +105,22 @@ Indicates that the operator has requested system initialization from the front p
 - is re-armed only after the synchronized input is released
 - must not directly modify processor or controller state
 
+**Accepted Event:**
+
+FP_CLEAR_ACCEPTED is asserted for one TSTEP when:
+- the synchronized and debounced FP_CLEAR input becomes asserted
+- RUN = 0
+- the input is armed
+
+The input becomes disarmed when FP_CLEAR_ACCEPTED is asserted and is re-armed only after the synchronized FP_CLEAR input is released.
+
+FP_CLEAR_ACCEPTED:
+- is a one-TSTEP event
+- includes the RUN = 0 acceptance qualification
+- is not a pending request
+- is not generated when RUN = 1
+- does not directly modify processor or controller state
+
 ### FP_CONTINUE
 
 **Name:** Front Panel Continue Command  

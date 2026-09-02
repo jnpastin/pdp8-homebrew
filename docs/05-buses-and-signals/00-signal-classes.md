@@ -98,6 +98,10 @@ System-wide control signals that coordinate behavior across modules.
 - /DMA_GRANT
 - MS[2:0]
 
+##### 4.3.4 System Control
+
+- /INITIALIZE
+
 ### 4.4 Rules
 
 - Must be present on all backplane slots
