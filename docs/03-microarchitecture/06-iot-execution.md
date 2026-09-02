@@ -311,7 +311,31 @@ Description:
 
 ---
 
-### 9.7 IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 111
+### 9.7 IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 110
+
+**Mnemonic (non-normative):** SGT
+
+TS1:
+- (no μops)
+
+TS2:
+- (no μops)
+
+TS3:
+- (no μops)
+
+TS4:
+- (no μops)
+
+Description:
+- Executes as a defined no-op because the EAE Greater-Than flag is not implemented.
+- Does not increment PC.
+- Does not modify processor, memory, controller, interrupt, or DMA state.
+- Does not initiate an external bus operation.
+
+---
+
+### 9.8 IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 111
   
 **Mnemonic (non-normative):** CAF
 

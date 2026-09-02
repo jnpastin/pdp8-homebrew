@@ -35,6 +35,21 @@ Each flag performs a single operation, these actions will occur at a defined TP 
 
 ---
 
+## NOP
+
+NOP is encoded as 7000.
+
+NOP selects the Group 1 OPR format with no operation bits set.
+
+NOP:
+- executes no operations
+- does not modify processor state
+- does not modify memory or controller state
+- does not initiate an external bus operation
+- advances normally to the next instruction
+
+---
+
 ## 2. Combining Operations
 
 All Group 1 operations can be combined with others into a single instruction.  This allows significant speedup by combining multiple operations, skipping additional FETCH and EXECUTE states.  For example, `CLA` and `CLL` can be combined to clear both AC and L, or `CLA` and `IAC` can be combined to clear then increment the AC, setting it to `0001`.

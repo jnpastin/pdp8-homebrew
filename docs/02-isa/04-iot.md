@@ -220,14 +220,20 @@ Detailed external-IOT behavior is defined in the [IOT interface](../07-io/02-ext
 
 ---
 
-## 6. Deferred Instructions (Planned)
-  
-The following processor IOT is recognized as part of the PDP-8/E device-0 set but is not defined for this system.  
-Software targeting the first hardware build must not rely on this instruction.
+## 6. Unsupported Instructions
 
-| Mnemonic | Octal | IR[2:0] | Name | Planned Operation | Blocking Dependency |
-|---|---|---|---|---|---|
-| SGT | 6006 | 110 | Skip if Greater Than | Skip the next instruction if the EAE greater-than flag is set | EAE is not implemented |
+### 6.1 SGT
 
-Notes:
-- SGT is meaningful only when the EAE option is present. This system does not currently implement the EAE, so SGT has no defined effect.
+SGT is recognized as PDP-8/E device-0 instruction 6006.
+
+The EAE Greater-Than flag is not implemented. Therefore, SGT executes as a defined no-op.
+
+SGT:
+- does not skip
+- does not modify processor state
+- does not modify memory
+- does not modify controller state
+- does not affect interrupt or DMA state
+- does not drive or initiate an external bus operation
+
+Software that requires EAE Greater-Than behavior is not supported.
