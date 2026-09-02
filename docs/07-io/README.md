@@ -14,6 +14,7 @@ This section defines:
 - controller response signals
 - IOT timing and wait behavior
 - common controller obligations
+- system-wide controller initialization through /INITIALIZE
 - DMA ownership, arbitration, and timing
 - device address allocation
 - programmer-visible controller behavior
@@ -79,3 +80,6 @@ Those items belong to the physical implementation documentation.
 - The CPU does not arbitrate among DMA controllers.
 - DEC-compatible controllers reproduce the programmer-visible behavior of the emulated DEC controller.
 - Controller-private physical interfaces do not alter programmer-visible compatibility behavior.
+- /INITIALIZE is distributed to every I/O controller independently of external-IOT selection and DMA ownership.
+- Every controller enters its documented initialized state when /INITIALIZE is asserted.
+- /INITIALIZE overrides controller actions that would otherwise commit at the same TP.

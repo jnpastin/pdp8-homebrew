@@ -88,11 +88,14 @@ RUN  = [Run state](../01-architecture/01-registers.md#run--run-state)
 
 /DMA_GRANT = [DMA Grant](../04-control/20-control-output-definitions/02-architectural-control-signals.md#45-dma_grant)
 
+/INITIALIZE = [System Initialization](../04-control/20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize)
+
+/INT_REQ = [Interrupt Request](../04-control/10-control-input-definitions/04-external-inputs.md#int_req)
+
 /RD      = [Memory Read](../04-control/20-control-output-definitions/02-architectural-control-signals.md#41-memory-read-rd)
 
 /WR      = [Memory Write](../04-control/20-control-output-definitions/02-architectural-control-signals.md#42-memory-write-wr)
 
-/INT_REQ = Interrupt Request (wired-OR)
 
 
 ---
@@ -127,6 +130,8 @@ IOA[5:0] = I/O Device Address Bus
   
 FP_START     = [Start Switch](../04-control/10-control-input-definitions/04-external-inputs.md#fp_start)
  
+FP_CLEAR = [Clear Switch](../04-control/10-control-input-definitions/04-external-inputs.md#fp_clear)
+
 FP_CONTINUE  = [Continue Switch](../04-control/10-control-input-definitions/04-external-inputs.md#fp_continue)
 
 FP_STOP      = [Stop Switch](../04-control/10-control-input-definitions/04-external-inputs.md#fp_stop)

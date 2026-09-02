@@ -46,6 +46,7 @@ External IOT communication involves:
 - DB
 - `/DB_READ`
 - `/DB_WRITE`
+- `/INITIALIZE`
 - `IO_READ_REQ`
 - `IO_WRITE_REQ`
 - `IO_SKIP_REQ`
@@ -150,6 +151,10 @@ At the following TP, the selected controller captures DB.
 - Controller response signals do not directly modify CPU state.
 - All CPU and controller state changes occur only at TP.
 - I/O wait behavior is defined in [I/O Timing](../07-io/03-io-timing.md).
+- /INITIALIZE is distributed to every I/O controller independently of external-IOT selection.
+- Every I/O controller must enter its documented initialized state when /INITIALIZE is asserted.
+- /INITIALIZE overrides controller actions that would otherwise commit at the same TP.
+- [System Initialization](../04-control/20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize) defines the authoritative signal behavior.
 
 ---
 

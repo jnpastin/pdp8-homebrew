@@ -49,6 +49,7 @@ Unlike the field instructions and Group 1 OPR, these are distinct operations sel
 | SRQ | 6003 | 011 | Skip on Interrupt Request | Skip the next instruction if an interrupt request is currently asserted |
 | GTF | 6004 | 100 | Get Flags | Replace AC with the PDP-8/E processor flags word |
 | RTF | 6005 | 101 | Restore Flags | Restore the implemented processor state from the PDP-8/E flags word and enable interrupts |
+| CAF | 6007 | 111 | Clear All Flags | Generate the same system-wide initialization action as the front-panel CLEAR switch |
 
 Semantics:
 - ION turns interrupts on, but the effect is deferred by one instruction: the instruction immediately following ION always executes before any interrupt can be recognized. This lets a routine execute ION followed by a return (for example, JMP I) without being interrupted between the two.
@@ -113,6 +114,41 @@ RTF ignores:
 - AC[6]
 
 RTF does not modify AC.
+
+---
+
+### 3.2 CAF
+
+CAF generates the same system-wide initialization action as an accepted front-panel CLEAR operation.
+
+CAF:
+- clears AC
+- clears L
+- clears IE
+- asserts the active-low /INITIALIZE signal
+- causes each I/O controller to enter its documented initialized state
+
+CAF does not modify:
+- II
+- CIFP
+- DIF
+- IF
+- DF
+- IB
+
+CAF completes atomically at EXECUTE TP4. No CAF effect occurs before that boundary.
+
+If CAF is executed while an I/O device is active, /INITIALIZE overrides the controller's normal activity and the controller enters its documented initialized state. Software is responsible for confirming that affected devices are idle and observing any device-specific safety interval before executing CAF.
+
+#### 3.2.1 Programming Convention
+
+Before executing CAF, software should:
+- use each affected device's status instructions to confirm that the device is idle
+- observe any device-specific safety interval required after the final operation
+- avoid executing CAF while a device operation remains active
+
+The processor does not enforce these checks or delays.  
+CAF executes normally and asserts /INITIALIZE at EXECUTE TP4 regardless of peripheral activity.
 
 ---
 
@@ -185,16 +221,13 @@ Detailed external-IOT behavior is defined in the [IOT interface](../07-io/02-ext
 ---
 
 ## 6. Deferred Instructions (Planned)
-
-The following processor IOTs are recognized as part of the PDP-8/E device-0 set but are not yet defined for this system. They are listed here for completeness of the device-0 operation space (IR[2:0] = 100 through 111). Each is deferred pending a design dependency noted below.
-
-Software targeting the first hardware build must not rely on these instructions.
+  
+The following processor IOT is recognized as part of the PDP-8/E device-0 set but is not defined for this system.  
+Software targeting the first hardware build must not rely on this instruction.
 
 | Mnemonic | Octal | IR[2:0] | Name | Planned Operation | Blocking Dependency |
 |---|---|---|---|---|---|
-| SGT | 6006 | 110 | Skip if Greater Than | Skip the next instruction if the EAE greater-than flag is set | EAE (Extended Arithmetic Element) not implemented |
-| CAF | 6007 | 111 | Clear All Flags | Clear AC, L, the interrupt system, and all device flags | Requires a system-wide I/O clear (INIT) broadcast, defined with the I/O system in section 07 |
+| SGT | 6006 | 110 | Skip if Greater Than | Skip the next instruction if the EAE greater-than flag is set | EAE is not implemented |
 
 Notes:
 - SGT is meaningful only when the EAE option is present. This system does not currently implement the EAE, so SGT has no defined effect.
-- CAF provides a single-instruction reset of processor and device state. Its device-clearing half depends on an I/O INIT broadcast signal that will be defined alongside the I/O system (section 07).

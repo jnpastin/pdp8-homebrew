@@ -27,7 +27,7 @@ Each controller document must define:
 - controller-local flags
 - interrupt behavior
 - interrupt-service identification and interrupt-condition clearing or servicing behavior, when the controller is interrupt-capable
-- reset behavior
+- /INITIALIZE response, including the exact initialized state and disposition of active or pending operations
 - complete IOT table
 - IOT phase and TP behavior
 - DB direction and ownership

@@ -154,6 +154,7 @@ Authoritative definitions are maintained in:
 - `IOT_ACTIVE`
 - `IOA[5:0]`
 - `IOP[2:0]`
+- `/INITIALIZE`
 - `/DB_READ`
 - `/DB_WRITE`
 - TS signals
@@ -230,6 +231,7 @@ DMA_GRANT_ID value 15 indicates that no controller is selected.
 - The DMA arbiter uses `MS = EXECUTE` and `TS4` to assert combinational `DMA_ENABLE`.
 - `DMA_ENABLE` is not stored state.
 - The DMA arbiter must not modify or participate in generating `MS`.
+- /INITIALIZE is the CPU-generated, active-low system initialization signal distributed to all controllers.
 
 Detailed I/O behavior is defined in [I/O Architecture](../07-io/01-io-architecture.md).  
 Detailed DMA arbitration is defined in [DMA Arbitration](../07-io/06-dma-arbitration.md).

@@ -347,6 +347,81 @@ Identifies execution of an external IOT and qualifies IOA, IOP, controller respo
 
 ---
 
+### 4.9 System Initialization (/INITIALIZE)
+
+**Name:** 
+/INITIALIZE  
+
+**Polarity:** 
+Active-low  
+
+**Domain:** 
+Architectural  
+
+**Description:** 
+System-wide reset signal asserted by CAF or an accepted front-panel CLEAR operation.
+
+**Sources:**
+- CAF during the EXECUTE TP4 TSTEP
+- an accepted front-panel CLEAR operation while RUN = 0
+
+**Assertion Condition:**
+
+```text
+INITIALIZE_ASSERTED =
+    (
+        IR_IS_CAF
+        AND (MS = EXECUTE)
+        AND (TP = 4)
+    )
+    OR
+    (
+        FP_CLEAR_ACCEPTED
+    )
+```
+
+`/INITIALIZE` is asserted when `INITIALIZE_ASSERTED = 1` and deasserted otherwise.
+
+`FP_CLEAR_ACCEPTED` represents one synchronized, debounced, and re-armed acceptance event derived from FP_CLEAR. It is not stored as a pending request.
+
+**Behavior:**
+- clears AC
+- clears L
+- clears IE
+- causes each I/O controller to enter its documented initialized state
+
+**Preserved Processor State:**
+- II
+- CIFP
+- DIF
+- IF
+- DF
+- IB
+
+**Timing:**
+- asserted for exactly one TSTEP
+- CAF asserts /INITIALIZE during the EXECUTE TP4 TSTEP
+- an accepted front-panel CLEAR operation asserts /INITIALIZE for one synchronized TSTEP while the processor is halted
+- all resulting state changes commit at the TP ending the asserted TSTEP
+- /INITIALIZE is deasserted before the next TSTEP begins
+
+**Priority:**
+- when asserted, /INITIALIZE overrides all controller commands, transfers, flag updates, interrupt requests, DMA activity, and other controller-local actions sampled during the same TSTEP
+- only the controller's documented initialized state commits
+
+**Constraints:**
+- front-panel CLEAR is accepted only when RUN = 0
+- front-panel CLEAR is ignored when RUN = 1
+- one /INITIALIZE pulse is generated per distinct accepted front-panel CLEAR press
+- a held front-panel CLEAR input must not generate repeated /INITIALIZE pulses
+- front-panel CLEAR is re-armed only after the synchronized input is released
+- CAF has no effect unless execution reaches EXECUTE TP4
+- CAF and front-panel CLEAR produce the same /INITIALIZE action
+- /INITIALIZE does not modify II, CIFP, DIF, IF, DF, or IB
+- controller-specific initialized states are defined in the corresponding controller documents
+
+---
+
 ## 5. Interaction Rules
 
 ---
@@ -371,6 +446,8 @@ They may only:
 
 - initiate external operations
 - define system-level interactions
+
+/INITIALIZE is the only defined exception. It directly establishes the documented initialized state of AC, L, IE, and each I/O controller without selecting datapath sources or invoking micro-operations.
 
 ---
 
@@ -403,8 +480,7 @@ Control must ensure:
 
 ### 5.5 Cross-Domain Binding Requirement
 
-Architectural signals participate in externally visible operations only
-when paired with corresponding μops.
+Architectural signals participate in externally visible operations only when paired with corresponding μops, except for /INITIALIZE, whose direct processor and controller effects are defined by its signal contract.
 
 Defined in:
 - [Cross-Domain Operation Binding Rules](../03-control-constraints.md#12-cross-domain-operation-binding-rules)
@@ -425,6 +501,7 @@ They:
 - initiate memory operations (/RD, /WR)
 - select I/O devices (IOA)
 - grant DMA service ('/DMA_GRANT')
+- initialize processor and controller state (/INITIALIZE)
 
 They do not:
 

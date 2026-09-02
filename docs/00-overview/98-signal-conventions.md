@@ -149,6 +149,30 @@ Aggregate `/DMA_REQ` is a single-driver signal. It is not a wired-OR or wired-AN
 
 ---
 
+## 8.4 System Initialization (/INITIALIZE)
+  
+/INITIALIZE is the active-low system-wide reset signal.
+
+Properties:
+- The CPU is the sole driver.
+- The signal is distributed to all I/O controllers.
+- CAF asserts /INITIALIZE during the EXECUTE TP4 TSTEP.
+- An accepted front-panel CLEAR operation asserts /INITIALIZE for one synchronized TSTEP while RUN = 0.
+- Each assertion lasts exactly one TSTEP.
+- The signal is deasserted before the following TSTEP begins.
+- A pull-up establishes the deasserted HIGH state.
+
+When asserted:
+- AC is cleared.
+- L is cleared.
+- IE is cleared.
+- Each I/O controller enters its documented initialized state.
+- /INITIALIZE overrides controller commands, transfers, flag updates, interrupt requests, DMA activity, and other controller-local actions sampled during the same TSTEP.
+
+The exact initialized state of each I/O controller is defined in that controller's documentation.
+
+---
+
 ## 9. Global Invariants
 
 - All signals must have explicit polarity

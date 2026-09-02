@@ -311,6 +311,35 @@ Description:
 
 ---
 
+### 9.7 IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 111
+  
+**Mnemonic (non-normative):** CAF
+
+TS1:
+- (no μops)
+
+TS2:
+- (no μops)
+
+TS3:
+- (no μops)
+
+TS4:
+- (no μops)
+
+Control action:
+- /INITIALIZE is asserted during the EXECUTE TP4 TSTEP.
+
+Description:
+- /INITIALIZE clears AC, L, and IE at TP4.
+- /INITIALIZE causes each I/O controller to enter its documented initialized state at TP4.
+- II, CIFP, DIF, IF, DF, and IB are not modified.
+- All processor and controller effects commit atomically at TP4.
+- No CAF effect occurs unless execution reaches TP4.
+- CAF does not use a CAF-specific micro-operation.
+
+---
+
 ## 10. Instruction Definitions (Memory Extension Control - Devices 20-27)
 
 ---

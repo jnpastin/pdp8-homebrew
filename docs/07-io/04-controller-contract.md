@@ -73,7 +73,40 @@ Controller-local state changes:
 
 ---
 
-## 6. Skip Condition
+## 6. System Initialization
+  
+Every controller must accept the active-low /INITIALIZE signal.
+
+When /INITIALIZE is asserted:
+- the controller enters its documented initialized state at the TP ending the asserted TSTEP
+- /INITIALIZE overrides all controller commands, transfers, flag updates, interrupt requests, DMA activity, and other controller-local actions sampled during the same TSTEP
+- any active controller operation is terminated
+- controller bus-driving outputs are released
+- the controller interrupt contribution is deasserted
+- any controller /DMA_REQ output is deasserted
+
+A controller must respond to /INITIALIZE regardless of:
+- IOT_ACTIVE
+- address match
+- IOP
+- interrupt state
+- DMA request state
+- DMA grant state
+
+Each controller-specific contract must define:
+- the initialized value of every programmer-visible register
+- the initialized value of every controller flag
+- the initialized interrupt-enable state
+- the disposition of active and pending operations
+- the initialized interrupt-request state
+- the initialized DMA-request state, when applicable
+- any controller-specific or emulated-device state affected by initialization
+
+The authoritative [System Initialization](../04-control/20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize) definition specifies the signal sources, polarity, and pulse timing.
+
+---
+
+## 7. Skip Condition
 
 A controller requesting skip during TS4 must derive `IO_SKIP_REQ` from:
 
@@ -90,7 +123,7 @@ The controller does not perform or control the resulting CPU state change beyond
 
 ---
 
-## 7. I/O Wait
+## 8. I/O Wait
 
 A controller may assert `/IO_WAIT` only:
 
@@ -103,7 +136,7 @@ The controller must deassert `/IO_WAIT` when the pending operation is ready to p
 
 ---
 
-## 8. Persistent Service Requests
+## 9. Persistent Service Requests
 
 Controller interrupt contributions and `/DMA_REQ[n]` are persistent registered request signals.
 
@@ -116,7 +149,7 @@ Rules:
 - A persistent request may remain asserted across multiple TS, TP, instruction, and major-state boundaries.
 - A controller must not generate a transient request pulse that could disappear before the receiving subsystem samples it.
 
-### 8.1 Interrupt Contribution
+### 9.1 Interrupt Contribution
 
 A controller interrupt contribution remains asserted while:
 
@@ -136,7 +169,7 @@ The controller-specific contract defines:
 
 The shared `/INT_REQ` signal is the aggregate of all controller interrupt contributions.
 
-### 8.2 DMA Request
+### 9.2 DMA Request
 
 A DMA-capable controller asserts exactly one configured /DMA_REQ[n] while DMA service remains pending, where n is in the range 0 through 14.  
 DMA priority 15 is reserved as the no-controller-selected encoding and has no corresponding /DMA_REQ line.
@@ -169,7 +202,7 @@ Separate combinational aggregation logic continuously derives aggregate CPU-faci
 
 The controller does not generate aggregate `/DMA_REQ`.
 
-### 8.3 Receiving-Side Synchronization
+### 9.3 Receiving-Side Synchronization
 
 Controller interrupt contributions and `/DMA_REQ[n]` are registered controller outputs.
 
@@ -181,7 +214,7 @@ Aggregate `/DMA_REQ` is a combinational CPU input derived from `DMA_ENABLE` and 
 
 ---
 
-## 9. DMA-Capable Controllers
+## 10. DMA-Capable Controllers
 
 A DMA-capable controller additionally must:
 
@@ -202,7 +235,7 @@ A DMA-capable controller additionally must:
 
 ---
 
-## 10. Physical Implementation Boundary
+## 11. Physical Implementation Boundary
 
 The following are outside this architectural contract:
 
@@ -215,7 +248,7 @@ The following are outside this architectural contract:
 
 ---
 
-## 11. Asynchronous Event Boundary
+## 12. Asynchronous Event Boundary
 
 Physical-device events may occur asynchronously relative to system timing.
 

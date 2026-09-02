@@ -79,6 +79,32 @@ During halted execution, front-panel command inputs may select a single console 
 - meaningful only when `RUN = 0`
 - must be treated as a momentary command input
 
+### FP_CLEAR
+  
+**Name:** Front Panel Clear Command  
+**Type:** External Command Input  
+**Bit Width:** 1  
+
+**Purpose:** 
+Indicates that the operator has requested system initialization from the front panel.
+
+**Value Encoding:**
+- 0 -> CLEAR command not asserted
+- 1 -> CLEAR command asserted
+
+**Consumed By:**
+- [System Initialization](../20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize)
+
+**Constraints:**
+- meaningful only when RUN = 0
+- ignored when RUN = 1
+- must be synchronized and debounced before use
+- must be treated as a momentary command input
+- generates one /INITIALIZE pulse per distinct accepted press
+- must not retrigger while the synchronized input remains asserted
+- is re-armed only after the synchronized input is released
+- must not directly modify processor or controller state
+
 ### FP_CONTINUE
 
 **Name:** Front Panel Continue Command  

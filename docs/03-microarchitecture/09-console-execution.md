@@ -92,6 +92,7 @@ RUNNING
 The following switches execute console operations:
 
 ```text
+CLEAR
 LOAD ADDRESS
 EXAM
 DEPOSIT
@@ -246,7 +247,35 @@ The processor remains halted.
 
 ---
 
-## 9. Start Operation
+## 9. Clear Operation
+  
+Front-panel CLEAR requests system initialization while the processor is halted.
+
+Acceptance:
+- FP_CLEAR is accepted only when RUN = 0.
+- FP_CLEAR is ignored when RUN = 1.
+- One accepted press generates one /INITIALIZE pulse.
+- A held FP_CLEAR input does not generate repeated pulses.
+- FP_CLEAR is re-armed only after the synchronized input is released.
+
+Execution:
+- An accepted FP_CLEAR assertion causes /INITIALIZE to be asserted for one synchronized TSTEP.
+- The processor remains halted.
+- Normal instruction sequencing does not begin.
+- The operation does not use the normal instruction execution path.
+
+Result:
+- AC is cleared.
+- L is cleared.
+- IE is cleared.
+- Each I/O controller enters its documented initialized state.
+- II, CIFP, DIF, IF, DF, and IB are unchanged.
+
+The authoritative signal behavior is defined in [System Initialization](../04-control/20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize).
+
+---
+
+## 10. Start Operation
 
 Start establishes a known processor execution state.
 
@@ -284,7 +313,7 @@ The processor enters the Running state.
 
 ---
 
-## 10. Continue Operation
+## 11. Continue Operation
 
 Continue resumes execution from the preserved processor state.
 
@@ -315,7 +344,7 @@ TS
 
 ---
 
-## 11. Single Instruction Mode
+## 12. Single Instruction Mode
 
 Single Instruction is an execution mode.
 
@@ -349,7 +378,7 @@ It only changes when execution halts.
 
 ---
 
-## 12. Single Step Mode
+## 13. Single Step Mode
 
 Single Step is an execution mode.
 
@@ -403,7 +432,7 @@ CONTINUE
 
 ---
 
-## 13. Timing Relationships
+## 14. Timing Relationships
 
 Console operation switches execute as single TS-equivalent transactions while halted.
 

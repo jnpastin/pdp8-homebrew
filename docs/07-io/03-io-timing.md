@@ -14,6 +14,28 @@ Controllers use the shared TP events directly. Dedicated I/O commit strobes are 
 
 All controller-local state changes caused by an IOT occur only at TP events.
 
+### 2.1 Initialization Timing
+
+/INITIALIZE is asserted for exactly one TSTEP.
+
+For CAF:
+- /INITIALIZE is asserted during the EXECUTE TP4 TSTEP.
+- All processor and controller initialization effects commit at TP4.
+- No CAF initialization effect occurs before TP4.
+- /INITIALIZE is deasserted before the following FETCH TSTEP begins.
+
+For an accepted front-panel CLEAR operation:
+- the processor is halted
+- /INITIALIZE is asserted for one synchronized TSTEP
+- all processor and controller initialization effects commit at the TP ending that TSTEP
+- /INITIALIZE is deasserted before the following TSTEP begins
+
+/INITIALIZE:
+- is not extended by /IO_WAIT
+- does not depend on IOT_ACTIVE, IOA, IOP, /DMA_GRANT, or DMA_GRANT_ID
+- overrides all controller actions that would otherwise commit at the same TP
+- causes only the controller's documented initialized state to commit at that TP
+
 ---
 
 ## 3. IOT Phase Allocation

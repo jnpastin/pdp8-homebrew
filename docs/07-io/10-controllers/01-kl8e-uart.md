@@ -23,7 +23,7 @@ This document defines:
 - programmer-visible state
 - character representation
 - interrupt behavior
-- reset behavior
+- /INITIALIZE behavior
 - IOT semantics
 - IOT response timing
 - externally visible busy and completion behavior
@@ -60,7 +60,7 @@ Internal implementation differences are permitted only when they do not change t
 - DB
 - controller response signals
 - interrupt requests
-- reset
+- /INITIALIZE behavior
 - controller flags
 - IOT results
 
@@ -155,22 +155,25 @@ The controller does not modify the CPU interrupt-enable state.
 
 ---
 
-## 8. Reset State
+## 8. System Initialization
 
-Reset establishes the following programmer-visible state:
+The controller enters its initialized state when /INITIALIZE is asserted.
 
-| State | Reset value |
-|---|---:|
-| Keyboard receive register | `000` |
+| State | Initialized value |
+|---|---|
+| Keyboard receive register | 000 |
 | Keyboard flag | Clear |
-| Teleprinter transmit register | `000` |
+| Teleprinter transmit register | 000 |
 | Teleprinter flag | Clear |
 | Shared interrupt enable | Clear |
 | Controller interrupt contribution | Inactive |
 
-Reset cancels any controller operation not yet reported as complete.
+/INITIALIZE cancels any controller operation not yet reported as complete.  
+Any characters not yet represented by a completed programmer-visible operation may be discarded.
 
-Any characters not yet represented by a completed programmer-visible operation may be discarded by reset.
+The controller responds to /INITIALIZE regardless of IOT_ACTIVE, address match, IOP, or interrupt state.  
+The initialized state commits at the TP ending the asserted /INITIALIZE TSTEP.  
+No other controller action commits at that TP.
 
 ---
 
@@ -191,7 +194,7 @@ The keyboard flag is cleared by:
 - `KCF`
 - `KCC`
 - `KRB`
-- reset
+- /INITIALIZE
 
 `KRS` does not clear the keyboard flag.
 
@@ -384,7 +387,7 @@ The teleprinter flag is cleared by:
 
 - `TCF`
 - `TLS`
-- reset
+- /INITIALIZE
 
 The teleprinter flag may be set directly by `TFL`.
 
@@ -395,7 +398,7 @@ Software is expected to test the teleprinter flag before supplying another chara
 The controller must preserve an accepted character until:
 
 - the output operation completes
-- reset cancels the operation
+- /INITIALIZE cancels the operation
 
 If the controller cannot accept a character supplied through `TPC` or `TLS`, the new character is discarded.
 

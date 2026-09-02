@@ -118,6 +118,7 @@ Represents evaluation of device-0 processor IOT instructions.
 Matches:
 - GTF
 - RTF
+- CAF
 
 ---
 
@@ -181,6 +182,7 @@ Expose raw IR fields:
 ### Processor IOT Detection
 - [IR_IS_GTF](#ir_is_gtf)
 - [IR_IS_RTF](#ir_is_rtf)
+- [IR_IS_CAF](#ir_is_caf)
 
 ### Fields
 - [IR_ADDR](#ir_addr)
@@ -340,6 +342,34 @@ IR_IS_AND = (IR[11:9] == 000)
 - 1 → AND
 
 **Consumed By:**
+
+---
+
+### IR_IS_CAF
+  
+**Mnemonic:** IR_IS_CAF  
+**Name:** Clear All Flags Instruction Flag  
+**Type:** Processor IOT Detection  
+**Bit Width:** 1  
+
+**Purpose:** 
+Indicates that the current instruction is CAF.  
+
+**Derivation:**
+
+```text
+IR_IS_CAF =
+    IR_IS_IOT
+AND (IR_IOA == 000000)
+AND (IR[2:0] == 111)
+```
+
+**Value Encoding:**
+- 0 -> not CAF
+- 1 -> CAF
+
+**Consumed By:**
+- [Initialize](../20-control-output-definitions/02-architectural-control-signals.md#initialize)
 
 ---
 

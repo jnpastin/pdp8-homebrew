@@ -107,7 +107,24 @@ Controller-local state changes do not require a separate CPU response signal. Th
 
 ---
 
-## 9. DMA Boundary
+## 9. Initialization Interface
+  
+/INITIALIZE is the active-low system-wide reset signal distributed by the CPU to every I/O controller.
+
+Properties:
+- /INITIALIZE is independent of external-IOT selection.
+- A controller must respond to /INITIALIZE regardless of IOT_ACTIVE, IOA, IOP, interrupt state, or DMA state.
+- When /INITIALIZE is asserted, it overrides all controller commands, transfers, flag updates, interrupt requests, DMA activity, and other controller-local actions sampled during the same TSTEP.
+- Each controller enters its documented initialized state at the TP ending the asserted TSTEP.
+- Each controller must define the exact state of its registers, flags, interrupt-enable state, active operations, bus outputs, /INT_REQ output, and /DMA_REQ output after initialization.
+- A controller must terminate any active operation when /INITIALIZE is asserted.
+- A controller must release all bus-driving outputs as part of initialization.
+
+The authoritative signal definition is provided by [System Initialization](../04-control/20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize)
+
+---
+
+## 10. DMA Boundary
 
 DMA arbitration is external to CPU control.
 
@@ -128,7 +145,7 @@ During DMA, the granted controller directly participates in the memory interface
 
 ---
 
-## 10. Related Documents
+## 11. Related Documents
 
 - [External IOT Interface](./02-external-iot-interface.md)
 - [I/O Timing](./03-io-timing.md)

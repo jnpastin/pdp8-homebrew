@@ -65,6 +65,7 @@ Writers:
 - OPR control operations (CLA, CMA, IAC)
 - MQ transfer path
 - IOT execution (GTF)
+- System Initialization (/INITIALIZE)
 
 ---
 
@@ -260,13 +261,14 @@ Invariants:
 
 Constraints:
 - Set only by ION or RTF
-- Cleared by IOF, SKON, and interrupt entry
-- Changes only at defined TP events  
+- Cleared by IOF, SKON, interrupt entry, or /INITIALIZE
+- Changes only at defined TP events
 
 Writers:
 - IOT execution (ION or RTF; IE_SET micro-operation)
 - IOT execution (IOF or SKON; IE_CLEAR micro-operation)
 - Interrupt entry (IE_CLEAR micro-operation)
+- System initialization (/INITIALIZE)
 
 ---
 
@@ -401,6 +403,7 @@ Constraints:
   - Shift/rotate operations
   - Explicit OPR instructions (CLL, CML, STL)
   - RTF processor-state restoration
+  - System initialization (/INITIALIZE)
 - Multiple updates must follow defined micro-op ordering
 
 Writers:
@@ -408,6 +411,7 @@ Writers:
 - Shift/rotate network
 - OPR control logic
 - IOT execution (RTF; AC_TO_L)
+- System initialization (/INITIALIZE)
 
 ---
 

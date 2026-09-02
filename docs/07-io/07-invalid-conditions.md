@@ -72,7 +72,24 @@ The following are invalid:
 
 ---
 
-## 4. Validation Boundary
+## 4. System Initialization Invalid Conditions
+
+The following are invalid:
+- a controller ignoring an asserted /INITIALIZE signal
+- a controller qualifying /INITIALIZE with IOT_ACTIVE, address match, IOP, interrupt state, DMA request state, or DMA grant state
+- a controller action committing at the same TP as /INITIALIZE instead of the documented initialized state
+- an active controller operation continuing after /INITIALIZE commits
+- a controller continuing to drive DB, AB, MFB, or MDB after /INITIALIZE commits
+- a controller continuing to assert /RD or /WR after /INITIALIZE commits
+- a controller interrupt contribution remaining asserted after /INITIALIZE commits
+- a controller /DMA_REQ output remaining asserted after /INITIALIZE commits
+- a controller entering a state other than its documented initialized state
+- /INITIALIZE being extended, repeated, or suppressed by /IO_WAIT
+- /INITIALIZE remaining asserted beyond its single assigned TSTEP
+
+---
+
+## 5. Validation Boundary
 
 These conditions are architectural design errors.
 
@@ -80,7 +97,7 @@ The architecture does not require centralized runtime validation of controller c
 
 ---
 
-## 5. Related Documents
+## 6. Related Documents
 
 - [External IOT Interface](./02-external-iot-interface.md)
 - [I/O Timing](./03-io-timing.md)

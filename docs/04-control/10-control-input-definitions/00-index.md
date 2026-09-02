@@ -63,9 +63,10 @@ Defined in:
 
 ### 4.2 Instruction Detection
 
-- [IR_IS_ISZ](./02-ir-derived-fields.md#ir_is_isz)  
 - [IR_IS_AND](./02-ir-derived-fields.md#ir_is_and)  
+- [IR_IS_CAF](./02-ir-derived-fields.md#ir_is_caf)
 - [IR_IS_GTF](./02-ir-derived-fields.md#ir_is_gtf)
+- [IR_IS_ISZ](./02-ir-derived-fields.md#ir_is_isz)  
 - [IR_IS_RTF](./02-ir-derived-fields.md#ir_is_rtf)
 
 ---
@@ -142,6 +143,7 @@ Defined in: [External Inputs](./04-external-inputs.md)
 
 ### 6.1 Front Panel Commands
 - [FP_START](./04-external-inputs.md#fp_start)
+- [FP_CLEAR](./04-external-inputs.md#fp_clear)
 - [FP_CONTINUE](./04-external-inputs.md#fp_continue)
 - [FP_STOP](./04-external-inputs.md#fp_stop)
 - [FP_LOAD_ADDRESS](./04-external-inputs.md#fp_load_address)

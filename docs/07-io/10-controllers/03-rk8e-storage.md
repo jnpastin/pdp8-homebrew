@@ -27,7 +27,7 @@ This document defines:
 - IOT semantics
 - IOT response timing
 - interrupt and skip behavior
-- reset and abort behavior
+- /INITIALIZE and abort behavior
 - disk-operation completion behavior
 - DMA participation
 - bootstrap-visible behavior
@@ -65,7 +65,7 @@ Internal implementation differences are permitted only when they do not change b
 - DB
 - controller response signals
 - interrupt requests
-- reset
+- /INITIALIZE behavior
 - DMA request and grant behavior
 - MFB
 - AB
@@ -1052,11 +1052,7 @@ When either destructive operation occurs:
 
 ## 28. System Initialization
 
-System initialization occurs during:
-
-- system power-up
-- the processor CLEAR operation
-- another system-level initialization event defined by the architecture
+The controller enters its initialized state when /INITIALIZE is asserted.
 
 System initialization clears:
 
@@ -1083,6 +1079,11 @@ System initialization does not:
 System initialization is destructive to active operations.
 
 Uncommitted write data may be discarded without an additional error indication.
+
+The controller responds to /INITIALIZE regardless of IOT_ACTIVE, address match, IOP, interrupt state, DMA request state, or DMA grant state.  
+The initialized state commits at the TP ending the asserted /INITIALIZE TSTEP.  
+/INITIALIZE overrides all other controller actions sampled during that TSTEP.  
+No other controller action commits at that TP.
 
 ---
 

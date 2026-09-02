@@ -23,7 +23,7 @@ This document defines:
 - programmer-visible state
 - character representation
 - interrupt behavior
-- reset behavior
+- /INITIALIZE behavior
 - IOT semantics
 - IOT response timing
 - externally visible acceptance and completion behavior
@@ -69,7 +69,7 @@ Internal implementation differences are permitted only when they do not change b
 - DB
 - controller response signals
 - interrupt requests
-- reset
+- /INITIALIZE behavior
 - controller flags
 - IOT results
 
@@ -153,26 +153,27 @@ The controller does not modify the CPU interrupt-enable state.
 
 ---
 
-## 8. Reset State
+## 8. System Initialization
 
-Reset establishes the following programmer-visible state:
+The controller enters its initialized state when /INITIALIZE is asserted.
 
-| State | Reset value |
-|---|---:|
-| Reader buffer | `000` |
+| State | Initialized value |
+|---|---|
+| Reader buffer | 000 |
 | Reader flag | Clear |
-| Punch buffer | `000` |
+| Punch buffer | 000 |
 | Punch flag | Set |
 | Shared interrupt enable | Clear |
 | Controller interrupt contribution | Inactive |
 
-The punch flag is set so the punch initially appears ready to accept a character.
+The punch flag is set so the punch initially appears ready to accept a character.  
+The reader flag remains clear until a reader operation completes.  
+/INITIALIZE cancels any controller operation not yet reported as complete.  
+Characters not yet represented by a completed programmer-visible operation may be discarded.
 
-The reader flag remains clear until a reader operation completes.
-
-Reset cancels any controller operation not yet reported as complete.
-
-Characters not yet represented by a completed programmer-visible operation may be discarded by reset.
+The controller responds to /INITIALIZE regardless of IOT_ACTIVE, address match, IOP, or interrupt state.  
+The initialized state commits at the TP ending the asserted /INITIALIZE TSTEP.  
+No other controller action commits at that TP.
 
 ---
 
@@ -193,7 +194,7 @@ The reader flag is cleared by:
 - `RRB`
 - `RFC`
 - `RRB RFC`
-- reset
+- /INITIALIZE
 
 ### 9.3 Reader Capacity Contract
 
@@ -369,7 +370,7 @@ The punch flag is cleared by:
 
 - `PCF`
 - `PLS`
-- reset, followed by the reset-specific set state defined above
+- /INITIALIZE, which establishes the initialized set state defined above
 
 ### 16.3 Punch Acceptance Contract
 
@@ -378,7 +379,7 @@ Software is expected to test the punch flag before supplying another character.
 The controller must preserve an accepted character until:
 
 - the punch operation completes
-- reset cancels the operation
+- /INITIALIZE cancels the operation
 
 If the controller cannot accept a character supplied through `PPC` or `PLS`:
 

@@ -111,7 +111,8 @@ Defined in:
 ### 4.2 I/O Interface
 
 - [/DB_READ](./02-architectural-control-signals.md#43-db_read)  
-- [/DB_WRITE](./02-architectural-control-signals.md#44-db_write)  
+- [/DB_WRITE](./02-architectural-control-signals.md#44-db_write) 
+- [/INITIALIZE](./02-architectural-control-signals.md#49-system-initialization-initialize )
 - [IOA[5:0]](./02-architectural-control-signals.md#36-io-address-bus-ioa50)  
 - [IOP[2:0]](./02-architectural-control-signals.md#37-io-operation-field-iop20)
 - [IOT_ACTIVE](./02-architectural-control-signals.md#48-external-iot-active-iot_active)
