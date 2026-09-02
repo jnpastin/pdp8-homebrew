@@ -114,9 +114,7 @@ Sequencing
 Defined in:
 - [Major State Model](../../03-microarchitecture/00-state-model.md)
 
-**Description**
-
-Specifies the next Major State.
+**Description:** Specifies the next Major State.
 
 **Value Encoding:**
 ```text
@@ -148,8 +146,7 @@ Specifies the next Major State.
 **Domain** Sequencing  
 **Width** 1 bit  
 
-**Description**  
-Specifies the next value of the RUN state.
+**Description:** Specifies the next value of the RUN state.
 
 **Behavior**
 - evaluated as part of the control word
@@ -184,8 +181,7 @@ Specifies the next value of the RUN state.
 **Domain** Sequencing  
 **Width** 1 bit  
 
-**Description**  
-Specifies the next value of the halt-request pending state.
+**Description:** Specifies the next value of the halt-request pending state.
 
 **Behavior**
 - evaluated as part of the control word

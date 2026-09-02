@@ -88,8 +88,9 @@ Active-low externally (`/RD`), active-high internally
 **Domain**  
 Architectural
 
-**Description**  
-Indicates that the CPU is requesting a memory read operation.
+**Bit Width:** 1
+
+**Description:** Indicates that the CPU is requesting a memory read operation.
 
 When asserted:
 - memory must provide the contents of the address selected by `AB_SRC` and `MFB_SRC`
@@ -124,8 +125,9 @@ Active-low externally (`/WR`), active-high internally
 **Domain**  
 Architectural
 
-**Description**  
-Indicates that the CPU is requesting a memory write operation.
+**Bit Width:** 1
+
+**Description:** Indicates that the CPU is requesting a memory write operation.
 
 When asserted:
 - memory must store the selected data into the address selected by `AB_SRC` and `MFB_SRC`
@@ -153,6 +155,9 @@ When asserted:
 ### 4.3 /DB_READ
 
 **Category:** Architectural Control Signal  
+
+**Bit Width:** 1
+
 **Description:** Indicates that the CPU is performing an I/O read operation and will sample the System Data Bus (DB) during this timing state.
 
 **Polarity:** Active-low (/DB_READ)
@@ -176,6 +181,9 @@ When asserted:
 ### 4.4 /DB_WRITE
 
 **Category:** Architectural Control Signal  
+
+**Bit Width:** 1
+
 **Description:** Indicates that the CPU is performing an I/O write operation and will drive the System Data Bus (DB) during this timing state.
 
 **Polarity:** Active-low (/DB_WRITE)
@@ -201,6 +209,8 @@ When asserted:
 **Name** /DMA_GRANT  
 **Polarity** Active-low  
 **Domain** Architectural  
+
+**Bit Width:** 1
 
 **Description:** Indicates that the CPU is in `MS = DMA` and has released normal CPU ownership of the memory interface.
 
@@ -252,8 +262,9 @@ Active-high
 **Domain**  
 Architectural
 
-**Description**  
-Specifies the target I/O device address during execution of IOT instructions.
+**Bit Width:** 6
+
+**Description:** Specifies the target I/O device address during execution of IOT instructions.
 
 Properties:
 
@@ -293,8 +304,9 @@ Active-high
 **Domain:**  
 Architectural  
 
-**Description:**  
-Presents `IR[2:0]` unchanged to external I/O controllers during an external IOT.
+**Bit Width:** 3
+
+**Description:** Presents `IR[2:0]` unchanged to external I/O controllers during an external IOT.
 
 **Timing:**
 
@@ -324,8 +336,9 @@ Active-high
 **Domain:**  
 Architectural  
 
-**Description:**  
-Identifies execution of an external IOT and qualifies IOA, IOP, controller responses, and I/O wait behavior.
+**Bit Width:** 1
+
+**Description:** Identifies execution of an external IOT and qualifies IOA, IOP, controller responses, and I/O wait behavior.
 
 **Timing:**
 
@@ -358,8 +371,9 @@ Active-low
 **Domain:** 
 Architectural  
 
-**Description:** 
-System-wide reset signal asserted by CAF or an accepted front-panel CLEAR operation.
+**Bit Width:** 1
+
+**Description:** System-wide reset signal asserted by CAF or an accepted front-panel CLEAR operation.
 
 **Sources:**
 - CAF during the EXECUTE TP4 TSTEP

@@ -1,0 +1,24 @@
+# Generated build artifacts
+/build/
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+
+# Python test and analysis caches
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Python virtual environments
+.venv/
+venv/
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+#Documentation rollups
+complete*.md

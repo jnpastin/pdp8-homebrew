@@ -332,8 +332,8 @@ All numeric encodings in this section are octal unless otherwise noted.
 
 **Encoding:**
 ```
-00 → MA
-01 → PC
+0 → MA
+1 → PC
 ```
 
 **Constraints:**
@@ -398,14 +398,14 @@ All numeric encodings in this section are octal unless otherwise noted.
 
 **Encoding:** 
 ```
-00 → IDB
-01 → DB
-02 → IF (field-merge)
-03 → DF (field-merge)
-04 → IB (field-merge)
-05 → MQ
-06 → GTF_FLAGS
-07 → reserved
+0 → IDB
+1 → DB
+2 → IF (field-merge)
+3 → DF (field-merge)
+4 → IB (field-merge)
+5 → MQ
+6 → GTF_FLAGS
+7 → reserved
 ```
 
 **Constraints:**
@@ -451,10 +451,10 @@ All numeric encodings in this section are octal unless otherwise noted.
 
 **Encoding:**
 ```
-00 → AC
-01 → MB
-02 → PC
-03 → L
+0 → AC
+1 → MB
+2 → PC
+3 → L
 ```
 
 **Constraints:**
@@ -489,14 +489,14 @@ All numeric encodings in this section are octal unless otherwise noted.
 
 **Encoding:**
 ```
-00 → NONE
-01 → AC
-02 → MB
-03 → MQ
-04 → FP_SR
-05 → PC
-06 → L
-07 → reserved
+0 → NONE
+1 → AC
+2 → MB
+3 → MQ
+4 → FP_SR
+5 → PC
+6 → L
+7 → reserved
 ```
 
 **Constraints:**
@@ -521,14 +521,14 @@ All numeric encodings in this section are octal unless otherwise noted.
 
 **Encoding:**
 ```
-00 → ADD
-01 → AND
-02 → OR
-03 → NOT
-04 → INC
-05 → ROR
-06 → ROL
-07 → RTR
+0 → ADD
+1 → AND
+2 → OR
+3 → NOT
+4 → INC
+5 → ROR
+6 → ROL
+7 → RTR
 10 → RTL
 11 → BSW
 12 → CLEAR
@@ -820,8 +820,8 @@ external bus value
 **Name:** Processor Flags Word  
 **Class:** Data Value  
 **Bit Width:** 12  
-*
-*Purpose:** Provides the implemented PDP-8/E processor flags word to the AC input path.  
+
+**Purpose:** Provides the implemented PDP-8/E processor flags word to the AC input path.  
 
 **Value:**
 
@@ -921,14 +921,14 @@ GTF_FLAGS[2:0] = DF
 
 **Encoding:**
 ```
-00 → AC
-01 → PC
-02 → MB
-03 → MQ
-04 → FP_SR
-05 → EA_ADDR
-06 → IR
-07 → ALU
+0 → AC
+1 → PC
+2 → MB
+3 → MQ
+4 → FP_SR
+5 → EA_ADDR
+6 → IR
+7 → ALU
 ```
 
 **Constraints:**
@@ -1173,7 +1173,7 @@ IF_DF_COMBINED[5:3]=IF
 
 ---
 
-#### IOT_TRANSFER_VAL
+### IOT_TRANSFER_VAL
 
 **Mnemonic:** `IOT_TRANSFER_VAL`  
 **Name:** Pending External-IOT Transfer Value  
@@ -1185,10 +1185,10 @@ IF_DF_COMBINED[5:3]=IF
 **Encoding:**
 
 ```text
-00 = no pending DB transfer
-01 = pending device-to-CPU read
-10 = pending CPU-to-device write
-11 = invalid
+0 = no pending DB transfer
+1 = pending device-to-CPU read
+2 = pending CPU-to-device write
+3 = invalid
 ```
 
 **Constraints:**
@@ -1272,10 +1272,10 @@ IF_DF_COMBINED[5:3]=IF
 
 **Encoding:**
 ```
-00 → CLEAR
-01 → COMP
-02 → ALU_CARRY
-03 → AC[11]
+0 → CLEAR
+1 → COMP
+2 → ALU_CARRY
+3 → AC[11]
 ```
 
 **Constraints:**
@@ -1328,10 +1328,10 @@ IF_DF_COMBINED[5:3]=IF
 
 **Encoding:**
 ```
-00 → PC
-01 → EA_ADDR
-02 → Control
-03 → reserved
+0 → PC
+1 → EA_ADDR
+2 → Control
+3 → reserved
 ```
 
 **Constraints:**
@@ -1404,8 +1404,8 @@ IF_DF_COMBINED[5:3]=IF
 
 **Encoding:**
 ```
-00 → IDB
-01 → MDB
+0 → IDB
+1 → MDB
 ```
 
 **Constraints:**
@@ -1483,8 +1483,8 @@ memory bus value
 
 **Encoding:** 
 ```text
-00 → IF
-01 → DF
+0 → IF
+1 → DF
 ```
 
 **Constraints:**
@@ -1582,8 +1582,8 @@ memory bus value
 
 **Encoding:**
 ```
-00 → IDB
-01 → Control
+0 → IDB
+1 → Control
 ```
 
 **Constraints:**
