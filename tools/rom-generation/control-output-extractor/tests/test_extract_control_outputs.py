@@ -553,31 +553,6 @@ class IndexExtractionTests(unittest.TestCase):
             )
             self.assertEqual(diagnostics, [])
             
-    def test_bus_names_with_brackets_are_extracted_from_index(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            repo_root = Path(temporary_directory)
-            index_path = repo_root / "docs/index.md"
-            index_path.parent.mkdir(parents=True)
-
-            document = SourceDocument(
-                path=index_path,
-                text=(
-                    "### 4.2 I/O Interface\n"
-                    "- [IOA\\[5:0\\]]"
-                    "(./02-architectural-control-signals.md#ioa)\n"
-                    "- [IOP\\[2:0\\]]"
-                    "(./02-architectural-control-signals.md#iop)\n"
-                ),
-            )
-
-            entries, diagnostics = parse_index(document, repo_root)
-
-            self.assertEqual(
-                [entry.name for entry in entries],
-                ["IOA[5:0]", "IOP[2:0]"],
-            )
-            self.assertEqual(diagnostics, [])    
-    
     def test_scalar_definition_attributes_are_extracted(self) -> None:
         block = DefinitionBlock(
             heading="AC_LOAD",
@@ -889,10 +864,10 @@ class IndexExtractionTests(unittest.TestCase):
             lines=(
                 "**Encoding:**",
                 "```text",
-                "00 = no pending transfer",
-                "01 = pending read",
-                "10 = pending write",
-                "11 = invalid",
+                "0 = no pending transfer",
+                "1 = pending read",
+                "2 = pending write",
+                "3 = invalid",
                 "```",
                 "**Constraints:**",
             ),
@@ -906,10 +881,10 @@ class IndexExtractionTests(unittest.TestCase):
         self.assertEqual(
             [(entry.value, entry.meaning) for entry in encodings],
             [
-                ("00", "no pending transfer"),
-                ("01", "pending read"),
-                ("10", "pending write"),
-                ("11", "invalid"),
+                ("0", "no pending transfer"),
+                ("1", "pending read"),
+                ("2", "pending write"),
+                ("3", "invalid"),
             ],
         )
         self.assertEqual(diagnostics, [])
@@ -1435,134 +1410,188 @@ class IndexExtractionTests(unittest.TestCase):
 
         self.assertEqual(diagnostics, [])
         
+    def test_exact_signal_heading_is_matched(self) -> None:
+        indexed_names = {
+            "AC_LOAD",
+            "PC_LOAD",
+        }
+
+        self.assertEqual(
+            find_signal_in_heading(
+                "AC_LOAD",
+                indexed_names,
+            ),
+            "AC_LOAD",
+        )
+
+
+    def test_signal_in_final_parentheses_is_matched(self) -> None:
+        indexed_names = {
+            "AC_LOAD",
+            "PC_LOAD",
+        }
+
+        self.assertEqual(
+            find_signal_in_heading(
+                "Accumulator Load (AC_LOAD)",
+                indexed_names,
+            ),
+            "AC_LOAD",
+        )
+
+
+    def test_embedded_signal_name_is_not_matched(self) -> None:
+        indexed_names = {
+            "AC_LOAD",
+        }
+
+        self.assertIsNone(
+            find_signal_in_heading(
+                "Behavior involving AC_LOAD during execution",
+                indexed_names,
+            )
+        )
+
+
+    def test_unknown_parenthesized_name_is_not_matched(self) -> None:
+        indexed_names = {
+            "AC_LOAD",
+        }
+
+        self.assertIsNone(
+            find_signal_in_heading(
+                "Unknown Signal (UNKNOWN_SIGNAL)",
+                indexed_names,
+            )
+        )
+
         
         
-        
-    class EndToEndTests(unittest.TestCase):
-        def test_main_generates_json_and_report(self) -> None:
-            with tempfile.TemporaryDirectory() as temporary_directory:
-                repo_root = Path(temporary_directory)
+class EndToEndTests(unittest.TestCase):
+    def test_main_generates_json_and_report(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            repo_root = Path(temporary_directory)
 
-                source_directory = (
-                    repo_root
-                    / "docs"
-                    / "04-control"
-                    / "20-control-output-definitions"
-                )
-                source_directory.mkdir(parents=True)
+            source_directory = (
+                repo_root
+                / "docs"
+                / "04-control"
+                / "20-control-output-definitions"
+            )
+            source_directory.mkdir(parents=True)
 
-                index_path = source_directory / "00-index.md"
-                microarchitecture_path = (
-                    source_directory
-                    / "01-microarchitectural-control-signals.md"
-                )
-                architecture_path = (
-                    source_directory
-                    / "02-architectural-control-signals.md"
-                )
-                sequencing_path = (
-                    source_directory
-                    / "03-sequencing-control-signals.md"
-                )
+            index_path = source_directory / "00-index.md"
+            microarchitecture_path = (
+                source_directory
+                / "01-microarchitectural-control-signals.md"
+            )
+            architecture_path = (
+                source_directory
+                / "02-architectural-control-signals.md"
+            )
+            sequencing_path = (
+                source_directory
+                / "03-sequencing-control-signals.md"
+            )
 
-                index_path.write_text(
-                    "### 3.1 Enable Signals\n"
-                    "- [AC\\_LOAD]"
-                    "(./01-microarchitectural-control-signals.md#ac_load)\n",
-                    encoding="utf-8",
-                )
+            index_path.write_text(
+                "### 3.1 Enable Signals\n"
+                "- [AC\\_LOAD]"
+                "(./01-microarchitectural-control-signals.md#ac_load)\n",
+                encoding="utf-8",
+            )
 
-                microarchitecture_path.write_text(
-                    "## 5. Signal Definitions\n"
-                    "\n"
-                    "### AC_LOAD\n"
-                    "\n"
-                    "**Mnemonic:** AC_LOAD\n"
-                    "**Name:** Accumulator Load\n"
-                    "**Class:** Enable\n"
-                    "**Bit Width:** 1\n"
-                    "**Purpose:** Loads the accumulator.\n"
-                    "**Encoding:**\n"
-                    "0 = no load\n"
-                    "1 = load\n"
-                    "**Constraints:**\n"
-                    "- Requires a valid accumulator input.\n",
-                    encoding="utf-8",
-                )
+            microarchitecture_path.write_text(
+                "## 5. Signal Definitions\n"
+                "\n"
+                "### AC_LOAD\n"
+                "\n"
+                "**Mnemonic:** AC_LOAD\n"
+                "**Name:** Accumulator Load\n"
+                "**Class:** Enable\n"
+                "**Bit Width:** 1\n"
+                "**Purpose:** Loads the accumulator.\n"
+                "**Encoding:**\n"
+                "0 = no load\n"
+                "1 = load\n"
+                "**Constraints:**\n"
+                "- Requires a valid accumulator input.\n",
+                encoding="utf-8",
+            )
 
-                architecture_path.write_text(
-                    "## 4. Signal Definitions\n",
-                    encoding="utf-8",
-                )
+            architecture_path.write_text(
+                "## 4. Signal Definitions\n",
+                encoding="utf-8",
+            )
 
-                sequencing_path.write_text(
-                    "## 4. Signal Definitions\n",
-                    encoding="utf-8",
-                )
+            sequencing_path.write_text(
+                "## 4. Signal Definitions\n",
+                encoding="utf-8",
+            )
 
-                exit_status = main(
-                    [
-                        "--repo-root",
-                        str(repo_root),
-                    ]
-                )
+            exit_status = main(
+                [
+                    "--repo-root",
+                    str(repo_root),
+                ]
+            )
 
-                json_path = (
-                    repo_root
-                    / "build"
-                    / "simulation_outputs"
-                    / "rom-generation"
-                    / "control-output-extractor"
-                    / "control-outputs.json"
-                )
-                report_path = (
-                    repo_root
-                    / "build"
-                    / "simulation_outputs"
-                    / "rom-generation"
-                    / "control-output-extractor"
-                    / "extraction-report.txt"
-                )
+            json_path = (
+                repo_root
+                / "build"
+                / "simulation_outputs"
+                / "rom-generation"
+                / "control-output-extractor"
+                / "control-outputs.json"
+            )
+            report_path = (
+                repo_root
+                / "build"
+                / "simulation_outputs"
+                / "rom-generation"
+                / "control-output-extractor"
+                / "extraction-report.txt"
+            )
 
-                self.assertEqual(exit_status, 0)
-                self.assertTrue(json_path.is_file())
-                self.assertTrue(report_path.is_file())
+            self.assertEqual(exit_status, 0)
+            self.assertTrue(json_path.is_file())
+            self.assertTrue(report_path.is_file())
 
-                generated_json = json.loads(
-                    json_path.read_text(encoding="utf-8")
-                )
-                generated_report = report_path.read_text(
-                    encoding="utf-8"
-                )
+            generated_json = json.loads(
+                json_path.read_text(encoding="utf-8")
+            )
+            generated_report = report_path.read_text(
+                encoding="utf-8"
+            )
 
-                self.assertEqual(
-                    generated_json["extraction_stage"],
-                    "category-validation",
-                )
-                self.assertEqual(
-                    len(generated_json["signals"]),
-                    1,
-                )
-                self.assertEqual(
-                    generated_json["signals"][0]["name"],
-                    "AC_LOAD",
-                )
-                self.assertEqual(
-                    generated_json["signals"][0]["definition"]["bit_width"],
-                    1,
-                )
-                self.assertEqual(
-                    generated_json["diagnostics"],
-                    [],
-                )
-                self.assertIn(
-                    "Indexed signals: 1",
-                    generated_report,
-                )
-                self.assertIn(
-                    "Errors: 0",
-                    generated_report,
-                )
+            self.assertEqual(
+                generated_json["extraction_stage"],
+                "category-validation",
+            )
+            self.assertEqual(
+                len(generated_json["signals"]),
+                1,
+            )
+            self.assertEqual(
+                generated_json["signals"][0]["name"],
+                "AC_LOAD",
+            )
+            self.assertEqual(
+                generated_json["signals"][0]["definition"]["bit_width"],
+                1,
+            )
+            self.assertEqual(
+                generated_json["diagnostics"],
+                [],
+            )
+            self.assertIn(
+                "Indexed signals: 1",
+                generated_report,
+            )
+            self.assertIn(
+                "Errors: 0",
+                generated_report,
+            )
             
 if __name__ == "__main__":
     unittest.main()

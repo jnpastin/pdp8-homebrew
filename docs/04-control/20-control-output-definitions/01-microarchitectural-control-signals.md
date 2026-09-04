@@ -1193,11 +1193,11 @@ IF_DF_COMBINED[5:3]=IF
 
 **Constraints:**
 
-- `01` is selected when `IO_READ_REQ` is accepted.
-- `10` is selected when `IO_WRITE_REQ` is accepted.
-- `00` is selected when a completed transfer is cleared without replacement.
-- If completion and request acceptance occur at the same TP, the newly accepted direction is selected instead of `00`.
-- Encoding `11` must never be selected.
+- `1` is selected when `IO_READ_REQ` is accepted.
+- `2` is selected when `IO_WRITE_REQ` is accepted.
+- `0` is selected when a completed transfer is cleared without replacement.
+- If completion and request acceptance occur at the same TP, the newly accepted direction is selected instead of `0`.
+- Encoding `3` must never be selected.
 - The value has no effect unless `IOT_TRANSFER_LOAD` is asserted.
 
 **Used by micro-operations:**

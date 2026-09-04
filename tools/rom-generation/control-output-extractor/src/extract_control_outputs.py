@@ -229,21 +229,16 @@ def parse_arguments(arguments: Sequence[str] | None = None) -> ToolPaths:
         parser.error(str(error))
 
 def repository_relative_path(path: Path, repo_root: Path) -> str:
-    """Return a stable POSIX-style path relative to the repository root."""
+    """Return a POSIX-style path for a source located under the repository"""
 
     return path.relative_to(repo_root).as_posix()
 
-
-def normalize_signal_name(link_text: str) -> str:
-    """Remove Markdown escaping from an indexed signal name."""
-
-    return link_text.replace("\\_", "_").replace("\\[", "[").replace("\\]", "]")
 
 def extract_definition_blocks(
     document: SourceDocument,
     repo_root: Path,
 ) -> list[DefinitionBlock]:
-    "t document into signal-definition blocks."""
+    """Split a control-output document into signal-definition blocks."""
 
     lines = document.text.splitlines()
     source_path = repository_relative_path(document.path, repo_root)
@@ -409,7 +404,7 @@ def build_index_result(
     attributes: dict[str, dict[str, str]],
     bit_widths: dict[str, int],
     encodings: dict[str, list[EncodingEntry]],
-    constraints: dict[str, list[str]],
+    constraints: dict[str, list[ConstraintEntry]],
     diagnostics: Sequence[Diagnostic],
 ) -> dict[str, object]:
     """Build the generated control-output extraction result."""
@@ -501,7 +496,7 @@ def write_report(
     attributes: dict[str, dict[str, str]],
     bit_widths: dict[str, int],
     encodings: dict[str, list[EncodingEntry]],
-    constraints: dict[str, list[str]],
+    constraints: dict[str, list[ConstraintEntry]],
     diagnostics: Sequence[Diagnostic],
     path: Path,
 ) -> None:
@@ -600,18 +595,23 @@ def find_signal_in_heading(
 
     normalized_heading = normalize_signal_name(heading)
 
-    # Prefer the longest match so one signal name cannot mask a more
-    # specific name contained in the same heading.
-    matches = [
-        name
-        for name in indexed_names
-        if name in normalized_heading
-    ]
+    if normalized_heading in indexed_names:
+        return normalized_heading
 
-    if not matches:
+    parenthesized_name = re.search(
+        r"\(([^()]+)\)\s*$",
+        normalized_heading,
+    )
+
+    if parenthesized_name is None:
         return None
 
-    return max(matches, key=len)
+    candidate = parenthesized_name.group(1).strip()
+
+    if candidate in indexed_names:
+        return candidate
+
+    return None
 
 
 def match_definition_blocks(
@@ -911,8 +911,6 @@ def parse_definition_encodings(
 
     return encodings, diagnostics
 
-    return encodings, diagnostics
-
 def extract_all_definition_encodings(
     definitions: dict[str, DefinitionBlock],
 ) -> tuple[dict[str, list[EncodingEntry]], list[Diagnostic]]:
@@ -1056,7 +1054,7 @@ def validate_documented_mnemonics(
     definitions: dict[str, DefinitionBlock],
     attributes: dict[str, dict[str, str]],
 ) -> list[Diagnostic]:
-    """Report cs that differ from indexed signal names."""
+    """Report documented mnemonics that differ from indexed signal names."""
 
     diagnostics: list[Diagnostic] = []
 
