@@ -327,6 +327,9 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Name:** Address Bus Source Select  
 **Class:** Select  
 **Bit Width:** 1  
+**Default Value:** 0  
+**Explicit Value Required:** Conditionally  
+**Value Required When:** /RD=0 OR /WR=0  
 
 **Purpose:** Selects the address source for memory reads and writes.
 
@@ -353,6 +356,10 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Name:** Accumulator Load  
 **Class:** Enable  
 **Bit Width:** 1  
+**Default Value:** 0  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
+
 
 **Purpose:** Load AC at TP.
 
@@ -393,6 +400,10 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Name:** Accumulator Source Select  
 **Class:** Select  
 **Bit Width:** 3
+**Default Value:** 0  
+**Explicit Value Required:** Conditionally  
+**Value Required When:** AC_LOAD=1  
+
 
 **Purpose:** Selects the input source for AC.
 
@@ -409,7 +420,6 @@ All numeric encodings in this section are octal unless otherwise noted.
 ```
 
 **Constraints:**
-- Must be valid every cycle
 - ALU is the source for all arithmetic/logical AC loads via the IDB
 - DB is the source for I/O data ingestion (DB_READ_TO_AC); the DB value is OR'd into AC
 - Field-merge encodings OR the selected field into its DEC-defined AC bit positions and preserve all other AC bits:
@@ -446,6 +456,9 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Name:** ALU Input A Select  
 **Class:** Select  
 **Bit Width:** 2  
+**Default Value:** 0  
+**Explicit Value Required:** Conditionally  
+**Value Required When:** Any micro-operation listed below is selected  
 
 **Purpose:** Select primary ALU operand.
 
@@ -484,6 +497,9 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Name:** ALU Input B Select  
 **Class:** Select  
 **Bit Width:** 3  
+**Default Value:** 0  
+**Explicit Value Required:** Conditionally  
+**Value Required When:** Any micro-operation listed below is selected  
 
 **Purpose:** Select secondary ALU operand.
 
@@ -516,6 +532,9 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Name:** ALU Operation  
 **Class:** Select  
 **Bit Width:** 4  
+**Default Value:** 0  
+**Explicit Value Required:** Conditionally  
+**Value Required When:** Any micro-operation listed below is selected  
 
 **Purpose:** Defines ALU computation.
 
@@ -565,6 +584,9 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Name:** CIF Pending Load  
 **Class:** Enable  
 **Bit Width:** 1
+**Default Value:** 0  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Purpose:** Loads the CIFP register.
 
@@ -589,6 +611,9 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Name:** CIF Pending Value  
 **Class:** Data Value  
 **Bit Width:** 1
+**Default Value:** 0  
+**Explicit Value Required:** Conditionally  
+**Value Required When:** CIFP_LOAD=1  
 
 **Purpose:** Specifies the value to load into the CIFP register.
 
@@ -613,6 +638,10 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Name:** External I/O Data Input  
 **Class:** Data Value  
 **Bit Width:** 12  
+**Default Value:** N/A  
+**Explicit Value Required:** No  
+**Value Required When:** AC_LOAD=1 AND AC_SRC=1  
+
 
 **Purpose:** Provides externally sourced I/O data into the CPU.
 
@@ -636,6 +665,9 @@ external bus value
 **Name:** Data Field Load  
 **Class:** Enable  
 **Bit Width:** 1  
+**Default Value:** 0  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Purpose:** Loads the DF register.
 
@@ -663,6 +695,9 @@ external bus value
 **Name:** DF Source Select  
 **Class:** Select  
 **Bit Width:** 2  
+**Default Value:** 0  
+**Explicit Value Required:** Conditionally  
+**Value Required When:** DF_LOAD=1  
 
 **Purpose:** Selects the source input for DF.
 
@@ -689,6 +724,9 @@ external bus value
 **Name:** DF Value Input  
 **Class:** Data Value  
 **Bit Width:** 3  
+**Default Value:** 0  
+**Explicit Value Required:** Conditionally  
+**Value Required When:** DF_LOAD=1 AND DF_SRC=0  
 
 **Purpose:** Represents the value loaded into DF
 
@@ -712,6 +750,9 @@ external bus value
 **Name:** Deferred Instruction Field Load  
 **Class:** Enable  
 **Bit Width:** 1  
+**Default Value:** 0  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Purpose:** Loads the DIF register.
 
@@ -739,6 +780,9 @@ external bus value
 **Name:** DIF Source Select  
 **Class:** Select  
 **Bit Width:** 3  
+**Default Value:** 0  
+**Explicit Value Required:** Conditionally  
+**Value Required When:** DIF_LOAD=1  
 
 **Purpose:** Selects the source input for DIF.
 
@@ -769,6 +813,9 @@ external bus value
 **Name:** Effective Address Load (Address Portion)   
 **Class:** Enable  
 **Bit Width:** 1  
+**Default Value:** 0
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Purpose:** Loads the EA_ADDR register.
 
@@ -794,6 +841,9 @@ external bus value
 **Name:** EA_ADDR Source Select  
 **Class:** Select  
 **Bit Width:** 1  
+**Default Value:** 0  
+**Explicit Value Required:** Conditionally  
+**Value Required When:** EA_ADDR_LOAD=1  
 
 **Purpose:** Selects the source input for EA_ADDR.
 
@@ -804,7 +854,6 @@ external bus value
 ```
 
 **Constraints:**
-- Must be valid every cycle  
 - IDB path requires IDB_DRIVE asserted  
 
 **Used by μops:**
@@ -820,6 +869,9 @@ external bus value
 **Name:** Processor Flags Word  
 **Class:** Data Value  
 **Bit Width:** 12  
+**Default Value:** N/A  
+**Explicit Value Required:** No  
+**Value Required When:** AC_LOAD=1 AND AC_SRC=6
 
 **Purpose:** Provides the implemented PDP-8/E processor flags word to the AC input path.  
 
@@ -862,6 +914,9 @@ GTF_FLAGS[2:0] = DF
 **Name:** Interrupt Buffer Load  
 **Class:** Enable  
 **Bit Width:** 1  
+**Default Value:** 0  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Purpose:** Loads the IB register.
 
@@ -885,6 +940,9 @@ GTF_FLAGS[2:0] = DF
 **Name:** Internal Data Bus Drive Enable  
 **Class:** Enable  
 **Bit Width:** 1  
+**Default Value:** 0  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Purpose:** Enables the selected source to drive the internal datapath bus (IDB).
 
@@ -916,6 +974,9 @@ GTF_FLAGS[2:0] = DF
 **Name:** Internal Data Bus Source Select  
 **Class:** Select  
 **Bit Width:** 3
+**Default Value:** 0  
+**Explicit Value Required:** Conditionally 
+**Value Required When:** IDB_DRIVE=1  
 
 **Purpose:** Selects which source drives the internal datapath bus (IDB).
 
@@ -958,6 +1019,9 @@ GTF_FLAGS[2:0] = DF
 **Name:** Interrupt Enable Load  
 **Class:** Enable  
 **Bit Width:** 1  
+**Default Value:** 0  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Purpose:** Loads the IE register.
 
@@ -982,6 +1046,9 @@ GTF_FLAGS[2:0] = DF
 **Name:** Interrupt Enable Value  
 **Class:** Data Value  
 **Bit Width:** 1  
+**Default Value:** 0  
+**Explicit Value Required:** Conditionally  
+**Value Required When:** IE_LOAD=1  
 
 **Purpose:** Specifies the value to load into the IE register
 
@@ -1006,6 +1073,9 @@ GTF_FLAGS[2:0] = DF
 **Name:** IF/DF Combination  
 **Class:** Data Value  
 **Bit Width:** 6  
+**Default Value:** N/A  
+**Explicit Value Required:** No  
+**Value Required When:** Any micro-operation listed below is selected    
 
 **Purpose:** Represents the concatenation of IF and DF
 
@@ -1028,6 +1098,9 @@ IF_DF_COMBINED[5:3]=IF
 **Name:** Instruction Field Load  
 **Class:** Enable  
 **Bit Width:** 1  
+**Default Value:** 0  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Purpose:** Loads the IF register.
 
@@ -1053,6 +1126,9 @@ IF_DF_COMBINED[5:3]=IF
 **Name:** IF Source Select  
 **Class:** Select  
 **Bit Width:** 2  
+**Default Value:** 0  
+**Explicit Value Required:** Conditionally  
+**Value Required When:** IF_LOAD=1  
 
 **Purpose:** Selects the source input for IF.
 
@@ -1077,6 +1153,9 @@ IF_DF_COMBINED[5:3]=IF
 **Name:** IF Value Input  
 **Class:** Data Value  
 **Bit Width:** 3  
+**Default Value:** 0  
+**Explicit Value Required:** Conditionally  
+**Value Required When:** IF_LOAD=1 AND IF_SRC=0  
 
 **Purpose:** Represents the value loaded into IF
 
@@ -1099,6 +1178,9 @@ IF_DF_COMBINED[5:3]=IF
 **Name:** Interrupt Inhibit Load  
 **Class:** Enable  
 **Bit Width:** 1  
+**Default Value:** 0  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Purpose:** Loads the II register.
 
@@ -1123,6 +1205,9 @@ IF_DF_COMBINED[5:3]=IF
 **Name:** Interrupt Inhibit Value  
 **Class:** Data Value  
 **Bit Width:** 1  
+**Default Value:** 0  
+**Explicit Value Required:** Conditionally  
+**Value Required When:** II_LOAD=1  
 
 **Purpose:** Specifies the value to load into the II register
 
@@ -1147,6 +1232,9 @@ IF_DF_COMBINED[5:3]=IF
 **Name:** Pending External-IOT Transfer Load  
 **Class:** Enable  
 **Bit Width:** 1  
+**Default Value:** 0  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Purpose:** Loads the `IOT_TRANSFER` register at TP.
 
@@ -1179,6 +1267,9 @@ IF_DF_COMBINED[5:3]=IF
 **Name:** Pending External-IOT Transfer Value  
 **Class:** Data Value  
 **Bit Width:** 2  
+**Default Value:** 0  
+**Explicit Value Required:** Conditionally  
+**Value Required When:** IOT_TRANSFER_LOAD=1  
 
 **Purpose:** Specifies the value loaded into `IOT_TRANSFER`.
 
@@ -1213,6 +1304,9 @@ IF_DF_COMBINED[5:3]=IF
 **Name:** Instruction Register Load  
 **Class:** Enable  
 **Bit Width:** 1  
+**Default Value:** 0  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Purpose:** Loads the IR register.
 
@@ -1236,6 +1330,9 @@ IF_DF_COMBINED[5:3]=IF
 **Name:** Link Register Load  
 **Class:** Enable  
 **Bit Width:** 1  
+**Default Value:** 0  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Purpose:** Loads the Link (L) register.
 
@@ -1267,6 +1364,9 @@ IF_DF_COMBINED[5:3]=IF
 **Name:** Link Operation  
 **Class:** Select  
 **Bit Width:** 2  
+**Default Value:** 0  
+**Explicit Value Required:** Conditionally  
+**Value Required When:** L_LOAD=1  
 
 **Purpose:** Selects the operation applied to the Link (L) register.
 
@@ -1279,7 +1379,6 @@ IF_DF_COMBINED[5:3]=IF
 ```
 
 **Constraints:**
-- Must be valid every cycle  
 - ALU_CARRY only valid during ALU operations producing carry  
 - AC[11] loads the pre-TP value of AC[11] into L without modifying AC.
 
@@ -1298,6 +1397,9 @@ IF_DF_COMBINED[5:3]=IF
 **Name:** Memory Address Load  
 **Class:** Enable  
 **Bit Width:** 1  
+**Default Value:** 0  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Purpose:** Loads the MA register.
 
@@ -1323,6 +1425,9 @@ IF_DF_COMBINED[5:3]=IF
 **Name:** MA Source Select  
 **Class:** Select  
 **Bit Width:** 2  
+**Default Value:** 0  
+**Explicit Value Required:** Conditionally  
+**Value Required When:** MA_LOAD=1  
 
 **Purpose:** Selects the input source for MA.
 
@@ -1334,8 +1439,7 @@ IF_DF_COMBINED[5:3]=IF
 3 → reserved
 ```
 
-**Constraints:**
-- Must be valid every cycle  
+**Constraints:**  
 
 **Used by μops:**
 - [EA_ADDR_TO_MA](../../03-microarchitecture/02-micro-operations.md#ea_addr_to_ma)
@@ -1350,6 +1454,9 @@ IF_DF_COMBINED[5:3]=IF
 **Name:** Memory Address Value  
 **Class:** Data Value  
 **Bit Width:** 12  
+**Default Value:** 0  
+**Explicit Value Required:** Conditionally  
+**Value Required When:** MA_LOAD=1 AND MA_SRC=2  
 
 **Purpose:** Specifies the value to load into the MA register
 
@@ -1372,6 +1479,9 @@ IF_DF_COMBINED[5:3]=IF
 **Name:** Memory Buffer Load  
 **Class:** Enable  
 **Bit Width:** 1  
+**Default Value:** 0  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Purpose:** Loads the MB register.
 
@@ -1399,6 +1509,9 @@ IF_DF_COMBINED[5:3]=IF
 **Name:** MB Source Select  
 **Class:** Select  
 **Bit Width:** 1  
+**Default Value:** 0  
+**Explicit Value Required:** Conditionally  
+**Value Required When:** MB_LOAD=1  
 
 **Purpose:** Selects the input source for MB.
 
@@ -1411,7 +1524,6 @@ IF_DF_COMBINED[5:3]=IF
 **Constraints:**
 - IDB path requires IDB_DRIVE asserted  
 - MDB path used for memory reads  
-- Must be valid every cycle  
 
 **Used by μops:**
 - [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb)
@@ -1427,6 +1539,9 @@ IF_DF_COMBINED[5:3]=IF
 **Name:** Memory Data Bus Input  
 **Class:** Data Value  
 **Bit Width:** 12  
+**Default Value:** N/A  
+**Explicit Value Required:** No  
+**Value Required When:** Any micro-operation listed below is selected  
 
 **Purpose:** Provides data received from memory via the memory data bus (MDB).
 
@@ -1451,6 +1566,9 @@ memory bus value
 **Name:** Memory Data Bus Source Select  
 **Class:** Select  
 **Bit Width:** 2  
+**Default Value:** 0  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Purpose:** Selects the data source used for driving MDB.
 
@@ -1478,6 +1596,9 @@ memory bus value
 **Name:** Memory Field Bus Source Select 
 **Class:** Select 
 **Bit Width:** 1
+**Default Value:** 0  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Purpose:** Selects the field register that drives the Memory Field Bus (MFB) as EA_FIELD for memory operations.
 
@@ -1501,6 +1622,9 @@ memory bus value
 **Name:** Multiplier Quotient Load  
 **Class:** Enable  
 **Bit Width:** 1  
+**Default Value:** 0  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Purpose:** Loads the MQ register.
 
@@ -1525,6 +1649,9 @@ memory bus value
 **Name:** Program Counter Increment  
 **Class:** Enable  
 **Bit Width:** 1  
+**Default Value:** 0  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Purpose:** Increments PC via ALU.
 
@@ -1551,6 +1678,9 @@ memory bus value
 **Name:** Program Counter Load  
 **Class:** Enable  
 **Bit Width:** 1  
+**Default Value:** 0  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Purpose:** Loads the PC register.
 
@@ -1577,6 +1707,9 @@ memory bus value
 **Name:** Program Counter Source Select  
 **Class:** Select  
 **Bit Width:** 1  
+**Default Value:** 0  
+**Explicit Value Required:** Conditionally  
+**Value Required When:** PC_LOAD=1  
 
 **Purpose:** Selects the input source for PC.
 
@@ -1587,7 +1720,6 @@ memory bus value
 ```
 
 **Constraints:**
-- Must be valid every cycle  
 - When PC_LOAD = 1:
   - selected source must be fully driven and valid  
 
@@ -1603,6 +1735,9 @@ memory bus value
 **Name:** Program Counter Value  
 **Class:** Data Value  
 **Bit Width:** 12  
+**Default Value:** 0  
+**Explicit Value Required:** Conditionally  
+**Value Required When:** PC_LOAD=1 AND PC_SRC=1  
 
 **Purpose:** Specifies the value to load into the PC register
 

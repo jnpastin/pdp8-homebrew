@@ -90,6 +90,10 @@ Architectural
 
 **Bit Width:** 1
 
+**Default Value:** 1  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
+
 **Description:** Indicates that the CPU is requesting a memory read operation.
 
 When asserted:
@@ -127,6 +131,10 @@ Architectural
 
 **Bit Width:** 1
 
+**Default Value:** 1  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
+
 **Description:** Indicates that the CPU is requesting a memory write operation.
 
 When asserted:
@@ -158,6 +166,10 @@ When asserted:
 
 **Bit Width:** 1
 
+**Default Value:** 1  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
+
 **Description:** Indicates that the CPU is performing an I/O read operation and will sample the System Data Bus (DB) during this timing state.
 
 **Polarity:** Active-low (/DB_READ)
@@ -183,6 +195,10 @@ When asserted:
 **Category:** Architectural Control Signal  
 
 **Bit Width:** 1
+
+**Default Value:** 1  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Description:** Indicates that the CPU is performing an I/O write operation and will drive the System Data Bus (DB) during this timing state.
 
@@ -211,6 +227,10 @@ When asserted:
 **Domain** Architectural  
 
 **Bit Width:** 1
+
+**Default Value:** 1  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Description:** Indicates that the CPU is in `MS = DMA` and has released normal CPU ownership of the memory interface.
 
@@ -264,6 +284,10 @@ Architectural
 
 **Bit Width:** 6
 
+**Default Value:** N/A  
+**Explicit Value Required:** No  
+**Value Required When:** Instruction class is IOT  
+
 **Description:** Specifies the target I/O device address during execution of IOT instructions.
 
 Properties:
@@ -306,6 +330,10 @@ Architectural
 
 **Bit Width:** 3
 
+**Default Value:** N/A  
+**Explicit Value Required:** No  
+**Value Required When:** Instruction class is IOT  
+
 **Description:** Presents `IR[2:0]` unchanged to external I/O controllers during an external IOT.
 
 **Timing:**
@@ -337,6 +365,10 @@ Active-high
 Architectural  
 
 **Bit Width:** 1
+
+**Default Value:** 0  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Description:** Identifies execution of an external IOT and qualifies IOA, IOP, controller responses, and I/O wait behavior.
 
@@ -372,6 +404,10 @@ Active-low
 Architectural  
 
 **Bit Width:** 1
+
+**Default Value:** 1  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Description:** System-wide reset signal asserted by CAF or an accepted front-panel CLEAR operation.
 

@@ -1,0 +1,3767 @@
+{
+  "specification_type": "control-word-schema",
+  "schema_version": 1,
+  "control_design_version": "v1",
+  "description": "Logical symbolic control-word schema for version 1 CPU control.",
+  "source": {
+    "specification_type": "control-output-extractor",
+    "format_version": 1,
+    "extraction_stage": "category-validation"
+  },
+  "fields": [
+    {
+      "name": "AC_LOAD",
+      "category": "Enable Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "display_name": "Accumulator Load",
+        "mnemonic": "AC_LOAD",
+        "purpose": "Load AC at TP.",
+        "signal_class": "Enable"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "no load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 368
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 369
+          }
+        }
+      ],
+      "constraints": [],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 36
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "AC_LOAD",
+          "line": 353
+        }
+      }
+    },
+    {
+      "name": "CIFP_LOAD",
+      "category": "Enable Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "display_name": "CIF Pending Load",
+        "mnemonic": "CIFP_LOAD",
+        "purpose": "Loads the CIFP register.",
+        "signal_class": "Enable"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "no load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 595
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 596
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Uses direct load path (no ALU or IDB involvement)",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 600
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 37
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "CIFP_LOAD",
+          "line": 581
+        }
+      }
+    },
+    {
+      "name": "DF_LOAD",
+      "category": "Enable Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "display_name": "Data Field Load",
+        "mnemonic": "DF_LOAD",
+        "purpose": "Loads the DF register.",
+        "signal_class": "Enable"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "no load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 676
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 677
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Uses direct load path (no ALU or IDB involvement)",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 681
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 38
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "DF_LOAD",
+          "line": 662
+        }
+      }
+    },
+    {
+      "name": "DIF_LOAD",
+      "category": "Enable Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "display_name": "Deferred Instruction Field Load",
+        "mnemonic": "DIF_LOAD",
+        "purpose": "Loads the DIF register.",
+        "signal_class": "Enable"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "no load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 761
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 762
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Uses direct load path (no ALU or IDB involvement)",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 766
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 39
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "DIF_LOAD",
+          "line": 747
+        }
+      }
+    },
+    {
+      "name": "EA_ADDR_LOAD",
+      "category": "Enable Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "display_name": "Effective Address Load (Address Portion)",
+        "mnemonic": "EA_ADDR_LOAD",
+        "purpose": "Loads the EA_ADDR register.",
+        "signal_class": "Enable"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "no load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 824
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 825
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Must not conflict with other EA writers",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 829
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 40
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "EA_ADDR_LOAD",
+          "line": 810
+        }
+      }
+    },
+    {
+      "name": "IB_LOAD",
+      "category": "Enable Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "display_name": "Interrupt Buffer Load",
+        "mnemonic": "IB_LOAD",
+        "purpose": "Loads the IB register.",
+        "signal_class": "Enable"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "no load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 925
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 926
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Uses direct load path (no ALU or IDB involvement)",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 930
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 41
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "IB_LOAD",
+          "line": 911
+        }
+      }
+    },
+    {
+      "name": "IDB_DRIVE",
+      "category": "Enable Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "display_name": "Internal Data Bus Drive Enable",
+        "mnemonic": "IDB_DRIVE",
+        "purpose": "Enables the selected source to drive the internal datapath bus (IDB).",
+        "signal_class": "Enable"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "no drive",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 951
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "drive IDB",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 952
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Must be asserted when IDB_SRC is used",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 956
+          }
+        },
+        {
+          "text": "Only one source may drive the IDB per cycle",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 957
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 42
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "IDB_DRIVE",
+          "line": 937
+        }
+      }
+    },
+    {
+      "name": "IE_LOAD",
+      "category": "Enable Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "display_name": "Interrupt Enable Load",
+        "mnemonic": "IE_LOAD",
+        "purpose": "Loads the IE register.",
+        "signal_class": "Enable"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "no load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1030
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1031
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Uses direct load path (no ALU or IDB involvement)",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1035
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 43
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "IE_LOAD",
+          "line": 1016
+        }
+      }
+    },
+    {
+      "name": "IF_LOAD",
+      "category": "Enable Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "display_name": "Instruction Field Load",
+        "mnemonic": "IF_LOAD",
+        "purpose": "Loads the IF register.",
+        "signal_class": "Enable"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "no load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1109
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1110
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Uses direct load path (no ALU or IDB involvement)",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1114
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 44
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "IF_LOAD",
+          "line": 1095
+        }
+      }
+    },
+    {
+      "name": "II_LOAD",
+      "category": "Enable Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "display_name": "Interrupt Inhibit Load",
+        "mnemonic": "II_LOAD",
+        "purpose": "Loads the II register.",
+        "signal_class": "Enable"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "no load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1189
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1190
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Uses direct load path (no ALU or IDB involvement)",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1194
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 45
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "II_LOAD",
+          "line": 1175
+        }
+      }
+    },
+    {
+      "name": "IOT_TRANSFER_LOAD",
+      "category": "Enable Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "display_name": "Pending External-IOT Transfer Load",
+        "mnemonic": "IOT_TRANSFER_LOAD",
+        "purpose": "Loads the IOT_TRANSFER register at TP.",
+        "signal_class": "Enable"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "no load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1244
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "load IOT_TRANSFER",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1245
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "May be asserted only during external-IOT EXECUTE.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1250
+          }
+        },
+        {
+          "text": "At TP2 or TP3, it may capture an accepted transfer request.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1251
+          }
+        },
+        {
+          "text": "At the commit TP of a pending transfer, it clears the completed transfer or replaces it with a newly accepted transfer.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1252
+          }
+        },
+        {
+          "text": "A transfer accepted at TP2 executes during TS3 and commits at TP3.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1253
+          }
+        },
+        {
+          "text": "A transfer accepted at TP3 executes during TS4 and commits at TP4.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1254
+          }
+        },
+        {
+          "text": "It uses a direct load path and does not involve the ALU or IDB.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1255
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 46
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "IOT_TRANSFER_LOAD",
+          "line": 1229
+        }
+      }
+    },
+    {
+      "name": "IR_LOAD",
+      "category": "Enable Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "display_name": "Instruction Register Load",
+        "mnemonic": "IR_LOAD",
+        "purpose": "Loads the IR register.",
+        "signal_class": "Enable"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "no load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1315
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1316
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Requires valid instruction present in MB",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1320
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 47
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "IR_LOAD",
+          "line": 1301
+        }
+      }
+    },
+    {
+      "name": "L_LOAD",
+      "category": "Enable Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "display_name": "Link Register Load",
+        "mnemonic": "L_LOAD",
+        "purpose": "Loads the Link (L) register.",
+        "signal_class": "Enable"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "no load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1341
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1342
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Typically used with ALU operations affecting carry or rotate",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1346
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 48
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "L_LOAD",
+          "line": 1327
+        }
+      }
+    },
+    {
+      "name": "MA_LOAD",
+      "category": "Enable Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "display_name": "Memory Address Load",
+        "mnemonic": "MA_LOAD",
+        "purpose": "Loads the MA register.",
+        "signal_class": "Enable"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "no load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1408
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1409
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Must not conflict with other MA writers",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1413
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 49
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "MA_LOAD",
+          "line": 1394
+        }
+      }
+    },
+    {
+      "name": "MB_LOAD",
+      "category": "Enable Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "display_name": "Memory Buffer Load",
+        "mnemonic": "MB_LOAD",
+        "purpose": "Loads the MB register.",
+        "signal_class": "Enable"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "no load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1490
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1491
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Must not conflict with other MB writers",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1495
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 50
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "MB_LOAD",
+          "line": 1476
+        }
+      }
+    },
+    {
+      "name": "MQ_LOAD",
+      "category": "Enable Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "display_name": "Multiplier Quotient Load",
+        "mnemonic": "MQ_LOAD",
+        "purpose": "Loads the MQ register.",
+        "signal_class": "Enable"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "no load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1633
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1634
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Requires a valid source driving IDB when used",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1638
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 51
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "MQ_LOAD",
+          "line": 1619
+        }
+      }
+    },
+    {
+      "name": "PC_INC",
+      "category": "Enable Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "display_name": "Program Counter Increment",
+        "mnemonic": "PC_INC",
+        "purpose": "Increments PC via ALU.",
+        "signal_class": "Enable"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "no increment",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1660
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "increment",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1661
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Requires ALU to be configured with:",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1665
+          }
+        },
+        {
+          "text": "ALU_OP = INC",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1666
+          }
+        },
+        {
+          "text": "ALU_A_SRC = PC",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1667
+          }
+        },
+        {
+          "text": "Must not be asserted simultaneously with PC_LOAD",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1668
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 52
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "PC_INC",
+          "line": 1646
+        }
+      }
+    },
+    {
+      "name": "PC_LOAD",
+      "category": "Enable Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "display_name": "Program Counter Load",
+        "mnemonic": "PC_LOAD",
+        "purpose": "Loads the PC register.",
+        "signal_class": "Enable"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "no load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1689
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "load",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1690
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Must not be asserted simultaneously with PC_INC",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1694
+          }
+        },
+        {
+          "text": "Exactly one source must drive PC input when asserted",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1695
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 53
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "PC_LOAD",
+          "line": 1675
+        }
+      }
+    },
+    {
+      "name": "AB_SRC",
+      "category": "Select Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Conditionally",
+      "value_required_when": "/RD=0 OR /WR=0",
+      "attributes": {
+        "display_name": "Address Bus Source Select",
+        "mnemonic": "AB_SRC",
+        "purpose": "Selects the address source for memory reads and writes.",
+        "signal_class": "Select"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "MA",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 338
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "PC",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 339
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Drive must be asserted via either /RD or /WR",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 343
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 59
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "AB_SRC",
+          "line": 324
+        }
+      }
+    },
+    {
+      "name": "AC_SRC",
+      "category": "Select Signals",
+      "width": 3,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Conditionally",
+      "value_required_when": "AC_LOAD=1",
+      "attributes": {
+        "display_name": "Accumulator Source Select",
+        "mnemonic": "AC_SRC",
+        "purpose": "Selects the input source for AC.",
+        "signal_class": "Select"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "IDB",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 412
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "DB",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 413
+          }
+        },
+        {
+          "encoding": "2",
+          "meaning": "IF (field-merge)",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 414
+          }
+        },
+        {
+          "encoding": "3",
+          "meaning": "DF (field-merge)",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 415
+          }
+        },
+        {
+          "encoding": "4",
+          "meaning": "IB (field-merge)",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 416
+          }
+        },
+        {
+          "encoding": "5",
+          "meaning": "MQ",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 417
+          }
+        },
+        {
+          "encoding": "6",
+          "meaning": "GTF_FLAGS",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 418
+          }
+        },
+        {
+          "encoding": "7",
+          "meaning": "reserved",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 419
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "ALU is the source for all arithmetic/logical AC loads via the IDB",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 423
+          }
+        },
+        {
+          "text": "DB is the source for I/O data ingestion (DB_READ_TO_AC); the DB value is OR'd into AC",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 424
+          }
+        },
+        {
+          "text": "Field-merge encodings OR the selected field into its DEC-defined AC bit positions and preserve all other AC bits:",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 425
+          }
+        },
+        {
+          "text": "IF, DF → AC[5:3]",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 426
+          }
+        },
+        {
+          "text": "IB → AC[5:3] (saved IF), AC[2:0] (saved DF)",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 427
+          }
+        },
+        {
+          "text": "MQ replaces AC in full (AC ← MQ), not a merge or OR; used by AC_MQ_SWAP",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 428
+          }
+        },
+        {
+          "text": "GTF_FLAGS is ORed into AC and is used only after AC_CLEAR has committed at the preceding TP.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 429
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 60
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "AC_SRC",
+          "line": 397
+        }
+      }
+    },
+    {
+      "name": "ALU_A_SRC",
+      "category": "Select Signals",
+      "width": 2,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Conditionally",
+      "value_required_when": "Any micro-operation listed below is selected",
+      "attributes": {
+        "display_name": "ALU Input A Select",
+        "mnemonic": "ALU_A_SRC",
+        "purpose": "Select primary ALU operand.",
+        "signal_class": "Select"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "AC",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 467
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "MB",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 468
+          }
+        },
+        {
+          "encoding": "2",
+          "meaning": "PC",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 469
+          }
+        },
+        {
+          "encoding": "3",
+          "meaning": "L",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 470
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Must be valid every cycle",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 474
+          }
+        },
+        {
+          "text": "Required for all ALU operations",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 475
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 61
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "ALU_A_SRC",
+          "line": 453
+        }
+      }
+    },
+    {
+      "name": "ALU_B_SRC",
+      "category": "Select Signals",
+      "width": 3,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Conditionally",
+      "value_required_when": "Any micro-operation listed below is selected",
+      "attributes": {
+        "display_name": "ALU Input B Select",
+        "mnemonic": "ALU_B_SRC",
+        "purpose": "Select secondary ALU operand.",
+        "signal_class": "Select"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "NONE",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 508
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "AC",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 509
+          }
+        },
+        {
+          "encoding": "2",
+          "meaning": "MB",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 510
+          }
+        },
+        {
+          "encoding": "3",
+          "meaning": "MQ",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 511
+          }
+        },
+        {
+          "encoding": "4",
+          "meaning": "FP_SR",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 512
+          }
+        },
+        {
+          "encoding": "5",
+          "meaning": "PC",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 513
+          }
+        },
+        {
+          "encoding": "6",
+          "meaning": "L",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 514
+          }
+        },
+        {
+          "encoding": "7",
+          "meaning": "reserved",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 515
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "NONE required for unary operations",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 519
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 62
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "ALU_B_SRC",
+          "line": 494
+        }
+      }
+    },
+    {
+      "name": "ALU_OP",
+      "category": "Select Signals",
+      "width": 4,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Conditionally",
+      "value_required_when": "Any micro-operation listed below is selected",
+      "attributes": {
+        "display_name": "ALU Operation",
+        "mnemonic": "ALU_OP",
+        "purpose": "Defines ALU computation.",
+        "signal_class": "Select"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "ADD",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 543
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "AND",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 544
+          }
+        },
+        {
+          "encoding": "2",
+          "meaning": "OR",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 545
+          }
+        },
+        {
+          "encoding": "3",
+          "meaning": "NOT",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 546
+          }
+        },
+        {
+          "encoding": "4",
+          "meaning": "INC",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 547
+          }
+        },
+        {
+          "encoding": "5",
+          "meaning": "ROR",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 548
+          }
+        },
+        {
+          "encoding": "6",
+          "meaning": "ROL",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 549
+          }
+        },
+        {
+          "encoding": "7",
+          "meaning": "RTR",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 550
+          }
+        },
+        {
+          "encoding": "10",
+          "meaning": "RTL",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 551
+          }
+        },
+        {
+          "encoding": "11",
+          "meaning": "BSW",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 552
+          }
+        },
+        {
+          "encoding": "12",
+          "meaning": "CLEAR",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 553
+          }
+        },
+        {
+          "encoding": "13",
+          "meaning": "reserved",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 554
+          }
+        },
+        {
+          "encoding": "14",
+          "meaning": "reserved",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 555
+          }
+        },
+        {
+          "encoding": "15",
+          "meaning": "reserved",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 556
+          }
+        },
+        {
+          "encoding": "16",
+          "meaning": "reserved",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 557
+          }
+        },
+        {
+          "encoding": "17",
+          "meaning": "reserved",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 558
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Result valid only if captured by a load signal",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 562
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 63
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "ALU_OP",
+          "line": 529
+        }
+      }
+    },
+    {
+      "name": "DF_SRC",
+      "category": "Select Signals",
+      "width": 2,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Conditionally",
+      "value_required_when": "DF_LOAD=1",
+      "attributes": {
+        "display_name": "DF Source Select",
+        "mnemonic": "DF_SRC",
+        "purpose": "Selects the source input for DF.",
+        "signal_class": "Select"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "Control",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 706
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "IB",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 707
+          }
+        },
+        {
+          "encoding": "2",
+          "meaning": "FP_DF",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 708
+          }
+        },
+        {
+          "encoding": "3",
+          "meaning": "AC[2:0]",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 709
+          }
+        }
+      ],
+      "constraints": [],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 64
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "DF_SRC",
+          "line": 692
+        }
+      }
+    },
+    {
+      "name": "DIF_SRC",
+      "category": "Select Signals",
+      "width": 3,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Conditionally",
+      "value_required_when": "DIF_LOAD=1",
+      "attributes": {
+        "display_name": "DIF Source Select",
+        "mnemonic": "DIF_SRC",
+        "purpose": "Selects the source input for DIF.",
+        "signal_class": "Select"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "IB",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 791
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "IR",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 792
+          }
+        },
+        {
+          "encoding": "2",
+          "meaning": "Control (hardwired 0)",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 793
+          }
+        },
+        {
+          "encoding": "3",
+          "meaning": "FP_IF",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 794
+          }
+        },
+        {
+          "encoding": "4",
+          "meaning": "AC[5:3]",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 795
+          }
+        },
+        {
+          "encoding": "5",
+          "meaning": "reserved",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 796
+          }
+        },
+        {
+          "encoding": "6",
+          "meaning": "reserved",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 797
+          }
+        },
+        {
+          "encoding": "7",
+          "meaning": "reserved",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 798
+          }
+        }
+      ],
+      "constraints": [],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 65
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "DIF_SRC",
+          "line": 777
+        }
+      }
+    },
+    {
+      "name": "EA_ADDR_SRC",
+      "category": "Select Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Conditionally",
+      "value_required_when": "EA_ADDR_LOAD=1",
+      "attributes": {
+        "display_name": "EA_ADDR Source Select",
+        "mnemonic": "EA_ADDR_SRC",
+        "purpose": "Selects the source input for EA_ADDR.",
+        "signal_class": "Select"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "IDB",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 852
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "IR address formation unit",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 853
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "IDB path requires IDB_DRIVE asserted",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 857
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 66
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "EA_ADDR_SRC",
+          "line": 838
+        }
+      }
+    },
+    {
+      "name": "IF_SRC",
+      "category": "Select Signals",
+      "width": 2,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Conditionally",
+      "value_required_when": "IF_LOAD=1",
+      "attributes": {
+        "display_name": "IF Source Select",
+        "mnemonic": "IF_SRC",
+        "purpose": "Selects the source input for IF.",
+        "signal_class": "Select"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "Control",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1137
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "DIF",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1138
+          }
+        },
+        {
+          "encoding": "2",
+          "meaning": "FP_IF",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1139
+          }
+        },
+        {
+          "encoding": "3",
+          "meaning": "reserved",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1140
+          }
+        }
+      ],
+      "constraints": [],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 67
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "IF_SRC",
+          "line": 1123
+        }
+      }
+    },
+    {
+      "name": "IDB_SRC",
+      "category": "Select Signals",
+      "width": 3,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Conditionally",
+      "value_required_when": "IDB_DRIVE=1",
+      "attributes": {
+        "display_name": "Internal Data Bus Source Select",
+        "mnemonic": "IDB_SRC",
+        "purpose": "Selects which source drives the internal datapath bus (IDB).",
+        "signal_class": "Select"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "AC",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 985
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "PC",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 986
+          }
+        },
+        {
+          "encoding": "2",
+          "meaning": "MB",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 987
+          }
+        },
+        {
+          "encoding": "3",
+          "meaning": "MQ",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 988
+          }
+        },
+        {
+          "encoding": "4",
+          "meaning": "FP_SR",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 989
+          }
+        },
+        {
+          "encoding": "5",
+          "meaning": "EA_ADDR",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 990
+          }
+        },
+        {
+          "encoding": "6",
+          "meaning": "IR",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 991
+          }
+        },
+        {
+          "encoding": "7",
+          "meaning": "ALU",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 992
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Requires IDB_DRIVE = 1",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 996
+          }
+        },
+        {
+          "text": "Exactly one source selected per cycle",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 997
+          }
+        },
+        {
+          "text": "Reserved values must not be used",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 998
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 68
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "IDB_SRC",
+          "line": 971
+        }
+      }
+    },
+    {
+      "name": "L_OP",
+      "category": "Select Signals",
+      "width": 2,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Conditionally",
+      "value_required_when": "L_LOAD=1",
+      "attributes": {
+        "display_name": "Link Operation",
+        "mnemonic": "L_OP",
+        "purpose": "Selects the operation applied to the Link (L) register.",
+        "signal_class": "Select"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "CLEAR",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1375
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "COMP",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1376
+          }
+        },
+        {
+          "encoding": "2",
+          "meaning": "ALU_CARRY",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1377
+          }
+        },
+        {
+          "encoding": "3",
+          "meaning": "AC[11]",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1378
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "ALU_CARRY only valid during ALU operations producing carry",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1382
+          }
+        },
+        {
+          "text": "AC[11] loads the pre-TP value of AC[11] into L without modifying AC.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1383
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 69
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "L_OP",
+          "line": 1361
+        }
+      }
+    },
+    {
+      "name": "MA_SRC",
+      "category": "Select Signals",
+      "width": 2,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Conditionally",
+      "value_required_when": "MA_LOAD=1",
+      "attributes": {
+        "display_name": "MA Source Select",
+        "mnemonic": "MA_SRC",
+        "purpose": "Selects the input source for MA.",
+        "signal_class": "Select"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "PC",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1436
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "EA_ADDR",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1437
+          }
+        },
+        {
+          "encoding": "2",
+          "meaning": "Control",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1438
+          }
+        },
+        {
+          "encoding": "3",
+          "meaning": "reserved",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1439
+          }
+        }
+      ],
+      "constraints": [],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 70
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "MA_SRC",
+          "line": 1422
+        }
+      }
+    },
+    {
+      "name": "MB_SRC",
+      "category": "Select Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Conditionally",
+      "value_required_when": "MB_LOAD=1",
+      "attributes": {
+        "display_name": "MB Source Select",
+        "mnemonic": "MB_SRC",
+        "purpose": "Selects the input source for MB.",
+        "signal_class": "Select"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "IDB",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1520
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "MDB",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1521
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "IDB path requires IDB_DRIVE asserted",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1525
+          }
+        },
+        {
+          "text": "MDB path used for memory reads",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1526
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 71
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "MB_SRC",
+          "line": 1506
+        }
+      }
+    },
+    {
+      "name": "MDB_SRC",
+      "category": "Select Signals",
+      "width": 2,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "display_name": "Memory Data Bus Source Select",
+        "mnemonic": "MDB_SRC",
+        "purpose": "Selects the data source used for driving MDB.",
+        "signal_class": "Select"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "Memory",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1577
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "MB",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1578
+          }
+        },
+        {
+          "encoding": "2",
+          "meaning": "FP_SR",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1579
+          }
+        },
+        {
+          "encoding": "3",
+          "meaning": "DMA",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1580
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Must contain a valid encoding in every control word",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1584
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 72
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "MDB_SRC",
+          "line": 1563
+        }
+      }
+    },
+    {
+      "name": "MFB_SRC",
+      "category": "Select Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "display_name": "Memory Field Bus Source Select",
+        "mnemonic": "MFB_SRC",
+        "purpose": "Selects the field register that drives the Memory Field Bus (MFB) as EA_FIELD for memory operations.",
+        "signal_class": "Select"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "IF",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1607
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "DF",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1608
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Selects the MFB driver during CPU-initiated memory operations",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1612
+          }
+        },
+        {
+          "text": "Governs the address field only; must not be conflated with data-side selects (MDB_SRC)",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1613
+          }
+        },
+        {
+          "text": "Console EXAM/DEP use MFB_SRC = IF",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1614
+          }
+        },
+        {
+          "text": "During MS = DMA, the CPU does not drive MFB; MFB_SRC has no effect",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1615
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 73
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "MFB_SRC",
+          "line": 1593
+        }
+      }
+    },
+    {
+      "name": "PC_SRC",
+      "category": "Select Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Conditionally",
+      "value_required_when": "PC_LOAD=1",
+      "attributes": {
+        "display_name": "Program Counter Source Select",
+        "mnemonic": "PC_SRC",
+        "purpose": "Selects the input source for PC.",
+        "signal_class": "Select"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "IDB",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1718
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "Control",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1719
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "When PC_LOAD = 1:",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1723
+          }
+        },
+        {
+          "text": "selected source must be fully driven and valid",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1724
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 74
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "PC_SRC",
+          "line": 1704
+        }
+      }
+    },
+    {
+      "name": "CIFP_VAL",
+      "category": "Data Value Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Conditionally",
+      "value_required_when": "CIFP_LOAD=1",
+      "attributes": {
+        "display_name": "CIF Pending Value",
+        "mnemonic": "CIFP_VAL",
+        "purpose": "Specifies the value to load into the CIFP register.",
+        "signal_class": "Data Value"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "0",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 622
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "1",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 623
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Uses direct load path (no ALU or IDB involvement)",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 627
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 80
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "CIFP_VAL",
+          "line": 608
+        }
+      }
+    },
+    {
+      "name": "DB_INPUT",
+      "category": "Data Value Signals",
+      "width": 12,
+      "control_word_role": "external_input",
+      "default_value": null,
+      "explicit_value_required": "No",
+      "value_required_when": "AC_LOAD=1 AND AC_SRC=1",
+      "attributes": {
+        "display_name": "External I/O Data Input",
+        "mnemonic": "DB_INPUT",
+        "purpose": "Provides externally sourced I/O data into the CPU.",
+        "signal_class": "Data Value"
+      },
+      "values": [],
+      "constraints": [
+        {
+          "text": "Must be stable when sampled",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 654
+          }
+        },
+        {
+          "text": "No effect unless explicitly consumed",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 655
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 81
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "DB_INPUT",
+          "line": 635
+        }
+      }
+    },
+    {
+      "name": "DF_VAL",
+      "category": "Data Value Signals",
+      "width": 3,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Conditionally",
+      "value_required_when": "DF_LOAD=1 AND DF_SRC=0",
+      "attributes": {
+        "display_name": "DF Value Input",
+        "mnemonic": "DF_VAL",
+        "purpose": "Represents the value loaded into DF",
+        "signal_class": "Data Value"
+      },
+      "values": [],
+      "constraints": [
+        {
+          "text": "Only used when DF_SRC = Control",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 739
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 82
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "DF_VAL",
+          "line": 721
+        }
+      }
+    },
+    {
+      "name": "GTF_FLAGS",
+      "category": "Data Value Signals",
+      "width": 12,
+      "control_word_role": "derived",
+      "default_value": null,
+      "explicit_value_required": "No",
+      "value_required_when": "AC_LOAD=1 AND AC_SRC=6",
+      "attributes": {
+        "display_name": "Processor Flags Word",
+        "mnemonic": "GTF_FLAGS",
+        "purpose": "Provides the implemented PDP-8/E processor flags word to the AC input path.",
+        "signal_class": "Data Value"
+      },
+      "values": [],
+      "constraints": [
+        {
+          "text": "GTF_FLAGS is a combinational datapath value and is not stored state.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 899
+          }
+        },
+        {
+          "text": "/INT_REQ must be synchronized and stable when GTF_FLAGS is consumed.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 900
+          }
+        },
+        {
+          "text": "GTF_FLAGS has no effect unless AC_SRC selects GTF_FLAGS and AC_LOAD is asserted.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 901
+          }
+        },
+        {
+          "text": "GTF_FLAGS is ORed into AC.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 902
+          }
+        },
+        {
+          "text": "AC must have been cleared at the preceding TP when GTF_FLAGS is consumed by GTF.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 903
+          }
+        },
+        {
+          "text": "Observing /INT_REQ does not acknowledge, clear, or consume any controller interrupt condition.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 904
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 83
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "GTF_FLAGS",
+          "line": 866
+        }
+      }
+    },
+    {
+      "name": "IE_VAL",
+      "category": "Data Value Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Conditionally",
+      "value_required_when": "IE_LOAD=1",
+      "attributes": {
+        "display_name": "Interrupt Enable Value",
+        "mnemonic": "IE_VAL",
+        "purpose": "Specifies the value to load into the IE register",
+        "signal_class": "Data Value"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "0",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1057
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "1",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1058
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Uses direct load path (no ALU or IDB involvement)",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1062
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 84
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "IE_VAL",
+          "line": 1043
+        }
+      }
+    },
+    {
+      "name": "IF_DF_COMBINED",
+      "category": "Data Value Signals",
+      "width": 6,
+      "control_word_role": "derived",
+      "default_value": null,
+      "explicit_value_required": "No",
+      "value_required_when": "Any micro-operation listed below is selected",
+      "attributes": {
+        "display_name": "IF/DF Combination",
+        "mnemonic": "IF_DF_COMBINED",
+        "purpose": "Represents the concatenation of IF and DF",
+        "signal_class": "Data Value"
+      },
+      "values": [],
+      "constraints": [],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 85
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "IF_DF_COMBINED",
+          "line": 1070
+        }
+      }
+    },
+    {
+      "name": "IF_VAL",
+      "category": "Data Value Signals",
+      "width": 3,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Conditionally",
+      "value_required_when": "IF_LOAD=1 AND IF_SRC=0",
+      "attributes": {
+        "display_name": "IF Value Input",
+        "mnemonic": "IF_VAL",
+        "purpose": "Represents the value loaded into IF",
+        "signal_class": "Data Value"
+      },
+      "values": [],
+      "constraints": [
+        {
+          "text": "Only used when IF_SRC = Control",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1168
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 86
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "IF_VAL",
+          "line": 1150
+        }
+      }
+    },
+    {
+      "name": "II_VAL",
+      "category": "Data Value Signals",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Conditionally",
+      "value_required_when": "II_LOAD=1",
+      "attributes": {
+        "display_name": "Interrupt Inhibit Value",
+        "mnemonic": "II_VAL",
+        "purpose": "Specifies the value to load into the II register",
+        "signal_class": "Data Value"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "0",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1216
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "1",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1217
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "Uses direct load path (no ALU or IDB involvement)",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1221
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 87
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "II_VAL",
+          "line": 1202
+        }
+      }
+    },
+    {
+      "name": "IOT_TRANSFER_VAL",
+      "category": "Data Value Signals",
+      "width": 2,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Conditionally",
+      "value_required_when": "IOT_TRANSFER_LOAD=1",
+      "attributes": {
+        "display_name": "Pending External-IOT Transfer Value",
+        "mnemonic": "IOT_TRANSFER_VAL",
+        "purpose": "Specifies the value loaded into IOT_TRANSFER.",
+        "signal_class": "Data Value"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "no pending DB transfer",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1279
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "pending device-to-CPU read",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1280
+          }
+        },
+        {
+          "encoding": "2",
+          "meaning": "pending CPU-to-device write",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1281
+          }
+        },
+        {
+          "encoding": "3",
+          "meaning": "invalid",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1282
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "1 is selected when IO_READ_REQ is accepted.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1287
+          }
+        },
+        {
+          "text": "2 is selected when IO_WRITE_REQ is accepted.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1288
+          }
+        },
+        {
+          "text": "0 is selected when a completed transfer is cleared without replacement.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1289
+          }
+        },
+        {
+          "text": "If completion and request acceptance occur at the same TP, the newly accepted direction is selected instead of 0.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1290
+          }
+        },
+        {
+          "text": "Encoding 3 must never be selected.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1291
+          }
+        },
+        {
+          "text": "The value has no effect unless IOT_TRANSFER_LOAD is asserted.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1292
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 88
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "IOT_TRANSFER_VAL",
+          "line": 1264
+        }
+      }
+    },
+    {
+      "name": "MA_VAL",
+      "category": "Data Value Signals",
+      "width": 12,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Conditionally",
+      "value_required_when": "MA_LOAD=1 AND MA_SRC=2",
+      "attributes": {
+        "display_name": "Memory Address Value",
+        "mnemonic": "MA_VAL",
+        "purpose": "Specifies the value to load into the MA register",
+        "signal_class": "Data Value"
+      },
+      "values": [],
+      "constraints": [
+        {
+          "text": "Only valid when MA_SRC == Control",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1469
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 89
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "MA_VAL",
+          "line": 1451
+        }
+      }
+    },
+    {
+      "name": "MDB_INPUT",
+      "category": "Data Value Signals",
+      "width": 12,
+      "control_word_role": "external_input",
+      "default_value": null,
+      "explicit_value_required": "No",
+      "value_required_when": "Any micro-operation listed below is selected",
+      "attributes": {
+        "display_name": "Memory Data Bus Input",
+        "mnemonic": "MDB_INPUT",
+        "purpose": "Provides data received from memory via the memory data bus (MDB).",
+        "signal_class": "Data Value"
+      },
+      "values": [],
+      "constraints": [
+        {
+          "text": "Must be valid when sampled",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1554
+          }
+        },
+        {
+          "text": "Only used during memory read operations",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1555
+          }
+        },
+        {
+          "text": "Not interchangeable with IDB or DB sources",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1556
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 90
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "MDB_INPUT",
+          "line": 1536
+        }
+      }
+    },
+    {
+      "name": "PC_VAL",
+      "category": "Data Value Signals",
+      "width": 12,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Conditionally",
+      "value_required_when": "PC_LOAD=1 AND PC_SRC=1",
+      "attributes": {
+        "display_name": "Program Counter Value",
+        "mnemonic": "PC_VAL",
+        "purpose": "Specifies the value to load into the PC register",
+        "signal_class": "Data Value"
+      },
+      "values": [],
+      "constraints": [
+        {
+          "text": "Only valid when PC_SRC == Control",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1750
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 91
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "section": "PC_VAL",
+          "line": 1732
+        }
+      }
+    },
+    {
+      "name": "/RD",
+      "category": "Memory Interface",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "1",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "description": "Indicates that the CPU is requesting a memory read operation."
+      },
+      "values": [],
+      "constraints": [
+        {
+          "text": "must not be asserted simultaneously with /WR",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 112
+          }
+        },
+        {
+          "text": "does not imply data transfer into any register",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 113
+          }
+        },
+        {
+          "text": "does not define MDB validity or timing behavior",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 114
+          }
+        },
+        {
+          "text": "does not select the memory address source",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 115
+          }
+        },
+        {
+          "text": "does not select the MDB data source",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 116
+          }
+        },
+        {
+          "text": "must be paired with [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb) or DMA",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 117
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 105
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+          "section": "Memory Read (/RD)",
+          "line": 80
+        }
+      }
+    },
+    {
+      "name": "/WR",
+      "category": "Memory Interface",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "1",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "description": "Indicates that the CPU is requesting a memory write operation."
+      },
+      "values": [],
+      "constraints": [
+        {
+          "text": "must not be asserted simultaneously with /RD",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 153
+          }
+        },
+        {
+          "text": "does not select the memory address source",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 154
+          }
+        },
+        {
+          "text": "does not select the MDB data source",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 155
+          }
+        },
+        {
+          "text": "must be paired with a valid memory-write μop or DMA",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 156
+          }
+        },
+        {
+          "text": "valid memory-write μops are:",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 157
+          }
+        },
+        {
+          "text": "[MEM_WRITE_FROM_MB](../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 158
+          }
+        },
+        {
+          "text": "[MEM_WRITE_FROM_FP_SR](../../03-microarchitecture/02-micro-operations.md#mem_write_from_fp_sr)",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 159
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 106
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+          "section": "Memory Write (/WR)",
+          "line": 121
+        }
+      }
+    },
+    {
+      "name": "/DMA_GRANT",
+      "category": "Memory Interface",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "1",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "description": "Indicates that the CPU is in MS = DMA and has released normal CPU ownership of the memory interface.",
+        "display_name": "/DMA_GRANT",
+        "domain": "Architectural",
+        "polarity": "Active-low"
+      },
+      "values": [],
+      "constraints": [
+        {
+          "text": "must be generated only by the control word",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 260
+          }
+        },
+        {
+          "text": "must not be asserted during normal instruction execution",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 261
+          }
+        },
+        {
+          "text": "must not be asserted concurrently with CPU-initiated /RD or /WR",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 262
+          }
+        },
+        {
+          "text": "does not itself define DMA address, data, direction, or device selection",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 263
+          }
+        },
+        {
+          "text": "does not modify CPU architectural state",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 264
+          }
+        },
+        {
+          "text": "does not modify RUN or HLT_REQ",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 265
+          }
+        },
+        {
+          "text": "external DMA ownership and multi-device arbitration are outside CPU control and must be resolved before or during DMA service",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 266
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 107
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+          "section": "/DMA_GRANT",
+          "line": 223
+        }
+      }
+    },
+    {
+      "name": "/DB_READ",
+      "category": "I/O Interface",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "1",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "description": "Indicates that the CPU is performing an I/O read operation and will sample the System Data Bus (DB) during this timing state.",
+        "polarity": "Active-low (/DB_READ)"
+      },
+      "values": [],
+      "constraints": [
+        {
+          "text": "Must not be asserted concurrently with /DB_WRITE",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 186
+          }
+        },
+        {
+          "text": "Must not be asserted without DB_READ_TO_AC",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 187
+          }
+        },
+        {
+          "text": "CPU must not drive DB while /DB_READ is asserted",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 188
+          }
+        },
+        {
+          "text": "DB must be driven by at most one external device",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 189
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 113
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+          "section": "/DB_READ",
+          "line": 163
+        }
+      }
+    },
+    {
+      "name": "/DB_WRITE",
+      "category": "I/O Interface",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "1",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "description": "Indicates that the CPU is performing an I/O write operation and will drive the System Data Bus (DB) during this timing state.",
+        "polarity": "Active-low (/DB_WRITE)"
+      },
+      "values": [],
+      "constraints": [
+        {
+          "text": "Must not be asserted concurrently with /DB_READ",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 216
+          }
+        },
+        {
+          "text": "Must not be asserted without DB_WRITE_FROM_AC",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 217
+          }
+        },
+        {
+          "text": "CPU is the sole driver of DB when this signal is asserted",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 218
+          }
+        },
+        {
+          "text": "External devices must not drive DB during this interval",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 219
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 114
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+          "section": "/DB_WRITE",
+          "line": 193
+        }
+      }
+    },
+    {
+      "name": "/INITIALIZE",
+      "category": "I/O Interface",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "1",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "description": "System-wide reset signal asserted by CAF or an accepted front-panel CLEAR operation."
+      },
+      "values": [],
+      "constraints": [
+        {
+          "text": "front-panel CLEAR is accepted only when RUN = 0",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 463
+          }
+        },
+        {
+          "text": "front-panel CLEAR is ignored when RUN = 1",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 464
+          }
+        },
+        {
+          "text": "one /INITIALIZE pulse is generated per distinct accepted front-panel CLEAR press",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 465
+          }
+        },
+        {
+          "text": "a held front-panel CLEAR input must not generate repeated /INITIALIZE pulses",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 466
+          }
+        },
+        {
+          "text": "front-panel CLEAR is re-armed only after the synchronized input is released",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 467
+          }
+        },
+        {
+          "text": "CAF has no effect unless execution reaches EXECUTE TP4",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 468
+          }
+        },
+        {
+          "text": "CAF and front-panel CLEAR produce the same /INITIALIZE action",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 469
+          }
+        },
+        {
+          "text": "/INITIALIZE does not modify II, CIFP, DIF, IF, DF, or IB",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 470
+          }
+        },
+        {
+          "text": "controller-specific initialized states are defined in the corresponding controller documents",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 471
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 115
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+          "section": "System Initialization (/INITIALIZE)",
+          "line": 395
+        }
+      }
+    },
+    {
+      "name": "IOA[5:0]",
+      "category": "I/O Interface",
+      "width": 6,
+      "control_word_role": "derived",
+      "default_value": null,
+      "explicit_value_required": "No",
+      "value_required_when": "Instruction class is IOT",
+      "attributes": {
+        "description": "Specifies the target I/O device address during execution of IOT instructions."
+      },
+      "values": [],
+      "constraints": [
+        {
+          "text": "Meaningful to external controllers only while IOT_ACTIVE is asserted.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 313
+          }
+        },
+        {
+          "text": "Must not be modified by a micro-operation.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 314
+          }
+        },
+        {
+          "text": "Does not imply data transfer or direction.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 315
+          }
+        },
+        {
+          "text": "Does not define device behavior.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 316
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 116
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+          "section": "I/O Address Bus (IOA[5:0])",
+          "line": 274
+        }
+      }
+    },
+    {
+      "name": "IOP[2:0]",
+      "category": "I/O Interface",
+      "width": 3,
+      "control_word_role": "derived",
+      "default_value": null,
+      "explicit_value_required": "No",
+      "value_required_when": "Instruction class is IOT",
+      "attributes": {
+        "description": "Presents IR[2:0] unchanged to external I/O controllers during an external IOT."
+      },
+      "values": [],
+      "constraints": [
+        {
+          "text": "Does not select a controller.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 346
+          }
+        },
+        {
+          "text": "Does not directly determine DB direction.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 347
+          }
+        },
+        {
+          "text": "Does not define controller behavior.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 348
+          }
+        },
+        {
+          "text": "Must not be interpreted unless IOT_ACTIVE is asserted.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 349
+          }
+        },
+        {
+          "text": "Must not be modified by a micro-operation.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 350
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 117
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+          "section": "I/O Operation Field (IOP[2:0])",
+          "line": 320
+        }
+      }
+    },
+    {
+      "name": "IOT_ACTIVE",
+      "category": "I/O Interface",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "description": "Identifies execution of an external IOT and qualifies IOA, IOP, controller responses, and I/O wait behavior."
+      },
+      "values": [],
+      "constraints": [
+        {
+          "text": "Does not itself cause data movement.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 383
+          }
+        },
+        {
+          "text": "Does not itself cause controller state change.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 384
+          }
+        },
+        {
+          "text": "Must be paired with IOA, IOP, TS, and TP according to the controller contract.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 385
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 118
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+          "section": "External IOT Active (IOT_ACTIVE)",
+          "line": 356
+        }
+      }
+    },
+    {
+      "name": "MS_NEXT",
+      "category": "Control Flow",
+      "width": 3,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Yes",
+      "value_required_when": "TS=4",
+      "attributes": {
+        "description": "Specifies the next Major State."
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "FETCH",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+            "line": 125
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "DEFER",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+            "line": 126
+          }
+        },
+        {
+          "encoding": "2",
+          "meaning": "EXECUTE",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+            "line": 127
+          }
+        },
+        {
+          "encoding": "3",
+          "meaning": "INTERRUPT",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+            "line": 128
+          }
+        },
+        {
+          "encoding": "4",
+          "meaning": "DMA",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+            "line": 129
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "must be defined for all states at TS4",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+            "line": 140
+          }
+        },
+        {
+          "text": "must not change outside TS4",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+            "line": 141
+          }
+        },
+        {
+          "text": "must not be modified by μops",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+            "line": 142
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 131
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+          "section": "Next Major State (MS_NEXT)",
+          "line": 101
+        }
+      }
+    },
+    {
+      "name": "RUN_NEXT",
+      "category": "Control Flow",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "1",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "description": "Specifies the next value of the RUN state.",
+        "display_name": "RUN_NEXT",
+        "domain": "Sequencing",
+        "signal_type": "Single-bit state-output field"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "processor halted",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+            "line": 166
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "processor running",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+            "line": 167
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "must be defined in every control word",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+            "line": 171
+          }
+        },
+        {
+          "text": "must not be computed outside the control store",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+            "line": 172
+          }
+        },
+        {
+          "text": "must not be modified by μops",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+            "line": 173
+          }
+        },
+        {
+          "text": "must be consumed as a committed state value through [RUN](../10-control-input-definitions/01-flags.md#run)",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+            "line": 174
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 132
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+          "section": "Run State Next Value (RUN_NEXT)",
+          "line": 146
+        }
+      }
+    },
+    {
+      "name": "HLT_REQ_NEXT",
+      "category": "Control Flow",
+      "width": 1,
+      "control_word_role": "encoded",
+      "default_value": "0",
+      "explicit_value_required": "Yes",
+      "value_required_when": "Always",
+      "attributes": {
+        "description": "Specifies the next value of the halt-request pending state.",
+        "display_name": "HLT_REQ_NEXT",
+        "domain": "Sequencing",
+        "signal_type": "Single-bit state-output field"
+      },
+      "values": [
+        {
+          "encoding": "0",
+          "meaning": "no halt request pending",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+            "line": 205
+          }
+        },
+        {
+          "encoding": "1",
+          "meaning": "halt request pending",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+            "line": 206
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "must be defined in every control word",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+            "line": 210
+          }
+        },
+        {
+          "text": "must not be computed outside the control store",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+            "line": 211
+          }
+        },
+        {
+          "text": "must not be modified by μops",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+            "line": 212
+          }
+        },
+        {
+          "text": "must be consumed as a committed state value through [HLT_REQ](../10-control-input-definitions/01-flags.md#hlt_req)",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+            "line": 213
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 133
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+          "section": "Halt Request Next Value (HLT_REQ_NEXT)",
+          "line": 185
+        }
+      }
+    }
+  ]
+}

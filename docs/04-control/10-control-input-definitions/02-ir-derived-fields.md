@@ -203,8 +203,7 @@ Expose raw IR fields:
 **Type:** Field Extraction  
 **Bit Width:** 7  
 
-**Purpose:**  
-Extracts the address field used by memory reference instructions.
+**Purpose:** Extracts the address field used by memory reference instructions.
 
 **Derivation:**
 ```text
@@ -226,8 +225,7 @@ IR_ADDR = IR[6:0]
 **Type:** Field Extraction  
 **Bit Width:** 3  
 
-**Purpose:**  
-Extracts the field used by the CDF instruction
+**Purpose:** Extracts the field used by the CDF instruction
 
 **Derivation:**
 ```text
@@ -253,8 +251,7 @@ in different instruction contexts (CDF vs CIF)
 **Type:** Field Extraction  
 **Bit Width:** 3  
 
-**Purpose:**  
-Extracts the field used by the CIF instruction
+**Purpose:** Extracts the field used by the CIF instruction
 
 **Derivation:**
 ```text
@@ -280,8 +277,7 @@ in different instruction contexts (CDF vs CIF)
 **Type:** Addressing Mode  
 **Bit Width:** 1  
 
-**Purpose:**  
-Indicates whether MRI uses indirect addressing.
+**Purpose:** Indicates whether MRI uses indirect addressing.
 
 **Derivation:**
 ```text
@@ -304,8 +300,7 @@ IR_INDIRECT = IR_IS_MRI AND IR[8]
 **Type:** Field Extraction  
 **Bit Width:** 6  
 
-**Purpose:**  
-Specifies the I/O device address for IOT instructions.
+**Purpose:** Specifies the I/O device address for IOT instructions.
 
 **Derivation:**
 ```text
@@ -328,8 +323,7 @@ IR_IOA = IR[8:3]
 **Type:** AND Detect
 **Bit Width:** 1
 
-**Purpose:**
-Indicates that the current instruction is AND
+**Purpose:** Indicates that the current instruction is AND
 
 **Derivation:**
 ```text
@@ -352,8 +346,7 @@ IR_IS_AND = (IR[11:9] == 000)
 **Type:** Processor IOT Detection  
 **Bit Width:** 1  
 
-**Purpose:** 
-Indicates that the current instruction is CAF.  
+**Purpose:** Indicates that the current instruction is CAF.  
 
 **Derivation:**
 
@@ -380,8 +373,7 @@ AND (IR[2:0] == 111)
 **Type:** Processor IOT Detection  
 **Bit Width:** 1  
 
-**Purpose:** 
-Indicates that the current instruction is GTF.  
+**Purpose:** Indicates that the current instruction is GTF.  
 
 **Derivation:**
 ```text
@@ -408,8 +400,7 @@ AND (IR[2:0] == 100)
 **Type:** IR Class  
 **Bit Width:** 1  
 
-**Purpose:**  
-Indicates that the current instruction is an I/O transfer instruction.
+**Purpose:** Indicates that the current instruction is an I/O transfer instruction.
 
 **Derivation:**
 ```text
@@ -432,8 +423,7 @@ IR_IS_IOT = (IR[11:9] == 110)
 **Type:** ISZ Detect
 **Bit Width:** 1
 
-**Purpose:**
-Indicates that the current instruction is ISZ
+**Purpose:** Indicates that the current instruction is ISZ
 
 **Derivation:**
 ```text
@@ -456,8 +446,7 @@ IR_IS_ISZ = (IR[11:9] == 010)
 **Type:** IR Class  
 **Bit Width:** 1  
 
-**Purpose:**  
-Indicates that the instruction is a memory reference instruction.
+**Purpose:** Indicates that the instruction is a memory reference instruction.
 
 **Derivation:**
 ```text
@@ -498,8 +487,7 @@ IR_IS_MRI =
 **Type:** IR Class  
 **Bit Width:** 1  
 
-**Purpose:**  
-Indicates that the current instruction is an OPR instruction.
+**Purpose:** Indicates that the current instruction is an OPR instruction.
 
 **Derivation:**
 ```text
@@ -567,8 +555,7 @@ AND (IR[2:0] == 101)
 **Type:** OPR Bit Flag  
 **Bit Width:** 1  
 
-**Purpose:**  
-Modifier bit used in Group 1 OPR operations.
+**Purpose:** Modifier bit used in Group 1 OPR operations.
 
 This bit participates in:
 
@@ -602,8 +589,7 @@ IR_OPR_BSW = IR_OPR_GROUP1 AND IR[1]
 **Type:** OPR Bit Flag  
 **Bit Width:** 1  
 
-**Purpose:**  
-Clears the accumulator (AC).
+**Purpose:** Clears the accumulator (AC).
 
 **Derivation:**
 ```text
@@ -627,8 +613,7 @@ IR_OPR_CLA = IR_IS_OPR AND IR[7]
 **Type:** OPR Bit Flag  
 **Bit Width:** 1  
 
-**Purpose:**  
-Clears the Link (L).
+**Purpose:** Clears the Link (L).
 
 **Derivation:**
 ```text
@@ -652,8 +637,7 @@ IR_OPR_CLL = IR_OPR_GROUP1 AND IR[6]
 **Type:** OPR Bit Flag  
 **Bit Width:** 1  
 
-**Purpose:**  
-Performs bitwise complement of the accumulator.
+**Purpose:** Performs bitwise complement of the accumulator.
 
 **Derivation:**
 ```text
@@ -677,8 +661,7 @@ IR_OPR_CMA = IR_OPR_GROUP1 AND IR[5]
 **Type:** OPR Bit Flag  
 **Bit Width:** 1  
 
-**Purpose:**  
-Performs bitwise complement of the Link register.
+**Purpose:** Performs bitwise complement of the Link register.
 
 **Derivation:**
 ```text
@@ -702,8 +685,7 @@ IR_OPR_CML = IR_OPR_GROUP1 AND IR[4]
 **Type:** OPR Class  
 **Bit Width:** 1  
 
-**Purpose:**  
-Selects Group 1 OPR instruction format.
+**Purpose:** Selects Group 1 OPR instruction format.
 
 **Derivation:**
 ```text
@@ -738,8 +720,7 @@ IR_OPR_GROUP1 = IR_IS_OPR AND (IR[8] == 0)
 **Type:** OPR Class  
 **Bit Width:** 1  
 
-**Purpose:**  
-Selects Group 2 OPR instruction format.
+**Purpose:** Selects Group 2 OPR instruction format.
 
 **Derivation:**
 ```text
@@ -767,8 +748,7 @@ IR_OPR_GROUP2 = IR_IS_OPR AND IR[8] AND (IR[0] == 0)
 **Type:** OPR Class  
 **Bit Width:** 1  
 
-**Purpose:**  
-Selects Group 3 OPR instruction format.
+**Purpose:** Selects Group 3 OPR instruction format.
 
 **Derivation:**
 ```text
@@ -796,8 +776,7 @@ IR_OPR_GROUP3 = IR_IS_OPR AND IR[8] AND IR[0]
 **Type:** OPR Bit Flag  
 **Bit Width:** 1  
 
-**Purpose:**  
-Halts CPU execution.
+**Purpose:** Halts CPU execution.
 
 **Derivation:**
 ```text
@@ -821,8 +800,7 @@ IR_OPR_HLT = IR_OPR_GROUP2 AND IR[1]
 **Type:** OPR Bit Flag  
 **Bit Width:** 1  
 
-**Purpose:**  
-Increments the accumulator (AC).
+**Purpose:** Increments the accumulator (AC).
 
 **Derivation:**
 ```text
@@ -847,8 +825,7 @@ IR_OPR_IAC = IR_OPR_GROUP1 AND IR[3]
 **Type:** OPR Bit Flag  
 **Bit Width:** 1  
 
-**Purpose:**  
-Performs OR operation between switch register and accumulator.
+**Purpose:** Performs OR operation between switch register and accumulator.
 
 **Derivation:**
 ```text
@@ -873,8 +850,7 @@ IR_OPR_OSR = IR_OPR_GROUP2 AND IR[2]
 **Type:** OPR Bit Flag  
 **Bit Width:** 1  
 
-**Purpose:**  
-Enables rotate-left behavior of the accumulator.
+**Purpose:** Enables rotate-left behavior of the accumulator.
 
 **Derivation:**
 ```text
@@ -901,8 +877,7 @@ IR_OPR_RAL = IR_OPR_GROUP1 AND IR[2]
 **Type:** OPR Bit Flag  
 **Bit Width:** 1  
 
-**Purpose:**  
-Enables rotate-right behavior of the accumulator.
+**Purpose:** Enables rotate-right behavior of the accumulator.
 
 **Derivation:**
 ```text
@@ -928,8 +903,7 @@ IR_OPR_RAR = IR_OPR_GROUP1 AND IR[0]
 **Type:** OPR Bit Flag  
 **Bit Width:** 1  
 
-**Purpose:**  
-Defines how Group 2 skip condition bits are combined.
+**Purpose:** Defines how Group 2 skip condition bits are combined.
 
 **Derivation:**
 ```text
@@ -954,8 +928,7 @@ IR_OPR_SKIP_MODE = IR_OPR_GROUP2 AND IR[3]
 **Type:** OPR Bit Flag  
 **Bit Width:** 1  
 
-**Purpose:**  
-Enables skip condition when accumulator is negative (AC < 0).
+**Purpose:** Enables skip condition when accumulator is negative (AC < 0).
 
 **Derivation:**
 ```text
@@ -980,8 +953,7 @@ IR_OPR_SMA = IR_OPR_GROUP2 AND IR[6]
 **Type:** OPR Bit Flag  
 **Bit Width:** 1  
 
-**Purpose:**  
-Enables skip condition when Link register is non-zero.
+**Purpose:** Enables skip condition when Link register is non-zero.
 
 **Derivation:**
 ```text
@@ -1006,8 +978,7 @@ IR_OPR_SNL = IR_OPR_GROUP2 AND IR[4]
 **Type:** OPR Bit Flag  
 **Bit Width:** 1  
 
-**Purpose:**  
-Enables skip condition when accumulator equals zero.
+**Purpose:** Enables skip condition when accumulator equals zero.
 
 **Derivation:**
 ```text
@@ -1032,8 +1003,7 @@ IR_OPR_SZA = IR_OPR_GROUP2 AND IR[5]
 **Type:** Memory Management
 **Bit Width:** 1
 
-**Purpose:**
-Indicates that the current instruction reads DF
+**Purpose:** Indicates that the current instruction reads DF
 
 **Derivation:**
 ```text
@@ -1057,8 +1027,7 @@ IR_READS_DF = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==001) (octal 6214
 **Type:** Memory Management
 **Bit Width:** 1
 
-**Purpose:**
-Indicates that the current instruction reads the IB into AC
+**Purpose:** Indicates that the current instruction reads the IB into AC
 
 **Derivation:**
 ```text
@@ -1082,8 +1051,7 @@ IR_READS_IB = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==011) (octal 6234
 **Type:** Memory Management
 **Bit Width:** 1
 
-**Purpose:**
-Indicates that the current instruction reads IF
+**Purpose:** Indicates that the current instruction reads IF
 
 **Derivation:**
 ```text
@@ -1107,8 +1075,7 @@ IR_READS_IF = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==010) (octal 6224
 **Type:** Memory Management
 **Bit Width:** 1
 
-**Purpose:**
-Indicates that the current instruction restores DF and IF from IB
+**Purpose:** Indicates that the current instruction restores DF and IF from IB
 
 **Derivation:**
 ```text
@@ -1135,8 +1102,7 @@ IR_RESTORES_IB = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==100) (octal 6
 **Type:** Memory Management
 **Bit Width:** 1
 
-**Purpose:**
-Indicates that the current instruction writes DF (either CDF or CDF+CIF)
+**Purpose:** Indicates that the current instruction writes DF (either CDF or CDF+CIF)
 
 **Derivation:**
 ```text
@@ -1160,8 +1126,7 @@ IR_WRITES_DF = (IR[11:6] == 110010 AND IR[2]==0 AND IR[0]==1)
 **Type:** Memory Management
 **Bit Width:** 1
 
-**Purpose:**
-Indicates that the current instruction writes IF (either CIF or CDF+CIF)
+**Purpose:** Indicates that the current instruction writes IF (either CIF or CDF+CIF)
 
 **Derivation:**
 ```text
@@ -1187,8 +1152,7 @@ IR_WRITES_IF = (IR[11:6] == 110010 AND IR[2]==0 AND IR[1]==1)
 **Type:** Addressing Mode  
 **Bit Width:** 1  
 
-**Purpose:**  
-Selects zero page vs current page addressing for MRI instructions.
+**Purpose:** Selects zero page vs current page addressing for MRI instructions.
 
 **Derivation:**
 ```text

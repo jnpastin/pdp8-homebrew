@@ -48,6 +48,9 @@ from extract_control_outputs import (  # noqa: E402
     normalize_signal_name,
     validate_documented_mnemonics,
     validate_category_requirements,
+    normalize_default_value,
+    normalize_explicit_value_required,
+    validate_control_word_attributes,
     main,
 )
 
@@ -1465,7 +1468,238 @@ class IndexExtractionTests(unittest.TestCase):
             )
         )
 
-        
+    def test_control_word_attributes_are_extracted(self) -> None:
+        block = DefinitionBlock(
+            heading="AC_SRC",
+            source_path="docs/signals.md",
+            start_line=20,
+            lines=(
+                "**Mnemonic:** AC_SRC",
+                "**Bit Width:** 3",
+                "**Default Value:** 0",
+                "**Explicit Value Required:** Conditionally",
+                "**Value Required When:** AC_LOAD=1",
+                "**Purpose:** Selects the AC input.",
+            ),
+        )
+
+        attributes, diagnostics = parse_definition_attributes(
+            "AC_SRC",
+            block,
+        )
+
+        self.assertEqual(attributes["default_value"], "0")
+        self.assertEqual(
+            attributes["explicit_value_required"],
+            "Conditionally",
+        )
+        self.assertEqual(
+            attributes["value_required_when"],
+            "AC_LOAD=1",
+        )
+        self.assertEqual(diagnostics, [])
+
+    def test_explicit_value_requirement_is_normalized(self) -> None:
+        self.assertEqual(
+            normalize_explicit_value_required("Yes"),
+            "Yes",
+        )
+        self.assertEqual(
+            normalize_explicit_value_required("no"),
+            "No",
+        )
+        self.assertEqual(
+            normalize_explicit_value_required("CONDITIONALLY"),
+            "Conditionally",
+        )
+        self.assertIsNone(
+            normalize_explicit_value_required("sometimes")
+        )
+
+    def test_default_value_is_normalized(self) -> None:
+        self.assertEqual(normalize_default_value("0", 1), "0")
+        self.assertEqual(normalize_default_value("17", 4), "17")
+        self.assertEqual(normalize_default_value("n/a", 12), "N/A")
+        self.assertIsNone(normalize_default_value("2", 1))
+        self.assertIsNone(normalize_default_value("8", 4))
+
+    def test_valid_conditional_attributes_are_accepted(self) -> None:
+        entries = [
+            IndexEntry(
+                name="AC_SRC",
+                category="Select Signals",
+                source_path="docs/index.md",
+                line=10,
+            )
+        ]
+        definitions = {
+            "AC_SRC": DefinitionBlock(
+                heading="AC_SRC",
+                source_path="docs/signals.md",
+                start_line=20,
+                lines=(),
+            )
+        }
+        attributes = {
+            "AC_SRC": {
+                "bit_width": "3",
+                "default_value": "0",
+                "explicit_value_required": "Conditionally",
+                "value_required_when": "AC_LOAD=1",
+            }
+        }
+
+        diagnostics = validate_control_word_attributes(
+            entries,
+            definitions,
+            attributes,
+            {"AC_SRC": 3},
+        )
+
+        self.assertEqual(diagnostics, [])
+
+    def test_non_control_value_can_have_validity_condition(self) -> None:
+        entries = [
+            IndexEntry(
+                name="GTF_FLAGS",
+                category="Data Value Signals",
+                source_path="docs/index.md",
+                line=10,
+            )
+        ]
+        definitions = {
+            "GTF_FLAGS": DefinitionBlock(
+                heading="GTF_FLAGS",
+                source_path="docs/signals.md",
+                start_line=20,
+                lines=(),
+            )
+        }
+        attributes = {
+            "GTF_FLAGS": {
+                "bit_width": "12",
+                "default_value": "N/A",
+                "explicit_value_required": "No",
+                "value_required_when": "AC_LOAD=1 AND AC_SRC=6",
+            }
+        }
+
+        diagnostics = validate_control_word_attributes(
+            entries,
+            definitions,
+            attributes,
+            {"GTF_FLAGS": 12},
+        )
+
+        self.assertEqual(diagnostics, [])
+
+    def test_missing_control_word_attributes_are_reported(self) -> None:
+        entries = [
+            IndexEntry(
+                name="AC_SRC",
+                category="Select Signals",
+                source_path="docs/index.md",
+                line=10,
+            )
+        ]
+        definitions = {
+            "AC_SRC": DefinitionBlock(
+                heading="AC_SRC",
+                source_path="docs/signals.md",
+                start_line=20,
+                lines=(),
+            )
+        }
+
+        diagnostics = validate_control_word_attributes(
+            entries,
+            definitions,
+            {"AC_SRC": {}},
+            {"AC_SRC": 3},
+        )
+
+        self.assertEqual(
+            {item.code for item in diagnostics},
+            {
+                "MISSING_DEFAULT_VALUE",
+                "MISSING_EXPLICIT_VALUE_REQUIRED",
+                "MISSING_VALUE_REQUIRED_WHEN",
+            },
+        )
+
+    def test_invalid_default_value_is_reported(self) -> None:
+        entries = [
+            IndexEntry(
+                name="AC_LOAD",
+                category="Enable Signals",
+                source_path="docs/index.md",
+                line=10,
+            )
+        ]
+        definitions = {
+            "AC_LOAD": DefinitionBlock(
+                heading="AC_LOAD",
+                source_path="docs/signals.md",
+                start_line=20,
+                lines=(),
+            )
+        }
+        attributes = {
+            "AC_LOAD": {
+                "default_value": "2",
+                "explicit_value_required": "Yes",
+                "value_required_when": "Always",
+            }
+        }
+
+        diagnostics = validate_control_word_attributes(
+            entries,
+            definitions,
+            attributes,
+            {"AC_LOAD": 1},
+        )
+
+        self.assertIn(
+            "INVALID_DEFAULT_VALUE",
+            [item.code for item in diagnostics],
+        )
+
+    def test_conditional_requirement_requires_condition(self) -> None:
+        entries = [
+            IndexEntry(
+                name="AC_SRC",
+                category="Select Signals",
+                source_path="docs/index.md",
+                line=10,
+            )
+        ]
+        definitions = {
+            "AC_SRC": DefinitionBlock(
+                heading="AC_SRC",
+                source_path="docs/signals.md",
+                start_line=20,
+                lines=(),
+            )
+        }
+        attributes = {
+            "AC_SRC": {
+                "default_value": "0",
+                "explicit_value_required": "Conditionally",
+                "value_required_when": "N/A",
+            }
+        }
+
+        diagnostics = validate_control_word_attributes(
+            entries,
+            definitions,
+            attributes,
+            {"AC_SRC": 3},
+        )
+
+        self.assertIn(
+            "INVALID_CONDITIONAL_REQUIREMENT",
+            [item.code for item in diagnostics],
+        )
         
 class EndToEndTests(unittest.TestCase):
     def test_main_generates_json_and_report(self) -> None:
@@ -1510,6 +1744,9 @@ class EndToEndTests(unittest.TestCase):
                 "**Name:** Accumulator Load\n"
                 "**Class:** Enable\n"
                 "**Bit Width:** 1\n"
+                "**Default Value:** 0\n"
+                "**Explicit Value Required:** Yes\n"
+                "**Value Required When:** Always\n"
                 "**Purpose:** Loads the accumulator.\n"
                 "**Encoding:**\n"
                 "0 = no load\n"
@@ -1579,6 +1816,22 @@ class EndToEndTests(unittest.TestCase):
             self.assertEqual(
                 generated_json["signals"][0]["definition"]["bit_width"],
                 1,
+            )
+            generated_attributes = (
+                generated_json["signals"][0]["definition"]["attributes"]
+            )
+
+            self.assertEqual(
+                generated_attributes["default_value"],
+                "0",
+            )
+            self.assertEqual(
+                generated_attributes["explicit_value_required"],
+                "Yes",
+            )
+            self.assertEqual(
+                generated_attributes["value_required_when"],
+                "Always",
             )
             self.assertEqual(
                 generated_json["diagnostics"],

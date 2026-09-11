@@ -36,6 +36,29 @@ SOURCE_PATHS = (
     ),
 )
 
+ATTRIBUTE_NAMES = {
+    "mnemonic": "mnemonic",
+    "name": "display_name",
+    "class": "signal_class",
+    "type": "signal_type",
+    "domain": "domain",
+    "bit width": "bit_width",
+    "width": "bit_width",
+    "polarity": "polarity",
+    "purpose": "purpose",
+    "description": "description",
+    "default value": "default_value",
+    "explicit value required": "explicit_value_required",
+    "value required when": "value_required_when",
+}
+
+EXPLICIT_VALUE_REQUIRED_VALUES = {
+    "yes": "Yes",
+    "no": "No",
+    "conditionally": "Conditionally",
+}
+
+
 
 @dataclass(frozen=True)
 class ToolPaths:
@@ -421,7 +444,21 @@ def build_index_result(
             definition = {
                 "heading": block.heading,
                 "attributes": {
-                    key: value
+                    key: (
+                        normalize_explicit_value_required(value)
+                        if key == "explicit_value_required"
+                        else (
+                            normalize_default_value(
+                                value,
+                                bit_widths[entry.name],
+                            )
+                            if (
+                                key == "default_value"
+                                and entry.name in bit_widths
+                            )
+                            else value
+                        )
+                    )
                     for key, value in attributes.get(entry.name, {}).items()
                     if key != "bit_width"
                 },
@@ -682,21 +719,37 @@ def match_definition_blocks(
         )
 
     return matched_blocks, diagnostics
+
+def normalize_explicit_value_required(
+    value: str,
+) -> str | None:
+    """Normalize the documented explicit-value requirement."""
+
+    return EXPLICIT_VALUE_REQUIRED_VALUES.get(
+        value.strip().casefold()
+    )
+
+
+def normalize_default_value(
+    value: str,
+    bit_width: int,
+) -> str | None:
+    """Normalize an octal default value or the N/A marker."""
+
+    stripped = value.strip()
+
+    if stripped.casefold() == "n/a":
+        return "N/A"
+
+    numeric_value = parse_octal_encoding(stripped)
+    if numeric_value is None:
+        return None
+
+    if numeric_value >= (1 << bit_width):
+        return None
+
+    return stripped
     
-ATTRIBUTE_NAMES = {
-    "mnemonic": "mnemonic",
-    "name": "display_name",
-    "class": "signal_class",
-    "type": "signal_type",
-    "domain": "domain",
-    "bit width": "bit_width",
-    "width": "bit_width",
-    "polarity": "polarity",
-    "purpose": "purpose",
-    "description": "description",
-}
-
-
 def parse_definition_attributes(
     signal_name: str,
     block: DefinitionBlock,
@@ -1203,6 +1256,173 @@ def normalize_bit_widths(
 
     return bit_widths, diagnostics
 
+def validate_control_word_attributes(
+    entries: Sequence[IndexEntry],
+    definitions: dict[str, DefinitionBlock],
+    attributes: dict[str, dict[str, str]],
+    bit_widths: dict[str, int],
+) -> list[Diagnostic]:
+    """Validate documented control-word value requirements."""
+
+    diagnostics: list[Diagnostic] = []
+
+    for entry in entries:
+        block = definitions.get(entry.name)
+        if block is None:
+            continue
+
+        signal_attributes = attributes.get(entry.name, {})
+        bit_width = bit_widths.get(entry.name)
+
+        default_value = signal_attributes.get("default_value")
+        explicit_required = signal_attributes.get(
+            "explicit_value_required"
+        )
+        value_required_when = signal_attributes.get(
+            "value_required_when"
+        )
+
+        normalized_default: str | None = None
+
+        if default_value is None:
+            diagnostics.append(
+                Diagnostic(
+                    severity="ERROR",
+                    code="MISSING_DEFAULT_VALUE",
+                    message="Definition does not specify Default Value.",
+                    source_path=block.source_path,
+                    line=block.start_line,
+                    signal_name=entry.name,
+                )
+            )
+        elif bit_width is not None:
+            normalized_default = normalize_default_value(
+                default_value,
+                bit_width,
+            )
+
+            if normalized_default is None:
+                diagnostics.append(
+                    Diagnostic(
+                        severity="ERROR",
+                        code="INVALID_DEFAULT_VALUE",
+                        message=(
+                            "Default Value must be N/A or an octal value "
+                            f"that fits the documented {bit_width}-bit "
+                            f"width: {default_value}"
+                        ),
+                        source_path=block.source_path,
+                        line=block.start_line,
+                        signal_name=entry.name,
+                    )
+                )
+
+        normalized_requirement: str | None = None
+
+        if explicit_required is None:
+            diagnostics.append(
+                Diagnostic(
+                    severity="ERROR",
+                    code="MISSING_EXPLICIT_VALUE_REQUIRED",
+                    message=(
+                        "Definition does not specify "
+                        "Explicit Value Required."
+                    ),
+                    source_path=block.source_path,
+                    line=block.start_line,
+                    signal_name=entry.name,
+                )
+            )
+        else:
+            normalized_requirement = (
+                normalize_explicit_value_required(
+                    explicit_required
+                )
+            )
+
+            if normalized_requirement is None:
+                diagnostics.append(
+                    Diagnostic(
+                        severity="ERROR",
+                        code="INVALID_EXPLICIT_VALUE_REQUIRED",
+                        message=(
+                            "Explicit Value Required must be Yes, No, "
+                            f"or Conditionally: {explicit_required}"
+                        ),
+                        source_path=block.source_path,
+                        line=block.start_line,
+                        signal_name=entry.name,
+                    )
+                )
+
+        if value_required_when is None:
+            diagnostics.append(
+                Diagnostic(
+                    severity="ERROR",
+                    code="MISSING_VALUE_REQUIRED_WHEN",
+                    message=(
+                        "Definition does not specify Value Required When."
+                    ),
+                    source_path=block.source_path,
+                    line=block.start_line,
+                    signal_name=entry.name,
+                )
+            )
+            continue
+
+        normalized_condition = value_required_when.strip()
+
+        if not normalized_condition:
+            diagnostics.append(
+                Diagnostic(
+                    severity="ERROR",
+                    code="EMPTY_VALUE_REQUIRED_WHEN",
+                    message="Value Required When must not be empty.",
+                    source_path=block.source_path,
+                    line=block.start_line,
+                    signal_name=entry.name,
+                )
+            )
+
+        if (
+            normalized_requirement == "Conditionally"
+            and normalized_condition.casefold() in {"always", "n/a"}
+        ):
+            diagnostics.append(
+                Diagnostic(
+                    severity="ERROR",
+                    code="INVALID_CONDITIONAL_REQUIREMENT",
+                    message=(
+                        "A conditionally explicit field must specify "
+                        "a conditional Value Required When expression."
+                    ),
+                    source_path=block.source_path,
+                    line=block.start_line,
+                    signal_name=entry.name,
+                )
+            )
+
+        if (
+            normalized_requirement in {"Yes", "Conditionally"}
+            and normalized_default == "N/A"
+        ):
+            diagnostics.append(
+                Diagnostic(
+                    severity="ERROR",
+                    code="EXPLICIT_FIELD_HAS_NO_DEFAULT",
+                    message=(
+                        "A field explicitly assigned by control must "
+                        "define an encoded Default Value."
+                    ),
+                    source_path=block.source_path,
+                    line=block.start_line,
+                    signal_name=entry.name,
+                )
+            )
+
+    return diagnostics
+
+
 def parse_octal_encoding(value: str) -> int | None:
     """Parse an octal encoding value."""
 
@@ -1327,6 +1547,15 @@ def main(arguments: Sequence[str] | None = None) -> int:
             attributes,
         )
  
+        control_word_attribute_diagnostics = (
+            validate_control_word_attributes(
+                index_entries,
+                definitions,
+                attributes,
+                bit_widths,
+            )
+        )
+
         encodings, encoding_diagnostics = (
             extract_all_definition_encodings(definitions)
         )
@@ -1355,6 +1584,7 @@ def main(arguments: Sequence[str] | None = None) -> int:
             *attribute_validation_diagnostics,
             *mnemonic_diagnostics,
             *bit_width_diagnostics,
+            *control_word_attribute_diagnostics,
             *encoding_diagnostics,
             *encoding_width_diagnostics,
             *category_diagnostics,

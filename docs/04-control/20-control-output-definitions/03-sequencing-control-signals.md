@@ -114,6 +114,10 @@ Sequencing
 Defined in:
 - [Major State Model](../../03-microarchitecture/00-state-model.md)
 
+**Default Value:** 0  
+**Explicit Value Required:** Yes  
+**Value Required When:** TS=4  
+
 **Description:** Specifies the next Major State.
 
 **Value Encoding:**
@@ -145,6 +149,10 @@ Defined in:
 **Type** Single-bit state-output field  
 **Domain** Sequencing  
 **Width** 1 bit  
+
+**Default Value:** 1  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Description:** Specifies the next value of the RUN state.
 
@@ -180,6 +188,10 @@ Defined in:
 **Type** Single-bit state-output field  
 **Domain** Sequencing  
 **Width** 1 bit  
+
+**Default Value:** 0  
+**Explicit Value Required:** Yes  
+**Value Required When:** Always  
 
 **Description:** Specifies the next value of the halt-request pending state.
 

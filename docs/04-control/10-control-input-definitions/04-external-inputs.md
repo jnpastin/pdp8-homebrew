@@ -85,8 +85,7 @@ During halted execution, front-panel command inputs may select a single console 
 **Type:** External Command Input  
 **Bit Width:** 1  
 
-**Purpose:** 
-Indicates that the operator has requested system initialization from the front panel.
+**Purpose:** Indicates that the operator has requested system initialization from the front panel.
 
 **Value Encoding:**
 - 0 -> CLEAR command not asserted

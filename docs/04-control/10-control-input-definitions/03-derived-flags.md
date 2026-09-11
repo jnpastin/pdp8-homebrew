@@ -17,6 +17,10 @@ Derived flags are combinational and reduce multi-input control conditions into s
 
 ### SKIP_TAKEN
 
+**Mnemonic:** SKIP_TAKEN
+**Name:** Skip Taken
+
+
 **Inputs:**
 - IR_OPR_GROUP2
 - IR_OPR_SKIP_MODE
@@ -29,8 +33,7 @@ Derived flags are combinational and reduce multi-input control conditions into s
 
 ---
 
-**Purpose:**
-Determines whether a Group 2 OPR instruction causes a skip (PC increment).
+**Purpose:** Determines whether a Group 2 OPR instruction causes a skip (PC increment).
 
 ---
 
@@ -96,14 +99,16 @@ AND (
 
 ### ISZ_SKIP_REQUIRED
 
+**Mnemonic:** ISZ_SKIP_REQUIRED
+**Name:** Increment Skip if Zero - Skip Required
+
 **Inputs:**
 - IR_IS_ISZ
 - MBZ
 
 ---
 
-**Purpose:**
-Determines whether ISZ causes a skip after increment.
+**Purpose:** Determines whether ISZ causes a skip after increment.
 
 ---
 
@@ -130,14 +135,16 @@ AND MBZ
 
 ### AUTO_INDEX_REQUIRED
 
+**Mnemonic:** AUTO_INDEX_REQUIRED
+**Name:** Auto Index Required
+
 **Inputs:**
 - IR_INDIRECT
 - EAI
 
 ---
 
-**Purpose:**
-Determines whether auto-index increment and writeback must occur.
+**Purpose:** Determines whether auto-index increment and writeback must occur.
 
 ---
 
@@ -165,6 +172,9 @@ AND EAI
 
 ### INTERRUPT_REQUEST_VALID
 
+**Mnemonic:** INTERRUPT_REQUEST_VALID
+**Name:** Interrupt Request Valid
+
 **Inputs:**
 - IE
 - II
@@ -172,8 +182,7 @@ AND EAI
 
 ---
 
-**Purpose:**
-Determines whether interrupt entry conditions are satisfied.
+**Purpose:** Determines whether interrupt entry conditions are satisfied.
 
 ---
 
@@ -200,6 +209,9 @@ AND (/INT_REQ = 0)
 ---
 
 ### IF_CHANGE_PENDING
+
+**Mnemonic:** IF_CHANGE_PENDING
+**Name:** Instruction Field Change Pending
 
 **Inputs:**
 - CIFP
