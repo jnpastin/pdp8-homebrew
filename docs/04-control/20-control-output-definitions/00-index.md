@@ -70,7 +70,8 @@ Defined in:
 - [MA_SRC](./01-microarchitectural-control-signals.md#ma_src)  
 - [MB_SRC](./01-microarchitectural-control-signals.md#mb_src)  
 - [MDB_SRC](./01-microarchitectural-control-signals.md#mdb_src)  
-- [MFB_SRC](./01-microarchitectural-control-signals.md#mfb_src)  
+- [MFB_SRC](./01-microarchitectural-control-signals.md#mfb_src)
+- [MQ_SRC](./01-microarchitectural-control-signals.md#mq_src)    
 - [PC_SRC](./01-microarchitectural-control-signals.md#pc_src)  
 
 ---

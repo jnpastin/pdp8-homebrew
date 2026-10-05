@@ -294,6 +294,7 @@ Constraint:
 - [MB_SRC](#mb_src)
 - [MDB_SRC](#mdb_src)
 - [MFB_SRC](#mfb_src)
+- [MQ_SRC](#mq_src)
 - [PC_SRC](#pc_src)
 
 ---
@@ -1635,11 +1636,39 @@ memory bus value
 ```
 
 **Constraints:**
-- Requires a valid source driving IDB when used  
+- Requires a valid source 
 
 **Used by μops:**
-- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac)
 - [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap)
+- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac)
+- [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear)
+
+---
+
+### MQ_SRC
+
+**Mnemonic:** MQ_SRC  
+**Name:** MQ Source Select  
+**Class:** Select  
+**Bit Width:** 1  
+**Default Value:** 0  
+**Explicit Value Required:** Conditionally  
+**Value Required When:** MQ_LOAD=1  
+
+**Purpose:** Selects the input source for MQ.
+
+**Encoding:**
+```
+0 → IDB
+1 → AC
+```
+
+**Constraints:**  
+
+**Used by μops:**
+- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap)
+- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac)
+- [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear)
 
 ---
 
