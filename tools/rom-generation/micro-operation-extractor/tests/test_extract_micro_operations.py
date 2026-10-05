@@ -12,7 +12,9 @@ class Tests(unittest.TestCase):
  def test_relative_path(self):
   with tempfile.TemporaryDirectory() as t:self.assertEqual(m.resolve_from_repo(Path(t),Path("x")),(Path(t)/"x").resolve())
  def test_absolute_path(self):
-  p=Path("/tmp/x");self.assertEqual(m.resolve_from_repo(Path("/z"),p),p)
+    with tempfile.TemporaryDirectory() as temporary:
+        path = (Path(temporary) / "x").resolve()
+        self.assertEqual(m.resolve_from_repo(Path.cwd(), path), path)
  def test_missing_source(self):
   with self.assertRaises(m.ExtractionFailure):m.read_source(Path("/missing"))
  def test_invalid_utf8(self):
@@ -46,8 +48,8 @@ class Tests(unittest.TestCase):
  def test_deterministic_json(self):
   result,_=m.build_result(doc(definition()),"x")
   with tempfile.TemporaryDirectory() as t:
-   a=Path(t)/"a";b=Path(t)/"b";m.write_json(result,a);m.write_json(result,b);self.assertEqual(a.read_bytes(),b.read_bytes());self.assertTrue(a.read_text().endswith("\n"))
+   a=Path(t)/"a";b=Path(t)/"b";m.write_json(result,a);m.write_json(result,b);self.assertEqual(a.read_bytes(),b.read_bytes());self.assertTrue(a.read_text(encoding="utf-8").endswith("\n"))
  def test_complete_run(self):
   with tempfile.TemporaryDirectory() as t:
-   root=Path(t);p=root/m.SOURCE_PATH;p.parent.mkdir(parents=True);p.write_text(doc(definition()),encoding="utf-8");self.assertEqual(m.run(["--repo-root",str(root)]),0);data=json.loads((root/m.DEFAULT_JSON_OUTPUT).read_text());self.assertEqual(data["micro_operations"][0]["name"],"PC_INC")
+   root=Path(t);p=root/m.SOURCE_PATH;p.parent.mkdir(parents=True);p.write_text(doc(definition()),encoding="utf-8");self.assertEqual(m.run(["--repo-root",str(root)]),0);data = json.loads((root / m.DEFAULT_JSON_OUTPUT).read_text(encoding="utf-8"));self.assertEqual(data["micro_operations"][0]["name"],"PC_INC")
 if __name__=="__main__":unittest.main()
