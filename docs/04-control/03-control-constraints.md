@@ -560,7 +560,174 @@ Constraint:
 
 ---
 
-## 15. Completeness
+---
+
+## 15. Direct-Control Constraints
+
+Direct control is defined by the [Direct Control Model](./07-direct-control-model.md).
+
+### 15.1 Composition
+
+For each selected control case, the control word is composed from:
+
+```text
+control-output defaults
++ selected micro-operation assignments
++ direct-control assignments
++ direct-control value bindings
++ direct-control output-drive states
+```
+
+Constraints:
+
+- Each component must contribute only the fields it owns.
+- Composition must produce one unambiguous result for every required control-output field.
+- A micro-operation assignment must not be duplicated as a direct-control assignment.
+- When a micro-operation selects a control-provided value path without supplying the required value, direct control must supply the explicitly documented value binding.
+- No control-word field may receive conflicting assignments from separate composition sources.
+- A default value must not override an assignment, binding, or output-drive state required by the selected control case.
+
+---
+
+### 15.2 Source Requirements
+
+Every direct-control assignment, value binding, transformation, and output-drive state must be explicitly supported by authoritative documentation.
+
+Direct control must not introduce:
+
+- undocumented input conditions
+- undocumented output values
+- undocumented value bindings
+- undocumented transformations
+- undocumented output-drive states
+- behavior inferred only from a default value
+- behavior inferred only from a signal name
+- behavior inferred only from a micro-operation name
+- behavior inferred only from an expected implementation
+
+Constraint:
+
+- An absent definition must remain unresolved until the authoritative documentation defines it.
+
+---
+
+### 15.3 Representation Separation
+
+The following representations are distinct:
+
+```text
+control-input predicate
+encoded control-output value
+derived combinational value
+external input value
+physical output-drive state
+observed electrical level
+```
+
+Constraints:
+
+- A control-input predicate must not be represented as an output assignment or value binding.
+- A derived combinational value must not be represented as an encoded direct-control value.
+- An external input value must not be represented as a CPU-generated value.
+- A physical output-drive state must not be represented as an encoded logical value unless the applicable control-output definition explicitly defines that encoding.
+- An observed electrical level must not be substituted for the output-drive state that produced it.
+- Signal assertion state must remain distinct from electrical drive state.
+- `HIGH_Z` must remain distinct from `DRIVE_HIGH` and `DRIVE_LOW`.
+
+---
+
+### 15.4 Output-Drive Requirements
+
+Where CPU output ownership applies, the selected control case must define exactly one CPU output-drive state:
+
+```text
+DRIVE_HIGH
+DRIVE_LOW
+HIGH_Z
+```
+
+Constraints:
+
+- The output-drive state must be interpreted using the polarity defined by the applicable signal definition.
+- When the CPU owns an interface, each applicable CPU output must provide the explicitly documented driven value or drive state.
+- When the CPU does not own a shared interface, each applicable CPU driver must be `HIGH_Z`.
+- A pull resistor or another active driver determining the observed signal level does not change the CPU output-drive state.
+- `HIGH_Z` must not be represented as active deassertion.
+- CPU ownership and external ownership of a single-owner interface must not overlap.
+
+Interface ownership must not be inferred solely from:
+
+- a major-state value
+- an inactive strobe
+- a default control-word value
+- the presence or absence of an external request
+- the behavior of an external participant
+
+Ownership and release requirements are defined by the applicable interface and ownership documentation.
+
+---
+
+### 15.5 Sequencing Requirements
+
+`MS_NEXT`, `RUN_NEXT`, and `HLT_REQ_NEXT` are direct-control outputs.
+
+Constraints:
+
+- They must be produced only by `CONTROL_WORD`.
+- They must contain explicit next-state values wherever required by their control-output definitions.
+- State preservation must be represented by an explicit next-state value when no separate hold encoding exists.
+- Current state and next-state value must remain separate representations.
+- They must commit only at their documented timing boundaries.
+- They must not be assigned or modified by micro-operations.
+- They must not be modified by post-control-store logic.
+
+---
+
+### 15.6 Value-Binding Requirements
+
+A direct-control value binding is permitted only when the authoritative documentation explicitly defines:
+
+- the source control input
+- the destination control-output field
+- the applicable control case or micro-operation
+- compatible value width
+- compatible representation
+- the point at which the destination value is consumed
+
+Constraints:
+
+- A binding represents value propagation, not condition evaluation.
+- A binding must not imply arithmetical, logical, polarity, width, or encoding conversion.
+- A transformation is permitted only when that exact transformation is explicitly documented.
+- Assignment of a selector by a micro-operation does not supply a conditionally required control value unless the mapping explicitly assigns that value.
+- A fixed value already supplied completely by a micro-operation mapping must not be duplicated as a direct-control binding.
+
+---
+
+### 15.7 Memory-Context Requirements
+
+A memory operation must independently provide every required:
+
+- memory-cycle action
+- address-source selection
+- memory-field-source selection
+- write-data-source selection
+- interface-ownership result
+- output-drive state
+
+Constraints:
+
+- Selection of a memory micro-operation must not implicitly determine an address source, field source, data source, ownership result, or output-drive state unless the authoritative documentation explicitly defines that relationship.
+- A memory-cycle strobe must not be treated as selecting an address, field, data source, or interface owner.
+- During external DMA ownership, CPU control must not drive the interfaces assigned to the granted DMA controller or memory.
+- CPU and DMA ownership must not overlap.
+- Release of a CPU-driven interface must be represented by the required `HIGH_Z` output-drive state rather than by an arbitrary binary value.
+
+The applicable ownership requirements are defined by the [DMA and Console Access](../06-memory/06-dma-and-console-access.md), [DMA Interface](../07-io/05-dma-interface.md), and [DMA Arbitration](../07-io/06-dma-arbitration.md) documents.
+
+---
+
+## 16. Completeness
 
 Constraint:
 - Every reachable input combination must map to a defined CONTROL_WORD.
@@ -570,7 +737,7 @@ Constraint:
 
 ---
 
-## 16. Non-Aliasing
+## 17. Non-Aliasing
 
 Constraint:
 - Distinct control behaviors must not map to the same CTRL_ADDR unless explicitly intended.
@@ -580,7 +747,7 @@ Constraint:
 
 ---
 
-## 17. No Implicit Behavior
+## 18. No Implicit Behavior
 
 Constraint:
 - All control behavior must be explicitly encoded.
@@ -593,7 +760,7 @@ Constraint:
 
 ---
 
-## 18. Invariant Summary
+## 19. Invariant Summary
 
 Constraint:
 - The control system must operate exclusively as:

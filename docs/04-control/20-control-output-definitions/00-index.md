@@ -81,6 +81,7 @@ Defined in:
 - [CIFP_VAL](./01-microarchitectural-control-signals.md#cifp_val)  
 - [DB_INPUT](./01-microarchitectural-control-signals.md#db_input)  
 - [DF_VAL](./01-microarchitectural-control-signals.md#df_val)
+- [DIF_VAL](./01-microarchitectural-control-signals.md#dif_val)
 - [GTF_FLAGS](./01-microarchitectural-control-signals.md#gtf_flags)  
 - [IE_VAL](./01-microarchitectural-control-signals.md#ie_val)  
 - [IF_DF_COMBINED](./01-microarchitectural-control-signals.md#if_df_combined)  

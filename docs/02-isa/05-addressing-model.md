@@ -133,7 +133,7 @@ Operation phase              | Field used
 Instruction fetch           | IF        
 Current page resolution     | IF        
 Direct access (I = 0)       | IF        
-Indirect pointer fetch      | DF        
+Indirect pointer fetch      | IF        
 Final indirect operand      | DF        
 
 ---

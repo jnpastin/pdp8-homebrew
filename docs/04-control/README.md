@@ -15,6 +15,7 @@ Includes:
 - Control input definitions (flags, IR-derived fields, derived flags, external inputs)
 - Control output definitions (microarchitectural, architectural, sequencing signals)
 - Datapath mapping from control word to system behavior
+- Direct-control definitions for sequencing, internal value bindings, interface qualification, and ownership
 
 Excludes:
 - Instruction semantics ([02-isa/README.md](../02-isa/README.md))
@@ -38,6 +39,7 @@ Excludes:
 - [04-control-word.md](./04-control-word.md)
 - [05-datapath-mapping.md](./05-datapath-mapping.md)
 - [06-invalid-conditions.md](./06-invalid-conditions.md)
+- [07-direct-control-model.md](./07-direct-control-model.md)
 - Control input definitions:
   - [00-index.md](./10-control-input-definitions/00-index.md)
   - [01-flags.md](./10-control-input-definitions/01-flags.md)
@@ -49,3 +51,7 @@ Excludes:
   - [01-microarchitectural-control-signals.md](./20-control-output-definitions/01-microarchitectural-control-signals.md)
   - [02-architectural-control-signals.md](./20-control-output-definitions/02-architectural-control-signals.md)
   - [03-sequencing-control-signals.md](./20-control-output-definitions/03-sequencing-control-signals.md)
+- Direct-control definitions:
+  - [00-index.md](./30-direct-control-definitions/00-index.md)
+  - [01-sequencing-and-internal-control.md](./30-direct-control-definitions/01-sequencing-and-internal-control.md)
+  - [02-interface-and-ownership-control.md](./30-direct-control-definitions/02-interface-and-ownership-control.md)

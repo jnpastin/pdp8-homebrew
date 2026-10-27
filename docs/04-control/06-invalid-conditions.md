@@ -160,7 +160,75 @@ The following are invalid:
 
 ---
 
-## 9. Validation Boundary
+## 9. Direct-Control Violations
+
+### 9.1 Composition Violations
+
+The following are invalid:
+
+- a required direct-control result omitted from the selected control case
+- a direct-control assignment, binding, transformation, or output-drive state lacking an authoritative documentation source
+- a micro-operation assignment duplicated as a direct-control assignment
+- a control-provided value omitted because its source selector was assigned by a micro-operation
+- a direct-control result inferred only from a field default, signal name, micro-operation name, or expected implementation behavior
+- more than one composition source assigning conflicting values to the same control-output field
+- a required control-output field remaining unresolved after composition
+- a default value overriding a required assignment, binding, or output-drive state
+- post-control-store logic modifying, replacing, suppressing, or completing a direct-control result
+- direct-control behavior encoded in a tool or generated artifact but absent from the authoritative documentation
+
+---
+
+### 9.2 Representation Violations
+
+The following are invalid:
+
+- a control-input predicate represented as an output assignment or value binding
+- a derived combinational value represented as an encoded direct-control value
+- an external input value represented as a CPU-generated value
+- an output-drive state represented as an observed electrical level
+- signal assertion state substituted for electrical drive state
+- current state and next-state value treated as the same representation
+- state preservation inferred without the required explicit next-state value
+- an undocumented transformation applied between a control input and control-output field
+- incompatible widths or representations used in a direct-control value binding
+
+---
+
+### 9.3 Output-Drive Violations
+
+The following are invalid:
+
+- `HIGH_Z` represented as logic high or logic low
+- `DRIVE_HIGH` or `DRIVE_LOW` represented as equivalent to `HIGH_Z`
+- a pulled-up observed value represented as an actively driven high value
+- an actively deasserted output represented as a released output
+- a CPU driver remaining enabled while the CPU does not own the interface
+- a CPU driver entering `HIGH_Z` while CPU ownership requires a driven value
+- more than one participant actively driving a single-owner interface
+- ownership transferred without every relinquishing driver entering `HIGH_Z`
+- a selected control case failing to define a required output-drive state
+- interface ownership inferred solely from a major state, inactive strobe, external request, or default control value
+
+---
+
+### 9.4 Memory-Context Violations
+
+The following are invalid:
+
+- a memory operation lacking a required address-source selection
+- a memory operation lacking a required memory-field-source selection
+- a memory write lacking a uniquely defined data producer
+- a memory read with an unauthorized participant driving the read-data path
+- a memory source or ownership result inferred from a micro-operation without an explicitly documented relationship
+- CPU and DMA ownership overlapping
+- CPU control driving `MFB`, `AB`, `MDB`, `/RD`, or `/WR` during external DMA ownership
+- a DMA controller driving a CPU-owned interface without valid ownership
+- a CPU output assigned a binary inactive value where the ownership documentation requires `HIGH_Z`
+
+---
+
+## 10. Validation Boundary
 
 These conditions are architectural design errors.
 
@@ -168,7 +236,7 @@ The architecture does not require centralized runtime validation of control comp
 
 ---
 
-## 10. Related Documents
+## 11. Related Documents
 
 - [Control Model](./01-control-model.md)
 - [Control Addressing](./02-control-addressing.md)
@@ -181,3 +249,4 @@ The architecture does not require centralized runtime validation of control comp
 - [Microarchitectural Control Signals](./20-control-output-definitions/01-microarchitectural-control-signals.md)
 - [Architectural Control Signals](./20-control-output-definitions/02-architectural-control-signals.md)
 - [Sequencing Control Signals](./20-control-output-definitions/03-sequencing-control-signals.md)
+- [Direct Control Model](./07-direct-control-model.md)

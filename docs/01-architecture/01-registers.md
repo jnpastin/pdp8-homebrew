@@ -103,7 +103,7 @@ Role: Upper field for operand memory addressing
 Visibility: Global
 
 Invariants:
-- Supplies high-order bits for all data memory accesses
+- Supplies the field for the final operand access of indirect MRI operations
 - May differ from IF
 
 Constraints:
@@ -281,6 +281,7 @@ Visibility: Global
 
 Invariants:
 - Supplies high-order bits of instruction fetch address
+- Supplies high-order bits for direct MRI access and indirect pointer access
 - Constant for the duration of an instruction cycle
 
 Constraints:
