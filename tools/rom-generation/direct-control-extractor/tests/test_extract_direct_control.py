@@ -266,6 +266,12 @@ Sources:
 
 
 class BuildTests(unittest.TestCase):
+    def test_default_output_is_extracted_artifact(self) -> None:
+        self.assertEqual(
+            extractor.DEFAULT_JSON_OUTPUT.name,
+            "direct-control-definitions.json",
+        )
+
     def test_missing_source_fails(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
