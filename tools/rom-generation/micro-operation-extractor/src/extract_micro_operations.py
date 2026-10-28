@@ -10,6 +10,8 @@ DEFAULT_REPORT_OUTPUT=Path("build/simulation_outputs/rom-generation/micro-operat
 DEFINITION_TITLE="5. μop Definitions (Alphabetical)"
 ATTRS={"category","description","target","expression","sources"}
 REQUIRED={"category","description","target","sources"}
+DIAGNOSTIC_SEVERITY_ORDER={"INFO":0,"WARNING":1,"ERROR":2,"FATAL":3}
+FAILURE_SEVERITIES={"ERROR","FATAL"}
 @dataclass(frozen=True)
 class Diagnostic:
  severity:str; code:str; message:str; source_path:str; line:int|None=None; micro_operation:str|None=None
@@ -119,6 +121,23 @@ def run(arguments=None):
  try:
   sp=resolve_from_repo(root,SOURCE_PATH);result,diags=build_result(read_source(sp),sp.relative_to(root).as_posix());count=len(result["micro_operations"]);write_json(result,resolve_from_repo(root,a.json_output));written=True
  except ExtractionFailure as e:diags=[Diagnostic("FATAL","EXTRACTION_FAILURE",str(e),SOURCE_PATH.as_posix())]
- write_report(diags,resolve_from_repo(root,a.report_output),count,written);return 1 if any(d.severity=="FATAL" for d in diags) else 0
+ diags=sorted(diags,key=lambda d:(DIAGNOSTIC_SEVERITY_ORDER.get(d.severity,99),d.code,d.source_path,d.line if d.line is not None else -1,d.micro_operation or "",d.message))
+ report_output=resolve_from_repo(root,a.report_output);json_output=resolve_from_repo(root,a.json_output)
+ write_report(diags,report_output,count,written)
+ failures=[d for d in diags if d.severity in FAILURE_SEVERITIES];exit_code=1 if failures else 0
+ print("Micro-operation extraction")
+ print(f"Status: {'FAILED' if exit_code else 'SUCCEEDED'}")
+ print(f"Micro-operations: {count}")
+ print(f"JSON written: {'yes' if written else 'no'}")
+ print(f"Diagnostics: {len(diags)}")
+ print(f"JSON output: {json_output}")
+ print(f"Report output: {report_output}")
+ if exit_code:
+  print();print("Failure diagnostics");print("-------------------")
+  for d in failures:
+   name=f" [{d.micro_operation}]" if d.micro_operation else "";location=d.source_path or "<unknown source>"
+   if d.line is not None:location=f"{location}:{d.line}"
+   print(f"{d.severity} {d.code}{name}");print(f"  Source: {location}");print(f"  {d.message}")
+ return exit_code
 def main():raise SystemExit(run())
 if __name__=="__main__":main()

@@ -36,6 +36,14 @@ CONTROL_DESIGN_VERSION = "v1"
 EXPECTED_EXTRACTION_STAGE = "category-validation"
 EXPECTED_EXTRACTION_STATUS = "category-validated"
 
+DIAGNOSTIC_SEVERITY_ORDER = {
+    "INFO": 0,
+    "WARNING": 1,
+    "ERROR": 2,
+    "FATAL": 3,
+}
+FAILURE_SEVERITIES = {"ERROR", "FATAL"}
+
 
 @dataclass(frozen=True)
 class ToolPaths:
@@ -1191,6 +1199,18 @@ def run(arguments: Sequence[str] | None = None) -> int:
             )
         )
 
+    diagnostics = sorted(
+        diagnostics,
+        key=lambda item: (
+            DIAGNOSTIC_SEVERITY_ORDER.get(item.severity, 99),
+            item.code,
+            item.source_path or "",
+            item.source_line if item.source_line is not None else -1,
+            item.field_name or "",
+            item.message,
+        ),
+    )
+
     try:
         write_report(
             diagnostics,
@@ -1205,7 +1225,35 @@ def run(arguments: Sequence[str] | None = None) -> int:
         )
         return 1
 
-    return 1 if has_errors(diagnostics) else 0
+    failure_diagnostics = [
+        item
+        for item in diagnostics
+        if item.severity in FAILURE_SEVERITIES
+    ]
+    exit_code = 1 if failure_diagnostics else 0
+
+    print("Control-word schema generation")
+    print(f"Status: {'FAILED' if exit_code else 'SUCCEEDED'}")
+    print(f"Control outputs: {field_count}")
+    print(f"Candidate written: {'yes' if candidate_written else 'no'}")
+    print(f"Diagnostics: {len(diagnostics)}")
+    print(f"Candidate output: {paths.candidate_output_path}")
+    print(f"Report output: {paths.report_output_path}")
+
+    if exit_code:
+        print()
+        print("Failure diagnostics")
+        print("-------------------")
+        for item in failure_diagnostics:
+            field = f" [{item.field_name}]" if item.field_name else ""
+            location = item.source_path or "<unknown source>"
+            if item.source_line is not None:
+                location = f"{location}:{item.source_line}"
+            print(f"{item.severity} {item.code}{field}")
+            print(f"  Source: {location}")
+            print(f"  {item.message}")
+
+    return exit_code
 
 
 def main() -> None:

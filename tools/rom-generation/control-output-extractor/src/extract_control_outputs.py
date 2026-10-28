@@ -9,6 +9,13 @@ from typing import Sequence
 import json
 import re
 
+DIAGNOSTIC_SEVERITY_ORDER = {
+    "INFO": 0,
+    "WARNING": 1,
+    "ERROR": 2,
+    "FATAL": 3,
+}
+FAILURE_SEVERITIES = {"ERROR", "FATAL"}
 
 DEFAULT_JSON_OUTPUT = Path(
     "build/simulation_outputs/rom-generation/"
@@ -1590,6 +1597,18 @@ def main(arguments: Sequence[str] | None = None) -> int:
             *category_diagnostics,
         ]
 
+        diagnostics = sorted(
+            diagnostics,
+            key=lambda item: (
+                DIAGNOSTIC_SEVERITY_ORDER.get(item.severity, 99),
+                item.code,
+                item.source_path or "",
+                item.line if item.line is not None else -1,
+                item.signal_name or "",
+                item.message,
+            ),
+        )
+
         result = build_index_result(
             index_entries,
             definitions,
@@ -1615,26 +1634,36 @@ def main(arguments: Sequence[str] | None = None) -> int:
         print(f"ERROR: {error}")
         return 1
 
-    print(f"Repository root: {paths.repo_root}")
-    print(f"Source documents loaded: {len(documents)}")
-    print(f"Indexed signals found: {len(index_entries)}")
-    print(f"Definition blocks found: {len(definition_blocks)}")
-    print(f"Definitions matched: {len(definitions)}")
-    print(f"Bit widths normalized: {len(bit_widths)}")
-    print(f"Definitions with attributes: {len(attributes)}")
-    print(
-        "Encoding entries extracted: "
-        f"{sum(len(values) for values in encodings.values())}"
-    )
-    print(
-        "Constraint entries extracted: "
-        f"{sum(len(values) for values in constraints.values())}"
-    )
-    print(f"Diagnostics reported: {len(diagnostics)}")
-    print(f"JSON output written: {paths.json_output}")
-    print(f"Report output written: {paths.report_output}")
+    failure_diagnostics = [
+        item
+        for item in diagnostics
+        if item.severity in FAILURE_SEVERITIES
+    ]
+    exit_code = 1 if failure_diagnostics else 0
 
-    return 0
+    print("Control-output extraction")
+    print(f"Status: {'FAILED' if exit_code else 'SUCCEEDED'}")
+    print(f"Control outputs: {len(index_entries)}")
+    print(f"Definitions matched: {len(definitions)}")
+    print(f"Diagnostics: {len(diagnostics)}")
+    print(f"JSON output: {paths.json_output}")
+    print(f"Report output: {paths.report_output}")
+
+    if exit_code:
+        print()
+        print("Failure diagnostics")
+        print("-------------------")
+
+        for item in failure_diagnostics:
+            location = item.source_path or "<unknown source>"
+            if item.line is not None:
+                location = f"{location}:{item.line}"
+            signal = f" [{item.signal_name}]" if item.signal_name else ""
+            print(f"{item.severity} {item.code}{signal}")
+            print(f"  Source: {location}")
+            print(f"  {item.message}")
+
+    return exit_code
 
 
 

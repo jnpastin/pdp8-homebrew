@@ -9,6 +9,14 @@ from typing import Sequence
 import re
 import json
 
+DIAGNOSTIC_SEVERITY_ORDER = {
+    "INFO": 0,
+    "WARNING": 1,
+    "ERROR": 2,
+    "FATAL": 3,
+}
+FAILURE_SEVERITIES = {"ERROR", "FATAL"}
+
 @dataclass(frozen=True)
 class IndexEntry:
     """One control input listed in the authoritative index."""
@@ -2670,12 +2678,21 @@ def main(
     diagnostics += dependency_validation_diagnostics
     diagnostics += logic_extraction_diagnostics
     diagnostics += logic_validation_diagnostics
-    diagnostics += logic_extraction_diagnostics
-    diagnostics += logic_validation_diagnostics
     diagnostics += constraint_diagnostics
     diagnostics += consumer_diagnostics
     diagnostics += final_structure_diagnostics
-    
+    diagnostics = sorted(
+        diagnostics,
+        key=lambda item: (
+            DIAGNOSTIC_SEVERITY_ORDER.get(item.severity, 99),
+            item.code,
+            item.source_path or "",
+            item.line if item.line is not None else -1,
+            item.signal_name or "",
+            item.message,
+        ),
+    )
+
     result = build_json_result(
         entries,
         definitions,
@@ -2696,9 +2713,7 @@ def main(
         paths.json_output,
     )
 
-    report_output = paths.json_output.with_name(
-        "extraction-report.txt"
-    )
+    report_output = paths.report_output
 
     report = build_extraction_report(
         entries,
@@ -2720,172 +2735,36 @@ def main(
         report_output,
     )
 
-    print(f"Repository root: {paths.repo_root}")
-    print(f"Source documents loaded: {len(documents)}")
-    print(f"Indexed control inputs: {len(entries)}")
-    print()
+    failure_diagnostics = [
+        item
+        for item in diagnostics
+        if item.severity in FAILURE_SEVERITIES
+    ]
+    exit_code = 1 if failure_diagnostics else 0
 
-    for document in documents[1:]:
-        document_block_count = sum(
-            block.source_path == document.relative_path
-            for block in definition_blocks
-        )
-
-        print(
-            f"{document.relative_path}: "
-            f"{document_block_count} definition blocks"
-        )
-
-    print()
-    print(f"Definition blocks found: {len(definition_blocks)}")
+    print("Control-input extraction")
+    print(f"Status: {'FAILED' if exit_code else 'SUCCEEDED'}")
+    print(f"Control inputs: {len(entries)}")
     print(f"Definitions matched: {len(definitions)}")
-    definitions_with_attributes = sum(
-        bool(values)
-        for values in attributes.values()
-    )
-
-    print(
-        "Definitions with extracted attributes: "
-        f"{definitions_with_attributes}"
-    )
-
-    definitions_without_attributes = sorted(
-        signal_name
-        for signal_name, values in attributes.items()
-        if not values
-    )
-
-    if definitions_without_attributes:
-        print()
-        print("Definitions without extracted scalar attributes:")
-
-        for signal_name in definitions_without_attributes:
-            print(f"  {signal_name}")
-
-    print(f"Bit widths normalized: {len(bit_widths)}")
-    print(f"Polarities normalized: {len(polarities)}")
-    
-    definitions_with_enumerated_values = sum(
-        bool(values)
-        for values in enumerated_values.values()
-    )
-
-    definitions_with_ranges = sum(
-        bool(ranges)
-        for ranges in value_ranges.values()
-    )
-
-    enumerated_value_count = sum(
-        len(values)
-        for values in enumerated_values.values()
-    )
-
-    value_range_count = sum(
-        len(ranges)
-        for ranges in value_ranges.values()
-    )
-
-    print(
-        "Definitions with enumerated values: "
-        f"{definitions_with_enumerated_values}"
-    )
-    print(
-        "Definitions with value ranges: "
-        f"{definitions_with_ranges}"
-    )
-    print(f"Enumerated values extracted: {enumerated_value_count}")
-    print(f"Value ranges extracted: {value_range_count}")
-
     print(f"Diagnostics: {len(diagnostics)}")
+    print(f"JSON output: {paths.json_output}")
+    print(f"Report output: {report_output}")
 
-    definitions_with_dependencies = sum(
-        bool(values)
-        for values in dependencies.values()
-    )
-
-    dependency_count = sum(
-        len(values)
-        for values in dependencies.values()
-    )
-
-    print(
-        "Definitions with explicit dependencies: "
-        f"{definitions_with_dependencies}"
-    )
-    print(f"Dependencies extracted: {dependency_count}")
-
-    print(
-        "Definitions with logic sections: "
-        f"{definitions_with_logic}"
-    )
-    print(f"Logic sections extracted: {logic_section_count}")
-
-
-    if diagnostics:
+    if exit_code:
         print()
-        print("Diagnostics")
+        print("Failure diagnostics")
+        print("-------------------")
 
-        for diagnostic in diagnostics:
-            location = diagnostic.source_path or "<unknown source>"
-
-            if diagnostic.line is not None:
-                location = f"{location}:{diagnostic.line}"
-
-            signal_suffix = ""
-
-            if diagnostic.signal_name:
-                signal_suffix = f" [{diagnostic.signal_name}]"
-
-            print(
-                f"{diagnostic.severity} "
-                f"{diagnostic.code}{signal_suffix}"
-            )
+        for item in failure_diagnostics:
+            location = item.source_path or "<unknown source>"
+            if item.line is not None:
+                location = f"{location}:{item.line}"
+            signal = f" [{item.signal_name}]" if item.signal_name else ""
+            print(f"{item.severity} {item.code}{signal}")
             print(f"  Source: {location}")
-            print(f"  {diagnostic.message}")
+            print(f"  {item.message}")
 
-    definitions_with_constraints = sum(
-        bool(values)
-        for values in constraints.values()
-    )
-
-    constraint_count = sum(
-        len(values)
-        for values in constraints.values()
-    )
-
-    print(
-        "Definitions with constraints: "
-        f"{definitions_with_constraints}"
-    )
-    print(f"Constraints extracted: {constraint_count}")
-    
-    definitions_with_consumers = sum(
-        bool(values)
-        for values in consumers.values()
-    )
-
-    consumer_count = sum(
-        len(values)
-        for values in consumers.values()
-    )
-
-    linked_consumer_count = sum(
-        consumer.target is not None
-        for values in consumers.values()
-        for consumer in values
-    )
-
-    print(
-        "Definitions with consumers: "
-        f"{definitions_with_consumers}"
-    )
-    print(f"Consumers extracted: {consumer_count}")
-    print(f"Linked consumers extracted: {linked_consumer_count}")
-
-    print(f"JSON output written: {paths.json_output}")
-    print(f"Report output written: {report_output}")
-
-    return 0
+    return exit_code
 
 
 if __name__ == "__main__":

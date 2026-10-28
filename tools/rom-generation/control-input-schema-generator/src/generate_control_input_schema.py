@@ -9,6 +9,8 @@ DEFAULT_MAINTAINED = Path('rom/microcode/v1/control-input-schema.json')
 DEFAULT_CANDIDATE = Path('build/simulation_outputs/rom-generation/control-input-schema-generator/control-input-schema.candidate.json')
 DEFAULT_REPORT = Path('build/simulation_outputs/rom-generation/control-input-schema-generator/generation-report.txt')
 USES = {'predicate', 'value'}
+DIAGNOSTIC_SEVERITY_ORDER = {'INFO': 0, 'WARNING': 1, 'ERROR': 2, 'FATAL': 3}
+FAILURE_SEVERITIES = {'ERROR', 'FATAL'}
 
 @dataclass(frozen=True)
 class Diagnostic:
@@ -197,8 +199,50 @@ def run(arguments=None):
             written = True
     except GenerationFailure as e:
         ds = [D('FATAL', 'GENERATION_FAILURE', str(e))]
-    write_report(ds, resolve_from_repo(root, a.report_output), count, written)
-    return 1 if any((d.severity in {'ERROR', 'FATAL'} for d in ds)) else 0
+
+    ds = sorted(
+        ds,
+        key=lambda item: (
+            DIAGNOSTIC_SEVERITY_ORDER.get(item.severity, 99),
+            item.code,
+            item.source_path or '',
+            item.source_line if item.source_line is not None else -1,
+            item.input_name or '',
+            item.referenced_input or '',
+            item.message,
+        ),
+    )
+    report_output = resolve_from_repo(root, a.report_output)
+    candidate_output = resolve_from_repo(root, a.candidate_output)
+    write_report(ds, report_output, count, written)
+
+    failure_diagnostics = [
+        item for item in ds if item.severity in FAILURE_SEVERITIES
+    ]
+    exit_code = 1 if failure_diagnostics else 0
+
+    print('Control-input schema generation')
+    print(f"Status: {'FAILED' if exit_code else 'SUCCEEDED'}")
+    print(f'Control inputs: {count}')
+    print(f"Candidate written: {'yes' if written else 'no'}")
+    print(f'Diagnostics: {len(ds)}')
+    print(f'Candidate output: {candidate_output}')
+    print(f'Report output: {report_output}')
+
+    if exit_code:
+        print()
+        print('Failure diagnostics')
+        print('-------------------')
+        for item in failure_diagnostics:
+            name = f' [{item.input_name}]' if item.input_name else ''
+            location = item.source_path or '<unknown source>'
+            if item.source_line is not None:
+                location = f'{location}:{item.source_line}'
+            print(f'{item.severity} {item.code}{name}')
+            print(f'  Source: {location}')
+            print(f'  {item.message}')
+
+    return exit_code
 
 def main():
     raise SystemExit(run())

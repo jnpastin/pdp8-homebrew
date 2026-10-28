@@ -12,6 +12,8 @@ DEFAULT_CANDIDATE_OUTPUT=Path("build/simulation_outputs/rom-generation/micro-ope
 DEFAULT_REPORT_OUTPUT=Path("build/simulation_outputs/rom-generation/micro-operation-mapping-generator/generation-report.txt")
 MAPPING_SCHEMA_VERSION=1
 CONTROL_DESIGN_VERSION="v1"
+DIAGNOSTIC_SEVERITY_ORDER={"INFO":0,"WARNING":1,"ERROR":2,"FATAL":3}
+FAILURE_SEVERITIES={"ERROR","FATAL"}
 
 @dataclass(frozen=True)
 class Diagnostic:
@@ -174,8 +176,24 @@ def run(arguments=None):
             candidate,more=build_candidate(micro,schema,maintained);diags.extend(more)
             if candidate is not None and not any(x.severity=="ERROR" for x in diags):write_json(candidate,resolve_from_repo(root,a.candidate_output));written=True
     except GenerationFailure as e:diags.append(diag("FATAL","GENERATION_FAILURE",str(e)))
-    try:write_report(diags,resolve_from_repo(root,a.report_output),count,written)
+    diags=sorted(diags,key=lambda x:(DIAGNOSTIC_SEVERITY_ORDER.get(x.severity,99),x.code,x.source_path or "",x.source_line if x.source_line is not None else -1,x.micro_operation or "",x.field_name or "",x.message))
+    report_output=resolve_from_repo(root,a.report_output);candidate_output=resolve_from_repo(root,a.candidate_output)
+    try:write_report(diags,report_output,count,written)
     except OSError as e:print(e,file=sys.stderr);return 1
-    return 1 if any(x.severity in {"ERROR","FATAL"} for x in diags) else 0
+    failures=[x for x in diags if x.severity in FAILURE_SEVERITIES];exit_code=1 if failures else 0
+    print("Micro-operation mapping generation")
+    print(f"Status: {'FAILED' if exit_code else 'SUCCEEDED'}")
+    print(f"Micro-operations: {count}")
+    print(f"Candidate written: {'yes' if written else 'no'}")
+    print(f"Diagnostics: {len(diags)}")
+    print(f"Candidate output: {candidate_output}")
+    print(f"Report output: {report_output}")
+    if exit_code:
+        print();print("Failure diagnostics");print("-------------------")
+        for x in failures:
+            operation=f" [{x.micro_operation}]" if x.micro_operation else "";field=f" [{x.field_name}]" if x.field_name else "";location=x.source_path or "<unknown source>"
+            if x.source_line is not None:location=f"{location}:{x.source_line}"
+            print(f"{x.severity} {x.code}{operation}{field}");print(f"  Source: {location}");print(f"  {x.message}")
+    return exit_code
 def main():raise SystemExit(run())
 if __name__=="__main__":main()
