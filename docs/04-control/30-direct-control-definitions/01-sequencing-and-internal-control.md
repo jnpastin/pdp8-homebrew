@@ -496,7 +496,7 @@ RUN_NEXT = 1
 MS_NEXT  = FETCH
 ```
 
-Result:
+Commit:
 
 ```text
 RUN <- 1 at TP
@@ -530,7 +530,7 @@ Assignment:
 RUN_NEXT = 1
 ```
 
-Result:
+Commit:
 
 ```text
 RUN <- 1 at TP
@@ -592,7 +592,7 @@ RUN_NEXT     = 0
 HLT_REQ_NEXT = 0
 ```
 
-Result:
+Commit:
 
 ```text
 RUN     <- 0 at TP
@@ -630,7 +630,7 @@ Assignment:
 RUN_NEXT = 0
 ```
 
-Result:
+Commit:
 
 ```text
 RUN <- 0 at TP
@@ -682,7 +682,7 @@ Assignment:
 RUN_NEXT = 0
 ```
 
-Result:
+Commit:
 
 ```text
 RUN <- 0 at TP4
@@ -792,7 +792,7 @@ Assignment:
 HLT_REQ_NEXT = 0
 ```
 
-Result:
+Commit:
 
 ```text
 HLT_REQ <- 0 at TP
@@ -822,28 +822,19 @@ Assignment:
 HLT_REQ_NEXT = 1
 ```
 
-Result:
+Commit:
 
 ```text
 HLT_REQ <- 1 at TP
 ```
 
-Once committed, the pending halt request remains set until the instruction-completion boundary.
+Constraints: 
 
-If STOP is captured before EXECUTE TP4:
-
-```text
-HLT_REQ = 1 during the EXECUTE TP4 control decision
-```
-
-The request is therefore consumed at that instruction-completion boundary.
-
-If STOP is not captured early enough to become committed state before the EXECUTE TP4 decision:
-
-- it does not affect that TP4 decision
-- the current instruction completes normally
-- the request remains pending after it is subsequently captured
-- it is consumed at the next instruction-completion boundary
+- The STOP request affects an instruction-completion decision only after the request has committed to `HLT_REQ`.
+- A request committed before the applicable instruction-completion TP is available to that decision.
+- A request not committed before the applicable instruction-completion TP does not affect that decision.
+- A request committed after that decision remains pending until the next instruction-completion boundary.
+- Consumption of the committed request is defined separately by [Pending-Halt Consumption](#346-pending-halt-consumption).
 
 Sources:
 
@@ -874,29 +865,12 @@ Commit:
 HLT_REQ <- 1 at TP3
 ```
 
-The committed request is available to the EXECUTE TP4 control decision.
+Constraints:
 
-At EXECUTE TP4:
-
-```text
-HLT_REQ = 1
-```
-
-The request is consumed at that instruction-completion boundary:
-
-```text
-RUN_NEXT     = 0
-HLT_REQ_NEXT = 0
-```
-
-Result at TP4:
-
-```text
-RUN     <- 0
-HLT_REQ <- 0
-```
-
-This sequence applies regardless of whether normal running, Single Instruction mode, or Single Step mode is active.
+- The request committed at TP3 is available as `HLT_REQ = 1` to the subsequent EXECUTE TP4 control decision.
+- This definition covers only capture of the HLT request.
+- The subsequent run-state transition and request consumption are defined separately by [Pending-Halt Consumption](#346-pending-halt-consumption).
+- Request capture is independent of whether normal running, Single Instruction mode, or Single Step mode is active.
 
 Sources:
 
@@ -921,7 +895,7 @@ Assignment:
 HLT_REQ_NEXT = 1
 ```
 
-Result:
+Commit:
 
 ```text
 HLT_REQ <- 1 at TP
@@ -957,7 +931,7 @@ RUN_NEXT     = 0
 HLT_REQ_NEXT = 0
 ```
 
-Result:
+Commit:
 
 ```text
 RUN     <- 0 at TP
@@ -981,61 +955,27 @@ Sources:
 
 #### 3.4.7 Relationship to Single Instruction
 
-Single Instruction mode directly determines `RUN_NEXT` at instruction completion.
+Single Instruction mode determines `RUN_NEXT` at the instruction-completion boundary as defined by [Single Instruction Halt](#337-single-instruction-halt).
 
-It does not create a pending halt request.
+If `HLT_REQ = 1` at that boundary, the pending request is consumed according to [Pending-Halt Consumption](#346-pending-halt-consumption).
 
-If no halt request is pending:
+Single Instruction mode does not create a pending halt request and does not alter the pending-halt consumption rules.
 
-```text
-RUN_NEXT     = 0
-HLT_REQ_NEXT = 0
-```
-
-If a halt request is pending:
-
-```text
-RUN_NEXT     = 0
-HLT_REQ_NEXT = 0
-```
-
-In the second case, the pending request is consumed because the Single Instruction halt occurs at an instruction-completion boundary.
-
-Source:
+Sources:
 
 - [Console Execution](../../03-microarchitecture/09-console-execution.md#12-single-instruction-mode)
 
----
-
 #### 3.4.8 Relationship to Single Step
 
-Single Step mode directly determines:
+Single Step mode determines `RUN_NEXT` at completion of the current major state as defined by [Single Step Halt](#338-single-step-halt).
 
-```text
-RUN_NEXT = 0
-```
+If the completed major state is not the final major state of the instruction, an existing pending halt request is preserved according to [Pending-Halt Preservation](#345-pending-halt-preservation).
 
-It does not create a pending halt request.
+If the completed major state is the final major state of the instruction, an existing pending halt request is consumed according to [Pending-Halt Consumption](#346-pending-halt-consumption).
 
-If Single Step completes a major state that is not the final major state of the current instruction and `HLT_REQ = 1`:
+Single Step mode does not create a pending halt request and does not alter the pending-halt preservation or consumption rules.
 
-```text
-RUN_NEXT     = 0
-HLT_REQ_NEXT = 1
-```
-
-The processor halts because of Single Step, but the pending halt request remains recorded because no instruction-completion boundary occurred.
-
-If Single Step completes the final major state of the current instruction and `HLT_REQ = 1`:
-
-```text
-RUN_NEXT     = 0
-HLT_REQ_NEXT = 0
-```
-
-The processor halts, and the pending halt request is consumed at the instruction-completion boundary.
-
-Source:
+Sources:
 
 - [Console Execution](../../03-microarchitecture/09-console-execution.md)
 
@@ -1082,6 +1022,7 @@ HLT_REQ = 0
 ```
 
 A STOP request captured too late for the current instruction-completion decision remains pending for the next instruction-completion boundary.
+
 ---
 
 ## 4. Memory-Context Selection
@@ -1105,30 +1046,48 @@ Selection of a memory micro-operation does not by itself define `AB_SRC`.
 
 ### 4.2 Program-Counter Address Context
 
-When a CPU-initiated memory operation uses the program counter as its address:
+Applicable context:
+
+```text
+the CPU owns the memory interface
+the current memory operation uses PC as its address
+```
+
+Assignment:
 
 ```text
 AB_SRC = PC
 ```
 
-This applies to documented instruction-fetch memory access.
+Constraints:
 
-Source:
+- This case applies to the documented instruction-fetch memory access.
+- `AB_SRC` defines the address source independently from `/RD`, `/WR`, `MDB_SRC`, and `MFB_SRC`.
+
+Sources:
 
 - [Fetch & Defer](../../03-microarchitecture/04-fetch-defer.md)
 - [Memory Field Selection](../../06-memory/05-memory-field-selection.md)
 
----
-
 ### 4.3 Memory-Address Register Context
 
-When a CPU-initiated memory operation uses the memory-address register:
+Applicable context:
+
+```text
+the CPU owns the memory interface
+the current memory operation uses MA as its address
+```
+
+Assignment:
 
 ```text
 AB_SRC = MA
 ```
 
-This applies to documented memory operations for which `MA` drives `AB`.
+Constraints:
+
+- This case applies only to documented memory operations for which `MA` drives `AB`.
+- `AB_SRC` defines the address source independently from `/RD`, `/WR`, `MDB_SRC`, and `MFB_SRC`.
 
 Sources:
 
@@ -1473,6 +1432,7 @@ JMP performs no memory access during EXECUTE and therefore requires no EXECUTE-s
 The summary applies only to documented memory operations.
 
 `MFB_SRC` need not be interpreted as an active external field selection when no CPU-owned memory operation is occurring.
+
 ---
 
 ### 4.7 DMA Context
@@ -1497,28 +1457,31 @@ Sources:
 
 ### 5.1 Data Field From Instruction
 
-#### Result
+Applicable context:
 
-The `IR_DF_TO_DF` micro-operation loads the data field from `IR[5:3]`.
+```text
+IR_WRITES_DF = 1
+IR_DF_TO_DF is selected
+```
 
-The micro-operation mapping supplies:
+Micro-operation assignments:
 
 ```text
 DF_LOAD = 1
 DF_SRC  = Control
 ```
 
-Direct control supplies:
+Control-supplied value:
 
 ```text
 DF_VAL = IR_DF
 ```
 
-Applicable context:
+Value relationship:
 
 ```text
-IR_WRITES_DF = 1
-IR_DF_TO_DF is selected
+IR_DF  = IR[5:3]
+DF_VAL = IR_DF
 ```
 
 Widths:
@@ -1528,7 +1491,11 @@ IR_DF = 3 bits
 DF_VAL = 3 bits
 ```
 
-No transformation is applied.
+Constraints:
+
+- `DF_VAL` is required when `DF_LOAD = 1` and `DF_SRC = Control`.
+- `IR_DF_TO_DF` binds the control input `IR_DF` directly to the control output `DF_VAL`.
+- No transformation is applied.
 
 Sources:
 
@@ -1540,26 +1507,24 @@ Sources:
 
 ### 5.2 Deferred Instruction Field From Instruction
 
-The `IR_IF_TO_DIF` micro-operation loads `DIF` from the instruction-derived `IR_IF` value.
+Applicable context:
 
-The micro-operation mapping supplies:
+```text
+IR_WRITES_IF = 1
+IR_IF_TO_DIF is selected
+```
+
+Micro-operation assignments:
 
 ```text
 DIF_LOAD = 1
 DIF_SRC  = Control
 ```
 
-Direct control supplies:
+Control-supplied value:
 
 ```text
 DIF_VAL = IR_IF
-```
-
-Applicable context:
-
-```text
-IR_WRITES_IF = 1
-IR_IF_TO_DIF is selected
 ```
 
 Value relationship:
@@ -1586,6 +1551,7 @@ Constraints:
 - `DIF_SRC` does not distinguish between `IR_IF` and zero; the selected control case determines `DIF_VAL`.
 - `IR_IF_TO_DIF` and `DIF_CLEAR` must not be selected concurrently.
 - No dedicated `DIF_SRC = IR` encoding or direct IR-to-DIF datapath is used.
+- No transformation is applied.
 
 Sources:
 
@@ -1597,25 +1563,23 @@ Sources:
 
 ### 5.3 Deferred Instruction Field Clear Value
 
-The `DIF_CLEAR` micro-operation clears `DIF`.
+Applicable context:
 
-The micro-operation mapping supplies:
+```text
+DIF_CLEAR is selected
+```
+
+Micro-operation assignments:
 
 ```text
 DIF_LOAD = 1
 DIF_SRC  = Control
 ```
 
-Direct control supplies:
+Control-supplied value:
 
 ```text
 DIF_VAL = 0
-```
-
-Applicable context:
-
-```text
-DIF_CLEAR is selected
 ```
 
 Constraints:
@@ -1660,48 +1624,153 @@ WRITE = 2
 3     = invalid
 ```
 
-When CPU control accepts a read request:
+#### 5.5.1 Read Request Acceptance
+
+Applicable context:
+
+```text
+IO_READ_REQ is accepted
+```
+
+Assignments:
 
 ```text
 IOT_TRANSFER_LOAD = 1
 IOT_TRANSFER_VAL  = READ
 ```
 
-When CPU control accepts a write request:
+Constraints:
+
+- `IO_READ_REQ` and `IO_WRITE_REQ` must not both be accepted for the same request.
+- The accepted request must have a transfer phase and commit TP within the current external-IOT EXECUTE major state.
+
+Sources:
+
+- [Microarchitectural Control Signals](../20-control-output-definitions/01-microarchitectural-control-signals.md)
+- [IOT Execution](../../03-microarchitecture/06-iot-execution.md)
+- [External I/O Interface](../../07-io/02-external-iot-interface.md)
+- [I/O Timing](../../07-io/03-io-timing.md)
+
+#### 5.5.2 Write Request Acceptance
+
+Applicable context:
+
+```text
+IO_WRITE_REQ is accepted
+```
+
+Assignments:
 
 ```text
 IOT_TRANSFER_LOAD = 1
 IOT_TRANSFER_VAL  = WRITE
 ```
 
-When a completed pending transfer is cleared without replacement:
+Constraints:
+
+- `IO_READ_REQ` and `IO_WRITE_REQ` must not both be accepted for the same request.
+- The accepted request must have a transfer phase and commit TP within the current external-IOT EXECUTE major state.
+
+Sources:
+
+- [Microarchitectural Control Signals](../20-control-output-definitions/01-microarchitectural-control-signals.md)
+- [IOT Execution](../../03-microarchitecture/06-iot-execution.md)
+- [External I/O Interface](../../07-io/02-external-iot-interface.md)
+- [I/O Timing](../../07-io/03-io-timing.md)
+
+#### 5.5.3 Completed Transfer Clear
+
+Applicable context:
+
+```text
+a pending transfer completes
+no replacement request is accepted at the same TP
+```
+
+Assignments:
 
 ```text
 IOT_TRANSFER_LOAD = 1
 IOT_TRANSFER_VAL  = NONE
 ```
 
-When completion and request acceptance occur at the same TP, the newly accepted request direction replaces the completed transfer:
-
-```text
-accepted read  -> IOT_TRANSFER_VAL = READ
-accepted write -> IOT_TRANSFER_VAL = WRITE
-```
-
-`IOT_TRANSFER_VAL = 3` is invalid.
-
 Constraints:
 
-- `IO_READ_REQ` and `IO_WRITE_REQ` must not both be accepted for the same request.
-- A new request accepted at a TP does not affect the transfer committing at that TP.
-- A request may be accepted only when its transfer phase and commit TP remain within the current external-IOT EXECUTE major state.
+- A newly accepted request does not affect the transfer committing at the same TP.
+- This case applies only when no replacement request is accepted.
 
 Sources:
 
 - [Microarchitectural Control Signals](../20-control-output-definitions/01-microarchitectural-control-signals.md)
 - [IOT Execution](../../03-microarchitecture/06-iot-execution.md)
-- [External IO Interface](../../07-io/02-external-iot-interface.md)
+- [External I/O Interface](../../07-io/02-external-iot-interface.md)
 - [I/O Timing](../../07-io/03-io-timing.md)
+
+#### 5.5.4 Completion With Read Replacement
+
+Applicable context:
+
+```text
+a pending transfer completes
+IO_READ_REQ is accepted at the same TP
+```
+
+Assignments:
+
+```text
+IOT_TRANSFER_LOAD = 1
+IOT_TRANSFER_VAL  = READ
+```
+
+Constraints:
+
+- The newly accepted read request replaces the completed transfer.
+- The new request does not affect the transfer committing at the current TP.
+- The replacement request must have a transfer phase and commit TP within the current external-IOT EXECUTE major state.
+
+Sources:
+
+- [Microarchitectural Control Signals](../20-control-output-definitions/01-microarchitectural-control-signals.md)
+- [IOT Execution](../../03-microarchitecture/06-iot-execution.md)
+- [External I/O Interface](../../07-io/02-external-iot-interface.md)
+- [I/O Timing](../../07-io/03-io-timing.md)
+
+#### 5.5.5 Completion With Write Replacement
+
+Applicable context:
+
+```text
+a pending transfer completes
+IO_WRITE_REQ is accepted at the same TP
+```
+
+Assignments:
+
+```text
+IOT_TRANSFER_LOAD = 1
+IOT_TRANSFER_VAL  = WRITE
+```
+
+Constraints:
+
+- The newly accepted write request replaces the completed transfer.
+- The new request does not affect the transfer committing at the current TP.
+- The replacement request must have a transfer phase and commit TP within the current external-IOT EXECUTE major state.
+
+Sources:
+
+- [Microarchitectural Control Signals](../20-control-output-definitions/01-microarchitectural-control-signals.md)
+- [IOT Execution](../../03-microarchitecture/06-iot-execution.md)
+- [External I/O Interface](../../07-io/02-external-iot-interface.md)
+- [I/O Timing](../../07-io/03-io-timing.md)
+
+#### 5.5.6 Invalid Encoding
+
+```text
+IOT_TRANSFER_VAL = 3
+```
+
+This encoding is invalid and must not appear in a generated control word.
 
 ---
 
@@ -1726,25 +1795,7 @@ In particular:
 
 ---
 
-## 7. Unresolved Documentation Items
-
-The following items require explicit source review or documentation correction before they can be represented as complete direct-control rules:
-
-- the complete `RUN_NEXT` case and priority matrix
-- the complete `HLT_REQ_NEXT` case and priority matrix
-- same-boundary interaction among halt consumption, STOP, HLT, START, and CONTINUE
-- a complete instruction-by-instruction `AB_SRC` matrix
-- a complete instruction-by-instruction `MFB_SRC` matrix
-- any control-input-to-output binding other than `DF_VAL = IR_DF`
-- whether any non-clear operation requires an input-dependent `IF_VAL`
-- whether any non-clear operation requires an input-dependent `MA_VAL`
-- whether any operation other than `PC_SET_1` requires a control-provided `PC_VAL`
-
-These items must not be completed by inference.
-
----
-
-## 8. Related Documents
+## 7. Related Documents
 
 - [Direct Control Model](../07-direct-control-model.md)
 - [Control Constraints](../03-control-constraints.md)

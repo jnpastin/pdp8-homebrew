@@ -181,7 +181,7 @@ a CPU-owned memory-read operation is active
 MEM_READ_TO_MB is selected
 ```
 
-Logical control results:
+Micro-operation assignments:
 
 ```text
 /RD = 0
@@ -198,7 +198,7 @@ CPU /WR driver = DRIVE_HIGH
 CPU MDB driver = HIGH_Z
 ```
 
-Memory behavior:
+External ownership:
 
 ```text
 Memory MDB driver = active
@@ -211,7 +211,7 @@ Constraints:
 - Memory must be the sole `MDB` producer.
 - The selected address and field must remain valid for the memory-read interval.
 - The read strobe does not itself select `AB_SRC`, `MFB_SRC`, or `MDB_SRC`.
-- The `/RD` assignment remains part of the `MEM_READ_TO_MB` micro-operation mapping rather than a separate direct-control assignment.
+- The `/RD` & `/WR` assignments remain part of the micro-operation mappings rather than a separate direct-control assignment.
 
 Sources:
 
@@ -230,7 +230,7 @@ a CPU-owned memory-write operation is active
 MEM_WRITE_FROM_MB is selected
 ```
 
-Logical control results:
+Micro-operation assignments:
 
 ```text
 /RD     = 1
@@ -248,13 +248,19 @@ CPU /WR driver = DRIVE_LOW
 CPU MDB driver = driven from MB
 ```
 
+External ownership:
+
+```text
+Memory captures MDB.
+```
+
 Constraints:
 
 - `/RD` and `/WR` must not both be asserted.
 - The CPU must be the sole `MDB` producer.
 - Memory must not drive `MDB`.
 - The selected address, field, and write data must remain valid for the memory-write interval.
-- The `/WR` and `MDB_SRC` assignments remain part of the `MEM_WRITE_FROM_MB` micro-operation mapping rather than separate direct-control assignments.
+- The `/RD` & `/WR` assignments remain part of the micro-operation mappings rather than a separate direct-control assignment.
 
 Sources:
 
@@ -273,7 +279,7 @@ a CPU-owned console DEPOSIT operation is active
 MEM_WRITE_FROM_FP_SR is selected
 ```
 
-Logical control results:
+Micro-operation assignments:
 
 ```text
 /RD     = 1
@@ -291,17 +297,23 @@ CPU /WR driver = DRIVE_LOW
 CPU MDB driver = driven from FP_SR
 ```
 
+External ownership:
+
+```text
+Memory captures MDB.
+```
+
 Constraints:
 
 - `/RD` and `/WR` must not both be asserted.
 - The CPU must be the sole `MDB` producer.
 - Memory must not drive `MDB`.
 - The selected address, field, and front-panel value must remain valid for the memory-write interval.
-- The `/WR` and `MDB_SRC` assignments remain part of the `MEM_WRITE_FROM_FP_SR` micro-operation mapping rather than separate direct-control assignments.
+- The `/RD` & `/WR` assignments remain part of the micro-operation mappings rather than a separate direct-control assignment.
 
 Sources:
 
-- [Micro-Operations](../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)
+- [Micro-Operations](../../03-microarchitecture/02-micro-operations.md)
 - [Console Execution](../../03-microarchitecture/09-console-execution.md#8-deposit-operation)
 - [Architectural Control Signals](../20-control-output-definitions/02-architectural-control-signals.md)
 
@@ -608,7 +620,7 @@ DB_WRITE_FROM_AC is selected
 /DB_WRITE is asserted
 ```
 
-Logical assignments:
+Micro-operation assignments:
 
 ```text
 /DB_READ  = 1
@@ -645,7 +657,7 @@ DB_READ_TO_AC is selected
 /DB_READ is asserted
 ```
 
-Logical assignments:
+Micro-operation assignments:
 
 ```text
 /DB_READ  = 0
