@@ -61,12 +61,11 @@ Defined in:
 
 ---
 
-### 4.2 Instruction Detection
+### 4.2 Instruction Selection
 
-- [IR_IS_AND](./02-ir-derived-fields.md#ir_is_and)  
+- [IR_MRI_OPCODE](./02-ir-derived-fields.md#ir_mri_opcode)
 - [IR_IS_CAF](./02-ir-derived-fields.md#ir_is_caf)
 - [IR_IS_GTF](./02-ir-derived-fields.md#ir_is_gtf)
-- [IR_IS_ISZ](./02-ir-derived-fields.md#ir_is_isz)  
 - [IR_IS_RTF](./02-ir-derived-fields.md#ir_is_rtf)
 
 ---

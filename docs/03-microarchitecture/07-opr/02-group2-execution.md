@@ -58,80 +58,15 @@ All μop selection and condition evaluation are derived directly from IR bits.
 
 ### 4.3 TS1 — Skip Evaluation
 
-Skip behavior is expressed as conditional execution of:
-- PC_INC
+Conditional μops:
 
-#### 4.3.1 AND Sub-group (IR[3] = 1)
+```text
+SKIP_TAKEN = 1 -> PC_INC
+```
 
-Let the active predicate set P be:
+The composition of the Group 2 skip predicates, including AND-subgroup vacuous truth and OR-subgroup behavior, is defined by `SKIP_TAKEN` in the control-input definitions [found here](../../04-control/10-control-input-definitions/03-derived-flags.md#skip_taken).
 
-- Include (AC ≥ 0) if IR[bit(SPA)] = 1
-- Include (AC ≠ 0) if IR[bit(SNA)] = 1
-- Include (L = 0)   if IR[bit(SZL)] = 1
-
-Condition:
-
-- if all predicates in P evaluate true: PC_INC
-- an empty P is vacuously true, so it skips unconditionally (SKP = 7410)
-
-Examples:
-
-1. IR[bit(SPA)] = 1, IR[bit(SNA)] = 0, IR[bit(SZL)] = 0  
-   P = { AC ≥ 0 }  
-   - AC = 0000 → true → PC_INC  
-   - AC < 0 → false → no skip  
-
-2. IR[bit(SPA)] = 1, IR[bit(SNA)] = 1, IR[bit(SZL)] = 0  
-   P = { AC ≥ 0, AC ≠ 0 }  
-   - AC = 0001 → true ∧ true → PC_INC  
-   - AC = 0000 → true ∧ false → no skip  
-   - AC < 0 → false ∧ true → no skip  
-
-3. IR[bit(SPA)] = 1, IR[bit(SNA)] = 1, IR[bit(SZL)] = 1  
-   P = { AC ≥ 0, AC ≠ 0, L = 0 }  
-   - AC = 0001, L = 0 → true ∧ true ∧ true → PC_INC  
-   - AC = 0001, L = 1 → true ∧ true ∧ false → no skip  
-
----
-
-#### 4.3.2 OR Sub-group (IR[3] = 0)
-
-Let the active predicate set P be:
-
-- Include (AC < 0) if IR[bit(SMA)] = 1
-- Include (AC = 0) if IR[bit(SZA)] = 1
-- Include (L ≠ 0) if IR[bit(SNL)] = 1
-
-Condition:
-
-- if any predicate in P evaluates true: PC_INC
-
-Examples:
-
-1. IR[bit(SMA)] = 1, IR[bit(SZA)] = 0, IR[bit(SNL)] = 0  
-   P = { AC < 0 }  
-   - AC < 0 → true → PC_INC  
-   - AC ≥ 0 → false → no skip  
-
-2. IR[bit(SMA)] = 1, IR[bit(SZA)] = 1, IR[bit(SNL)] = 0  
-   P = { AC < 0, AC = 0 }  
-   - AC < 0 → true ∨ false → PC_INC  
-   - AC = 0000 → false ∨ true → PC_INC  
-   - AC > 0 → false ∨ false → no skip  
-
-3. IR[bit(SMA)] = 0, IR[bit(SZA)] = 1, IR[bit(SNL)] = 1  
-   P = { AC = 0, L ≠ 0 }  
-   - AC = 0000 → true → PC_INC  
-   - AC ≠ 0, L ≠ 0 → false ∨ true → PC_INC  
-   - AC ≠ 0, L = 0 → false ∨ false → no skip  
-
----
-
-Notes:
-- Predicates are included only when their corresponding IR bit = 1
-- Unset bits contribute no condition
-- If P is empty: the AND sub-group skips unconditionally (vacuous truth); the OR sub-group does not skip
-- Evaluation uses only register state; no intermediate state is created
+The Group 2 ISA defines the instruction-bit meanings and subgroup encodings.
 
 ---
 

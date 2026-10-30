@@ -140,11 +140,8 @@ Expose raw IR fields:
 - [IR_IS_MRI](#ir_is_mri)
 - [IR_IS_OPR](#ir_is_opr)
 
-### ISZ Detect
-- [IR_IS_ISZ](#ir_is_isz)
-
-### AND Detect
-- [IR_IS_AND](#ir_is_and)
+### MRI Opcode
+- [IR_MRI_OPCODE](#ir_mri_opcode)
 
 ### Addressing Mode
 - [IR_INDIRECT](#ir_indirect)
@@ -316,29 +313,6 @@ IR_IOA = IR[8:3]
 
 ---
 
-### IR_IS_AND
-
-**Mnemonic:** IR_IS_AND
-**Name:** AND Instruction Flag
-**Type:** AND Detect
-**Bit Width:** 1
-
-**Purpose:** Indicates that the current instruction is AND
-
-**Derivation:**
-```text
-IR_IS_AND = (IR[11:9] == 000)
-```
-
-**Value Encoding:**
-
-- 0 → not AND
-- 1 → AND
-
-**Consumed By:**
-
----
-
 ### IR_IS_CAF
   
 **Mnemonic:** IR_IS_CAF  
@@ -411,29 +385,6 @@ IR_IS_IOT = (IR[11:9] == 110)
 
 - 0 → not IOT  
 - 1 → IOT  
-
-**Consumed By:**
-
----
-
-### IR_IS_ISZ
-
-**Mnemonic:** IR_IS_ISZ
-**Name:** ISZ Instruction Flag
-**Type:** ISZ Detect
-**Bit Width:** 1
-
-**Purpose:** Indicates that the current instruction is ISZ
-
-**Derivation:**
-```text
-IR_IS_ISZ = (IR[11:9] == 010)
-```
-
-**Value Encoding:**
-
-- 0 → not ISZ
-- 1 → ISZ
 
 **Consumed By:**
 
@@ -545,6 +496,43 @@ AND (IR[2:0] == 101)
 - [CIFP_SET](../../03-microarchitecture/02-micro-operations.md#cifp_set)
 - [IE_SET](../../03-microarchitecture/02-micro-operations.md#ie_set)
 - [II_SET](../../03-microarchitecture/02-micro-operations.md#ii_set)
+
+---
+
+### IR_MRI_OPCODE
+
+**Mnemonic:** IR_MRI_OPCODE  
+**Name:** Memory Reference Instruction Opcode  
+**Type:** MRI Opcode Field  
+**Bit Width:** 3  
+
+**Purpose:** Provides the MRI opcode used to select the applicable memory-reference instruction behavior.
+
+**Derivation:**
+
+```text
+IR_MRI_OPCODE = IR[11:9]
+```
+
+**Value Encoding:**
+
+- `000` → AND
+- `001` → TAD
+- `010` → ISZ
+- `011` → DCA
+- `100` → JMS
+- `101` → JMP
+- `110` → not MRI
+- `111` → not MRI
+
+**Constraint:**
+
+`IR_MRI_OPCODE` selects MRI behavior only when `IR_IS_MRI = 1`.
+
+**Consumed By:**
+
+- MRI execution selection
+- `ISZ_SKIP_REQUIRED`
 
 ---
 

@@ -44,8 +44,11 @@ Responsibilities:
 μops:
 - PC_TO_MA
 
-μops (conditional):
-- if NOT CIFP: II_CLEAR
+Conditional μops:
+
+```text
+CIFP = 0 -> II_CLEAR
+```
 
 Description:
 - Places the instruction address in MA for memory access.
@@ -124,10 +127,15 @@ Description:
 
 ### 4.4 TS3
 
-μops (conditional):
-- MB_INC
+Conditional μops:
+
+```text
+AUTO_INDEX_REQUIRED = 1 -> MB_INC
+```
+
 Description:
-- Increments the value at the indirect address
+
+- Increments the value at the indirect address when auto-index is required.
 
 ---
 
@@ -136,22 +144,19 @@ Description:
 μops:
 - MB_TO_EA_ADDR
 
-μops (conditional):  
-- MEM_WRITE_FROM_MB
+Conditional μops:
 
-Condition:
-
-    if EA_ADDR is within autoindex range
-
+```text
+AUTO_INDEX_REQUIRED = 1 -> MEM_WRITE_FROM_MB
+```
 
 Control Decisions:
 
-    MS_NEXT ← EXECUTE
-
 Description:
-- Writes incremented value back to memory
-- Updates EA_ADDR register with final resolved address
-- Transitions to EXECUTE
+
+- Writes the incremented value back to memory when auto-index is required.
+- Updates EA_ADDR register with the final resolved address.
+- Transitions to EXECUTE.
 
 ---
 

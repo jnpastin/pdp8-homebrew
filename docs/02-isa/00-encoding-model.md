@@ -19,13 +19,27 @@ No instruction decoding into symbolic instructions is permitted.
 
 ---
 
-## 3. IR Structure
+## 3. IR Structure and Instruction-Class Selection
 
-The contents of the instruction register are interpreted differently based on the opcode. The opcode is contained in the three MSBs (IR[11:9])
+The opcode occupies `IR[11:9]`.
 
-- 0-5 → Memory Reference Instruction (MRI)
-- 6   → I/O Transfer Instruction (IOT)
-- 7   → Operate Instruction (OPR)
+Instruction-class predicates are derived directly from that field:
+
+```text
+IR_IS_MRI = 1 when IR[11:9] is 0 through 5
+IR_IS_IOT = 1 when IR[11:9] is 6
+IR_IS_OPR = 1 when IR[11:9] is 7
+```
+
+Exactly one instruction-class predicate is asserted for every instruction-register value.
+
+These predicates identify the applicable instruction model:
+
+- `IR_IS_MRI = 1` selects the Memory Reference Instruction model.
+- `IR_IS_IOT = 1` selects the I/O Transfer Instruction model.
+- `IR_IS_OPR = 1` selects the Operate Instruction model.
+
+The predicates classify the instruction without replacing the underlying IR bit fields used by more specific instruction-selection logic.
 
 ---
 

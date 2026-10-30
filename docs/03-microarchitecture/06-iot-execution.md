@@ -218,8 +218,13 @@ TS1:
 - (no μops)
 
 TS2:
-- if IE: PC_INC
 - IE_CLEAR
+
+Conditional μops:
+
+```text
+IE = 1 -> PC_INC
+```
 
 TS3:
 - (no μops)
@@ -241,8 +246,14 @@ Description:
   TS1:
 - (no μops)
 
-  TS2:
-- if /INT_REQ = 0: PC_INC
+TS2:
+- (no unconditional μops)
+
+Conditional μops:
+
+```text
+/INT_REQ = 0 -> PC_INC
+```
 
   TS3:
 - (no μops)

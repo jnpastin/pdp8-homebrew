@@ -99,36 +99,31 @@ AND (
 
 ### ISZ_SKIP_REQUIRED
 
-**Mnemonic:** ISZ_SKIP_REQUIRED
-**Name:** Increment Skip if Zero - Skip Required
+**Mnemonic:** ISZ_SKIP_REQUIRED  
+**Name:** Increment Skip if Zero - Skip Required  
 
 **Inputs:**
-- IR_IS_ISZ
-- MBZ
 
----
+- IR_MRI_OPCODE
+- MBZ
 
 **Purpose:** Determines whether ISZ causes a skip after increment.
 
----
-
 **Expression:**
 
-```
+```text
 ISZ_SKIP_REQUIRED =
-    IR_IS_ISZ
+    (IR_MRI_OPCODE = 010)
 AND MBZ
 ```
 
----
-
 **Value Encoding:**
-- `0` → no skip
-- `1` → increment PC
 
----
+- 0 → no skip
+- 1 → increment PC
 
 **Used By μops:**
+
 - [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
 
 ---

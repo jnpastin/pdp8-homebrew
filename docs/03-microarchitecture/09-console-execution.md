@@ -154,17 +154,27 @@ The PC is loaded via FP_SR, this is then used to drive MA and EA for EXAM and DE
 
 ## 6. Load Address Operation
 
-Load Address sets the front panel execution context by reading IF, DF, and PC from the switches
-
-Micro-operation sequence:
+Applicable context:
 
 ```text
-CIFP_CLEAR
-FP_SR_TO_PC
-FP_IF_TO_DIF
-FP_IF_TO_IF
-FP_DF_TO_DF
+RUN = 0
+FP_LOAD = 1
 ```
+
+Execution model:
+
+```text
+single TS-equivalent console transaction
+```
+
+μops:
+
+- CIFP_CLEAR
+- FP_SR_TO_PC
+- FP_IF_TO_DIF
+- FP_IF_TO_IF
+- FP_DF_TO_DF
+
 
 Result:
 
@@ -184,16 +194,25 @@ The processor remains halted.
 
 ## 7. Examine Operation
 
-Examine sets the address context from the PC, reads memory, and increments the PC
-
-Micro-operation sequence:
+Applicable context:
 
 ```text
-PC_TO_MA
-PC_TO_EA_ADDR
-PC_INC
-MEM_READ_TO_MB
+RUN = 0
+FP_EXAM = 1
 ```
+
+Execution model:
+
+```text
+single TS-equivalent console transaction
+```
+
+μops:
+
+- PC_TO_MA
+- PC_TO_EA_ADDR
+- PC_INC
+- MEM_READ_TO_MB
 
 Result:
 
@@ -212,17 +231,26 @@ The processor remains halted.
 
 ## 8. Deposit Operation
 
-Deposit sets the address context from the PC, writes the value of FP_SR to memory, and increments the PC
-
-Micro-operation sequence:
+Applicable context:
 
 ```text
-PC_TO_MA
-PC_TO_EA_ADDR
-PC_INC
-FP_SR_TO_MB
-MEM_WRITE_FROM_FP_SR
+RUN = 0
+FP_DEP = 1
 ```
+
+Execution model:
+
+```text
+single TS-equivalent console transaction
+```
+
+μops:
+
+- PC_TO_MA
+- PC_TO_EA_ADDR
+- PC_INC
+- FP_SR_TO_MB
+- MEM_WRITE_FROM_FP_SR
 
 Result:
 
@@ -277,17 +305,26 @@ The authoritative signal behavior is defined in [System Initialization](../04-co
 
 ## 10. Start Operation
 
-Start establishes a known processor execution state.
-
-Micro-operation sequence:
+Applicable context:
 
 ```text
-AC_CLEAR
-L_CLEAR
-MQ_CLEAR
-IE_CLEAR
-II_CLEAR
+RUN = 0
+FP_START = 1
 ```
+
+Execution model:
+
+```text
+single TS-equivalent console transaction
+```
+
+μops:
+
+- AC_CLEAR
+- L_CLEAR
+- MQ_CLEAR
+- IE_CLEAR
+- II_CLEAR
 
 Result:
 

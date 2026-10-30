@@ -77,8 +77,13 @@ TS3:
 - MB_INC  
 
 TS4:
-- MEM_WRITE_FROM_MB  
-- if (MB == 0): PC_INC  
+- MEM_WRITE_FROM_MB
+
+Conditional μops:
+
+```text
+ISZ_SKIP_REQUIRED = 1 -> PC_INC
+```
 
 ---
 
@@ -116,8 +121,13 @@ TS3:
 
 TS4:
 - PC_INC  
-- if IF_CHANGE_PENDING: DIF_TO_IF
-- if CIFP: CIFP_CLEAR
+
+Conditional μops:
+
+```text
+IF_CHANGE_PENDING = 1 -> DIF_TO_IF
+CIFP = 1 -> CIFP_CLEAR
+```
 
 ---
 
@@ -135,8 +145,12 @@ TS3:
 - PC_LOAD_EA_ADDR  
 
 TS4:
-- if IF_CHANGE_PENDING: DIF_TO_IF
-- if CIFP: CIFP_CLEAR 
+Conditional μops:
+
+```text
+IF_CHANGE_PENDING = 1 -> DIF_TO_IF
+CIFP = 1 -> CIFP_CLEAR
+```
 
 ---
 
