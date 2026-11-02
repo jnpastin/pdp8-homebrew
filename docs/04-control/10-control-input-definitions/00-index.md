@@ -120,6 +120,7 @@ Defined in:
 - [IR_ADDR](./02-ir-derived-fields.md#ir_addr)  
 - [IR_DF](./02-ir-derived-fields.md#ir_df)  
 - [IR_IOA](./02-ir-derived-fields.md#ir_ioa)  
+- [IR_IOT_OP](./02-ir-derived-fields.md#ir_iot_op)  
 - [IR_IF](./02-ir-derived-fields.md#ir_if)  
 
 ---

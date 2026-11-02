@@ -129,6 +129,7 @@ Expose raw IR fields:
 - IR_ADDR → IR[6:0]
 - IR_DF → IR[5:3]
 - IR_IOA → IR[8:3]
+- IR_IOT_OP → IR[2:0]
 - IR_IF → IR[5:3]
 
 ---
@@ -185,6 +186,7 @@ Expose raw IR fields:
 - [IR_ADDR](#ir_addr)
 - [IR_DF](#ir_df)
 - [IR_IOA](#ir_ioa)
+- [IR_IOT_OP](#ir_iot_op)
 - [IR_IF](#ir_if)
 
 ---
@@ -310,6 +312,35 @@ IR_IOA = IR[8:3]
 
 **Consumed By:**
 - [Architectural Control Signals](../20-control-output-definitions/02-architectural-control-signals.md)
+
+---
+
+### IR_IOT_OP
+
+**Mnemonic:** IR_IOT_OP  
+**Name:** IOT Operation Field  
+**Type:** IOT Operation Field  
+**Bit Width:** 3  
+
+**Purpose:** Provides `IR[2:0]` for IOT operation selection.
+
+**Derivation:**
+
+```text
+IR_IOT_OP = IR[2:0]
+```
+
+**Value Encoding:**
+
+- 000–111 → IOT operation
+
+**Constraint:**
+
+`IR_IOT_OP` is used for instruction selection only when `IR_IS_IOT = 1`.
+
+**Consumed By:**
+
+- IOT execution selection
 
 ---
 

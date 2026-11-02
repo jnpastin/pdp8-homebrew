@@ -86,6 +86,59 @@ def conditional_after(lines:list[str], index:int) -> list[dict]:
     return out
 
 
+OPR_GROUP_INPUTS = {
+    1: "IR_OPR_GROUP1",
+    2: "IR_OPR_GROUP2",
+    3: "IR_OPR_GROUP3",
+}
+
+OPR_BIT_INPUTS = {
+    1: {
+        "CLA": "IR_OPR_CLA",
+        "CLL": "IR_OPR_CLL",
+        "CMA": "IR_OPR_CMA",
+        "CML": "IR_OPR_CML",
+        "RAR": "IR_OPR_RAR",
+        "RAL": "IR_OPR_RAL",
+        "BSW": "IR_OPR_BSW",
+        "IAC": "IR_OPR_IAC",
+    },
+    2: {
+        "CLA": "IR_OPR_CLA",
+        "OSR": "IR_OPR_OSR",
+        "HLT": "IR_OPR_HLT",
+    },
+    3: {
+        "CLA": "IR_OPR_CLA",
+    },
+}
+
+def normalize_context_term(term: str) -> str:
+    value = clean(term.strip())
+    match = re.fullmatch(r"IR\[11:9\] = ([01]{3})", value)
+    if match:
+        opcode = match.group(1)
+        if opcode in {"000", "001", "010", "011", "100", "101"}:
+            return f"IR_MRI_OPCODE = {opcode}"
+        if opcode == "110":
+            return "IR_IS_IOT = 1"
+    match = re.fullmatch(r"IR\[2:0\] = ([01]{3})", value)
+    if match:
+        return f"IR_IOT_OP = {match.group(1)}"
+    if value.startswith("IOA = "):
+        return "IR_IOA = " + value.removeprefix("IOA = ")
+    return value
+
+def normalize_opr_predicate(
+    predicate: str, bits: dict[str, int], group: int
+) -> str:
+    result = clean(predicate)
+    for mnemonic, input_name in OPR_BIT_INPUTS[group].items():
+        bit = bits.get(mnemonic)
+        if bit is not None:
+            result = re.sub(rf"IR\[{bit}\]", input_name, result)
+    return result
+
 def parse_bit_diagram(text:str) -> dict[str,int]:
     """Parse the agreed three-row OPR bit diagram: position, required value, mnemonic."""
     lines=text.splitlines()
@@ -128,6 +181,22 @@ def parse_fetch_defer(text:str, source:str):
     return out
 
 
+IOT_DECODED_CONTEXTS = {
+    "10.1": ["IR_IS_IOT = 1", "IR_WRITES_DF = 1"],
+    "10.2": ["IR_IS_IOT = 1", "IR_WRITES_IF = 1"],
+    "10.3": ["IR_IS_IOT = 1", "IR_READS_DF = 1"],
+    "10.4": ["IR_IS_IOT = 1", "IR_READS_IF = 1"],
+    "10.5": ["IR_IS_IOT = 1", "IR_READS_IB = 1"],
+    "10.6": ["IR_IS_IOT = 1", "IR_RESTORES_IB = 1"],
+}
+
+
+def normalize_execute_context(prefix: str, number: str, title: str) -> list[str]:
+    if prefix == "iot" and number in IOT_DECODED_CONTEXTS:
+        return list(IOT_DECODED_CONTEXTS[number])
+    return [normalize_context_term(x) for x in re.split(r"\s+AND\s+", title)]
+
+
 def parse_numbered_execute(text:str,source:str,prefix:str):
     lines=text.splitlines(); out=[]
     headings=[]
@@ -137,7 +206,7 @@ def parse_numbered_execute(text:str,source:str,prefix:str):
     for n,(start,num,title) in enumerate(headings):
         end=headings[n+1][0] if n+1<len(headings) else next((j for j in range(start+1,len(lines)) if lines[j].startswith("## ")),len(lines))
         block=lines[start:end]
-        context=[x.strip() for x in re.split(r"\s+AND\s+",title)]
+        context=normalize_execute_context(prefix, num, title)
         for ts in range(1,5):
             marker=f"TS{ts}:"; idx=next((k for k,x in enumerate(block) if x.strip()==marker),None)
             if idx is None: continue
@@ -197,6 +266,7 @@ def parse_opr_execution(text, source, group, bits):
             predicate = conditional.group(1)
             for name, bit in bits.items():
                 predicate = predicate.replace(f"IR[bit({name})]", f"IR[{bit}]")
+            predicate = normalize_opr_predicate(predicate, bits, group)
             by_ts[current_ts].append({"predicate": predicate, "micro_operation": conditional.group(2)})
 
     if group == 2:
@@ -215,7 +285,7 @@ def parse_opr_execution(text, source, group, bits):
             f"opr{group}:ts{ts}",
             source,
             first_line[ts],
-            ["MS = EXECUTE", f"OPR_GROUP = {group}"],
+            ["MS = EXECUTE", f"{OPR_GROUP_INPUTS[group]} = 1"],
             ts,
             [],
             by_ts[ts],

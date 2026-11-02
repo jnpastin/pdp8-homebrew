@@ -172,7 +172,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 000"
+        "IR_MRI_OPCODE = 000"
       ],
       "timing_state": 1,
       "micro_operations": [
@@ -189,7 +189,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 000"
+        "IR_MRI_OPCODE = 000"
       ],
       "timing_state": 2,
       "micro_operations": [
@@ -206,7 +206,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 000"
+        "IR_MRI_OPCODE = 000"
       ],
       "timing_state": 3,
       "micro_operations": [
@@ -223,7 +223,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 000"
+        "IR_MRI_OPCODE = 000"
       ],
       "timing_state": 4,
       "micro_operations": [],
@@ -238,7 +238,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 001"
+        "IR_MRI_OPCODE = 001"
       ],
       "timing_state": 1,
       "micro_operations": [
@@ -255,7 +255,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 001"
+        "IR_MRI_OPCODE = 001"
       ],
       "timing_state": 2,
       "micro_operations": [
@@ -272,7 +272,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 001"
+        "IR_MRI_OPCODE = 001"
       ],
       "timing_state": 3,
       "micro_operations": [
@@ -289,7 +289,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 001"
+        "IR_MRI_OPCODE = 001"
       ],
       "timing_state": 4,
       "micro_operations": [],
@@ -304,7 +304,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 010"
+        "IR_MRI_OPCODE = 010"
       ],
       "timing_state": 1,
       "micro_operations": [
@@ -321,7 +321,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 010"
+        "IR_MRI_OPCODE = 010"
       ],
       "timing_state": 2,
       "micro_operations": [
@@ -338,7 +338,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 010"
+        "IR_MRI_OPCODE = 010"
       ],
       "timing_state": 3,
       "micro_operations": [
@@ -355,7 +355,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 010"
+        "IR_MRI_OPCODE = 010"
       ],
       "timing_state": 4,
       "micro_operations": [
@@ -377,7 +377,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 011"
+        "IR_MRI_OPCODE = 011"
       ],
       "timing_state": 1,
       "micro_operations": [
@@ -394,7 +394,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 011"
+        "IR_MRI_OPCODE = 011"
       ],
       "timing_state": 2,
       "micro_operations": [
@@ -411,7 +411,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 011"
+        "IR_MRI_OPCODE = 011"
       ],
       "timing_state": 3,
       "micro_operations": [
@@ -428,7 +428,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 011"
+        "IR_MRI_OPCODE = 011"
       ],
       "timing_state": 4,
       "micro_operations": [
@@ -445,7 +445,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 100"
+        "IR_MRI_OPCODE = 100"
       ],
       "timing_state": 1,
       "micro_operations": [
@@ -462,7 +462,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 100"
+        "IR_MRI_OPCODE = 100"
       ],
       "timing_state": 2,
       "micro_operations": [
@@ -479,7 +479,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 100"
+        "IR_MRI_OPCODE = 100"
       ],
       "timing_state": 3,
       "micro_operations": [
@@ -497,7 +497,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 100"
+        "IR_MRI_OPCODE = 100"
       ],
       "timing_state": 4,
       "micro_operations": [
@@ -523,7 +523,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 101"
+        "IR_MRI_OPCODE = 101"
       ],
       "timing_state": 1,
       "micro_operations": [],
@@ -538,7 +538,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 101"
+        "IR_MRI_OPCODE = 101"
       ],
       "timing_state": 2,
       "micro_operations": [],
@@ -553,7 +553,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 101"
+        "IR_MRI_OPCODE = 101"
       ],
       "timing_state": 3,
       "micro_operations": [
@@ -570,7 +570,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 101"
+        "IR_MRI_OPCODE = 101"
       ],
       "timing_state": 4,
       "micro_operations": [],
@@ -594,9 +594,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 010"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 010"
       ],
       "timing_state": 1,
       "micro_operations": [],
@@ -611,9 +611,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 010"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 010"
       ],
       "timing_state": 2,
       "micro_operations": [
@@ -630,9 +630,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 010"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 010"
       ],
       "timing_state": 3,
       "micro_operations": [],
@@ -647,9 +647,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 010"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 010"
       ],
       "timing_state": 4,
       "micro_operations": [],
@@ -664,9 +664,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 001"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 001"
       ],
       "timing_state": 1,
       "micro_operations": [],
@@ -681,9 +681,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 001"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 001"
       ],
       "timing_state": 2,
       "micro_operations": [
@@ -701,9 +701,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 001"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 001"
       ],
       "timing_state": 3,
       "micro_operations": [],
@@ -718,9 +718,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 001"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 001"
       ],
       "timing_state": 4,
       "micro_operations": [],
@@ -735,9 +735,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 000"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 000"
       ],
       "timing_state": 1,
       "micro_operations": [],
@@ -752,9 +752,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 000"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 000"
       ],
       "timing_state": 2,
       "micro_operations": [
@@ -776,9 +776,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 000"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 000"
       ],
       "timing_state": 3,
       "micro_operations": [],
@@ -793,9 +793,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 000"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 000"
       ],
       "timing_state": 4,
       "micro_operations": [],
@@ -810,9 +810,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 011"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 011"
       ],
       "timing_state": 1,
       "micro_operations": [],
@@ -827,9 +827,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 011"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 011"
       ],
       "timing_state": 2,
       "micro_operations": [],
@@ -849,9 +849,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 011"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 011"
       ],
       "timing_state": 3,
       "micro_operations": [],
@@ -866,9 +866,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 011"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 011"
       ],
       "timing_state": 4,
       "micro_operations": [],
@@ -883,9 +883,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 100"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 100"
       ],
       "timing_state": 1,
       "micro_operations": [
@@ -902,9 +902,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 100"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 100"
       ],
       "timing_state": 2,
       "micro_operations": [
@@ -921,9 +921,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 100"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 100"
       ],
       "timing_state": 3,
       "micro_operations": [],
@@ -938,9 +938,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 100"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 100"
       ],
       "timing_state": 4,
       "micro_operations": [],
@@ -955,9 +955,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 101"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 101"
       ],
       "timing_state": 1,
       "micro_operations": [],
@@ -972,9 +972,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 101"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 101"
       ],
       "timing_state": 2,
       "micro_operations": [
@@ -996,9 +996,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 101"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 101"
       ],
       "timing_state": 3,
       "micro_operations": [],
@@ -1013,9 +1013,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 101"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 101"
       ],
       "timing_state": 4,
       "micro_operations": [],
@@ -1030,9 +1030,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 110"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 110"
       ],
       "timing_state": 1,
       "micro_operations": [],
@@ -1047,9 +1047,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 110"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 110"
       ],
       "timing_state": 2,
       "micro_operations": [],
@@ -1064,9 +1064,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 110"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 110"
       ],
       "timing_state": 3,
       "micro_operations": [],
@@ -1081,9 +1081,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 110"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 110"
       ],
       "timing_state": 4,
       "micro_operations": [],
@@ -1098,9 +1098,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 111"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 111"
       ],
       "timing_state": 1,
       "micro_operations": [],
@@ -1115,9 +1115,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 111"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 111"
       ],
       "timing_state": 2,
       "micro_operations": [],
@@ -1132,9 +1132,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 111"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 111"
       ],
       "timing_state": 3,
       "micro_operations": [],
@@ -1149,9 +1149,9 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 00",
-        "IR[2:0] = 111"
+        "IR_IS_IOT = 1",
+        "IR_IOA = 00",
+        "IR_IOT_OP = 111"
       ],
       "timing_state": 4,
       "micro_operations": [],
@@ -1166,10 +1166,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IR[8:6] = 010",
-        "IR[2] = 0",
-        "IR[0] = 1"
+        "IR_IS_IOT = 1",
+        "IR_WRITES_DF = 1"
       ],
       "timing_state": 1,
       "micro_operations": [],
@@ -1184,10 +1182,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IR[8:6] = 010",
-        "IR[2] = 0",
-        "IR[0] = 1"
+        "IR_IS_IOT = 1",
+        "IR_WRITES_DF = 1"
       ],
       "timing_state": 2,
       "micro_operations": [
@@ -1204,10 +1200,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IR[8:6] = 010",
-        "IR[2] = 0",
-        "IR[0] = 1"
+        "IR_IS_IOT = 1",
+        "IR_WRITES_DF = 1"
       ],
       "timing_state": 3,
       "micro_operations": [],
@@ -1222,10 +1216,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IR[8:6] = 010",
-        "IR[2] = 0",
-        "IR[0] = 1"
+        "IR_IS_IOT = 1",
+        "IR_WRITES_DF = 1"
       ],
       "timing_state": 4,
       "micro_operations": [],
@@ -1240,10 +1232,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 2n",
-        "IR[2] = 0",
-        "IR[1] = 1"
+        "IR_IS_IOT = 1",
+        "IR_WRITES_IF = 1"
       ],
       "timing_state": 1,
       "micro_operations": [],
@@ -1258,10 +1248,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 2n",
-        "IR[2] = 0",
-        "IR[1] = 1"
+        "IR_IS_IOT = 1",
+        "IR_WRITES_IF = 1"
       ],
       "timing_state": 2,
       "micro_operations": [
@@ -1280,10 +1268,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 2n",
-        "IR[2] = 0",
-        "IR[1] = 1"
+        "IR_IS_IOT = 1",
+        "IR_WRITES_IF = 1"
       ],
       "timing_state": 3,
       "micro_operations": [],
@@ -1298,10 +1284,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IOA = 2n",
-        "IR[2] = 0",
-        "IR[1] = 1"
+        "IR_IS_IOT = 1",
+        "IR_WRITES_IF = 1"
       ],
       "timing_state": 4,
       "micro_operations": [],
@@ -1316,10 +1300,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IR[8:6] = 010",
-        "IR[2:0] = 100",
-        "IR[5:3] = 001"
+        "IR_IS_IOT = 1",
+        "IR_READS_DF = 1"
       ],
       "timing_state": 1,
       "micro_operations": [],
@@ -1334,10 +1316,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IR[8:6] = 010",
-        "IR[2:0] = 100",
-        "IR[5:3] = 001"
+        "IR_IS_IOT = 1",
+        "IR_READS_DF = 1"
       ],
       "timing_state": 2,
       "micro_operations": [
@@ -1354,10 +1334,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IR[8:6] = 010",
-        "IR[2:0] = 100",
-        "IR[5:3] = 001"
+        "IR_IS_IOT = 1",
+        "IR_READS_DF = 1"
       ],
       "timing_state": 3,
       "micro_operations": [],
@@ -1372,10 +1350,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IR[8:6] = 010",
-        "IR[2:0] = 100",
-        "IR[5:3] = 001"
+        "IR_IS_IOT = 1",
+        "IR_READS_DF = 1"
       ],
       "timing_state": 4,
       "micro_operations": [],
@@ -1390,10 +1366,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IR[8:6] = 010",
-        "IR[2:0] = 100",
-        "IR[5:3] = 010"
+        "IR_IS_IOT = 1",
+        "IR_READS_IF = 1"
       ],
       "timing_state": 1,
       "micro_operations": [],
@@ -1408,10 +1382,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IR[8:6] = 010",
-        "IR[2:0] = 100",
-        "IR[5:3] = 010"
+        "IR_IS_IOT = 1",
+        "IR_READS_IF = 1"
       ],
       "timing_state": 2,
       "micro_operations": [
@@ -1428,10 +1400,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IR[8:6] = 010",
-        "IR[2:0] = 100",
-        "IR[5:3] = 010"
+        "IR_IS_IOT = 1",
+        "IR_READS_IF = 1"
       ],
       "timing_state": 3,
       "micro_operations": [],
@@ -1446,10 +1416,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IR[8:6] = 010",
-        "IR[2:0] = 100",
-        "IR[5:3] = 010"
+        "IR_IS_IOT = 1",
+        "IR_READS_IF = 1"
       ],
       "timing_state": 4,
       "micro_operations": [],
@@ -1464,10 +1432,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IR[8:6] = 010",
-        "IR[2:0] = 100",
-        "IR[5:3] = 011"
+        "IR_IS_IOT = 1",
+        "IR_READS_IB = 1"
       ],
       "timing_state": 1,
       "micro_operations": [],
@@ -1482,10 +1448,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IR[8:6] = 010",
-        "IR[2:0] = 100",
-        "IR[5:3] = 011"
+        "IR_IS_IOT = 1",
+        "IR_READS_IB = 1"
       ],
       "timing_state": 2,
       "micro_operations": [
@@ -1502,10 +1466,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IR[8:6] = 010",
-        "IR[2:0] = 100",
-        "IR[5:3] = 011"
+        "IR_IS_IOT = 1",
+        "IR_READS_IB = 1"
       ],
       "timing_state": 3,
       "micro_operations": [],
@@ -1520,10 +1482,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IR[8:6] = 010",
-        "IR[2:0] = 100",
-        "IR[5:3] = 011"
+        "IR_IS_IOT = 1",
+        "IR_READS_IB = 1"
       ],
       "timing_state": 4,
       "micro_operations": [],
@@ -1538,10 +1498,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IR[8:6] = 010",
-        "IR[2:0] = 100",
-        "IR[5:3] = 100"
+        "IR_IS_IOT = 1",
+        "IR_RESTORES_IB = 1"
       ],
       "timing_state": 1,
       "micro_operations": [],
@@ -1556,10 +1514,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IR[8:6] = 010",
-        "IR[2:0] = 100",
-        "IR[5:3] = 100"
+        "IR_IS_IOT = 1",
+        "IR_RESTORES_IB = 1"
       ],
       "timing_state": 2,
       "micro_operations": [
@@ -1579,10 +1535,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IR[8:6] = 010",
-        "IR[2:0] = 100",
-        "IR[5:3] = 100"
+        "IR_IS_IOT = 1",
+        "IR_RESTORES_IB = 1"
       ],
       "timing_state": 3,
       "micro_operations": [],
@@ -1597,10 +1551,8 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "IR[11:9] = 110",
-        "IR[8:6] = 010",
-        "IR[2:0] = 100",
-        "IR[5:3] = 100"
+        "IR_IS_IOT = 1",
+        "IR_RESTORES_IB = 1"
       ],
       "timing_state": 4,
       "micro_operations": [],
@@ -1768,17 +1720,17 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "OPR_GROUP = 1"
+        "IR_OPR_GROUP1 = 1"
       ],
       "timing_state": 1,
       "micro_operations": [],
       "conditional_micro_operations": [
         {
-          "predicate": "IR[7] = 1",
+          "predicate": "IR_OPR_CLA = 1",
           "micro_operation": "AC_CLEAR"
         },
         {
-          "predicate": "IR[6] = 1",
+          "predicate": "IR_OPR_CLL = 1",
           "micro_operation": "L_CLEAR"
         }
       ]
@@ -1792,17 +1744,17 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "OPR_GROUP = 1"
+        "IR_OPR_GROUP1 = 1"
       ],
       "timing_state": 2,
       "micro_operations": [],
       "conditional_micro_operations": [
         {
-          "predicate": "IR[5] = 1",
+          "predicate": "IR_OPR_CMA = 1",
           "micro_operation": "AC_COMP"
         },
         {
-          "predicate": "IR[4] = 1",
+          "predicate": "IR_OPR_CML = 1",
           "micro_operation": "L_COMP"
         }
       ]
@@ -1816,13 +1768,13 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "OPR_GROUP = 1"
+        "IR_OPR_GROUP1 = 1"
       ],
       "timing_state": 3,
       "micro_operations": [],
       "conditional_micro_operations": [
         {
-          "predicate": "IR[0] = 1",
+          "predicate": "IR_OPR_IAC = 1",
           "micro_operation": "AC_INC"
         }
       ]
@@ -1836,29 +1788,29 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "OPR_GROUP = 1"
+        "IR_OPR_GROUP1 = 1"
       ],
       "timing_state": 4,
       "micro_operations": [],
       "conditional_micro_operations": [
         {
-          "predicate": "IR[3] = 1 AND IR[1] = 0",
+          "predicate": "IR_OPR_RAR = 1 AND IR_OPR_BSW = 0",
           "micro_operation": "AC_RAR"
         },
         {
-          "predicate": "IR[2] = 1 AND IR[1] = 0",
+          "predicate": "IR_OPR_RAL = 1 AND IR_OPR_BSW = 0",
           "micro_operation": "AC_RAL"
         },
         {
-          "predicate": "IR[3] = 1 AND IR[1] = 1",
+          "predicate": "IR_OPR_RAR = 1 AND IR_OPR_BSW = 1",
           "micro_operation": "AC_RTR"
         },
         {
-          "predicate": "IR[2] = 1 AND IR[1] = 1",
+          "predicate": "IR_OPR_RAL = 1 AND IR_OPR_BSW = 1",
           "micro_operation": "AC_RTL"
         },
         {
-          "predicate": "IR[3] = 0 AND IR[2] = 0 AND IR[1] = 1",
+          "predicate": "IR_OPR_RAR = 0 AND IR_OPR_RAL = 0 AND IR_OPR_BSW = 1",
           "micro_operation": "AC_BSW"
         }
       ]
@@ -1872,7 +1824,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "OPR_GROUP = 2"
+        "IR_OPR_GROUP2 = 1"
       ],
       "timing_state": 1,
       "micro_operations": [],
@@ -1892,13 +1844,13 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "OPR_GROUP = 2"
+        "IR_OPR_GROUP2 = 1"
       ],
       "timing_state": 2,
       "micro_operations": [],
       "conditional_micro_operations": [
         {
-          "predicate": "IR[7] = 1",
+          "predicate": "IR_OPR_CLA = 1",
           "micro_operation": "AC_CLEAR"
         }
       ]
@@ -1912,13 +1864,13 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "OPR_GROUP = 2"
+        "IR_OPR_GROUP2 = 1"
       ],
       "timing_state": 3,
       "micro_operations": [],
       "conditional_micro_operations": [
         {
-          "predicate": "IR[2] = 1",
+          "predicate": "IR_OPR_OSR = 1",
           "micro_operation": "AC_OR_FP_SR"
         }
       ]
@@ -1932,13 +1884,13 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "OPR_GROUP = 3"
+        "IR_OPR_GROUP3 = 1"
       ],
       "timing_state": 1,
       "micro_operations": [],
       "conditional_micro_operations": [
         {
-          "predicate": "IR[7] = 1",
+          "predicate": "IR_OPR_CLA = 1",
           "micro_operation": "AC_CLEAR"
         }
       ]
@@ -1952,7 +1904,7 @@
       "execution_model": "major-state",
       "context": [
         "MS = EXECUTE",
-        "OPR_GROUP = 3"
+        "IR_OPR_GROUP3 = 1"
       ],
       "timing_state": 2,
       "micro_operations": [],
