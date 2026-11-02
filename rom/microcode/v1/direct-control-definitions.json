@@ -356,7 +356,7 @@
         "line": 440
       },
       "applicable_context": [
-        "RUN = 1\n\nAND\n\nnone of the following halt conditions applies at the current TP:\n\n- a pending halt request is consumed at an instruction-completion boundary\n- Single Instruction mode reaches an instruction-completion boundary\n- Single Step mode reaches completion of the current major state"
+        "RUN = 1\nNOT (\n    HLT_REQ = 1\n    AND MS = EXECUTE\n    AND TS = 4\n)\nNOT (\n    FP_SINGLE_INSTRUCTION = 1\n    AND MS = EXECUTE\n    AND TS = 4\n)\nNOT (\n    FP_SINGLE_STEP = 1\n    AND TS = 4\n)"
       ],
       "direct_assignments": [
         "RUN_NEXT = 1"
@@ -392,10 +392,10 @@
       "group": "3.3 Run-State Sequencing",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 482
+        "line": 494
       },
       "applicable_context": [
-        "RUN = 0\nFP_START = 1\nthe START command is accepted"
+        "RUN = 0\nFP_START = 1"
       ],
       "direct_assignments": [
         "RUN_NEXT = 1\nMS_NEXT  = FETCH"
@@ -429,10 +429,10 @@
       "group": "3.3 Run-State Sequencing",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 516
+        "line": 527
       },
       "applicable_context": [
-        "RUN = 0\nFP_CONTINUE = 1\nthe CONTINUE command is accepted\nFP_START = 0"
+        "RUN = 0\nFP_CONTINUE = 1\nFP_START = 0"
       ],
       "direct_assignments": [
         "RUN_NEXT = 1"
@@ -466,10 +466,10 @@
       "group": "3.3 Run-State Sequencing",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 578
+        "line": 588
       },
       "applicable_context": [
-        "RUN = 1\nHLT_REQ = 1\nthe current TP is an instruction-completion boundary"
+        "RUN = 1\nHLT_REQ = 1\nMS = EXECUTE\nTS = 4"
       ],
       "direct_assignments": [
         "RUN_NEXT     = 0\nHLT_REQ_NEXT = 0"
@@ -509,10 +509,10 @@
       "group": "3.3 Run-State Sequencing",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 617
+        "line": 628
       },
       "applicable_context": [
-        "RUN = 1\nFP_SINGLE_INSTRUCTION = 1\nthe current TP completes the instruction"
+        "RUN = 1\nFP_SINGLE_INSTRUCTION = 1\nMS = EXECUTE\nTS = 4"
       ],
       "direct_assignments": [
         "RUN_NEXT = 0"
@@ -553,7 +553,7 @@
       "group": "3.3 Run-State Sequencing",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 669
+        "line": 681
       },
       "applicable_context": [
         "RUN = 1\nFP_SINGLE_STEP = 1\nTS = 4"
@@ -598,10 +598,10 @@
       "group": "3.4 Halt-Request Sequencing",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 779
+        "line": 791
       },
       "applicable_context": [
-        "HLT_REQ = 0\nno STOP request is accepted\nIR_OPR_HLT = 0"
+        "HLT_REQ = 0\nIR_OPR_HLT = 0"
       ],
       "direct_assignments": [
         "HLT_REQ_NEXT = 0"
@@ -628,10 +628,10 @@
       "group": "3.4 Halt-Request Sequencing",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 807
+        "line": 818
       },
       "applicable_context": [
-        "FP_STOP = 1\nthe STOP command is accepted\nthe current TP precedes the instruction-completion TP"
+        "RUN = 1\nFP_STOP = 1\nNOT (\n    MS = EXECUTE\n    AND TS = 4\n)"
       ],
       "direct_assignments": [
         "HLT_REQ_NEXT = 1"
@@ -671,7 +671,7 @@
       "group": "3.4 Halt-Request Sequencing",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 846
+        "line": 860
       },
       "applicable_context": [
         "MS = EXECUTE\nTS = 3\nIR_OPR_HLT = 1"
@@ -717,10 +717,10 @@
       "group": "3.4 Halt-Request Sequencing",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 883
+        "line": 897
       },
       "applicable_context": [
-        "HLT_REQ = 1\nthe current TP is not an instruction-completion boundary"
+        "HLT_REQ = 1\nNOT (\n    MS = EXECUTE\n    AND TS = 4\n)"
       ],
       "direct_assignments": [
         "HLT_REQ_NEXT = 1"
@@ -759,10 +759,10 @@
       "group": "3.4 Halt-Request Sequencing",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 918
+        "line": 935
       },
       "applicable_context": [
-        "HLT_REQ = 1\nthe current TP is an instruction-completion boundary"
+        "HLT_REQ = 1\nMS = EXECUTE\nTS = 4"
       ],
       "direct_assignments": [
         "RUN_NEXT     = 0\nHLT_REQ_NEXT = 0"
@@ -797,15 +797,77 @@
       "derived_values": []
     },
     {
-      "id": "01:4.2",
-      "title": "4.2 Program-Counter Address Context",
-      "group": "4 Memory-Context Selection",
+      "id": "01:4.2.1",
+      "title": "4.2.1 Instruction Fetch",
+      "group": "4.2 Program-Counter Address Context",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1047
+        "line": 1069
       },
       "applicable_context": [
-        "the CPU owns the memory interface\nthe current memory operation uses PC as its address"
+        "MS = FETCH\nTS = 2"
+      ],
+      "direct_assignments": [
+        "AB_SRC = PC"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [
+        {
+          "label": "Fetch & Defer",
+          "target": "../../03-microarchitecture/04-fetch-defer.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.2.2",
+      "title": "4.2.2 Console Examine",
+      "group": "4.2 Program-Counter Address Context",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1088
+      },
+      "applicable_context": [
+        "RUN = 0\nFP_EXAMINE = 1"
+      ],
+      "direct_assignments": [
+        "AB_SRC = PC"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [
+        {
+          "label": "Console Execution",
+          "target": "../../03-microarchitecture/09-console-execution.md#7-examine-operation"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.2.3",
+      "title": "4.2.3 Console Deposit",
+      "group": "4.2 Program-Counter Address Context",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1107
+      },
+      "applicable_context": [
+        "RUN = 0\nFP_DEPOSIT = 1"
       ],
       "direct_assignments": [
         "AB_SRC = PC"
@@ -816,17 +878,13 @@
       "value_relationships": [],
       "widths": [],
       "constraints": [
-        "This case applies to the documented instruction-fetch memory access.",
-        "`AB_SRC` defines the address source independently from `/RD`, `/WR`, `MDB_SRC`, and `MFB_SRC`."
+        "These cases define the documented CPU-owned memory accesses that drive `AB` from `PC`.",
+        "`AB_SRC` remains independent from `/RD`, `/WR`, `MDB_SRC`, and `MFB_SRC`."
       ],
       "sources": [
         {
-          "label": "Fetch & Defer",
-          "target": "../../03-microarchitecture/04-fetch-defer.md"
-        },
-        {
-          "label": "Memory Field Selection",
-          "target": "../../06-memory/05-memory-field-selection.md"
+          "label": "Console Execution",
+          "target": "../../03-microarchitecture/09-console-execution.md#8-deposit-operation"
         }
       ],
       "drive_states": [],
@@ -835,15 +893,171 @@
       "derived_values": []
     },
     {
-      "id": "01:4.3",
-      "title": "4.3 Memory-Address Register Context",
-      "group": "4 Memory-Context Selection",
+      "id": "01:4.3.1",
+      "title": "4.3.1 DEFER Pointer Read",
+      "group": "4.3 Memory-Address Register Context",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1072
+        "line": 1135
       },
       "applicable_context": [
-        "the CPU owns the memory interface\nthe current memory operation uses MA as its address"
+        "MS = DEFER\nTS = 2"
+      ],
+      "direct_assignments": [
+        "AB_SRC = MA"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.3.2",
+      "title": "4.3.2 DEFER Auto-Index Writeback",
+      "group": "4.3 Memory-Address Register Context",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1150
+      },
+      "applicable_context": [
+        "MS = DEFER\nTS = 4\nAUTO_INDEX_REQUIRED = 1"
+      ],
+      "direct_assignments": [
+        "AB_SRC = MA"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.3.3",
+      "title": "4.3.3 MRI Memory Read",
+      "group": "4.3 Memory-Address Register Context",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1166
+      },
+      "applicable_context": [
+        "MS = EXECUTE\nTS = 2\nIR_MRI_OPCODE = 000"
+      ],
+      "direct_assignments": [
+        "AB_SRC = MA"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.3.4",
+      "title": "4.3.4 ISZ Writeback",
+      "group": "4.3 Memory-Address Register Context",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1198
+      },
+      "applicable_context": [
+        "MS = EXECUTE\nTS = 4\nIR_MRI_OPCODE = 010"
+      ],
+      "direct_assignments": [
+        "AB_SRC = MA"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.3.5",
+      "title": "4.3.5 DCA Write",
+      "group": "4.3 Memory-Address Register Context",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1214
+      },
+      "applicable_context": [
+        "MS = EXECUTE\nTS = 3\nIR_MRI_OPCODE = 011"
+      ],
+      "direct_assignments": [
+        "AB_SRC = MA"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.3.6",
+      "title": "4.3.6 JMS Write",
+      "group": "4.3 Memory-Address Register Context",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1230
+      },
+      "applicable_context": [
+        "MS = EXECUTE\nTS = 3\nIR_MRI_OPCODE = 100"
+      ],
+      "direct_assignments": [
+        "AB_SRC = MA"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.3.7",
+      "title": "4.3.7 Interrupt Return-Address Write",
+      "group": "4.3 Memory-Address Register Context",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1246
+      },
+      "applicable_context": [
+        "MS = INTERRUPT\nTS = 3"
       ],
       "direct_assignments": [
         "AB_SRC = MA"
@@ -854,8 +1068,8 @@
       "value_relationships": [],
       "widths": [],
       "constraints": [
-        "This case applies only to documented memory operations for which `MA` drives `AB`.",
-        "`AB_SRC` defines the address source independently from `/RD`, `/WR`, `MDB_SRC`, and `MFB_SRC`."
+        "These cases define the documented CPU-owned memory accesses that drive `AB` from `MA`.",
+        "`AB_SRC` remains independent from `/RD`, `/WR`, `MDB_SRC`, and `MFB_SRC`."
       ],
       "sources": [
         {
@@ -869,10 +1083,6 @@
         {
           "label": "Interrupt Execution",
           "target": "../../03-microarchitecture/08-interrupt-execution.md"
-        },
-        {
-          "label": "Console Execution",
-          "target": "../../03-microarchitecture/09-console-execution.md"
         }
       ],
       "drive_states": [],
@@ -886,10 +1096,10 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1132
+        "line": 1305
       },
       "applicable_context": [
-        "MS = FETCH\nthe CPU performs the instruction-fetch memory access"
+        "MS = FETCH\nTS = 2"
       ],
       "direct_assignments": [
         "MFB_SRC = IF"
@@ -917,12 +1127,16 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1153
+        "line": 1326
       },
       "applicable_context": [
-        "MS = EXECUTE\nIR_IS_MRI = 1\nIR_INDIRECT = 0\nthe current instruction performs a memory access"
+        "MS = EXECUTE\nTS = 2\nIR_INDIRECT = 0\nAND (\n    IR_MRI_OPCODE = 000\n    OR IR_MRI_OPCODE = 001\n    OR IR_MRI_OPCODE = 010\n)",
+        "MS = EXECUTE\nTS = 4\nIR_INDIRECT = 0\nIR_MRI_OPCODE = 010",
+        "MS = EXECUTE\nTS = 3\nIR_INDIRECT = 0\nAND (\n    IR_MRI_OPCODE = 011\n    OR IR_MRI_OPCODE = 100\n)"
       ],
       "direct_assignments": [
+        "MFB_SRC = IF",
+        "MFB_SRC = IF",
         "MFB_SRC = IF"
       ],
       "control_supplied_values": [],
@@ -956,10 +1170,10 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1193
+        "line": 1409
       },
       "applicable_context": [
-        "MS = DEFER\nIR_IS_MRI = 1\nIR_INDIRECT = 1\nthe CPU reads the indirect pointer"
+        "MS = DEFER\nTS = 2\nIR_IS_MRI = 1"
       ],
       "direct_assignments": [
         "MFB_SRC = IF"
@@ -994,10 +1208,10 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1224
+        "line": 1439
       },
       "applicable_context": [
-        "MS = DEFER\nIR_IS_MRI = 1\nIR_INDIRECT = 1\nEAI = 1\nthe incremented pointer is written back to memory"
+        "MS = DEFER\nTS = 4\nAUTO_INDEX_REQUIRED = 1"
       ],
       "direct_assignments": [
         "MFB_SRC = IF"
@@ -1027,15 +1241,15 @@
       "derived_values": []
     },
     {
-      "id": "01:4.5.5",
-      "title": "4.5.5 Final Indirect MRI Access",
+      "id": "01:4.5.5.1",
+      "title": "4.5.5.1 Indirect MRI Read",
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1256
+        "line": 1493
       },
       "applicable_context": [
-        "MS = EXECUTE\nIR_IS_MRI = 1\nIR_INDIRECT = 1\nthe current instruction performs a memory access"
+        "MS = EXECUTE\nTS = 2\nIR_INDIRECT = 1\nAND (\n    IR_MRI_OPCODE = 000\n    OR IR_MRI_OPCODE = 001\n    OR IR_MRI_OPCODE = 010\n)"
       ],
       "direct_assignments": [
         "MFB_SRC = DF"
@@ -1045,22 +1259,60 @@
       "state_commits": [],
       "value_relationships": [],
       "widths": [],
-      "constraints": [
-        "`DF` applies only to the final memory access after indirect address resolution.",
-        "The indirect pointer read and any autoindex writeback remain in `IF`.",
-        "The resolved 12-bit address is supplied separately from the field selection.",
-        "`MFB_SRC = DF` does not alter the resolved address portion."
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.5.5.2",
+      "title": "4.5.5.2 Indirect ISZ Writeback",
+      "group": "4.5 Memory Field Selection Rules",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1514
+      },
+      "applicable_context": [
+        "MS = EXECUTE\nTS = 4\nIR_INDIRECT = 1\nIR_MRI_OPCODE = 010"
       ],
-      "sources": [
-        {
-          "label": "Addressing Model",
-          "target": "../../02-isa/05-addressing-model.md"
-        },
-        {
-          "label": "MRI Execution",
-          "target": "../../03-microarchitecture/05-mri-execution.md"
-        }
+      "direct_assignments": [
+        "MFB_SRC = DF"
       ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.5.5.3",
+      "title": "4.5.5.3 Indirect DCA/JMS Write",
+      "group": "4.5 Memory Field Selection Rules",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1531
+      },
+      "applicable_context": [
+        "MS = EXECUTE\nTS = 3\nIR_INDIRECT = 1\nAND (\n    IR_MRI_OPCODE = 011\n    OR IR_MRI_OPCODE = 100\n)"
+      ],
+      "direct_assignments": [
+        "MFB_SRC = DF"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
       "drive_states": [],
       "external_ownership": [],
       "memory_behavior": [],
@@ -1072,10 +1324,10 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1297
+        "line": 1553
       },
       "applicable_context": [
-        "MS = INTERRUPT\nthe return address is written to memory location 0000"
+        "MS = INTERRUPT\nTS = 3"
       ],
       "direct_assignments": [
         "MFB_SRC = IF"
@@ -1103,10 +1355,10 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1318
+        "line": 1574
       },
       "applicable_context": [
-        "RUN = 0\nan EXAM command is accepted"
+        "RUN = 0\nFP_EXAMINE = 1"
       ],
       "direct_assignments": [
         "MFB_SRC = IF"
@@ -1134,10 +1386,10 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1341
+        "line": 1597
       },
       "applicable_context": [
-        "RUN = 0\na DEPOSIT command is accepted"
+        "RUN = 0\nFP_DEPOSIT = 1"
       ],
       "direct_assignments": [
         "MFB_SRC = IF"
@@ -1165,10 +1417,10 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1364
+        "line": 1620
       },
       "applicable_context": [
-        "MS = DMA\n/DMA_GRANT is asserted"
+        "MS = DMA"
       ],
       "direct_assignments": [],
       "control_supplied_values": [],
@@ -1200,7 +1452,7 @@
       "group": "5 Control-Provided Internal Values",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1458
+        "line": 1713
       },
       "applicable_context": [
         "IR_WRITES_DF = 1\nIR_DF_TO_DF is selected"
@@ -1249,7 +1501,7 @@
       "group": "5 Control-Provided Internal Values",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1508
+        "line": 1763
       },
       "applicable_context": [
         "IR_WRITES_IF = 1\nIR_IF_TO_DIF is selected"
@@ -1302,7 +1554,7 @@
       "group": "5 Control-Provided Internal Values",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1564
+        "line": 1819
       },
       "applicable_context": [
         "DIF_CLEAR is selected"
@@ -1342,10 +1594,10 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1627
+        "line": 1882
       },
       "applicable_context": [
-        "IO_READ_REQ is accepted"
+        "IO_READ_REQ = 1"
       ],
       "direct_assignments": [
         "IOT_TRANSFER_LOAD = 1\nIOT_TRANSFER_VAL  = READ"
@@ -1388,10 +1640,10 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1654
+        "line": 1909
       },
       "applicable_context": [
-        "IO_WRITE_REQ is accepted"
+        "IO_WRITE_REQ = 1"
       ],
       "direct_assignments": [
         "IOT_TRANSFER_LOAD = 1\nIOT_TRANSFER_VAL  = WRITE"
@@ -1434,10 +1686,10 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1681
+        "line": 1936
       },
       "applicable_context": [
-        "a pending transfer completes\nno replacement request is accepted at the same TP"
+        "(\n    IOT_READ_PENDING = 1\n    OR IOT_WRITE_PENDING = 1\n)\nIO_READ_REQ = 0\nIO_WRITE_REQ = 0"
       ],
       "direct_assignments": [
         "IOT_TRANSFER_LOAD = 1\nIOT_TRANSFER_VAL  = NONE"
@@ -1480,10 +1732,10 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1709
+        "line": 1971
       },
       "applicable_context": [
-        "a pending transfer completes\nIO_READ_REQ is accepted at the same TP"
+        "(\n    IOT_READ_PENDING = 1\n    OR IOT_WRITE_PENDING = 1\n)\nIO_READ_REQ = 1"
       ],
       "direct_assignments": [
         "IOT_TRANSFER_LOAD = 1\nIOT_TRANSFER_VAL  = READ"
@@ -1527,10 +1779,10 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1738
+        "line": 2006
       },
       "applicable_context": [
-        "a pending transfer completes\nIO_WRITE_REQ is accepted at the same TP"
+        "(\n    IOT_READ_PENDING = 1\n    OR IOT_WRITE_PENDING = 1\n)\nIO_WRITE_REQ = 1"
       ],
       "direct_assignments": [
         "IOT_TRANSFER_LOAD = 1\nIOT_TRANSFER_VAL  = WRITE"
@@ -1577,7 +1829,7 @@
         "line": 175
       },
       "applicable_context": [
-        "a CPU-owned memory-read operation is active\nMEM_READ_TO_MB is selected"
+        "MEM_READ_TO_MB is selected"
       ],
       "direct_assignments": [],
       "control_supplied_values": [],
@@ -1624,10 +1876,10 @@
       "group": "4 CPU Memory-Interface Ownership",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 224
+        "line": 223
       },
       "applicable_context": [
-        "a CPU-owned memory-write operation is active\nMEM_WRITE_FROM_MB is selected"
+        "MEM_WRITE_FROM_MB is selected"
       ],
       "direct_assignments": [],
       "control_supplied_values": [],
@@ -1673,10 +1925,10 @@
       "group": "4 CPU Memory-Interface Ownership",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 273
+        "line": 271
       },
       "applicable_context": [
-        "a CPU-owned console DEPOSIT operation is active\nMEM_WRITE_FROM_FP_SR is selected"
+        "MEM_WRITE_FROM_FP_SR is selected"
       ],
       "direct_assignments": [],
       "control_supplied_values": [],
@@ -1722,10 +1974,10 @@
       "group": "4 CPU Memory-Interface Ownership",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 322
+        "line": 319
       },
       "applicable_context": [
-        "the CPU owns the memory interface\nno CPU memory operation is active"
+        "MEM_READ_TO_MB is not selected\nMEM_WRITE_FROM_MB is not selected\nMEM_WRITE_FROM_FP_SR is not selected\nMS != DMA"
       ],
       "direct_assignments": [],
       "control_supplied_values": [],
@@ -1760,7 +2012,7 @@
       "group": "5 DMA Authorization and Ownership",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 394
+        "line": 393
       },
       "applicable_context": [
         "MS = DMA"
@@ -1813,7 +2065,7 @@
       "group": "5 DMA Authorization and Ownership",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 437
+        "line": 436
       },
       "applicable_context": [
         "MS != DMA"
@@ -1856,7 +2108,7 @@
       "group": "5 DMA Authorization and Ownership",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 472
+        "line": 471
       },
       "applicable_context": [
         "MS = DMA\n/DMA_GRANT = 0\na controller has a matching valid DMA_GRANT_ID\nthe selected DMA transfer is a memory read"
@@ -1894,7 +2146,7 @@
       "group": "5 DMA Authorization and Ownership",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 516
+        "line": 515
       },
       "applicable_context": [
         "MS = DMA\n/DMA_GRANT = 0\na controller has a matching valid DMA_GRANT_ID\nthe selected DMA transfer is a memory write"
@@ -1932,10 +2184,10 @@
       "group": "6 System Data Bus Ownership",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 585
+        "line": 584
       },
       "applicable_context": [
-        "no CPU DB write is active"
+        "DB_WRITE_FROM_AC is not selected"
       ],
       "direct_assignments": [],
       "control_supplied_values": [],
@@ -1976,10 +2228,10 @@
       "group": "6 System Data Bus Ownership",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 614
+        "line": 613
       },
       "applicable_context": [
-        "DB_WRITE_FROM_AC is selected\n/DB_WRITE is asserted"
+        "DB_WRITE_FROM_AC is selected"
       ],
       "direct_assignments": [],
       "control_supplied_values": [],
@@ -2019,10 +2271,10 @@
       "group": "6 System Data Bus Ownership",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 651
+        "line": 649
       },
       "applicable_context": [
-        "DB_READ_TO_AC is selected\n/DB_READ is asserted"
+        "DB_READ_TO_AC is selected"
       ],
       "direct_assignments": [],
       "control_supplied_values": [],
@@ -2064,10 +2316,10 @@
       "group": "7 External-IOT Qualification",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 715
+        "line": 712
       },
       "applicable_context": [
-        "MS = EXECUTE\nthe current instruction is an external-device IOT"
+        "MS = EXECUTE\nIR_IS_IOT = 1\nIR_IOA != 000000"
       ],
       "direct_assignments": [
         "IOT_ACTIVE = 1"
@@ -2111,10 +2363,10 @@
       "group": "7 External-IOT Qualification",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 753
+        "line": 751
       },
       "applicable_context": [
-        "the current control case is not external-device IOT execution"
+        "NOT (\n    MS = EXECUTE\n    AND IR_IS_IOT = 1\n    AND IR_IOA != 000000\n)"
       ],
       "direct_assignments": [
         "IOT_ACTIVE = 0"
@@ -2150,10 +2402,10 @@
       "group": "8 System Initialization",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 806
+        "line": 808
       },
       "applicable_context": [
-        "MS = EXECUTE\nthe current instruction is CAF\nthe current timing state is the documented CAF initialization timing state"
+        "MS = EXECUTE\nTS = 4\nIR_IS_CAF = 1"
       ],
       "direct_assignments": [
         "/INITIALIZE = 0"
@@ -2197,10 +2449,10 @@
       "group": "8 System Initialization",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 844
+        "line": 846
       },
       "applicable_context": [
-        "RUN = 0\nFP_CLEAR = 1\nthe CLEAR command is accepted"
+        "RUN = 0\nFP_CLEAR = 1"
       ],
       "direct_assignments": [
         "/INITIALIZE = 0"
@@ -2243,10 +2495,10 @@
       "group": "8 System Initialization",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 881
+        "line": 882
       },
       "applicable_context": [
-        "neither CAF initialization nor accepted front-panel CLEAR applies"
+        "NOT (\n    MS = EXECUTE\n    AND TS = 4\n    AND IR_IS_CAF = 1\n)\nNOT (\n    RUN = 0\n    AND FP_CLEAR = 1\n)"
       ],
       "direct_assignments": [
         "/INITIALIZE = 1"

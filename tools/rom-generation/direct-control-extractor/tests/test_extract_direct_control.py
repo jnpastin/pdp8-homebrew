@@ -230,6 +230,50 @@ RUN_NEXT = 1
             ["RUN = 1\nAND\nnone of the halt conditions applies"],
         )
 
+    def test_preserves_multiline_boolean_context_code_block(self) -> None:
+        text = """### 3.3.2 Continued Running
+
+Applicable context:
+
+```text
+RUN = 1
+NOT (
+    HLT_REQ = 1
+    AND MS = EXECUTE
+    AND TS = 4
+)
+NOT (
+    FP_SINGLE_STEP = 1
+    AND TS = 4
+)
+```
+
+Assignment:
+
+```text
+RUN_NEXT = 1
+```
+"""
+        definitions, diagnostics = extractor.extract_document(
+            text, "docs/01-example.md"
+        )
+        self.assertEqual(diagnostics, [])
+        self.assertEqual(
+            definitions[0]["applicable_context"],
+            [
+                "RUN = 1\n"
+                "NOT (\n"
+                "    HLT_REQ = 1\n"
+                "    AND MS = EXECUTE\n"
+                "    AND TS = 4\n"
+                ")\n"
+                "NOT (\n"
+                "    FP_SINGLE_STEP = 1\n"
+                "    AND TS = 4\n"
+                ")"
+            ],
+        )
+
     def test_unstructured_assignment_is_error(self) -> None:
         text = """### 3.2.1 Case
 

@@ -439,18 +439,30 @@ Source:
 
 #### 3.3.2 Continued Running
 
-Applicable context:
-
-```text
-RUN = 1
-
-AND
-
-none of the following halt conditions applies at the current TP:
+Continued running applies while `RUN = 1` when none of the following halt conditions applies at the current TP:
 
 - a pending halt request is consumed at an instruction-completion boundary
 - Single Instruction mode reaches an instruction-completion boundary
 - Single Step mode reaches completion of the current major state
+
+Applicable context:
+
+```text
+RUN = 1
+NOT (
+    HLT_REQ = 1
+    AND MS = EXECUTE
+    AND TS = 4
+)
+NOT (
+    FP_SINGLE_INSTRUCTION = 1
+    AND MS = EXECUTE
+    AND TS = 4
+)
+NOT (
+    FP_SINGLE_STEP = 1
+    AND TS = 4
+)
 ```
 
 Assignment:
@@ -486,7 +498,6 @@ Applicable context:
 ```text
 RUN = 0
 FP_START = 1
-the START command is accepted
 ```
 
 Assignments:
@@ -520,7 +531,6 @@ Applicable context:
 ```text
 RUN = 0
 FP_CONTINUE = 1
-the CONTINUE command is accepted
 FP_START = 0
 ```
 
@@ -582,7 +592,8 @@ Applicable context:
 ```text
 RUN = 1
 HLT_REQ = 1
-the current TP is an instruction-completion boundary
+MS = EXECUTE
+TS = 4
 ```
 
 Assignments:
@@ -621,7 +632,8 @@ Applicable context:
 ```text
 RUN = 1
 FP_SINGLE_INSTRUCTION = 1
-the current TP completes the instruction
+MS = EXECUTE
+TS = 4
 ```
 
 Assignment:
@@ -782,7 +794,6 @@ Applicable context:
 
 ```text
 HLT_REQ = 0
-no STOP request is accepted
 IR_OPR_HLT = 0
 ```
 
@@ -811,9 +822,12 @@ A synchronized STOP request is captured at a TP before the instruction-completio
 Applicable context:
 
 ```text
+RUN = 1
 FP_STOP = 1
-the STOP command is accepted
-the current TP precedes the instruction-completion TP
+NOT (
+    MS = EXECUTE
+    AND TS = 4
+)
 ```
 
 Assignment:
@@ -886,7 +900,10 @@ Applicable context:
 
 ```text
 HLT_REQ = 1
-the current TP is not an instruction-completion boundary
+NOT (
+    MS = EXECUTE
+    AND TS = 4
+)
 ```
 
 Assignment:
@@ -921,7 +938,8 @@ Applicable context:
 
 ```text
 HLT_REQ = 1
-the current TP is an instruction-completion boundary
+MS = EXECUTE
+TS = 4
 ```
 
 Assignments:
@@ -1046,11 +1064,15 @@ Selection of a memory micro-operation does not by itself define `AB_SRC`.
 
 ### 4.2 Program-Counter Address Context
 
+`AB_SRC = PC` applies in the following documented CPU-owned memory-access cases.
+
+#### 4.2.1 Instruction Fetch
+
 Applicable context:
 
 ```text
-the CPU owns the memory interface
-the current memory operation uses PC as its address
+MS = FETCH
+TS = 2
 ```
 
 Assignment:
@@ -1059,23 +1081,175 @@ Assignment:
 AB_SRC = PC
 ```
 
-Constraints:
-
-- This case applies to the documented instruction-fetch memory access.
-- `AB_SRC` defines the address source independently from `/RD`, `/WR`, `MDB_SRC`, and `MFB_SRC`.
-
 Sources:
 
 - [Fetch & Defer](../../03-microarchitecture/04-fetch-defer.md)
-- [Memory Field Selection](../../06-memory/05-memory-field-selection.md)
 
-### 4.3 Memory-Address Register Context
+#### 4.2.2 Console Examine
 
 Applicable context:
 
 ```text
-the CPU owns the memory interface
-the current memory operation uses MA as its address
+RUN = 0
+FP_EXAMINE = 1
+```
+
+Assignment:
+
+```text
+AB_SRC = PC
+```
+
+Sources:
+
+- [Console Execution](../../03-microarchitecture/09-console-execution.md#7-examine-operation)
+
+#### 4.2.3 Console Deposit
+
+Applicable context:
+
+```text
+RUN = 0
+FP_DEPOSIT = 1
+```
+
+Assignment:
+
+```text
+AB_SRC = PC
+```
+
+Sources:
+
+- [Console Execution](../../03-microarchitecture/09-console-execution.md#8-deposit-operation)
+
+Constraints:
+
+- These cases define the documented CPU-owned memory accesses that drive `AB` from `PC`.
+- `AB_SRC` remains independent from `/RD`, `/WR`, `MDB_SRC`, and `MFB_SRC`.
+
+### 4.3 Memory-Address Register Context
+
+`AB_SRC = MA` applies in the following documented CPU-owned memory-access cases.
+
+#### 4.3.1 DEFER Pointer Read
+
+Applicable context:
+
+```text
+MS = DEFER
+TS = 2
+```
+
+Assignment:
+
+```text
+AB_SRC = MA
+```
+
+#### 4.3.2 DEFER Auto-Index Writeback
+
+Applicable context:
+
+```text
+MS = DEFER
+TS = 4
+AUTO_INDEX_REQUIRED = 1
+```
+
+Assignment:
+
+```text
+AB_SRC = MA
+```
+
+#### 4.3.3 MRI Memory Read
+
+Applicable context:
+
+```text
+MS = EXECUTE
+TS = 2
+IR_MRI_OPCODE = 000
+```
+
+or:
+
+```text
+MS = EXECUTE
+TS = 2
+IR_MRI_OPCODE = 001
+```
+
+or:
+
+```text
+MS = EXECUTE
+TS = 2
+IR_MRI_OPCODE = 010
+```
+
+Assignment:
+
+```text
+AB_SRC = MA
+```
+
+#### 4.3.4 ISZ Writeback
+
+Applicable context:
+
+```text
+MS = EXECUTE
+TS = 4
+IR_MRI_OPCODE = 010
+```
+
+Assignment:
+
+```text
+AB_SRC = MA
+```
+
+#### 4.3.5 DCA Write
+
+Applicable context:
+
+```text
+MS = EXECUTE
+TS = 3
+IR_MRI_OPCODE = 011
+```
+
+Assignment:
+
+```text
+AB_SRC = MA
+```
+
+#### 4.3.6 JMS Write
+
+Applicable context:
+
+```text
+MS = EXECUTE
+TS = 3
+IR_MRI_OPCODE = 100
+```
+
+Assignment:
+
+```text
+AB_SRC = MA
+```
+
+#### 4.3.7 Interrupt Return-Address Write
+
+Applicable context:
+
+```text
+MS = INTERRUPT
+TS = 3
 ```
 
 Assignment:
@@ -1086,15 +1260,14 @@ AB_SRC = MA
 
 Constraints:
 
-- This case applies only to documented memory operations for which `MA` drives `AB`.
-- `AB_SRC` defines the address source independently from `/RD`, `/WR`, `MDB_SRC`, and `MFB_SRC`.
+- These cases define the documented CPU-owned memory accesses that drive `AB` from `MA`.
+- `AB_SRC` remains independent from `/RD`, `/WR`, `MDB_SRC`, and `MFB_SRC`.
 
 Sources:
 
 - [Fetch & Defer](../../03-microarchitecture/04-fetch-defer.md)
 - [MRI Execution](../../03-microarchitecture/05-mri-execution.md)
 - [Interrupt Execution](../../03-microarchitecture/08-interrupt-execution.md)
-- [Console Execution](../../03-microarchitecture/09-console-execution.md)
 
 ---
 
@@ -1135,7 +1308,7 @@ Applicable context:
 
 ```text
 MS = FETCH
-the CPU performs the instruction-fetch memory access
+TS = 2
 ```
 
 Assignment:
@@ -1151,21 +1324,6 @@ Source:
 ---
 
 #### 4.5.2 Direct MRI Access
-
-Applicable context:
-
-```text
-MS = EXECUTE
-IR_IS_MRI = 1
-IR_INDIRECT = 0
-the current instruction performs a memory access
-```
-
-Assignment:
-
-```text
-MFB_SRC = IF
-```
 
 This applies to the documented memory access performed by a direct:
 
@@ -1188,6 +1346,64 @@ Sources:
 - [Addressing Model](../../02-isa/05-addressing-model.md)
 - [MRI Execution](../../03-microarchitecture/05-mri-execution.md)
 
+##### 4.5.2.1 Direct MRI Read
+
+Applicable context:
+
+```text
+MS = EXECUTE
+TS = 2
+IR_INDIRECT = 0
+AND (
+    IR_MRI_OPCODE = 000
+    OR IR_MRI_OPCODE = 001
+    OR IR_MRI_OPCODE = 010
+)
+```
+
+Assignment:
+
+```text
+MFB_SRC = IF
+```
+
+##### 4.5.2.2 Direct ISZ Writeback
+
+Applicable context:
+
+```text
+MS = EXECUTE
+TS = 4
+IR_INDIRECT = 0
+IR_MRI_OPCODE = 010
+```
+
+Assignment:
+
+```text
+MFB_SRC = IF
+```
+
+##### 4.5.2.3 Direct DCA/JMS Write
+
+Applicable context:
+
+```text
+MS = EXECUTE
+TS = 3
+IR_INDIRECT = 0
+AND (
+    IR_MRI_OPCODE = 011
+    OR IR_MRI_OPCODE = 100
+)
+```
+
+Assignment:
+
+```text
+MFB_SRC = IF
+```
+
 ---
 
 #### 4.5.3 Indirect Pointer Read
@@ -1196,9 +1412,8 @@ Applicable context:
 
 ```text
 MS = DEFER
+TS = 2
 IR_IS_MRI = 1
-IR_INDIRECT = 1
-the CPU reads the indirect pointer
 ```
 
 Assignment:
@@ -1227,10 +1442,8 @@ Applicable context:
 
 ```text
 MS = DEFER
-IR_IS_MRI = 1
-IR_INDIRECT = 1
-EAI = 1
-the incremented pointer is written back to memory
+TS = 4
+AUTO_INDEX_REQUIRED = 1
 ```
 
 Assignment:
@@ -1255,21 +1468,6 @@ Sources:
 
 #### 4.5.5 Final Indirect MRI Access
 
-Applicable context:
-
-```text
-MS = EXECUTE
-IR_IS_MRI = 1
-IR_INDIRECT = 1
-the current instruction performs a memory access
-```
-
-Assignment:
-
-```text
-MFB_SRC = DF
-```
-
 This applies to the final resolved memory access performed by an indirect:
 
 - AND
@@ -1292,6 +1490,64 @@ Sources:
 - [Addressing Model](../../02-isa/05-addressing-model.md)
 - [MRI Execution](../../03-microarchitecture/05-mri-execution.md)
 
+#### 4.5.5.1 Indirect MRI Read
+
+Applicable context:
+
+```text
+MS = EXECUTE
+TS = 2
+IR_INDIRECT = 1
+AND (
+    IR_MRI_OPCODE = 000
+    OR IR_MRI_OPCODE = 001
+    OR IR_MRI_OPCODE = 010
+)
+```
+
+Assignment:
+
+```text
+MFB_SRC = DF
+```
+
+#### 4.5.5.2 Indirect ISZ Writeback
+
+Applicable context:
+
+```text
+MS = EXECUTE
+TS = 4
+IR_INDIRECT = 1
+IR_MRI_OPCODE = 010
+```
+
+Assignment:
+
+```text
+MFB_SRC = DF
+```
+
+#### 4.5.5.3 Indirect DCA/JMS Write
+
+Applicable context:
+
+```text
+MS = EXECUTE
+TS = 3
+IR_INDIRECT = 1
+AND (
+    IR_MRI_OPCODE = 011
+    OR IR_MRI_OPCODE = 100
+)
+```
+
+Assignment:
+
+```text
+MFB_SRC = DF
+```
+
 ---
 
 #### 4.5.6 Interrupt Entry
@@ -1300,7 +1556,7 @@ Applicable context:
 
 ```text
 MS = INTERRUPT
-the return address is written to memory location 0000
+TS = 3
 ```
 
 Assignment:
@@ -1321,7 +1577,7 @@ Applicable context:
 
 ```text
 RUN = 0
-an EXAM command is accepted
+FP_EXAMINE = 1
 ```
 
 Assignment:
@@ -1344,7 +1600,7 @@ Applicable context:
 
 ```text
 RUN = 0
-a DEPOSIT command is accepted
+FP_DEPOSIT = 1
 ```
 
 Assignment:
@@ -1367,7 +1623,6 @@ Applicable context:
 
 ```text
 MS = DMA
-/DMA_GRANT is asserted
 ```
 
 CPU behavior:
@@ -1629,7 +1884,7 @@ WRITE = 2
 Applicable context:
 
 ```text
-IO_READ_REQ is accepted
+IO_READ_REQ = 1
 ```
 
 Assignments:
@@ -1656,7 +1911,7 @@ Sources:
 Applicable context:
 
 ```text
-IO_WRITE_REQ is accepted
+IO_WRITE_REQ = 1
 ```
 
 Assignments:
@@ -1682,9 +1937,16 @@ Sources:
 
 Applicable context:
 
+- a pending transfer completes
+- no replacement request is accepted at the same TP
+
 ```text
-a pending transfer completes
-no replacement request is accepted at the same TP
+(
+    IOT_READ_PENDING = 1
+    OR IOT_WRITE_PENDING = 1
+)
+IO_READ_REQ = 0
+IO_WRITE_REQ = 0
 ```
 
 Assignments:
@@ -1710,9 +1972,15 @@ Sources:
 
 Applicable context:
 
+- A pending transfer completes
+- IO_READ_REQ is accepted at the same TP
+
 ```text
-a pending transfer completes
-IO_READ_REQ is accepted at the same TP
+(
+    IOT_READ_PENDING = 1
+    OR IOT_WRITE_PENDING = 1
+)
+IO_READ_REQ = 1
 ```
 
 Assignments:
@@ -1739,9 +2007,15 @@ Sources:
 
 Applicable context:
 
+- A pending transfer completes
+- IO_WRITE_REQ is accepted at the same TP
+
 ```text
-a pending transfer completes
-IO_WRITE_REQ is accepted at the same TP
+(
+    IOT_READ_PENDING = 1
+    OR IOT_WRITE_PENDING = 1
+)
+IO_WRITE_REQ = 1
 ```
 
 Assignments:

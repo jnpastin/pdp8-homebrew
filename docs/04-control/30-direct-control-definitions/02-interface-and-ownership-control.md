@@ -177,7 +177,6 @@ The required `/RD`, `/WR`, and `MDB_SRC` assignments associated with memory micr
 Applicable context:
 
 ```text
-a CPU-owned memory-read operation is active
 MEM_READ_TO_MB is selected
 ```
 
@@ -226,7 +225,6 @@ Sources:
 Applicable context:
 
 ```text
-a CPU-owned memory-write operation is active
 MEM_WRITE_FROM_MB is selected
 ```
 
@@ -275,7 +273,6 @@ Sources:
 Applicable context:
 
 ```text
-a CPU-owned console DEPOSIT operation is active
 MEM_WRITE_FROM_FP_SR is selected
 ```
 
@@ -324,8 +321,10 @@ Sources:
 Applicable context:
 
 ```text
-the CPU owns the memory interface
-no CPU memory operation is active
+MEM_READ_TO_MB is not selected
+MEM_WRITE_FROM_MB is not selected
+MEM_WRITE_FROM_FP_SR is not selected
+MS != DMA
 ```
 
 Logical control results:
@@ -587,7 +586,7 @@ Source:
 Applicable context:
 
 ```text
-no CPU DB write is active
+DB_WRITE_FROM_AC is not selected
 ```
 
 CPU output-drive state:
@@ -617,7 +616,6 @@ Applicable context:
 
 ```text
 DB_WRITE_FROM_AC is selected
-/DB_WRITE is asserted
 ```
 
 Micro-operation assignments:
@@ -654,7 +652,6 @@ Applicable context:
 
 ```text
 DB_READ_TO_AC is selected
-/DB_READ is asserted
 ```
 
 Micro-operation assignments:
@@ -718,7 +715,8 @@ Applicable context:
 
 ```text
 MS = EXECUTE
-the current instruction is an external-device IOT
+IR_IS_IOT = 1
+IR_IOA != 000000
 ```
 
 Assignment:
@@ -755,7 +753,11 @@ Sources:
 Applicable context:
 
 ```text
-the current control case is not external-device IOT execution
+NOT (
+    MS = EXECUTE
+    AND IR_IS_IOT = 1
+    AND IR_IOA != 000000
+)
 ```
 
 Assignment:
@@ -809,8 +811,8 @@ Applicable context:
 
 ```text
 MS = EXECUTE
-the current instruction is CAF
-the current timing state is the documented CAF initialization timing state
+TS = 4
+IR_IS_CAF = 1
 ```
 
 Assignment:
@@ -848,7 +850,6 @@ Applicable context:
 ```text
 RUN = 0
 FP_CLEAR = 1
-the CLEAR command is accepted
 ```
 
 Assignment:
@@ -882,8 +883,18 @@ Sources:
 
 Applicable context:
 
+- Neither CAF initialization nor accepted front-panel CLEAR applies
+
 ```text
-neither CAF initialization nor accepted front-panel CLEAR applies
+NOT (
+    MS = EXECUTE
+    AND TS = 4
+    AND IR_IS_CAF = 1
+)
+NOT (
+    RUN = 0
+    AND FP_CLEAR = 1
+)
 ```
 
 Assignment:
