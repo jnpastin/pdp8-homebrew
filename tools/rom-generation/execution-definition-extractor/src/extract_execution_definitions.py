@@ -405,7 +405,7 @@ def run(arguments:Sequence[str]|None=None):
     try: result=extract(root)
     except ExtractionFailure as e: print(f"ERROR: {e}"); return 1
     out=a.json_output if a.json_output.is_absolute() else root/a.json_output; report=a.report_output if a.report_output.is_absolute() else root/a.report_output
-    out.parent.mkdir(parents=True,exist_ok=True);out.write_text(json.dumps(result,indent=2)+"\n")
+    out.parent.mkdir(parents=True,exist_ok=True);out.write_text(json.dumps(result,indent=2,ensure_ascii=False)+"\n",encoding="utf-8",newline="\n")
     diagnostics = result["diagnostics"]
     report_lines = [
         "Execution-Definition Extraction Report",
@@ -424,7 +424,7 @@ def run(arguments:Sequence[str]|None=None):
         )
     else:
         report_lines.append("No diagnostics.")
-    report.parent.mkdir(parents=True,exist_ok=True);report.write_text("\n".join(report_lines)+"\n")
+    report.parent.mkdir(parents=True,exist_ok=True);report.write_text("\n".join(report_lines)+"\n",encoding="utf-8",newline="\n")
     failed = any(item["severity"] in {"ERROR", "FATAL"} for item in diagnostics)
     print("Execution-definition extraction");print(f"Status: {'FAILED' if failed else 'SUCCEEDED'}");print(f"Cases: {len(result['cases'])}");print(f"Diagnostics: {len(diagnostics)}");print(f"JSON output: {out}");print(f"Report output: {report}")
     if failed:

@@ -533,9 +533,8 @@ def write_json_output(result: dict[str, object], path: Path) -> None:
         result,
         indent=2,
         ensure_ascii=False,
-        sort_keys=True,
     )
-    path.write_text(serialized + "\n", encoding="utf-8")
+    path.write_text(serialized + "\n", encoding="utf-8", newline="\n")
 
 
 def write_report(
@@ -633,6 +632,7 @@ def write_report(
     path.write_text(
         "\n".join(lines).rstrip() + "\n",
         encoding="utf-8",
+        newline="\n",
     )
 
 def find_signal_in_heading(

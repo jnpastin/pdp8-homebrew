@@ -24,7 +24,7 @@ def build(extracted,maintained=None):
 
 def main(argv=None):
  p=argparse.ArgumentParser();p.add_argument("--repo-root",type=Path,required=True);a=p.parse_args(argv);root=a.repo_root.resolve();ex=json.loads((root/EXTRACTED).read_text());mp=root/MAINTAINED;maint=json.loads(mp.read_text()) if mp.exists() else None;c,d=build(ex,maint);out=root/CANDIDATE;rep=root/REPORT;out.parent.mkdir(parents=True,exist_ok=True);written=c is not None and not any(x["severity"]=="ERROR" for x in d)
- if written:out.write_text(json.dumps(c,indent=2)+"\n")
- rep.write_text("Timing-Constraint Generation Report\n===================================\n\n"+f"Constraints processed: {len(ex.get('constraints',[]))}\nCandidate written: {'yes' if written else 'no'}\nDiagnostics: {len(d)}\n\n"+"\n".join(f"{x['severity']} {x['code']} [{x.get('constraint','')}]: {x['message']}" for x in d)+"\n")
+ if written:out.write_text(json.dumps(c,indent=2,ensure_ascii=False)+"\n",encoding="utf-8",newline="\n")
+ rep.write_text(("Timing-Constraint Generation Report\n===================================\n\n"+f"Constraints processed: {len(ex.get('constraints',[]))}\nCandidate written: {'yes' if written else 'no'}\nDiagnostics: {len(d)}\n\n"+"\n".join(f"{x['severity']} {x['code']} [{x.get('constraint','')}]: {x['message']}" for x in d)).rstrip("\n")+"\n",encoding="utf-8",newline="\n")
  errors=[x for x in d if x["severity"]=="ERROR"];print("Timing-constraint generation");print(f"Status: {'FAILED' if errors else 'SUCCEEDED'}");print(f"Constraints: {len(ex.get('constraints',[]))}");print(f"Candidate written: {'yes' if written else 'no'}");print(f"Diagnostics: {len(d)}");print(f"Candidate output: {out}");print(f"Report output: {rep}");return 1 if errors else 0
 if __name__=="__main__":sys.exit(main())

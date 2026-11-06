@@ -385,7 +385,7 @@ The repository-level `.gitignore` excludes the `build/` directory.
 
 `control-inputs.json` is consumed by the control-input schema generator, so changes to its layout must be coordinated with that tool.
 
-The JSON is UTF-8, indented by two spaces, written with object keys sorted, and ends with a newline. Characters such as `μ` and `→` are written directly, not escaped.
+The JSON and the report follow the shared ROM-generation output format (`tools/rom-generation/README.md`, section 15.1): UTF-8, LF line endings, one trailing newline, two-space indentation, non-ASCII characters written directly, and object keys in the fixed order the tool builds them, as listed in the tables below.
 
 Top-level fields:
 

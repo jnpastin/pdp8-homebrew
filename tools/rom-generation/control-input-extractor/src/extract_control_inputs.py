@@ -1863,10 +1863,6 @@ def signal_to_dict(
             if polarity is None
             else {"value": polarity.value, "source": polarity.source}
         ),
-        "dependencies": [
-            {"name": item.name, "source": source(item.line)}
-            for item in signal.dependencies
-        ],
         "enumerated_values": [
             {
                 "value": item.value,
@@ -1883,6 +1879,10 @@ def signal_to_dict(
                 "source": source(item.line),
             }
             for item in signal.value_ranges
+        ],
+        "dependencies": [
+            {"name": item.name, "source": source(item.line)}
+            for item in signal.dependencies
         ],
         "logic": {
             name: {"text": section.text, "source": source(section.line)}
@@ -1936,9 +1936,9 @@ def build_json_result(result: ExtractionResult) -> dict[str, object]:
 
 
 def serialize_json(data: dict[str, object]) -> str:
-    """Serialize deterministic, human-readable JSON."""
+    """Serialize JSON in construction order, with a trailing newline."""
 
-    return json.dumps(data, indent=2, ensure_ascii=False, sort_keys=True) + "\n"
+    return json.dumps(data, indent=2, ensure_ascii=False) + "\n"
 
 
 # ---------------------------------------------------------------------------
@@ -2054,10 +2054,10 @@ def build_extraction_report(result: ExtractionResult) -> str:
 
 
 def write_text(path: Path, text: str) -> None:
-    """Write UTF-8 text, creating parent directories as needed."""
+    """Write UTF-8 text with LF line endings, creating parent directories."""
 
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(text, encoding="utf-8")
+    path.write_text(text, encoding="utf-8", newline="\n")
 
 
 def print_summary(result: ExtractionResult, paths: ToolPaths) -> None:

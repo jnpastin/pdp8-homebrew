@@ -27,6 +27,6 @@ def parse(text:str,path:str)->dict:
 
 def main(argv=None):
  p=argparse.ArgumentParser();p.add_argument("--repo-root",type=Path,required=True);a=p.parse_args(argv);root=a.repo_root.resolve();src=root/SOURCE;out=root/OUTPUT;report=root/REPORT;out.parent.mkdir(parents=True,exist_ok=True)
- result=parse(src.read_text(encoding="utf-8"),SOURCE.as_posix());out.write_text(json.dumps(result,indent=2)+"\n",encoding="utf-8");report.write_text(f"Timing-constraint extraction\nStatus: {'FAILED' if result['diagnostics'] else 'SUCCEEDED'}\nConstraints: {len(result['constraints'])}\nDiagnostics: {len(result['diagnostics'])}\n",encoding="utf-8")
+ result=parse(src.read_text(encoding="utf-8"),SOURCE.as_posix());out.write_text(json.dumps(result,indent=2,ensure_ascii=False)+"\n",encoding="utf-8",newline="\n");report.write_text(f"Timing-constraint extraction\nStatus: {'FAILED' if result['diagnostics'] else 'SUCCEEDED'}\nConstraints: {len(result['constraints'])}\nDiagnostics: {len(result['diagnostics'])}\n",encoding="utf-8",newline="\n")
  print("Timing-constraint extraction");print(f"Status: {'FAILED' if result['diagnostics'] else 'SUCCEEDED'}");print(f"Constraints: {len(result['constraints'])}");print(f"Diagnostics: {len(result['diagnostics'])}");print(f"JSON output: {out}");print(f"Report output: {report}");return 1 if result['diagnostics'] else 0
 if __name__=="__main__":sys.exit(main())

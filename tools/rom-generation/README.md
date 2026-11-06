@@ -322,7 +322,27 @@ Generated reports should record:
 - physical ROM layout
 - validation result
 
-Identical source inputs must produce identical generated outputs.
+Identical source inputs must produce identical generated outputs, byte for byte, on every operating system.
+
+### 15.1 Output File Format
+
+Every ROM-generation tool writes its JSON and text outputs the same way:
+
+- UTF-8, set explicitly rather than taken from the platform default
+- LF line endings on every operating system
+- exactly one trailing newline
+- JSON indented by two spaces
+- non-ASCII characters such as `μ` and `→` written directly, not as `\u` escapes
+- JSON object keys in the order the tool constructs them, not sorted, so related properties such as `name` stay first and promoted maintained files keep a readable order
+
+In Python this means:
+
+```python
+path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
+path.write_text(report_text, encoding="utf-8", newline="\n")
+```
+
+Because keys are not sorted, a tool must build its output objects in a fixed order. It must never build an output object by iterating over a set.
 
 ## 16. Change Process
 

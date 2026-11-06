@@ -336,9 +336,9 @@ def validate_symbolic_artifact(artifact,a):
 def main(argv=None):
  p=argparse.ArgumentParser();p.add_argument("--repo-root",type=Path,default=Path("."));p.add_argument("--artifact-dir",type=Path);n=p.parse_args(argv);root=n.repo_root.resolve();ad=n.artifact_dir or root/"rom/microcode/v1";out=root/"build/simulation_outputs/rom-generation/symbolic-control-word-generator";out.mkdir(parents=True,exist_ok=True);candidate=out/"symbolic-control-words.candidate.json";report=out/"generation-report.json";source_artifacts=load(ad);artifact,diag=generate(source_artifacts);
  if artifact is not None and not diag:diag=validate_symbolic_artifact(artifact,source_artifacts);artifact=None if diag else artifact;
- if artifact is not None:candidate.write_text(json.dumps(artifact,indent=2)+"\n",encoding="utf-8")
+ if artifact is not None:candidate.write_text(json.dumps(artifact,indent=2,ensure_ascii=False)+"\n",encoding="utf-8",newline="\n")
  elif candidate.exists():candidate.unlink()
- report.write_text(json.dumps({"diagnostics":diag},indent=2)+"\n",encoding="utf-8")
+ report.write_text(json.dumps({"diagnostics":diag},indent=2,ensure_ascii=False)+"\n",encoding="utf-8",newline="\n")
  print("Symbolic control-word generation")
  print(f"Status: {'FAILED' if diag else 'SUCCEEDED'}")
  print(f"Cases: {len(artifact['cases']) if artifact else 0}")
