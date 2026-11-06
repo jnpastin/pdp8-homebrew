@@ -11,7 +11,7 @@ def signal(name='A', deps=None):
     return {'name': name, 'attributes': {'display_name': name, 'purpose': 'test'}, 'bit_width': 1, 'category': 'Test', 'constraints': [], 'consumers': [], 'definition_source': {'heading': name, 'line': 2, 'path': 'docs/in.md'}, 'dependencies': deps or [], 'domain': 'Test', 'enumerated_values': [{'value': '0', 'meaning': 'off', 'source': {'path': 'docs/in.md', 'line': 3}}, {'value': '1', 'meaning': 'on', 'source': {'path': 'docs/in.md', 'line': 4}}], 'extraction_status': 'structure-validated', 'index_source': {'path': 'docs/index.md', 'line': 1}, 'logic': {}, 'polarity': {'source': 'defaulted', 'value': 'active-high'}, 'value_ranges': []}
 
 def extracted(items=None):
-    return {'diagnostics': [], 'extraction_stage': 'final-structure-validation', 'format_version': 1, 'signals': items or [signal()], 'sources': ['docs/in.md']}
+    return {'constraints': [], 'diagnostics': [], 'extraction_stage': 'final-structure-validation', 'format_version': 1, 'signals': items or [signal()], 'sources': ['docs/in.md']}
 
 def maintained(fields=None):
     return {'specification_type': 'control-input-schema', 'schema_version': 1, 'control_design_version': 'v1', 'fields': fields or []}
@@ -64,6 +64,13 @@ class Tests(unittest.TestCase):
         s = signal()
         s['enumerated_values'].append(s['enumerated_values'][0])
         self.assertIn('DUPLICATE_ENUMERATED_VALUE', [d.code for d in g.validate_extracted(extracted([s]))])
+
+    def test_preserves_global_constraints(self):
+        x = extracted([signal('A'), signal('B')])
+        x['constraints'] = [{'kind': 'exactly_one', 'inputs': ['A', 'B'], 'source': {'path': 'docs/in.md', 'line': 8}}]
+        c, d = g.build_candidate(x, maintained([mf('A'), mf('B')]))
+        self.assertEqual(c['constraints'], x['constraints'])
+        self.assertEqual(d, [])
 
     def test_preserves_classification(self):
         c, d = g.build_candidate(extracted(), maintained([mf(uses=['predicate', 'value'])]))

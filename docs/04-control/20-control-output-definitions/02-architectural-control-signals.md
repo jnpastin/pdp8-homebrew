@@ -94,6 +94,12 @@ Architectural
 **Explicit Value Required:** Yes  
 **Value Required When:** Always  
 
+**Encoding:**
+```text
+0 → asserted
+1 → deasserted
+```
+
 **Description:** Indicates that the CPU is requesting a memory read operation.
 
 When asserted:
@@ -116,6 +122,9 @@ When asserted:
 - does not select the MDB data source
 - must be paired with [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb) or DMA
 
+**Used by μops:**
+- [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb) = 0
+
 ---
 
 ### 4.2 Memory Write (/WR)
@@ -134,6 +143,12 @@ Architectural
 **Default Value:** 1  
 **Explicit Value Required:** Yes  
 **Value Required When:** Always  
+
+**Encoding:**
+```text
+0 → asserted
+1 → deasserted
+```
 
 **Description:** Indicates that the CPU is requesting a memory write operation.
 
@@ -154,9 +169,10 @@ When asserted:
 - does not select the memory address source
 - does not select the MDB data source
 - must be paired with a valid memory-write μop or DMA
-- valid memory-write μops are:
-  - [MEM_WRITE_FROM_MB](../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)
-  - [MEM_WRITE_FROM_FP_SR](../../03-microarchitecture/02-micro-operations.md#mem_write_from_fp_sr)
+
+**Used by μops:**
+- [MEM_WRITE_FROM_MB](../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb) = 0
+- [MEM_WRITE_FROM_FP_SR](../../03-microarchitecture/02-micro-operations.md#mem_write_from_fp_sr) = 0
   
 ---
 
@@ -169,6 +185,12 @@ When asserted:
 **Default Value:** 1  
 **Explicit Value Required:** Yes  
 **Value Required When:** Always  
+
+**Encoding:**
+```text
+0 → asserted
+1 → deasserted
+```
 
 **Description:** Indicates that the CPU is performing an I/O read operation and will sample the System Data Bus (DB) during this timing state.
 
@@ -188,6 +210,9 @@ When asserted:
 - CPU must not drive DB while /DB_READ is asserted
 - DB must be driven by at most one external device
 
+**Used by μops:**
+- [DB_READ_TO_AC](../../03-microarchitecture/02-micro-operations.md#db_read_to_ac) = 0
+
 ---
 
 ### 4.4 /DB_WRITE
@@ -199,6 +224,12 @@ When asserted:
 **Default Value:** 1  
 **Explicit Value Required:** Yes  
 **Value Required When:** Always  
+
+**Encoding:**
+```text
+0 → asserted
+1 → deasserted
+```
 
 **Description:** Indicates that the CPU is performing an I/O write operation and will drive the System Data Bus (DB) during this timing state.
 
@@ -217,6 +248,10 @@ When asserted:
 - Must not be asserted without DB_WRITE_FROM_AC
 - CPU is the sole driver of DB when this signal is asserted
 - External devices must not drive DB during this interval
+
+**Used by μops:**
+
+- [DB_WRITE_FROM_AC](../../03-microarchitecture/02-micro-operations.md#db_write_from_ac) = 0
 
 ---
 

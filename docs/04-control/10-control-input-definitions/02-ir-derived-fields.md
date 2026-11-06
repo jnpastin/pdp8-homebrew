@@ -43,6 +43,7 @@ Encodings:
 Properties:
 
 - exactly one flag must be asserted
+  - `EXACTLY_ONE(IR_IS_MRI, IR_IS_IOT, IR_IS_OPR)`
 - mutually exclusive and exhaustive
 
 ---
@@ -78,6 +79,7 @@ Partition OPR instructions into groups:
 Properties:
 
 - mutually exclusive
+  - `AT_MOST_ONE(IR_OPR_GROUP1, IR_OPR_GROUP2, IR_OPR_GROUP3)`
 - define interpretation of remaining bits
 
 ---
@@ -161,6 +163,8 @@ Expose raw IR fields:
 - [IR_OPR_CML](#ir_opr_cml)
 - [IR_OPR_HLT](#ir_opr_hlt)
 - [IR_OPR_IAC](#ir_opr_iac)
+- [IR_OPR_MQA](#ir_opr_mqa)
+- [IR_OPR_MQL](#ir_opr_mql)
 - [IR_OPR_OSR](#ir_opr_osr)
 - [IR_OPR_RAL](#ir_opr_ral)
 - [IR_OPR_RAR](#ir_opr_rar)
@@ -834,6 +838,56 @@ IR_OPR_IAC = IR_OPR_GROUP1 AND IR[3]
 **Consumed By:**
 
 - [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
+
+---
+
+### IR_OPR_MQA
+
+**Mnemonic:** IR_OPR_MQA  
+**Name:** MQ OR into AC  
+**Type:** OPR Bit Flag  
+**Bit Width:** 1  
+
+**Purpose:** Performs OR operation between switch multiplier quotient and accumulator.
+
+**Derivation:**
+```text
+IR_OPR_MQA = IR_OPR_GROUP3 AND IR[6]
+```
+
+**Value Encoding:**
+
+- 0 → inactive  
+- 1 → OR MQ into AC  
+
+**Consumed By:**
+
+- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
+
+---
+
+### IR_OPR_MQL
+
+**Mnemonic:** IR_OPR_MQL  
+**Name:** AC load to MQ  
+**Type:** OPR Bit Flag  
+**Bit Width:** 1  
+
+**Purpose:** Loads AC contents into MQ and clears AC
+
+**Derivation:**
+```text
+IR_OPR_MQL = IR_OPR_GROUP3 AND IR[4]
+```
+
+**Value Encoding:**
+
+- 0 → inactive  
+- 1 → Load MQ into AC and clear AC  
+
+**Consumed By:**
+
+- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac)
 
 ---
 

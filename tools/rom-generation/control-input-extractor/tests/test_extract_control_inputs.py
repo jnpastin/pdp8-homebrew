@@ -69,6 +69,7 @@ from extract_control_inputs import (  # noqa: E402
     validate_required_logic_sections,
     ConstraintEntry,
     extract_all_definition_constraints,
+    parse_global_constraints,
     parse_definition_constraints,
     ConsumerEntry,
     extract_all_definition_consumers,
@@ -2026,6 +2027,12 @@ class IndexExtractionTests(unittest.TestCase):
         self.assertEqual(sections["ACN"], {})
         self.assertEqual(diagnostics, [])
 
+    def test_global_constraints_are_extracted(self) -> None:
+        document = SourceDocument(Path("x"), "docs/x.md", "- Classes:\n  - `EXACTLY_ONE(IR_IS_MRI, IR_IS_IOT, IR_IS_OPR)`\n")
+        values, diagnostics = parse_global_constraints([document], {"IR_IS_MRI", "IR_IS_IOT", "IR_IS_OPR"})
+        self.assertEqual([(x.kind, x.inputs) for x in values], [("exactly_one", ("IR_IS_MRI", "IR_IS_IOT", "IR_IS_OPR"))])
+        self.assertEqual(diagnostics, [])
+
     def test_plural_constraints_are_extracted(self) -> None:
         bold = chr(42) + chr(42)
 
@@ -2853,6 +2860,7 @@ class IndexExtractionTests(unittest.TestCase):
             constraints={
                 "ACN": [],
             },
+            global_constraints=[],
             consumers={
                 "ACN": [],
             },
@@ -2904,6 +2912,7 @@ class IndexExtractionTests(unittest.TestCase):
             dependencies={},
             logic_sections={},
             constraints={},
+            global_constraints=[],
             consumers={},
             diagnostics=[diagnostic],
         )

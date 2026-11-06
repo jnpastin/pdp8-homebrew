@@ -64,15 +64,15 @@ class GenerationTests(unittest.TestCase):
         )
         self.assertEqual(
             generator.DEFAULT_INPUT_SCHEMA.name,
-            "control-input-schema.candidate.json",
+            "control-input-schema.json",
         )
         self.assertEqual(
             generator.DEFAULT_WORD_SCHEMA.name,
-            "control-word-schema.candidate.json",
+            "control-word-schema.json",
         )
         self.assertEqual(
             generator.DEFAULT_MAPPING.name,
-            "micro-operation-mapping.candidate.json",
+            "micro-operation-mapping.json",
         )
 
     def test_first_generation_reports_new_definition(self) -> None:
@@ -162,7 +162,7 @@ class RepositoryTests(unittest.TestCase):
 
     def test_repository_definition_count(self) -> None:
         assert self.candidate is not None
-        self.assertEqual(len(self.candidate["definitions"]), 55)
+        self.assertEqual(len(self.candidate["definitions"]), 65)
 
     def test_repository_first_generation_is_reviewable(self) -> None:
         self.assertTrue(self.diagnostics)

@@ -61,6 +61,22 @@ def validate_extracted(data):
     signals = data.get('signals')
     if not isinstance(signals, list):
         return ds + [D('ERROR', 'INVALID_SIGNALS', 'signals must be an array.')]
+    constraints = data.get('constraints')
+    if not isinstance(constraints, list):
+        ds.append(D('ERROR', 'INVALID_GLOBAL_CONSTRAINTS', 'constraints must be an array.'))
+        constraints = []
+    valid_names = {item.get('name') for item in signals if isinstance(item, dict)}
+    for constraint in constraints:
+        if not isinstance(constraint, dict) or constraint.get('kind') not in {'exactly_one', 'at_most_one'}:
+            ds.append(D('ERROR', 'INVALID_GLOBAL_CONSTRAINT', 'Global constraint is invalid.'))
+            continue
+        inputs = constraint.get('inputs')
+        if not isinstance(inputs, list) or len(inputs) < 2:
+            ds.append(D('ERROR', 'INVALID_GLOBAL_CONSTRAINT_INPUTS', 'Global constraint inputs are invalid.'))
+            continue
+        for name in inputs:
+            if name not in valid_names:
+                ds.append(D('ERROR', 'UNDEFINED_GLOBAL_CONSTRAINT_INPUT', f'Global constraint input {name!r} is undefined.', ref=name, source=constraint.get('source')))
     seen = set()
     for s in signals:
         if not isinstance(s, dict):
@@ -163,7 +179,7 @@ def build_candidate(extracted, maintained=None):
         for dep in s.get('dependencies', []):
             if isinstance(dep, dict) and isinstance(dep.get('name'), str) and (dep['name'] not in names):
                 ds.append(D('ERROR', 'UNDEFINED_DEPENDENCY', f"Dependency {dep['name']!r} is undefined.", name=s['name'], ref=dep['name'], source=dep.get('source')))
-    c = {'specification_type': 'control-input-schema', 'schema_version': 1, 'control_design_version': 'v1', 'description': 'Logical control-input schema for version 1 CPU control.', 'source': {'specification_type': 'control-input-extractor', 'format_version': extracted['format_version'], 'extraction_stage': extracted['extraction_stage']}, 'fields': fields, 'diagnostics': [dd(d) for d in ds]}
+    c = {'specification_type': 'control-input-schema', 'schema_version': 1, 'control_design_version': 'v1', 'description': 'Logical control-input schema for version 1 CPU control.', 'source': {'specification_type': 'control-input-extractor', 'format_version': extracted['format_version'], 'extraction_stage': extracted['extraction_stage']}, 'fields': fields, 'constraints': extracted.get('constraints', []), 'diagnostics': [dd(d) for d in ds]}
     return (c, ds)
 
 def write_json(data, path):

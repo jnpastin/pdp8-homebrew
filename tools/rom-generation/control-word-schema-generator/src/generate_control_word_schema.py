@@ -681,6 +681,58 @@ def validate_signal(
                     else:
                         seen_encoding_values.add(value)
 
+    used_by = definition.get("used_by_micro_operations")
+    if not isinstance(used_by, list):
+        diagnostics.append(
+            diagnostic(
+                "ERROR",
+                "INVALID_USED_BY_MICRO_OPERATIONS",
+                "Definition used_by_micro_operations must be an array.",
+                field_name=name,
+                source=definition_source,
+            )
+        )
+    else:
+        for use in used_by:
+            if (
+                not isinstance(use, dict)
+                or not isinstance(use.get("micro_operation"), str)
+                or not use["micro_operation"]
+            ):
+                diagnostics.append(
+                    diagnostic(
+                        "ERROR",
+                        "INVALID_USED_BY_MICRO_OPERATION",
+                        "Used-by entry must name a micro-operation.",
+                        field_name=name,
+                        source=(
+                            use.get("source")
+                            if isinstance(use, dict)
+                            else definition_source
+                        ),
+                    )
+                )
+                continue
+            if "value" in use and (
+                not isinstance(use["value"], str) or not use["value"]
+            ):
+                diagnostics.append(
+                    diagnostic(
+                        "ERROR",
+                        "INVALID_USED_BY_VALUE",
+                        "Used-by value must be a non-empty string when present.",
+                        field_name=name,
+                        source=use.get("source"),
+                    )
+                )
+            diagnostics.extend(
+                validate_source(
+                    use.get("source"),
+                    field_name=name,
+                    context="Used-by micro-operation",
+                )
+            )
+
     constraints = definition.get("constraints")
     if not isinstance(constraints, list):
         diagnostics.append(
@@ -957,6 +1009,14 @@ def convert_signal(
         "constraints": [
             convert_constraint(constraint)
             for constraint in definition["constraints"]
+        ],
+        "used_by_micro_operations": [
+            {
+                "micro_operation": use["micro_operation"],
+                **({"value": use["value"]} if "value" in use else {}),
+                "source": convert_source(use["source"]),
+            }
+            for use in definition["used_by_micro_operations"]
         ],
         "sources": {
             "index": convert_source(signal["source"]),

@@ -435,6 +435,7 @@ def build_index_result(
     bit_widths: dict[str, int],
     encodings: dict[str, list[EncodingEntry]],
     constraints: dict[str, list[ConstraintEntry]],
+    micro_operation_uses: dict[str, list[dict[str, object]]],
     diagnostics: Sequence[Diagnostic],
 ) -> dict[str, object]:
     """Build the generated control-output extraction result."""
@@ -491,6 +492,9 @@ def build_index_result(
                     }
                     for constraint in constraints.get(entry.name, [])
                 ],
+                "used_by_micro_operations": micro_operation_uses.get(
+                    entry.name, []
+                ),
                 "source": {
                     "path": block.source_path,
                     "line": block.start_line,
@@ -1042,6 +1046,55 @@ def extract_all_definition_constraints(
     }
     
     
+def parse_definition_micro_operation_uses(
+    block: DefinitionBlock,
+) -> list[dict[str, object]]:
+    """Extract entries from a definition's Used by μops section."""
+    uses: list[dict[str, object]] = []
+    in_section = False
+    label_pattern = re.compile(
+        r"^\s*\*\*(.+?):?\*\*\s*:?\s*(.*?)\s*$"
+    )
+    for offset, line in enumerate(block.lines, start=1):
+        source_line = block.start_line + offset
+        stripped = line.strip()
+        label_match = label_pattern.match(line)
+        if label_match:
+            label = label_match.group(1).strip().rstrip(":").casefold()
+            if label in {"used by μops", "used by uops"}:
+                in_section = True
+                continue
+            if in_section:
+                break
+        if in_section and stripped.startswith("- "):
+            item = stripped[2:].strip()
+            item_match = re.fullmatch(
+                r"(?:\[([^]]+)\]\([^)]*\)|([^=]+?))(?:\s*=\s*(\S+))?",
+                item,
+            )
+            if item_match is None:
+                continue
+            micro_operation = (
+                item_match.group(1) or item_match.group(2)
+            ).strip()
+            use = {
+                "micro_operation": normalize_signal_name(micro_operation),
+                "source": {"path": block.source_path, "line": source_line},
+            }
+            if item_match.group(3) is not None:
+                use["value"] = normalize_signal_name(item_match.group(3))
+            uses.append(use)
+    return uses
+
+def extract_all_definition_micro_operation_uses(
+    definitions: dict[str, DefinitionBlock],
+) -> dict[str, list[dict[str, object]]]:
+    """Extract Used by μops entries from all definitions."""
+    return {
+        name: parse_definition_micro_operation_uses(block)
+        for name, block in definitions.items()
+    }
+
 def extract_all_definition_attributes(
     definitions: dict[str, DefinitionBlock],
 ) -> tuple[dict[str, dict[str, str]], list[Diagnostic]]:
@@ -1583,6 +1636,9 @@ def main(arguments: Sequence[str] | None = None) -> int:
         constraints = extract_all_definition_constraints(
             definitions
         )
+        micro_operation_uses = (
+            extract_all_definition_micro_operation_uses(definitions)
+        )
         
         diagnostics = [
             *index_diagnostics,
@@ -1616,6 +1672,7 @@ def main(arguments: Sequence[str] | None = None) -> int:
             bit_widths,
             encodings,
             constraints,
+            micro_operation_uses,
             diagnostics,
         )
 

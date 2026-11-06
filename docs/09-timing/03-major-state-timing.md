@@ -121,7 +121,8 @@ Acceptance of `IO_READ_REQ` or `IO_WRITE_REQ` at TP2 does not transfer DB data a
 - During `/DB_READ`, the selected controller drives valid data onto DB.
 - During `/DB_WRITE`, the CPU drives AC onto DB.
 - The selected controller may assert `IO_READ_REQ` or `IO_WRITE_REQ` for a transfer during TS4.
-- The selected controller may assert `IO_CLEAR_AC_REQ` when it does not conflict with the active transfer.
+- The selected controller may assert `IO_CLEAR_AC_REQ` only when neither a read nor write transfer is pending:
+  - `IO_CLEAR_AC_REQ != 1 IF IOT_READ_PENDING = 1 OR IOT_WRITE_PENDING = 1`
 - The selected controller may assert `/IO_WAIT` during an eligible non-TP setup TSTEP.
 
 #### 5.2.6 TP3
@@ -141,7 +142,8 @@ Acceptance of a new request at TP3 does not affect the transfer committing at TP
 - `IOT_WRITE_PENDING` causes CPU control to assert `/DB_WRITE`.
 - During `/DB_READ`, the selected controller drives valid data onto DB.
 - During `/DB_WRITE`, the CPU drives AC onto DB.
-- The selected controller may assert `IO_CLEAR_AC_REQ` only when no read transfer is pending.
+- The selected controller may assert `IO_CLEAR_AC_REQ` only when no read transfer or `IO_SKIP_REQ` is pending:
+  - `IO_CLEAR_AC_REQ != 1 IF IOT_READ_PENDING = 1 OR IO_SKIP_REQ = 1`
 - The selected controller may assert `IO_SKIP_REQ` from stable registered controller state.
 - `/IO_WAIT` may hold an eligible non-TP setup TSTEP.
 - TP4 device actions and CPU sequencing decisions use pre-TP4 inputs.

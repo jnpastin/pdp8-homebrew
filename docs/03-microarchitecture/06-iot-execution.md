@@ -144,6 +144,8 @@ This document defines the microarchitectural operations that occur within that t
 - A completed transfer clears `IOT_TRANSFER` to `NONE` unless another request is accepted at the same TP.
 - When completion and request acceptance occur at the same TP, the newly accepted transfer replaces the completed transfer.
 - `IO_CLEAR_AC_REQ` and `IO_SKIP_REQ` select their corresponding CPU micro-operations according to the timing and combination constraints defined by the external-IOT schedule.
+- `IO_CLEAR_AC_REQ` selects `AC_CLEAR` during the TS in which the request is asserted.
+- `IO_SKIP_REQ` selects `PC_INC` during TS4.
 
 The timing document defines when requests may be asserted, accepted, transferred, and committed. This document defines how those events map to CPU state and micro-operations.
 

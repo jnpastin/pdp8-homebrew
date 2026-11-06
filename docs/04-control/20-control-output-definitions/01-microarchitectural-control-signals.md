@@ -345,10 +345,6 @@ All numeric encodings in this section are octal unless otherwise noted.
 - Drive must be asserted via either /RD or /WR
 
 **Used by μops:**
-- [GTF_FLAGS_TO_AC](../../03-microarchitecture/02-micro-operations.md#gtf_flags_to_ac)
-- [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb)
-- [MEM_WRITE_FROM_MB](../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)
-- [MEM_WRITE_FROM_FP_SR](../../03-microarchitecture/02-micro-operations.md#mem_write_from_fp_sr)
 
 ---
 
@@ -374,25 +370,25 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Constraints:**
 
 **Used by μops:**
-- [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb)
-- [AC_BSW](../../03-microarchitecture/02-micro-operations.md#ac_bsw)
-- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
-- [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp)
-- [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
-- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap)
-- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
-- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr)
-- [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral)
-- [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar)
-- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl)
-- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr)
-- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac)
-- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb)
-- [DB_READ_TO_AC](../../03-microarchitecture/02-micro-operations.md#db_read_to_ac)
-- [DF_TO_AC](../../03-microarchitecture/02-micro-operations.md#df_to_ac)
-- [GTF_FLAGS_TO_AC](../../03-microarchitecture/02-micro-operations.md#gtf_flags_to_ac)
-- [IB_TO_AC](../../03-microarchitecture/02-micro-operations.md#ib_to_ac)
-- [IF_TO_AC](../../03-microarchitecture/02-micro-operations.md#if_to_ac)
+- [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 1
+- [AC_BSW](../../03-microarchitecture/02-micro-operations.md#ac_bsw) = 1
+- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 1
+- [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp) = 1
+- [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc) = 1
+- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap) = 1
+- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr) = 1
+- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 1
+- [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral) = 1
+- [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar) = 1
+- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl) = 1
+- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr) = 1
+- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 1
+- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 1
+- [DB_READ_TO_AC](../../03-microarchitecture/02-micro-operations.md#db_read_to_ac) = 1
+- [DF_TO_AC](../../03-microarchitecture/02-micro-operations.md#df_to_ac) = 1
+- [GTF_FLAGS_TO_AC](../../03-microarchitecture/02-micro-operations.md#gtf_flags_to_ac) = 1
+- [IB_TO_AC](../../03-microarchitecture/02-micro-operations.md#ib_to_ac) = 1
+- [IF_TO_AC](../../03-microarchitecture/02-micro-operations.md#if_to_ac) = 1
 
 ---
 
@@ -431,24 +427,25 @@ All numeric encodings in this section are octal unless otherwise noted.
 - GTF_FLAGS is ORed into AC and is used only after AC_CLEAR has committed at the preceding TP.
 
 **Used by μops:**
-- [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb)
-- [AC_BSW](../../03-microarchitecture/02-micro-operations.md#ac_bsw)
-- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
-- [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp)
-- [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
-- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap)
-- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
-- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr)
-- [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral)
-- [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar)
-- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl)
-- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr)
-- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac)
-- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb)
-- [DB_READ_TO_AC](../../03-microarchitecture/02-micro-operations.md#db_read_to_ac)
-- [DF_TO_AC](../../03-microarchitecture/02-micro-operations.md#df_to_ac)
-- [IB_TO_AC](../../03-microarchitecture/02-micro-operations.md#ib_to_ac)
-- [IF_TO_AC](../../03-microarchitecture/02-micro-operations.md#if_to_ac)
+- [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 0
+- [AC_BSW](../../03-microarchitecture/02-micro-operations.md#ac_bsw) = 0
+- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 0
+- [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp) = 0
+- [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc) = 0
+- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap) = 5
+- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr) = 0
+- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 0
+- [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral) = 0
+- [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar) = 0
+- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl) = 0
+- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr) = 0
+- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 0
+- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 0
+- [DB_READ_TO_AC](../../03-microarchitecture/02-micro-operations.md#db_read_to_ac) = 1
+- [DF_TO_AC](../../03-microarchitecture/02-micro-operations.md#df_to_ac) = 3
+- [GTF_FLAGS_TO_AC](../../03-microarchitecture/02-micro-operations.md#gtf_flags_to_ac) = 6
+- [IB_TO_AC](../../03-microarchitecture/02-micro-operations.md#ib_to_ac) = 4
+- [IF_TO_AC](../../03-microarchitecture/02-micro-operations.md#if_to_ac) = 2
 
 ---
 
@@ -477,19 +474,22 @@ All numeric encodings in this section are octal unless otherwise noted.
 - Required for all ALU operations
 
 **Used by μops:**
-- [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb)
-- [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp)
-- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
-- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr)
-- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb)
-- [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar)
-- [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral)
-- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr)
-- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl)
-- [AC_BSW](../../03-microarchitecture/02-micro-operations.md#ac_bsw)
-- [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
-- [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc)
-- [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
+- [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 0
+- [AC_BSW](../../03-microarchitecture/02-micro-operations.md#ac_bsw) = 0
+- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 0
+- [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp) = 0
+- [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc) = 0
+- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr) = 0
+- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 0
+- [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral) = 0
+- [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar) = 0
+- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl) = 0
+- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr) = 0
+- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 0
+- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 0
+- [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc) = 1
+- [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 0
+- [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc) = 2
 
 ---
 
@@ -521,10 +521,22 @@ All numeric encodings in this section are octal unless otherwise noted.
 - NONE required for unary operations
 
 **Used by μops:**
-- [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb)
-- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
-- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr)
-- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb)
+- [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 2
+- [AC_BSW](../../03-microarchitecture/02-micro-operations.md#ac_bsw) = 0
+- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 0
+- [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp) = 0
+- [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc) = 0
+- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr) = 4
+- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 3
+- [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral) = 6
+- [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar) = 6
+- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl) = 6
+- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr) = 6
+- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 0
+- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 2
+- [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc) = 0
+- [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 0
+- [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc) = 0
 
 ---
 
@@ -564,19 +576,22 @@ All numeric encodings in this section are octal unless otherwise noted.
 - Result valid only if captured by a load signal
 
 **Used by μops:**
-- [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb)
-- [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp)
-- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
-- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr)
-- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb)
-- [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar)
-- [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral)
-- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr)
-- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl)
-- [AC_BSW](../../03-microarchitecture/02-micro-operations.md#ac_bsw)
-- [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
-- [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc)
-- [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
+- [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 1
+- [AC_BSW](../../03-microarchitecture/02-micro-operations.md#ac_bsw) = 11
+- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 12
+- [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp) = 3
+- [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc) = 4
+- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr) = 2
+- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 2
+- [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral) = 6
+- [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar) = 5
+- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl) = 10
+- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr) = 7
+- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 12
+- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 0
+- [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc) = 4
+- [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 12
+- [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc) = 4
 
 ---
 
@@ -602,8 +617,8 @@ All numeric encodings in this section are octal unless otherwise noted.
 - Uses direct load path (no ALU or IDB involvement)
 
 **Used by μops:**
-- [CIFP_CLEAR](../../03-microarchitecture/02-micro-operations.md#cifp_clear)
-- [CIFP_SET](../../03-microarchitecture/02-micro-operations.md#cifp_set)
+- [CIFP_CLEAR](../../03-microarchitecture/02-micro-operations.md#cifp_clear) = 1
+- [CIFP_SET](../../03-microarchitecture/02-micro-operations.md#cifp_set) = 1
 
 ---
 
@@ -629,8 +644,8 @@ All numeric encodings in this section are octal unless otherwise noted.
 - Uses direct load path (no ALU or IDB involvement)
 
 **Used by μops:**
-- [CIFP_CLEAR](../../03-microarchitecture/02-micro-operations.md#cifp_clear)
-- [CIFP_SET](../../03-microarchitecture/02-micro-operations.md#cifp_set)
+- [CIFP_CLEAR](../../03-microarchitecture/02-micro-operations.md#cifp_clear) = 0
+- [CIFP_SET](../../03-microarchitecture/02-micro-operations.md#cifp_set) = 1
 
 ---
 
@@ -657,7 +672,6 @@ external bus value
 - No effect unless explicitly consumed  
 
 **Used by μops:**
-- [DB_READ_TO_AC](../../03-microarchitecture/02-micro-operations.md#db_read_to_ac)
 
 ---
 
@@ -683,11 +697,11 @@ external bus value
 - Uses direct load path (no ALU or IDB involvement)
 
 **Used by μops:**
-- [AC_TO_DF](../../03-microarchitecture/02-micro-operations.md#ac_to_df)
-- [IB_TO_DF](../../03-microarchitecture/02-micro-operations.md#ib_to_df)
-- [DF_CLEAR](../../03-microarchitecture/02-micro-operations.md#df_clear)
-- [IR_DF_TO_DF](../../03-microarchitecture/02-micro-operations.md#ir_df_to_df)
-- [FP_DF_TO_DF]( ../../03-microarchitecture/02-micro-operations.md#fp_df_to_df)
+- [AC_TO_DF](../../03-microarchitecture/02-micro-operations.md#ac_to_df) = 1
+- [DF_CLEAR](../../03-microarchitecture/02-micro-operations.md#df_clear) = 1
+- [FP_DF_TO_DF](../../03-microarchitecture/02-micro-operations.md#fp_df_to_df) = 1
+- [IB_TO_DF](../../03-microarchitecture/02-micro-operations.md#ib_to_df) = 1
+- [IR_DF_TO_DF](../../03-microarchitecture/02-micro-operations.md#ir_df_to_df) = 1
 
 ---
 
@@ -712,11 +726,11 @@ external bus value
 ```
 
 **Used by μops:**
-- [AC_TO_DF](../../03-microarchitecture/02-micro-operations.md#ac_to_df)
-- [IB_TO_DF](../../03-microarchitecture/02-micro-operations.md#ib_to_df)
-- [DF_CLEAR](../../03-microarchitecture/02-micro-operations.md#df_clear)
-- [IR_DF_TO_DF](../../03-microarchitecture/02-micro-operations.md#ir_df_to_df)
-- [FP_DF_TO_DF]( ../../03-microarchitecture/02-micro-operations.md#fp_df_to_df)
+- [AC_TO_DF](../../03-microarchitecture/02-micro-operations.md#ac_to_df) = 3
+- [DF_CLEAR](../../03-microarchitecture/02-micro-operations.md#df_clear) = 0
+- [FP_DF_TO_DF](../../03-microarchitecture/02-micro-operations.md#fp_df_to_df) = 2
+- [IB_TO_DF](../../03-microarchitecture/02-micro-operations.md#ib_to_df) = 1
+- [IR_DF_TO_DF](../../03-microarchitecture/02-micro-operations.md#ir_df_to_df) = 0
 
 ---
 
@@ -741,8 +755,7 @@ external bus value
 - Only used when DF_SRC = Control
 
 **Used by μops:**
-- [DF_CLEAR](../../03-microarchitecture/02-micro-operations.md#df_clear)
-- [IR_DF_TO_DF](../../03-microarchitecture/02-micro-operations.md#ir_df_to_df)
+- [DF_CLEAR](../../03-microarchitecture/02-micro-operations.md#df_clear) = 0
 
 ---
 
@@ -768,11 +781,11 @@ external bus value
 - Uses direct load path (no ALU or IDB involvement)
 
 **Used by μops:**
-- [AC_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ac_to_dif)
-- [DIF_CLEAR](../../03-microarchitecture/02-micro-operations.md#dif_clear)
-- [FP_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#fp_if_to_dif)
-- [IB_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ib_to_dif)
-- [IR_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_dif)
+- [AC_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ac_to_dif) = 1
+- [DIF_CLEAR](../../03-microarchitecture/02-micro-operations.md#dif_clear) = 1
+- [FP_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#fp_if_to_dif) = 1
+- [IB_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ib_to_dif) = 1
+- [IR_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_dif) = 1
 
 ---
 
@@ -797,11 +810,11 @@ external bus value
 ```
 
 **Used by μops:**
-- [AC_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ac_to_dif)
-- [DIF_CLEAR](../../03-microarchitecture/02-micro-operations.md#dif_clear)
-- [FP_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#fp_if_to_dif)
-- [IB_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ib_to_dif)
-- [IR_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_dif)
+- [AC_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ac_to_dif) = 3
+- [DIF_CLEAR](../../03-microarchitecture/02-micro-operations.md#dif_clear) = 1
+- [FP_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#fp_if_to_dif) = 2
+- [IB_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ib_to_dif) = 0
+- [IR_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_dif) = 1
 
 ---
 
@@ -826,11 +839,6 @@ external bus value
 - Only used when DIF_SRC = Control
 
 **Used by μops:**
-- [AC_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ac_to_dif)
-- [DIF_CLEAR](../../03-microarchitecture/02-micro-operations.md#dif_clear)
-- [FP_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#fp_if_to_dif)
-- [IB_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ib_to_dif)
-- [IR_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_dif)
 
 ---
 
@@ -856,9 +864,9 @@ external bus value
 - Must not conflict with other EA writers  
 
 **Used by μops:**
-- [IR_ADDR_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#ir_addr_to_ea_addr)
-- [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr)
-- [PC_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_to_ea_addr)
+- [IR_ADDR_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#ir_addr_to_ea_addr) = 1
+- [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr) = 1
+- [PC_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_to_ea_addr) = 1
 
 ---
 
@@ -884,9 +892,9 @@ external bus value
 - IDB path requires IDB_DRIVE asserted  
 
 **Used by μops:**
-- [IR_ADDR_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#ir_addr_to_ea_addr)
-- [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr)
-- [PC_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_to_ea_addr)
+- [IR_ADDR_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#ir_addr_to_ea_addr) = 1
+- [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr) = 0
+- [PC_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_to_ea_addr) = 0
 
 ---
 
@@ -931,7 +939,6 @@ GTF_FLAGS[2:0] = DF
 - Observing /INT_REQ does not acknowledge, clear, or consume any controller interrupt condition.
 
 **Used by μops:**
-- [GTF_FLAGS_TO_AC](../../03-microarchitecture/02-micro-operations.md#gtf_flags_to_ac)
 
 ---
 
@@ -957,7 +964,7 @@ GTF_FLAGS[2:0] = DF
 - Uses direct load path (no ALU or IDB involvement)
 
 **Used by μops:**
-- [IF_DF_TO_IB](../../03-microarchitecture/02-micro-operations.md#if_df_to_ib)
+- [IF_DF_TO_IB](../../03-microarchitecture/02-micro-operations.md#if_df_to_ib) = 1
 
 ---
 
@@ -984,14 +991,28 @@ GTF_FLAGS[2:0] = DF
 - Only one source may drive the IDB per cycle  
 
 **Used by μops:**
-- [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb)
-- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap)
-- [PC_TO_MB](../../03-microarchitecture/02-micro-operations.md#pc_to_mb)
-- [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr)
-- [MB_TO_IR](../../03-microarchitecture/02-micro-operations.md#mb_to_ir)
-- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac)
-- [FP_SR_TO_MB](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_mb)
-- [PC_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_to_ea_addr)
+- [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 1
+- [AC_BSW](../../03-microarchitecture/02-micro-operations.md#ac_bsw) = 1
+- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 1
+- [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp) = 1
+- [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc) = 1
+- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap) = 1
+- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr) = 1
+- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 1
+- [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral) = 1
+- [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar) = 1
+- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl) = 1
+- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr) = 1
+- [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb) = 1
+- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 1
+- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 1
+- [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc) = 1
+- [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc) = 1
+- [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr) = 1
+- [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 1
+- [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr) = 1
+- [PC_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_to_ea_addr) = 1
+- [PC_TO_MB](../../03-microarchitecture/02-micro-operations.md#pc_to_mb) = 1
 
 ---
 
@@ -1025,16 +1046,28 @@ GTF_FLAGS[2:0] = DF
 - Reserved values must not be used  
 
 **Used by μops:**
-- [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb)
-- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap)
-- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac)
-- [FP_SR_TO_MB](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_mb)
-- [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc)
-- [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr)
-- [MB_TO_IR](../../03-microarchitecture/02-micro-operations.md#mb_to_ir)
-- [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr)
-- [PC_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_to_ea_addr)
-- [PC_TO_MB](../../03-microarchitecture/02-micro-operations.md#pc_to_mb)
+- [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 7
+- [AC_BSW](../../03-microarchitecture/02-micro-operations.md#ac_bsw) = 7
+- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 7
+- [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp) = 7
+- [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc) = 7
+- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap) = 0
+- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr) = 7
+- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 7
+- [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral) = 7
+- [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar) = 7
+- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl) = 7
+- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr) = 7
+- [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb) = 0
+- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 7
+- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 7
+- [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc) = 4
+- [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc) = 7
+- [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr) = 2
+- [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 7
+- [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr) = 5
+- [PC_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_to_ea_addr) = 1
+- [PC_TO_MB](../../03-microarchitecture/02-micro-operations.md#pc_to_mb) = 1
 
 
 
@@ -1062,8 +1095,8 @@ GTF_FLAGS[2:0] = DF
 - Uses direct load path (no ALU or IDB involvement)
 
 **Used by μops:**
-- [IE_CLEAR](../../03-microarchitecture/02-micro-operations.md#ie_clear)
-- [IE_SET](../../03-microarchitecture/02-micro-operations.md#ie_set)
+- [IE_CLEAR](../../03-microarchitecture/02-micro-operations.md#ie_clear) = 1
+- [IE_SET](../../03-microarchitecture/02-micro-operations.md#ie_set) = 1
 
 ---
 
@@ -1089,8 +1122,8 @@ GTF_FLAGS[2:0] = DF
 - Uses direct load path (no ALU or IDB involvement)
 
 **Used by μops:**
-- [IE_CLEAR](../../03-microarchitecture/02-micro-operations.md#ie_clear)
-- [IE_SET](../../03-microarchitecture/02-micro-operations.md#ie_set)
+- [IE_CLEAR](../../03-microarchitecture/02-micro-operations.md#ie_clear) = 0
+- [IE_SET](../../03-microarchitecture/02-micro-operations.md#ie_set) = 1
 
 ---
 
@@ -1115,7 +1148,6 @@ IF_DF_COMBINED[5:3]=IF
 ```
 
 **Used by μops:**
-- [IF_DF_TO_IB](../../03-microarchitecture/02-micro-operations.md#if_df_to_ib)
 
 ---
 
@@ -1141,9 +1173,9 @@ IF_DF_COMBINED[5:3]=IF
 - Uses direct load path (no ALU or IDB involvement)
 
 **Used by μops:**
-- [IF_CLEAR](../../03-microarchitecture/02-micro-operations.md#if_clear)
-- [DIF_TO_IF](../../03-microarchitecture/02-micro-operations.md#dif_to_if)
-- [FP_IF_TO_IF](../../03-microarchitecture/02-micro-operations.md#fp_if_to_if)
+- [DIF_TO_IF](../../03-microarchitecture/02-micro-operations.md#dif_to_if) = 1
+- [FP_IF_TO_IF](../../03-microarchitecture/02-micro-operations.md#fp_if_to_if) = 1
+- [IF_CLEAR](../../03-microarchitecture/02-micro-operations.md#if_clear) = 1
 
 ---
 
@@ -1168,9 +1200,9 @@ IF_DF_COMBINED[5:3]=IF
 ```
 
 **Used by μops:**
-- [IF_CLEAR](../../03-microarchitecture/02-micro-operations.md#if_clear)
-- [DIF_TO_IF](../../03-microarchitecture/02-micro-operations.md#dif_to_if)
-- [FP_IF_TO_IF](../../03-microarchitecture/02-micro-operations.md#fp_if_to_if)
+- [DIF_TO_IF](../../03-microarchitecture/02-micro-operations.md#dif_to_if) = 1
+- [FP_IF_TO_IF](../../03-microarchitecture/02-micro-operations.md#fp_if_to_if) = 2
+- [IF_CLEAR](../../03-microarchitecture/02-micro-operations.md#if_clear) = 0
 
 ---
 
@@ -1195,7 +1227,7 @@ IF_DF_COMBINED[5:3]=IF
 - Only used when IF_SRC = Control
 
 **Used by μops:**
-- [IF_CLEAR](../../03-microarchitecture/02-micro-operations.md#if_clear)
+- [IF_CLEAR](../../03-microarchitecture/02-micro-operations.md#if_clear) = 0
 
 ---
 
@@ -1221,8 +1253,8 @@ IF_DF_COMBINED[5:3]=IF
 - Uses direct load path (no ALU or IDB involvement)
 
 **Used by μops:**
-- [II_CLEAR](../../03-microarchitecture/02-micro-operations.md#ii_clear)
-- [II_SET](../../03-microarchitecture/02-micro-operations.md#ii_set)
+- [II_CLEAR](../../03-microarchitecture/02-micro-operations.md#ii_clear) = 1
+- [II_SET](../../03-microarchitecture/02-micro-operations.md#ii_set) = 1
 
 ---
 
@@ -1248,8 +1280,8 @@ IF_DF_COMBINED[5:3]=IF
 - Uses direct load path (no ALU or IDB involvement)
 
 **Used by μops:**
-- [II_CLEAR](../../03-microarchitecture/02-micro-operations.md#ii_clear)
-- [II_SET](../../03-microarchitecture/02-micro-operations.md#ii_set)
+- [II_CLEAR](../../03-microarchitecture/02-micro-operations.md#ii_clear) = 0
+- [II_SET](../../03-microarchitecture/02-micro-operations.md#ii_set) = 1
 
 ---
 
@@ -1281,10 +1313,10 @@ IF_DF_COMBINED[5:3]=IF
 - A transfer accepted at TP3 executes during TS4 and commits at TP4.
 - It uses a direct load path and does not involve the ALU or IDB.
 
-**Used by micro-operations:**
+**Used by μops:**
 
-- [IOT_TRANSFER_CAPTURE](../../03-microarchitecture/02-micro-operations.md#iot_transfer_capture)
-- [IOT_TRANSFER_CLEAR](../../03-microarchitecture/02-micro-operations.md#iot_transfer_clear)
+- [IOT_TRANSFER_CAPTURE](../../03-microarchitecture/02-micro-operations.md#iot_transfer_capture) = 1
+- [IOT_TRANSFER_CLEAR](../../03-microarchitecture/02-micro-operations.md#iot_transfer_clear) = 1
 
 ---
 
@@ -1318,10 +1350,9 @@ IF_DF_COMBINED[5:3]=IF
 - Encoding `3` must never be selected.
 - The value has no effect unless `IOT_TRANSFER_LOAD` is asserted.
 
-**Used by micro-operations:**
+**Used by μops:**
 
-- [IOT_TRANSFER_CAPTURE](../../03-microarchitecture/02-micro-operations.md#iot_transfer_capture)
-- [IOT_TRANSFER_CLEAR](../../03-microarchitecture/02-micro-operations.md#iot_transfer_clear)
+- [IOT_TRANSFER_CLEAR](../../03-microarchitecture/02-micro-operations.md#iot_transfer_clear) = 0
 
 ---
 
@@ -1347,7 +1378,7 @@ IF_DF_COMBINED[5:3]=IF
 - Requires valid instruction present in MB
 
 **Used by μops:**
-- [MB_TO_IR](../../03-microarchitecture/02-micro-operations.md#mb_to_ir)
+- [MB_TO_IR](../../03-microarchitecture/02-micro-operations.md#mb_to_ir) = 1
 
 ---
 
@@ -1373,15 +1404,15 @@ IF_DF_COMBINED[5:3]=IF
 - Typically used with ALU operations affecting carry or rotate
 
 **Used by μops:**
-- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb)
-- [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar)
-- [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral)
-- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr)
-- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl)
-- [AC_TO_L](../../03-microarchitecture/02-micro-operations.md#ac_to_l)
-- [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
-- [L_CLEAR](../../03-microarchitecture/02-micro-operations.md#l_clear)
-- [L_COMP](../../03-microarchitecture/02-micro-operations.md#l_comp)
+- [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc) = 1
+- [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral) = 1
+- [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar) = 1
+- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl) = 1
+- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr) = 1
+- [AC_TO_L](../../03-microarchitecture/02-micro-operations.md#ac_to_l) = 1
+- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 1
+- [L_CLEAR](../../03-microarchitecture/02-micro-operations.md#l_clear) = 1
+- [L_COMP](../../03-microarchitecture/02-micro-operations.md#l_comp) = 1
 
 ---
 
@@ -1410,11 +1441,15 @@ IF_DF_COMBINED[5:3]=IF
 - AC[11] loads the pre-TP value of AC[11] into L without modifying AC.
 
 **Used by μops:**
-- [AC_TO_L](../../03-microarchitecture/02-micro-operations.md#ac_to_l)
-- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb)
-- [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
-- [L_CLEAR](../../03-microarchitecture/02-micro-operations.md#l_clear)
-- [L_COMP](../../03-microarchitecture/02-micro-operations.md#l_comp)
+- [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc) = 2
+- [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral) = 2
+- [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar) = 2
+- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl) = 2
+- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr) = 2
+- [AC_TO_L](../../03-microarchitecture/02-micro-operations.md#ac_to_l) = 3
+- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 2
+- [L_CLEAR](../../03-microarchitecture/02-micro-operations.md#l_clear) = 0
+- [L_COMP](../../03-microarchitecture/02-micro-operations.md#l_comp) = 1
 
 ---
 
@@ -1440,9 +1475,9 @@ IF_DF_COMBINED[5:3]=IF
 - Must not conflict with other MA writers  
 
 **Used by μops:**
-- [EA_ADDR_TO_MA](../../03-microarchitecture/02-micro-operations.md#ea_addr_to_ma)
-- [PC_TO_MA](../../03-microarchitecture/02-micro-operations.md#pc_to_ma)
-- [MA_CLEAR](../../03-microarchitecture/02-micro-operations.md#ma_clear)
+- [EA_ADDR_TO_MA](../../03-microarchitecture/02-micro-operations.md#ea_addr_to_ma) = 1
+- [MA_CLEAR](../../03-microarchitecture/02-micro-operations.md#ma_clear) = 1
+- [PC_TO_MA](../../03-microarchitecture/02-micro-operations.md#pc_to_ma) = 1
 
 ---
 
@@ -1469,9 +1504,9 @@ IF_DF_COMBINED[5:3]=IF
 **Constraints:**  
 
 **Used by μops:**
-- [EA_ADDR_TO_MA](../../03-microarchitecture/02-micro-operations.md#ea_addr_to_ma)
-- [MA_CLEAR](../../03-microarchitecture/02-micro-operations.md#ma_clear)
-- [PC_TO_MA](../../03-microarchitecture/02-micro-operations.md#pc_to_ma)
+- [EA_ADDR_TO_MA](../../03-microarchitecture/02-micro-operations.md#ea_addr_to_ma) = 1
+- [MA_CLEAR](../../03-microarchitecture/02-micro-operations.md#ma_clear) = 2
+- [PC_TO_MA](../../03-microarchitecture/02-micro-operations.md#pc_to_ma) = 0
 
 ---
 
@@ -1496,7 +1531,7 @@ IF_DF_COMBINED[5:3]=IF
 - Only valid when MA_SRC == Control
 
 **Used by μops:**
-- [MA_CLEAR](../../03-microarchitecture/02-micro-operations.md#ma_clear)
+- [MA_CLEAR](../../03-microarchitecture/02-micro-operations.md#ma_clear) = 0
 
 ---
 
@@ -1522,11 +1557,11 @@ IF_DF_COMBINED[5:3]=IF
 - Must not conflict with other MB writers  
 
 **Used by μops:**
-- [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb)
-- [PC_TO_MB](../../03-microarchitecture/02-micro-operations.md#pc_to_mb)
-- [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb)
-- [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc)
-- [FP_SR_TO_MB](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_mb)
+- [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb) = 1
+- [FP_SR_TO_MB](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_mb) = 1
+- [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc) = 1
+- [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb) = 1
+- [PC_TO_MB](../../03-microarchitecture/02-micro-operations.md#pc_to_mb) = 1
 
 ---
 
@@ -1535,7 +1570,7 @@ IF_DF_COMBINED[5:3]=IF
 **Mnemonic:** MB_SRC  
 **Name:** MB Source Select  
 **Class:** Select  
-**Bit Width:** 1  
+**Bit Width:** 2  
 **Default Value:** 0  
 **Explicit Value Required:** Conditionally  
 **Value Required When:** MB_LOAD=1  
@@ -1546,6 +1581,8 @@ IF_DF_COMBINED[5:3]=IF
 ```
 0 → IDB
 1 → MDB
+2 → FP_SR
+3 → reserved
 ```
 
 **Constraints:**
@@ -1553,10 +1590,11 @@ IF_DF_COMBINED[5:3]=IF
 - MDB path used for memory reads  
 
 **Used by μops:**
-- [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb)
-- [PC_TO_MB](../../03-microarchitecture/02-micro-operations.md#pc_to_mb)
-- [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb)
-- [FP_SR_TO_MB](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_mb)
+- [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb) = 0
+- [FP_SR_TO_MB](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_mb) = 2
+- [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc) = 0
+- [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb) = 1
+- [PC_TO_MB](../../03-microarchitecture/02-micro-operations.md#pc_to_mb) = 0
 
 ---
 
@@ -1583,7 +1621,6 @@ memory bus value
 - Not interchangeable with IDB or DB sources  
 
 **Used by μops:**
-- [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb)
 
 ---
 
@@ -1611,9 +1648,9 @@ memory bus value
 - Must contain a valid encoding in every control word
 
 **Used by μops:**
-- [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb)
-- [MEM_WRITE_FROM_MB](../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)
-- [MEM_WRITE_FROM_FP_SR](../../03-microarchitecture/02-micro-operations.md#mem_write_from_fp_sr)
+- [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb) = 0
+- [MEM_WRITE_FROM_FP_SR](../../03-microarchitecture/02-micro-operations.md#mem_write_from_fp_sr) = 2
+- [MEM_WRITE_FROM_MB](../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb) = 1
 
 ---
 
@@ -1665,9 +1702,9 @@ memory bus value
 - Requires a valid source 
 
 **Used by μops:**
-- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap)
-- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac)
-- [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear)
+- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap) = 1
+- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 1
+- [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 1
 
 ---
 
@@ -1692,9 +1729,9 @@ memory bus value
 **Constraints:**  
 
 **Used by μops:**
-- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap)
-- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac)
-- [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear)
+- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap) = 1
+- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 1
+- [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 0
 
 ---
 
@@ -1723,7 +1760,7 @@ memory bus value
 - Must not be asserted simultaneously with PC_LOAD  
 
 **Used by μops:**
-- [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
+- [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc) = 1
 
 ---
 
@@ -1750,9 +1787,9 @@ memory bus value
 - Exactly one source must drive PC input when asserted  
 
 **Used by μops:**
-- [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr)
-- [PC_SET_1](../../03-microarchitecture/02-micro-operations.md#pc_set_1)
-- [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc)
+- [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc) = 1
+- [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr) = 1
+- [PC_SET_1](../../03-microarchitecture/02-micro-operations.md#pc_set_1) = 1
 
 ---
 
@@ -1779,9 +1816,9 @@ memory bus value
   - selected source must be fully driven and valid  
 
 **Used by μops:**
-- [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr)
-- [PC_SET_1](../../03-microarchitecture/02-micro-operations.md#pc_set_1)
-- [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc)
+- [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc) = 0
+- [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr) = 0
+- [PC_SET_1](../../03-microarchitecture/02-micro-operations.md#pc_set_1) = 1
 ---
 
 ### PC_VAL
@@ -1805,7 +1842,7 @@ memory bus value
 - Only valid when PC_SRC == Control
 
 **Used by μops:**
-- [PC_SET_1](../../03-microarchitecture/02-micro-operations.md#pc_set_1)
+- [PC_SET_1](../../03-microarchitecture/02-micro-operations.md#pc_set_1) = 1
 
 ---
 

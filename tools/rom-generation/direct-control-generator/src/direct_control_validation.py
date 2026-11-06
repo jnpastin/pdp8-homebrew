@@ -9,9 +9,9 @@ from pathlib import Path
 from typing import Sequence
 
 DEFAULT_DEFINITIONS = Path("build/simulation_outputs/rom-generation/direct-control-generator/direct-control-definitions.candidate.json")
-DEFAULT_INPUT_SCHEMA = Path("build/simulation_outputs/rom-generation/control-input-schema-generator/control-input-schema.candidate.json")
-DEFAULT_WORD_SCHEMA = Path("build/simulation_outputs/rom-generation/control-word-schema-generator/control-word-schema.candidate.json")
-DEFAULT_MAPPING = Path("build/simulation_outputs/rom-generation/micro-operation-mapping-generator/micro-operation-mapping.candidate.json")
+DEFAULT_INPUT_SCHEMA = Path("rom/microcode/v1/control-input-schema.json")
+DEFAULT_WORD_SCHEMA = Path("rom/microcode/v1/control-word-schema.json")
+DEFAULT_MAPPING = Path("rom/microcode/v1/micro-operation-mapping.json")
 DEFAULT_REPORT = Path("build/simulation_outputs/rom-generation/direct-control-validator/validation-report.txt")
 FAILURE_SEVERITIES = {"ERROR", "FATAL"}
 SEVERITY_ORDER = {"INFO": 0, "WARNING": 1, "ERROR": 2, "FATAL": 3}

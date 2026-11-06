@@ -21,10 +21,12 @@ Execution behavior follows:
 
 ## 2. Scope
   
-Applies to instructions where:
+Applies when:
 
-- IR[11:9] = 111  
-- Group 1 bit pattern is selected (see [Group 1 ISA](../../02-isa/01-group-1.md))
+```text
+IR_IS_OPR = 1
+IR_OPR_GROUP1 = 1
+```
 
 ---
 
@@ -59,10 +61,10 @@ TS3:
 - if IR[bit(IAC)] = 1: AC_INC  
 
 TS4:
-- if IR[bit(RAR)] = 1 AND IR[bit(BSW)] = 0: AC_RAR  
-- if IR[bit(RAL)] = 1 AND IR[bit(BSW)] = 0: AC_RAL  
-- if IR[bit(RAR)] = 1 AND IR[bit(BSW)] = 1: AC_RTR  
-- if IR[bit(RAL)] = 1 AND IR[bit(BSW)] = 1: AC_RTL  
+- if IR[bit(RAR)] = 1 AND IR[bit(RAL)] = 0 AND IR[bit(BSW)] = 0: AC_RAR  
+- if IR[bit(RAL)] = 1 AND IR[bit(RAR)] = 0 AND IR[bit(BSW)] = 0: AC_RAL  
+- if IR[bit(RAR)] = 1 AND IR[bit(RAL)] = 0 AND IR[bit(BSW)] = 1: AC_RTR  
+- if IR[bit(RAL)] = 1 AND IR[bit(RAR)] = 0 AND IR[bit(BSW)] = 1: AC_RTL  
 - if IR[bit(RAR)] = 0 AND IR[bit(RAL)] = 0 AND IR[bit(BSW)] = 1: AC_BSW  
 
 ---

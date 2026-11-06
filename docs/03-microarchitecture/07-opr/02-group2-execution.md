@@ -19,9 +19,12 @@ Execution behavior follows:
 
 ## 2. Scope
   
-Applies to instructions where:
-- IR[11:9] = 111
-- Group 2 bit pattern is selected (see [Group 2 ISA](../../02-isa/02-group-2.md))
+Applies when:
+
+```text
+IR_IS_OPR = 1
+IR_OPR_GROUP2 = 1
+```
 
 ---
 

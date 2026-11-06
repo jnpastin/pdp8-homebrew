@@ -134,6 +134,7 @@ Source:
 Applicable context:
 
 ```text
+RUN = 1
 MS = FETCH
 TS = 4
 IR_INDIRECT = 0
@@ -162,6 +163,7 @@ Source:
 Applicable context:
 
 ```text
+RUN = 1
 MS = FETCH
 TS = 4
 IR_INDIRECT = 1
@@ -190,6 +192,7 @@ Source:
 Applicable context:
 
 ```text
+RUN = 1
 MS = DEFER
 TS = 4
 ```
@@ -217,6 +220,7 @@ Source:
 Applicable context:
 
 ```text
+RUN = 1
 MS = EXECUTE
 TS = 4
 INTERRUPT_REQUEST_VALID = 1
@@ -247,6 +251,7 @@ Source:
 Applicable context:
 
 ```text
+RUN = 1
 MS = EXECUTE
 TS = 4
 INTERRUPT_REQUEST_VALID = 0
@@ -285,6 +290,7 @@ Sources:
 Applicable context:
 
 ```text
+RUN = 1
 MS = EXECUTE
 TS = 4
 INTERRUPT_REQUEST_VALID = 0
@@ -315,6 +321,7 @@ Sources:
 Applicable context:
 
 ```text
+RUN = 1
 MS = INTERRUPT
 TS = 4
 ```
@@ -342,6 +349,7 @@ Source:
 Applicable context:
 
 ```text
+RUN = 1
 MS = DMA
 TS = 4
 /DMA_REQ = 0
@@ -378,6 +386,7 @@ Sources:
 Applicable context:
 
 ```text
+RUN = 1
 MS = DMA
 TS = 4
 /DMA_REQ = 1
@@ -795,6 +804,7 @@ Applicable context:
 ```text
 HLT_REQ = 0
 IR_OPR_HLT = 0
+FP_STOP = 0
 ```
 
 Assignment:
@@ -937,6 +947,7 @@ Sources:
 Applicable context:
 
 ```text
+RUN = 1
 HLT_REQ = 1
 MS = EXECUTE
 TS = 4
@@ -1137,6 +1148,7 @@ Constraints:
 Applicable context:
 
 ```text
+RUN = 1
 MS = DEFER
 TS = 2
 ```
@@ -1152,6 +1164,7 @@ AB_SRC = MA
 Applicable context:
 
 ```text
+RUN = 1
 MS = DEFER
 TS = 4
 AUTO_INDEX_REQUIRED = 1
@@ -1168,24 +1181,30 @@ AB_SRC = MA
 Applicable context:
 
 ```text
+RUN = 1
 MS = EXECUTE
 TS = 2
+IR_IS_MRI = 1
 IR_MRI_OPCODE = 000
 ```
 
 or:
 
 ```text
+RUN = 1
 MS = EXECUTE
 TS = 2
+IR_IS_MRI = 1
 IR_MRI_OPCODE = 001
 ```
 
 or:
 
 ```text
+RUN = 1
 MS = EXECUTE
 TS = 2
+IR_IS_MRI = 1
 IR_MRI_OPCODE = 010
 ```
 
@@ -1200,8 +1219,10 @@ AB_SRC = MA
 Applicable context:
 
 ```text
+RUN = 1
 MS = EXECUTE
 TS = 4
+IR_IS_MRI = 1
 IR_MRI_OPCODE = 010
 ```
 
@@ -1216,8 +1237,10 @@ AB_SRC = MA
 Applicable context:
 
 ```text
+RUN = 1
 MS = EXECUTE
 TS = 3
+IR_IS_MRI = 1
 IR_MRI_OPCODE = 011
 ```
 
@@ -1232,8 +1255,10 @@ AB_SRC = MA
 Applicable context:
 
 ```text
+RUN = 1
 MS = EXECUTE
 TS = 3
+IR_IS_MRI = 1
 IR_MRI_OPCODE = 100
 ```
 
@@ -1248,6 +1273,7 @@ AB_SRC = MA
 Applicable context:
 
 ```text
+RUN = 1
 MS = INTERRUPT
 TS = 3
 ```
@@ -1353,6 +1379,7 @@ Applicable context:
 ```text
 MS = EXECUTE
 TS = 2
+IR_IS_MRI = 1
 IR_INDIRECT = 0
 AND (
     IR_MRI_OPCODE = 000
@@ -1374,6 +1401,7 @@ Applicable context:
 ```text
 MS = EXECUTE
 TS = 4
+IR_IS_MRI = 1
 IR_INDIRECT = 0
 IR_MRI_OPCODE = 010
 ```
@@ -1391,6 +1419,7 @@ Applicable context:
 ```text
 MS = EXECUTE
 TS = 3
+IR_IS_MRI = 1
 IR_INDIRECT = 0
 AND (
     IR_MRI_OPCODE = 011
@@ -1495,8 +1524,10 @@ Sources:
 Applicable context:
 
 ```text
+RUN = 1
 MS = EXECUTE
 TS = 2
+IR_IS_MRI = 1
 IR_INDIRECT = 1
 AND (
     IR_MRI_OPCODE = 000
@@ -1516,8 +1547,10 @@ MFB_SRC = DF
 Applicable context:
 
 ```text
+RUN = 1
 MS = EXECUTE
 TS = 4
+IR_IS_MRI = 1
 IR_INDIRECT = 1
 IR_MRI_OPCODE = 010
 ```
@@ -1533,8 +1566,10 @@ MFB_SRC = DF
 Applicable context:
 
 ```text
+RUN = 1
 MS = EXECUTE
 TS = 3
+IR_IS_MRI = 1
 IR_INDIRECT = 1
 AND (
     IR_MRI_OPCODE = 011
@@ -1555,6 +1590,7 @@ MFB_SRC = DF
 Applicable context:
 
 ```text
+RUN = 1
 MS = INTERRUPT
 TS = 3
 ```
@@ -1884,6 +1920,8 @@ WRITE = 2
 Applicable context:
 
 ```text
+IR_IS_IOT = 1
+MS = EXECUTE
 IO_READ_REQ = 1
 ```
 
@@ -1911,6 +1949,8 @@ Sources:
 Applicable context:
 
 ```text
+IR_IS_IOT = 1
+MS = EXECUTE
 IO_WRITE_REQ = 1
 ```
 
@@ -1945,6 +1985,8 @@ Applicable context:
     IOT_READ_PENDING = 1
     OR IOT_WRITE_PENDING = 1
 )
+IR_IS_IOT = 1
+MS = EXECUTE
 IO_READ_REQ = 0
 IO_WRITE_REQ = 0
 ```
@@ -1980,6 +2022,8 @@ Applicable context:
     IOT_READ_PENDING = 1
     OR IOT_WRITE_PENDING = 1
 )
+IR_IS_IOT = 1
+MS = EXECUTE
 IO_READ_REQ = 1
 ```
 
@@ -2015,6 +2059,8 @@ Applicable context:
     IOT_READ_PENDING = 1
     OR IOT_WRITE_PENDING = 1
 )
+IR_IS_IOT = 1
+MS = EXECUTE
 IO_WRITE_REQ = 1
 ```
 

@@ -95,6 +95,8 @@ Defined in:
 - [IR_OPR_HLT](./02-ir-derived-fields.md#ir_opr_hlt)  
 - [IR_OPR_IAC](./02-ir-derived-fields.md#ir_opr_iac)  
 - [IR_OPR_OSR](./02-ir-derived-fields.md#ir_opr_osr)  
+- [IR_OPR_MQA](./02-ir-derived-fields.md#ir_opr_mqa)  
+- [IR_OPR_MQL](./02-ir-derived-fields.md#ir_opr_mql)  
 - [IR_OPR_RAL](./02-ir-derived-fields.md#ir_opr_ral)  
 - [IR_OPR_RAR](./02-ir-derived-fields.md#ir_opr_rar)  
 - [IR_OPR_SKIP_MODE](./02-ir-derived-fields.md#ir_opr_skip_mode)  

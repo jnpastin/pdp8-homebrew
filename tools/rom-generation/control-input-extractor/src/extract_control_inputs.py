@@ -165,10 +165,24 @@ class ConsumerEntry:
     line: int
 
 
+@dataclass(frozen=True)
+class GlobalConstraintEntry:
+    """One machine-readable relationship spanning control inputs."""
+
+    kind: str
+    inputs: tuple[str, ...]
+    source_path: str
+    line: int
+
+
 CONSUMER_SECTION_LABELS = {
     "consumed by",
     "used by μops",
     "used by uops",
+}
+GLOBAL_CONSTRAINT_KINDS = {
+    "EXACTLY_ONE": "exactly_one",
+    "AT_MOST_ONE": "at_most_one",
 }
 
 
@@ -1267,6 +1281,7 @@ def build_json_result(
     dependencies: dict[str, list[DependencyEntry]],
     logic_sections: dict[str, dict[str, TextSection]], 
     constraints: dict[str, list[ConstraintEntry]], 
+    global_constraints: Sequence[GlobalConstraintEntry],
     consumers: dict[str, list[ConsumerEntry]],
     diagnostics: Sequence[Diagnostic],
 ) -> dict[str, object]:
@@ -1413,6 +1428,7 @@ def build_json_result(
             for path in SOURCE_PATHS
         ],
         "signals": signals,
+        "constraints": [{"kind": item.kind, "inputs": list(item.inputs), "source": {"path": item.source_path, "line": item.line}} for item in global_constraints],
         "diagnostics": [
             diagnostic_to_dict(diagnostic)
             for diagnostic in diagnostics
@@ -2062,6 +2078,40 @@ def parse_consumer_line(
     )
 
 
+def parse_global_constraints(
+    documents: Sequence[SourceDocument],
+    indexed_names: set[str],
+) -> tuple[list[GlobalConstraintEntry], list[Diagnostic]]:
+    """Extract nested machine-readable cross-input constraints."""
+    constraints: list[GlobalConstraintEntry] = []
+    diagnostics: list[Diagnostic] = []
+    pattern = re.compile(
+        r"^\s{2,}-\s+`?(EXACTLY_ONE|AT_MOST_ONE)\(([^)]+)\)`?\s*$"
+    )
+    seen: set[tuple[str, tuple[str, ...]]] = set()
+    for document in documents:
+        for line_number, line in enumerate(document.text.splitlines(), start=1):
+            match = pattern.match(line)
+            if match is None:
+                continue
+            kind = GLOBAL_CONSTRAINT_KINDS[match.group(1)]
+            inputs = tuple(normalize_markdown_text(item) for item in match.group(2).split(",") if normalize_markdown_text(item))
+            unknown = [name for name in inputs if name not in indexed_names]
+            if len(inputs) < 2:
+                diagnostics.append(Diagnostic("ERROR", "INVALID_GLOBAL_CONSTRAINT", "A global constraint must name at least two inputs.", document.relative_path, line_number))
+                continue
+            if unknown:
+                diagnostics.append(Diagnostic("ERROR", "UNKNOWN_GLOBAL_CONSTRAINT_INPUT", "Global constraint references unknown input(s): " + ", ".join(unknown), document.relative_path, line_number))
+                continue
+            key = (kind, inputs)
+            if key in seen:
+                diagnostics.append(Diagnostic("ERROR", "DUPLICATE_GLOBAL_CONSTRAINT", "Global constraint is defined more than once.", document.relative_path, line_number))
+                continue
+            seen.add(key)
+            constraints.append(GlobalConstraintEntry(kind, inputs, document.relative_path, line_number))
+    return constraints, diagnostics
+
+
 def parse_definition_consumers(
     block: DefinitionBlock,
 ) -> tuple[list[ConsumerEntry], list[Diagnostic]]:
@@ -2326,6 +2376,7 @@ def build_extraction_report(
     dependencies: dict[str, list[DependencyEntry]],
     logic_sections: dict[str, dict[str, TextSection]],
     constraints: dict[str, list[ConstraintEntry]],
+    global_constraints: Sequence[GlobalConstraintEntry],
     consumers: dict[str, list[ConsumerEntry]],
     diagnostics: Sequence[Diagnostic],
 ) -> str:
@@ -2459,6 +2510,7 @@ def build_extraction_report(
             f"{definitions_with_constraints}"
         ),
         f"Constraints: {constraint_count}",
+        f"Global constraints: {len(global_constraints)}",
         (
             "Definitions with consumers: "
             f"{definitions_with_consumers}"
@@ -2652,7 +2704,9 @@ def main(
     constraints, constraint_diagnostics = (
         extract_all_definition_constraints(definitions)
     )
-    
+    global_constraints, global_constraint_diagnostics = (
+        parse_global_constraints(documents, indexed_names)
+    )
     consumers, consumer_diagnostics = (
         extract_all_definition_consumers(definitions)
     )
@@ -2679,6 +2733,7 @@ def main(
     diagnostics += logic_extraction_diagnostics
     diagnostics += logic_validation_diagnostics
     diagnostics += constraint_diagnostics
+    diagnostics += global_constraint_diagnostics
     diagnostics += consumer_diagnostics
     diagnostics += final_structure_diagnostics
     diagnostics = sorted(
@@ -2704,6 +2759,7 @@ def main(
         dependencies,
         logic_sections,
         constraints,
+        global_constraints,
         consumers,
         diagnostics,
     )
@@ -2726,6 +2782,7 @@ def main(
         dependencies,
         logic_sections,
         constraints,
+        global_constraints,
         consumers,
         diagnostics,
     )

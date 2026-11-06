@@ -468,15 +468,13 @@ Sources:
 
 ---
 
-### 5.4 DMA Read Ownership
+### 5.4 DMA Ownership
 
 Applicable context:
 
 ```text
 MS = DMA
 /DMA_GRANT = 0
-a controller has a matching valid DMA_GRANT_ID
-the selected DMA transfer is a memory read
 ```
 
 CPU output-drive states:
@@ -512,51 +510,7 @@ Source:
 
 ---
 
-### 5.5 DMA Write Ownership
-
-Applicable context:
-
-```text
-MS = DMA
-/DMA_GRANT = 0
-a controller has a matching valid DMA_GRANT_ID
-the selected DMA transfer is a memory write
-```
-
-CPU output-drive states:
-
-```text
-CPU MFB driver = HIGH_Z
-CPU AB driver  = HIGH_Z
-CPU MDB driver = HIGH_Z
-CPU /RD driver = HIGH_Z
-CPU /WR driver = HIGH_Z
-```
-
-External ownership:
-
-```text
-selected controller drives MFB
-selected controller drives AB
-selected controller asserts /WR
-selected controller deasserts /RD
-selected controller drives MDB
-```
-
-Constraints:
-
-- The selected controller is the sole `MDB` producer.
-- Memory must not drive `MDB`.
-- Memory captures `MDB` at TP2.
-- No CPU control assignment may replace the controller-supplied address, field, data, or direction.
-
-Source:
-
-- [DMA Interface](../../07-io/05-dma-interface.md)
-
----
-
-### 5.6 DMA Ownership Release
+### 5.5 DMA Ownership Release
 
 When a controller selection terminates:
 

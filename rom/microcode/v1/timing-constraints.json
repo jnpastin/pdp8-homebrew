@@ -1,0 +1,30 @@
+{
+  "format_version": 1,
+  "control_design_version": "v1",
+  "artifact": "timing-constraints",
+  "generation_stage": "candidate-generation",
+  "sources": [
+    "docs/09-timing/03-major-state-timing.md"
+  ],
+  "constraints": [
+    {
+      "id": "timing:125",
+      "context": "TS = 3 AND (IOT_READ_PENDING = 1 OR IOT_WRITE_PENDING = 1)",
+      "requirement": "IO_CLEAR_AC_REQ != 1",
+      "source": {
+        "path": "docs/09-timing/03-major-state-timing.md",
+        "line": 125
+      }
+    },
+    {
+      "id": "timing:146",
+      "context": "TS = 4 AND (IOT_READ_PENDING = 1 OR IO_SKIP_REQ = 1)",
+      "requirement": "IO_CLEAR_AC_REQ != 1",
+      "source": {
+        "path": "docs/09-timing/03-major-state-timing.md",
+        "line": 146
+      }
+    }
+  ],
+  "diagnostics": []
+}

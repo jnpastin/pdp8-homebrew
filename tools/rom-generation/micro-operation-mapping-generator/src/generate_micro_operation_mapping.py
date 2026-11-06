@@ -136,6 +136,18 @@ def validate_assignments(name:str,assignments:list[Any],fields:dict[str,dict[str
         if legal is not None and value not in legal:d.append(diag("ERROR","INVALID_ASSIGNED_VALUE",f"Value {value!r} is not legal for field {field!r}.",micro_operation=name,field_name=field,source=source))
     return d
 
+def derive_assignments_from_schema(name:str,fields:dict[str,dict[str,Any]],old:dict[str,Any]|None)->tuple[list[dict[str,str]],list[Diagnostic]]:
+    d=[]; old_values={a.get("field"):str(a.get("value")) for a in (old or {}).get("assignments",[]) if isinstance(a,dict)}; assignments=[]
+    for field_name,definition in fields.items():
+        use=next((u for u in definition.get("used_by_micro_operations",[]) if isinstance(u,dict) and u.get("micro_operation")==name),None)
+        if use is None: continue
+        value=use.get("value")
+        if value is None: value=old_values.get(field_name)
+        if value is None:
+            d.append(diag("ERROR","MAPPING_VALUE_UNRESOLVED","Used-by relationship has no assignment value and no reviewed value exists.",micro_operation=name,field_name=field_name,source=use.get("source")));continue
+        assignments.append({"field":field_name,"value":str(value)})
+    return assignments,d
+
 def build_candidate(micro_data,schema_data,maintained_data=None):
     d=[]; sd,fields=validate_schema(schema_data); d.extend(sd)
     md,maintained=validate_maintained(maintained_data); d.extend(md)
@@ -143,9 +155,9 @@ def build_candidate(micro_data,schema_data,maintained_data=None):
     ops=micro_data["micro_operations"]; names={op["name"] for op in ops}; mappings=[]
     for op in ops:
         name=op["name"]; old=maintained.get(name); source=op["source"]
-        assignments=list(old.get("assignments",[])) if old else []
+        assignments,derived=derive_assignments_from_schema(name,fields,old);d.extend(derived)
         notes=list(old.get("notes",[])) if old else []
-        if old is None or not assignments:d.append(diag("WARNING","MAPPING_UNRESOLVED","Micro-operation mapping has no reviewed assignments.",micro_operation=name,source=source))
+        if not assignments:d.append(diag("WARNING","MAPPING_UNRESOLVED","No assignments were derived from control-output Used-by relationships.",micro_operation=name,source=source))
         d.extend(validate_assignments(name,assignments,fields,source))
         mappings.append({"micro_operation":name,"assignments":assignments,"source":{"document":source["path"],"section":source["heading"],"line":source["line"]},"notes":notes})
     for name in maintained:

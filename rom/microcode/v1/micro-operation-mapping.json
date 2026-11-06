@@ -12,6 +12,18 @@
       "micro_operation": "AC_AND_MB",
       "assignments": [
         {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
+        {
           "field": "ALU_A_SRC",
           "value": "0"
         },
@@ -26,18 +38,6 @@
         {
           "field": "IDB_SRC",
           "value": "7"
-        },
-        {
-          "field": "IDB_DRIVE",
-          "value": "1"
-        },
-        {
-          "field": "AC_SRC",
-          "value": "0"
-        },
-        {
-          "field": "AC_LOAD",
-          "value": "1"
         }
       ],
       "source": {
@@ -50,6 +50,18 @@
     {
       "micro_operation": "AC_BSW",
       "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
         {
           "field": "ALU_A_SRC",
           "value": "0"
@@ -65,18 +77,6 @@
         {
           "field": "IDB_SRC",
           "value": "7"
-        },
-        {
-          "field": "IDB_DRIVE",
-          "value": "1"
-        },
-        {
-          "field": "AC_SRC",
-          "value": "0"
-        },
-        {
-          "field": "AC_LOAD",
-          "value": "1"
         }
       ],
       "source": {
@@ -89,6 +89,18 @@
     {
       "micro_operation": "AC_CLEAR",
       "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
         {
           "field": "ALU_A_SRC",
           "value": "0"
@@ -104,18 +116,6 @@
         {
           "field": "IDB_SRC",
           "value": "7"
-        },
-        {
-          "field": "IDB_DRIVE",
-          "value": "1"
-        },
-        {
-          "field": "AC_SRC",
-          "value": "0"
-        },
-        {
-          "field": "AC_LOAD",
-          "value": "1"
         }
       ],
       "source": {
@@ -128,6 +128,18 @@
     {
       "micro_operation": "AC_COMP",
       "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
         {
           "field": "ALU_A_SRC",
           "value": "0"
@@ -143,18 +155,6 @@
         {
           "field": "IDB_SRC",
           "value": "7"
-        },
-        {
-          "field": "IDB_DRIVE",
-          "value": "1"
-        },
-        {
-          "field": "AC_SRC",
-          "value": "0"
-        },
-        {
-          "field": "AC_LOAD",
-          "value": "1"
         }
       ],
       "source": {
@@ -167,6 +167,22 @@
     {
       "micro_operation": "AC_INC",
       "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "L_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
         {
           "field": "ALU_A_SRC",
           "value": "0"
@@ -184,24 +200,8 @@
           "value": "7"
         },
         {
-          "field": "IDB_DRIVE",
-          "value": "1"
-        },
-        {
-          "field": "AC_SRC",
-          "value": "0"
-        },
-        {
-          "field": "AC_LOAD",
-          "value": "1"
-        },
-        {
           "field": "L_OP",
           "value": "2"
-        },
-        {
-          "field": "L_LOAD",
-          "value": "1"
         }
       ],
       "source": {
@@ -215,8 +215,8 @@
       "micro_operation": "AC_MQ_SWAP",
       "assignments": [
         {
-          "field": "IDB_SRC",
-          "value": "0"
+          "field": "AC_LOAD",
+          "value": "1"
         },
         {
           "field": "IDB_DRIVE",
@@ -231,11 +231,11 @@
           "value": "5"
         },
         {
-          "field": "MQ_SRC",
-          "value": "1"
+          "field": "IDB_SRC",
+          "value": "0"
         },
         {
-          "field": "AC_LOAD",
+          "field": "MQ_SRC",
           "value": "1"
         }
       ],
@@ -249,6 +249,18 @@
     {
       "micro_operation": "AC_OR_MQ",
       "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
         {
           "field": "ALU_A_SRC",
           "value": "0"
@@ -264,18 +276,6 @@
         {
           "field": "IDB_SRC",
           "value": "7"
-        },
-        {
-          "field": "IDB_DRIVE",
-          "value": "1"
-        },
-        {
-          "field": "AC_SRC",
-          "value": "0"
-        },
-        {
-          "field": "AC_LOAD",
-          "value": "1"
         }
       ],
       "source": {
@@ -288,6 +288,18 @@
     {
       "micro_operation": "AC_OR_FP_SR",
       "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
         {
           "field": "ALU_A_SRC",
           "value": "0"
@@ -303,18 +315,6 @@
         {
           "field": "IDB_SRC",
           "value": "7"
-        },
-        {
-          "field": "IDB_DRIVE",
-          "value": "1"
-        },
-        {
-          "field": "AC_SRC",
-          "value": "0"
-        },
-        {
-          "field": "AC_LOAD",
-          "value": "1"
         }
       ],
       "source": {
@@ -327,6 +327,22 @@
     {
       "micro_operation": "AC_RAR",
       "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "L_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
         {
           "field": "ALU_A_SRC",
           "value": "0"
@@ -344,24 +360,8 @@
           "value": "7"
         },
         {
-          "field": "IDB_DRIVE",
-          "value": "1"
-        },
-        {
-          "field": "AC_SRC",
-          "value": "0"
-        },
-        {
-          "field": "AC_LOAD",
-          "value": "1"
-        },
-        {
           "field": "L_OP",
           "value": "2"
-        },
-        {
-          "field": "L_LOAD",
-          "value": "1"
         }
       ],
       "source": {
@@ -375,6 +375,22 @@
       "micro_operation": "AC_RAL",
       "assignments": [
         {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "L_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
+        {
           "field": "ALU_A_SRC",
           "value": "0"
         },
@@ -391,24 +407,8 @@
           "value": "7"
         },
         {
-          "field": "IDB_DRIVE",
-          "value": "1"
-        },
-        {
-          "field": "AC_SRC",
-          "value": "0"
-        },
-        {
-          "field": "AC_LOAD",
-          "value": "1"
-        },
-        {
           "field": "L_OP",
           "value": "2"
-        },
-        {
-          "field": "L_LOAD",
-          "value": "1"
         }
       ],
       "source": {
@@ -422,6 +422,22 @@
       "micro_operation": "AC_RTR",
       "assignments": [
         {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "L_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
+        {
           "field": "ALU_A_SRC",
           "value": "0"
         },
@@ -438,24 +454,8 @@
           "value": "7"
         },
         {
-          "field": "IDB_DRIVE",
-          "value": "1"
-        },
-        {
-          "field": "AC_SRC",
-          "value": "0"
-        },
-        {
-          "field": "AC_LOAD",
-          "value": "1"
-        },
-        {
           "field": "L_OP",
           "value": "2"
-        },
-        {
-          "field": "L_LOAD",
-          "value": "1"
         }
       ],
       "source": {
@@ -468,6 +468,22 @@
     {
       "micro_operation": "AC_RTL",
       "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "L_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
         {
           "field": "ALU_A_SRC",
           "value": "0"
@@ -485,24 +501,8 @@
           "value": "7"
         },
         {
-          "field": "IDB_DRIVE",
-          "value": "1"
-        },
-        {
-          "field": "AC_SRC",
-          "value": "0"
-        },
-        {
-          "field": "AC_LOAD",
-          "value": "1"
-        },
-        {
           "field": "L_OP",
           "value": "2"
-        },
-        {
-          "field": "L_LOAD",
-          "value": "1"
         }
       ],
       "source": {
@@ -516,12 +516,12 @@
       "micro_operation": "AC_TO_DF",
       "assignments": [
         {
-          "field": "DF_SRC",
-          "value": "3"
-        },
-        {
           "field": "DF_LOAD",
           "value": "1"
+        },
+        {
+          "field": "DF_SRC",
+          "value": "3"
         }
       ],
       "source": {
@@ -535,12 +535,12 @@
       "micro_operation": "AC_TO_DIF",
       "assignments": [
         {
-          "field": "DIF_SRC",
-          "value": "3"
-        },
-        {
           "field": "DIF_LOAD",
           "value": "1"
+        },
+        {
+          "field": "DIF_SRC",
+          "value": "3"
         }
       ],
       "source": {
@@ -554,12 +554,12 @@
       "micro_operation": "AC_TO_L",
       "assignments": [
         {
-          "field": "L_OP",
-          "value": "3"
-        },
-        {
           "field": "L_LOAD",
           "value": "1"
+        },
+        {
+          "field": "L_OP",
+          "value": "3"
         }
       ],
       "source": {
@@ -573,20 +573,20 @@
       "micro_operation": "AC_TO_MB",
       "assignments": [
         {
-          "field": "IDB_SRC",
-          "value": "0"
-        },
-        {
           "field": "IDB_DRIVE",
           "value": "1"
         },
         {
-          "field": "MB_SRC",
+          "field": "MB_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_SRC",
           "value": "0"
         },
         {
-          "field": "MB_LOAD",
-          "value": "1"
+          "field": "MB_SRC",
+          "value": "0"
         }
       ],
       "source": {
@@ -600,12 +600,20 @@
       "micro_operation": "AC_TO_MQ_AND_CLEAR_AC",
       "assignments": [
         {
-          "field": "MQ_SRC",
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
           "value": "1"
         },
         {
           "field": "MQ_LOAD",
           "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
         },
         {
           "field": "ALU_A_SRC",
@@ -624,15 +632,7 @@
           "value": "7"
         },
         {
-          "field": "IDB_DRIVE",
-          "value": "1"
-        },
-        {
-          "field": "AC_SRC",
-          "value": "0"
-        },
-        {
-          "field": "AC_LOAD",
+          "field": "MQ_SRC",
           "value": "1"
         }
       ],
@@ -646,6 +646,22 @@
     {
       "micro_operation": "ADD_AC_MB",
       "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "L_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
         {
           "field": "ALU_A_SRC",
           "value": "0"
@@ -663,24 +679,8 @@
           "value": "7"
         },
         {
-          "field": "IDB_DRIVE",
-          "value": "1"
-        },
-        {
-          "field": "AC_SRC",
-          "value": "0"
-        },
-        {
-          "field": "AC_LOAD",
-          "value": "1"
-        },
-        {
           "field": "L_OP",
           "value": "2"
-        },
-        {
-          "field": "L_LOAD",
-          "value": "1"
         }
       ],
       "source": {
@@ -694,12 +694,12 @@
       "micro_operation": "CIFP_CLEAR",
       "assignments": [
         {
-          "field": "CIFP_VAL",
-          "value": "0"
-        },
-        {
           "field": "CIFP_LOAD",
           "value": "1"
+        },
+        {
+          "field": "CIFP_VAL",
+          "value": "0"
         }
       ],
       "source": {
@@ -713,11 +713,11 @@
       "micro_operation": "CIFP_SET",
       "assignments": [
         {
-          "field": "CIFP_VAL",
+          "field": "CIFP_LOAD",
           "value": "1"
         },
         {
-          "field": "CIFP_LOAD",
+          "field": "CIFP_VAL",
           "value": "1"
         }
       ],
@@ -732,16 +732,16 @@
       "micro_operation": "DB_READ_TO_AC",
       "assignments": [
         {
-          "field": "/DB_READ",
-          "value": "0"
+          "field": "AC_LOAD",
+          "value": "1"
         },
         {
           "field": "AC_SRC",
           "value": "1"
         },
         {
-          "field": "AC_LOAD",
-          "value": "1"
+          "field": "/DB_READ",
+          "value": "0"
         }
       ],
       "source": {
@@ -770,16 +770,16 @@
       "micro_operation": "DF_CLEAR",
       "assignments": [
         {
+          "field": "DF_LOAD",
+          "value": "1"
+        },
+        {
           "field": "DF_SRC",
           "value": "0"
         },
         {
           "field": "DF_VAL",
           "value": "0"
-        },
-        {
-          "field": "DF_LOAD",
-          "value": "1"
         }
       ],
       "source": {
@@ -793,11 +793,11 @@
       "micro_operation": "DIF_CLEAR",
       "assignments": [
         {
-          "field": "DIF_SRC",
+          "field": "DIF_LOAD",
           "value": "1"
         },
         {
-          "field": "DIF_LOAD",
+          "field": "DIF_SRC",
           "value": "1"
         }
       ],
@@ -812,12 +812,12 @@
       "micro_operation": "DF_TO_AC",
       "assignments": [
         {
-          "field": "AC_SRC",
-          "value": "3"
-        },
-        {
           "field": "AC_LOAD",
           "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "3"
         }
       ],
       "source": {
@@ -831,11 +831,11 @@
       "micro_operation": "DIF_TO_IF",
       "assignments": [
         {
-          "field": "IF_SRC",
+          "field": "IF_LOAD",
           "value": "1"
         },
         {
-          "field": "IF_LOAD",
+          "field": "IF_SRC",
           "value": "1"
         }
       ],
@@ -850,11 +850,11 @@
       "micro_operation": "EA_ADDR_TO_MA",
       "assignments": [
         {
-          "field": "MA_SRC",
+          "field": "MA_LOAD",
           "value": "1"
         },
         {
-          "field": "MA_LOAD",
+          "field": "MA_SRC",
           "value": "1"
         }
       ],
@@ -869,12 +869,12 @@
       "micro_operation": "FP_DF_TO_DF",
       "assignments": [
         {
-          "field": "DF_SRC",
-          "value": "2"
-        },
-        {
           "field": "DF_LOAD",
           "value": "1"
+        },
+        {
+          "field": "DF_SRC",
+          "value": "2"
         }
       ],
       "source": {
@@ -888,12 +888,12 @@
       "micro_operation": "FP_IF_TO_DIF",
       "assignments": [
         {
-          "field": "DIF_SRC",
-          "value": "2"
-        },
-        {
           "field": "DIF_LOAD",
           "value": "1"
+        },
+        {
+          "field": "DIF_SRC",
+          "value": "2"
         }
       ],
       "source": {
@@ -907,12 +907,12 @@
       "micro_operation": "FP_IF_TO_IF",
       "assignments": [
         {
-          "field": "IF_SRC",
-          "value": "2"
-        },
-        {
           "field": "IF_LOAD",
           "value": "1"
+        },
+        {
+          "field": "IF_SRC",
+          "value": "2"
         }
       ],
       "source": {
@@ -926,20 +926,12 @@
       "micro_operation": "FP_SR_TO_MB",
       "assignments": [
         {
-          "field": "IDB_SRC",
-          "value": "4"
-        },
-        {
-          "field": "IDB_DRIVE",
+          "field": "MB_LOAD",
           "value": "1"
         },
         {
           "field": "MB_SRC",
-          "value": "0"
-        },
-        {
-          "field": "MB_LOAD",
-          "value": "1"
+          "value": "2"
         }
       ],
       "source": {
@@ -953,20 +945,20 @@
       "micro_operation": "FP_SR_TO_PC",
       "assignments": [
         {
-          "field": "IDB_SRC",
-          "value": "4"
-        },
-        {
           "field": "IDB_DRIVE",
           "value": "1"
         },
         {
-          "field": "PC_SRC",
-          "value": "0"
-        },
-        {
           "field": "PC_LOAD",
           "value": "1"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "4"
+        },
+        {
+          "field": "PC_SRC",
+          "value": "0"
         }
       ],
       "source": {
@@ -980,12 +972,12 @@
       "micro_operation": "GTF_FLAGS_TO_AC",
       "assignments": [
         {
-          "field": "AC_SRC",
-          "value": "6"
-        },
-        {
           "field": "AC_LOAD",
           "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "6"
         }
       ],
       "source": {
@@ -999,12 +991,12 @@
       "micro_operation": "IB_TO_AC",
       "assignments": [
         {
-          "field": "AC_SRC",
-          "value": "4"
-        },
-        {
           "field": "AC_LOAD",
           "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "4"
         }
       ],
       "source": {
@@ -1018,11 +1010,11 @@
       "micro_operation": "IB_TO_DF",
       "assignments": [
         {
-          "field": "DF_SRC",
+          "field": "DF_LOAD",
           "value": "1"
         },
         {
-          "field": "DF_LOAD",
+          "field": "DF_SRC",
           "value": "1"
         }
       ],
@@ -1037,12 +1029,12 @@
       "micro_operation": "IB_TO_DIF",
       "assignments": [
         {
-          "field": "DIF_SRC",
-          "value": "0"
-        },
-        {
           "field": "DIF_LOAD",
           "value": "1"
+        },
+        {
+          "field": "DIF_SRC",
+          "value": "0"
         }
       ],
       "source": {
@@ -1056,12 +1048,12 @@
       "micro_operation": "IE_CLEAR",
       "assignments": [
         {
-          "field": "IE_VAL",
-          "value": "0"
-        },
-        {
           "field": "IE_LOAD",
           "value": "1"
+        },
+        {
+          "field": "IE_VAL",
+          "value": "0"
         }
       ],
       "source": {
@@ -1075,11 +1067,11 @@
       "micro_operation": "IE_SET",
       "assignments": [
         {
-          "field": "IE_VAL",
+          "field": "IE_LOAD",
           "value": "1"
         },
         {
-          "field": "IE_LOAD",
+          "field": "IE_VAL",
           "value": "1"
         }
       ],
@@ -1094,16 +1086,16 @@
       "micro_operation": "IF_CLEAR",
       "assignments": [
         {
+          "field": "IF_LOAD",
+          "value": "1"
+        },
+        {
           "field": "IF_SRC",
           "value": "0"
         },
         {
           "field": "IF_VAL",
           "value": "0"
-        },
-        {
-          "field": "IF_LOAD",
-          "value": "1"
         }
       ],
       "source": {
@@ -1132,12 +1124,12 @@
       "micro_operation": "IF_TO_AC",
       "assignments": [
         {
-          "field": "AC_SRC",
-          "value": "2"
-        },
-        {
           "field": "AC_LOAD",
           "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "2"
         }
       ],
       "source": {
@@ -1151,12 +1143,12 @@
       "micro_operation": "II_CLEAR",
       "assignments": [
         {
-          "field": "II_VAL",
-          "value": "0"
-        },
-        {
           "field": "II_LOAD",
           "value": "1"
+        },
+        {
+          "field": "II_VAL",
+          "value": "0"
         }
       ],
       "source": {
@@ -1170,11 +1162,11 @@
       "micro_operation": "II_SET",
       "assignments": [
         {
-          "field": "II_VAL",
+          "field": "II_LOAD",
           "value": "1"
         },
         {
-          "field": "II_LOAD",
+          "field": "II_VAL",
           "value": "1"
         }
       ],
@@ -1206,12 +1198,12 @@
       "micro_operation": "IOT_TRANSFER_CLEAR",
       "assignments": [
         {
-          "field": "IOT_TRANSFER_VAL",
-          "value": "0"
-        },
-        {
           "field": "IOT_TRANSFER_LOAD",
           "value": "1"
+        },
+        {
+          "field": "IOT_TRANSFER_VAL",
+          "value": "0"
         }
       ],
       "source": {
@@ -1225,11 +1217,11 @@
       "micro_operation": "IR_ADDR_TO_EA_ADDR",
       "assignments": [
         {
-          "field": "EA_ADDR_SRC",
+          "field": "EA_ADDR_LOAD",
           "value": "1"
         },
         {
-          "field": "EA_ADDR_LOAD",
+          "field": "EA_ADDR_SRC",
           "value": "1"
         }
       ],
@@ -1244,12 +1236,12 @@
       "micro_operation": "IR_DF_TO_DF",
       "assignments": [
         {
-          "field": "DF_SRC",
-          "value": "0"
-        },
-        {
           "field": "DF_LOAD",
           "value": "1"
+        },
+        {
+          "field": "DF_SRC",
+          "value": "0"
         }
       ],
       "source": {
@@ -1265,11 +1257,11 @@
       "micro_operation": "IR_IF_TO_DIF",
       "assignments": [
         {
-          "field": "DIF_SRC",
+          "field": "DIF_LOAD",
           "value": "1"
         },
         {
-          "field": "DIF_LOAD",
+          "field": "DIF_SRC",
           "value": "1"
         }
       ],
@@ -1284,12 +1276,12 @@
       "micro_operation": "L_CLEAR",
       "assignments": [
         {
-          "field": "L_OP",
-          "value": "0"
-        },
-        {
           "field": "L_LOAD",
           "value": "1"
+        },
+        {
+          "field": "L_OP",
+          "value": "0"
         }
       ],
       "source": {
@@ -1303,11 +1295,11 @@
       "micro_operation": "L_COMP",
       "assignments": [
         {
-          "field": "L_OP",
+          "field": "L_LOAD",
           "value": "1"
         },
         {
-          "field": "L_LOAD",
+          "field": "L_OP",
           "value": "1"
         }
       ],
@@ -1322,16 +1314,16 @@
       "micro_operation": "MA_CLEAR",
       "assignments": [
         {
+          "field": "MA_LOAD",
+          "value": "1"
+        },
+        {
           "field": "MA_SRC",
           "value": "2"
         },
         {
           "field": "MA_VAL",
           "value": "0"
-        },
-        {
-          "field": "MA_LOAD",
-          "value": "1"
         }
       ],
       "source": {
@@ -1344,6 +1336,14 @@
     {
       "micro_operation": "MB_INC",
       "assignments": [
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "MB_LOAD",
+          "value": "1"
+        },
         {
           "field": "ALU_A_SRC",
           "value": "1"
@@ -1361,16 +1361,8 @@
           "value": "7"
         },
         {
-          "field": "IDB_DRIVE",
-          "value": "1"
-        },
-        {
           "field": "MB_SRC",
           "value": "0"
-        },
-        {
-          "field": "MB_LOAD",
-          "value": "1"
         }
       ],
       "source": {
@@ -1384,8 +1376,8 @@
       "micro_operation": "MB_TO_EA_ADDR",
       "assignments": [
         {
-          "field": "IDB_SRC",
-          "value": "2"
+          "field": "EA_ADDR_LOAD",
+          "value": "1"
         },
         {
           "field": "IDB_DRIVE",
@@ -1396,8 +1388,8 @@
           "value": "0"
         },
         {
-          "field": "EA_ADDR_LOAD",
-          "value": "1"
+          "field": "IDB_SRC",
+          "value": "2"
         }
       ],
       "source": {
@@ -1426,16 +1418,16 @@
       "micro_operation": "MEM_READ_TO_MB",
       "assignments": [
         {
-          "field": "MDB_SRC",
-          "value": "0"
+          "field": "MB_LOAD",
+          "value": "1"
         },
         {
           "field": "MB_SRC",
           "value": "1"
         },
         {
-          "field": "MB_LOAD",
-          "value": "1"
+          "field": "MDB_SRC",
+          "value": "0"
         },
         {
           "field": "/RD",
@@ -1497,6 +1489,14 @@
       "micro_operation": "MQ_CLEAR",
       "assignments": [
         {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "MQ_LOAD",
+          "value": "1"
+        },
+        {
           "field": "ALU_A_SRC",
           "value": "0"
         },
@@ -1511,14 +1511,6 @@
         {
           "field": "IDB_SRC",
           "value": "7"
-        },
-        {
-          "field": "IDB_DRIVE",
-          "value": "1"
-        },
-        {
-          "field": "MQ_LOAD",
-          "value": "1"
         },
         {
           "field": "MQ_SRC",
@@ -1536,6 +1528,10 @@
       "micro_operation": "PC_INC",
       "assignments": [
         {
+          "field": "PC_INC",
+          "value": "1"
+        },
+        {
           "field": "ALU_A_SRC",
           "value": "2"
         },
@@ -1546,10 +1542,6 @@
         {
           "field": "ALU_OP",
           "value": "4"
-        },
-        {
-          "field": "PC_INC",
-          "value": "1"
         }
       ],
       "source": {
@@ -1563,20 +1555,20 @@
       "micro_operation": "PC_LOAD_EA_ADDR",
       "assignments": [
         {
-          "field": "IDB_SRC",
-          "value": "5"
-        },
-        {
           "field": "IDB_DRIVE",
           "value": "1"
         },
         {
-          "field": "PC_SRC",
-          "value": "0"
-        },
-        {
           "field": "PC_LOAD",
           "value": "1"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "5"
+        },
+        {
+          "field": "PC_SRC",
+          "value": "0"
         }
       ],
       "source": {
@@ -1590,15 +1582,15 @@
       "micro_operation": "PC_SET_1",
       "assignments": [
         {
+          "field": "PC_LOAD",
+          "value": "1"
+        },
+        {
           "field": "PC_SRC",
           "value": "1"
         },
         {
           "field": "PC_VAL",
-          "value": "1"
-        },
-        {
-          "field": "PC_LOAD",
           "value": "1"
         }
       ],
@@ -1613,7 +1605,7 @@
       "micro_operation": "PC_TO_EA_ADDR",
       "assignments": [
         {
-          "field": "IDB_SRC",
+          "field": "EA_ADDR_LOAD",
           "value": "1"
         },
         {
@@ -1625,7 +1617,7 @@
           "value": "0"
         },
         {
-          "field": "EA_ADDR_LOAD",
+          "field": "IDB_SRC",
           "value": "1"
         }
       ],
@@ -1640,12 +1632,12 @@
       "micro_operation": "PC_TO_MA",
       "assignments": [
         {
-          "field": "MA_SRC",
-          "value": "0"
-        },
-        {
           "field": "MA_LOAD",
           "value": "1"
+        },
+        {
+          "field": "MA_SRC",
+          "value": "0"
         }
       ],
       "source": {
@@ -1659,20 +1651,20 @@
       "micro_operation": "PC_TO_MB",
       "assignments": [
         {
-          "field": "IDB_SRC",
+          "field": "IDB_DRIVE",
           "value": "1"
         },
         {
-          "field": "IDB_DRIVE",
+          "field": "MB_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_SRC",
           "value": "1"
         },
         {
           "field": "MB_SRC",
           "value": "0"
-        },
-        {
-          "field": "MB_LOAD",
-          "value": "1"
         }
       ],
       "source": {

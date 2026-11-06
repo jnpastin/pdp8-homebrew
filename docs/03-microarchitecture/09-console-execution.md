@@ -158,7 +158,7 @@ Applicable context:
 
 ```text
 RUN = 0
-FP_LOAD = 1
+FP_LOAD_ADDRESS = 1
 ```
 
 Execution model:
@@ -198,7 +198,7 @@ Applicable context:
 
 ```text
 RUN = 0
-FP_EXAM = 1
+FP_EXAMINE = 1
 ```
 
 Execution model:
@@ -235,7 +235,7 @@ Applicable context:
 
 ```text
 RUN = 0
-FP_DEP = 1
+FP_DEPOSIT = 1
 ```
 
 Execution model:

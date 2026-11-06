@@ -67,10 +67,10 @@ class RepositoryTests(unittest.TestCase):
   cls.mapping=v.load_json(cls.root/generator.DEFAULT_MAPPING,"micro-operation-mapping")
   cls.diags=v.validate(cls.defs,cls.inputs,cls.word,cls.mapping)
   cls.generation_diagnostics=generation_diagnostics
- def test_repository_definitions_count(self): self.assertEqual(len(self.defs["definitions"]),55)
+ def test_repository_definitions_count(self): self.assertEqual(len(self.defs["definitions"]),64)
  def test_repository_validation(self): self.assertEqual(self.diags,[])
  def test_repository_candidate_is_built_in_memory(self):
-  self.assertEqual(len(self.generation_diagnostics),55)
+  self.assertEqual(len(self.generation_diagnostics),64)
   self.assertTrue(all(item.code=="NEW_DEFINITION" for item in self.generation_diagnostics))
  def test_all_direct_fields_exist(self):
   fields=v.field_index(self.word)

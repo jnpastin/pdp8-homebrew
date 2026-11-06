@@ -194,7 +194,10 @@ IOT_DECODED_CONTEXTS = {
 def normalize_execute_context(prefix: str, number: str, title: str) -> list[str]:
     if prefix == "iot" and number in IOT_DECODED_CONTEXTS:
         return list(IOT_DECODED_CONTEXTS[number])
-    return [normalize_context_term(x) for x in re.split(r"\s+AND\s+", title)]
+    context = [normalize_context_term(x) for x in re.split(r"\s+AND\s+", title)]
+    if prefix == "mri":
+        return ["IR_IS_MRI = 1", *context]
+    return context
 
 
 def parse_numbered_execute(text:str,source:str,prefix:str):
@@ -218,6 +221,38 @@ def parse_numbered_execute(text:str,source:str,prefix:str):
             out.append(case(f"{prefix}:{num}:ts{ts}",source,start+1,["MS = EXECUTE",*context],ts,u,cond))
     return out
 
+
+def parse_external_iot_phase_binding(text: str, source: str):
+    lines = text.splitlines()
+    start = next(
+        (i for i, line in enumerate(lines) if line.strip() == "## 7. External IOT Phase Binding"),
+        None,
+    )
+    if start is None:
+        return []
+    end = next(
+        (i for i in range(start + 1, len(lines)) if lines[i].startswith("## ")),
+        len(lines),
+    )
+    block = [clean(line).replace("`", "") for line in lines[start:end]]
+    clear_binding = "- IO_CLEAR_AC_REQ selects AC_CLEAR during the TS in which the request is asserted."
+    skip_binding = "- IO_SKIP_REQ selects PC_INC during TS4."
+    if clear_binding not in block or skip_binding not in block:
+        return []
+    output = []
+    for ts in range(1, 5):
+        conditional = [
+            {"predicate": "IO_CLEAR_AC_REQ = 1", "micro_operation": "AC_CLEAR"}
+        ]
+        if ts == 4:
+            conditional.append(
+                {"predicate": "IO_SKIP_REQ = 1", "micro_operation": "PC_INC"}
+            )
+        output.append(case(
+            f"iot:external:ts{ts}", source, start + 1,
+            ["MS = EXECUTE", "IOT_ACTIVE = 1"], ts, [], conditional,
+        ))
+    return output
 
 def parse_interrupt(text,source):
     lines=text.splitlines();out=[]
@@ -285,7 +320,7 @@ def parse_opr_execution(text, source, group, bits):
             f"opr{group}:ts{ts}",
             source,
             first_line[ts],
-            ["MS = EXECUTE", f"{OPR_GROUP_INPUTS[group]} = 1"],
+            ["MS = EXECUTE", "IR_IS_OPR = 1", f"{OPR_GROUP_INPUTS[group]} = 1"],
             ts,
             [],
             by_ts[ts],
@@ -343,7 +378,9 @@ def extract(root:Path):
     cases=[]
     cases += parse_fetch_defer(read(micro/"04-fetch-defer.md"),"docs/03-microarchitecture/04-fetch-defer.md")
     cases += parse_numbered_execute(read(micro/"05-mri-execution.md"),"docs/03-microarchitecture/05-mri-execution.md","mri")
-    cases += parse_numbered_execute(read(micro/"06-iot-execution.md"),"docs/03-microarchitecture/06-iot-execution.md","iot")
+    iot_text = read(micro/"06-iot-execution.md")
+    cases += parse_external_iot_phase_binding(iot_text,"docs/03-microarchitecture/06-iot-execution.md")
+    cases += parse_numbered_execute(iot_text,"docs/03-microarchitecture/06-iot-execution.md","iot")
     cases += parse_interrupt(read(micro/"08-interrupt-execution.md"),"docs/03-microarchitecture/08-interrupt-execution.md")
     cases += parse_console(read(micro/"09-console-execution.md"),"docs/03-microarchitecture/09-console-execution.md")
     cases += parse_opr_execution(read(opr/"01-group1-execution.md"),"docs/03-microarchitecture/07-opr/01-group1-execution.md",1,bits)

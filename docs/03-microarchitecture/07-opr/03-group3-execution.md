@@ -18,9 +18,12 @@ Execution behavior follows:
 
 ## 2. Scope
   
-Applies to instructions where:
-- IR[11:9] = 111
-- Group 3 bit pattern is selected (see [Group 3 ISA](../../02-isa/03-group-3.md))
+Applies when:
+
+```text
+IR_IS_OPR = 1
+IR_OPR_GROUP3 = 1
+```
 
 ---
 
@@ -47,15 +50,15 @@ All μop selection is derived directly from IR bits.
 
 ### 4.2 TS1 — AC Modification
 
-- if IR[bit(CLA)] = 1: AC_CLEAR
+- if IR_OPR_CLA = 1: AC_CLEAR
 
 ---
 
 ### 4.3 TS2 — Register Transfer and Logical Operations
 
-- if IR[bit(MQA)] = 1: AC_OR_MQ
-- if IR[bit(MQL)] = 1: AC_TO_MQ_AND_CLEAR_AC
-- if IR[bit(MQA)] = 1 AND IR[bit(MQL)] = 1: AC_MQ_SWAP
+- if IR_OPR_MQA = 1 AND IR_OPR_MQL = 0: AC_OR_MQ
+- if IR_OPR_MQL = 1 AND IR_OPR_MQA = 0: AC_TO_MQ_AND_CLEAR_AC
+- if IR_OPR_MQA = 1 AND IR_OPR_MQL = 1: AC_MQ_SWAP
 
 ---
 
@@ -85,7 +88,7 @@ All μop selection is derived directly from IR bits.
 - No two μops may write the same register in the same TS
 
 ### 5.4 Group 3 Constraints
-- When IR[bit(MQA)] and IR[bit(MQL)] are both 1, the combination selects AC_MQ_SWAP (the SWP instruction), which exchanges AC and MQ as a single operation
+- When IR_OPR_MQA and IR_OPR_MQL are both 1, the combination selects AC_MQ_SWAP (the SWP instruction), which exchanges AC and MQ as a single operation
 - TS2 must resolve to at most one μop
 - This mirrors the Group 1 rotate/BSW decode, where two otherwise-conflicting bits select a single combined operation
 

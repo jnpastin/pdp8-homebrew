@@ -20,6 +20,11 @@ class ParserTests(unittest.TestCase):
   )
  def test_iot_op_field_normalization(self):
   self.assertEqual(e.normalize_context_term("IR[2:0] = 101"),"IR_IOT_OP = 101")
+ def test_mri_context_includes_instruction_class(self):
+  self.assertEqual(
+   e.normalize_execute_context("mri", "3.1", "IR[11:9] = 000"),
+   ["IR_IS_MRI = 1", "IR_MRI_OPCODE = 000"],
+  )
  def test_memory_extension_decoded_contexts(self):
   expected={
    "10.1":["IR_IS_IOT = 1","IR_WRITES_DF = 1"],
@@ -33,6 +38,14 @@ class ParserTests(unittest.TestCase):
  def test_console_case(self):
   text="""## 6. Load Address Operation\nApplicable context:\n```text\nRUN = 0\nFP_LOAD = 1\n```\nExecution model:\n```text\nsingle TS-equivalent console transaction\n```\nμops:\n- AC_CLEAR\n"""
   x=e.parse_console(text,"x")[0];self.assertEqual(x["execution_model"],"console-transaction");self.assertEqual(x["context"],["RUN = 0","FP_LOAD = 1"])
+ def test_opr_context_includes_instruction_class(self):
+  text="""### 4. Instruction Definition
+#### 4.1 X
+TS1:
+- if IR[bit(CLA)] = 1: AC_CLEAR
+"""
+  x=e.parse_opr_execution(text,"x",1,{"CLA":7})[0]
+  self.assertEqual(x["context"],["MS = EXECUTE","IR_IS_OPR = 1","IR_OPR_GROUP1 = 1"])
  def test_opr_bit_resolution(self):
   text="""### 4. Instruction Definition\n#### 4.1 X\nTS1:\n- if IR[bit(CLA)] = 1: AC_CLEAR\n"""
   x=e.parse_opr_execution(text,"x",1,{"CLA":7})[0];self.assertEqual(x["id"],"opr1:ts1");self.assertEqual(x["conditional_micro_operations"][0]["predicate"],"IR_OPR_CLA = 1")
@@ -58,8 +71,10 @@ class RepositoryTests(unittest.TestCase):
  def test_opr_bit_positions(self):
   expected={"CLA":7,"CLL":6,"CMA":5,"CML":4,"RAR":3,"RAL":2,"BSW":1,"IAC":0,"SPA":6,"SNA":5,"SZL":4,"OSR":2,"HLT":1,"MQA":6,"MQL":4}
   for name,bit in expected.items():self.assertEqual(self.data["opr_bit_positions"][name],bit)
- def test_mri_context_uses_control_input_name(self):
-  x=next(c for c in self.data["cases"] if c["id"]=="mri:3.3:ts4");self.assertIn("IR_MRI_OPCODE = 010",x["context"]);self.assertNotIn("IR[11:9] = 010",x["context"])
+ def test_mri_context_uses_control_input_names(self):
+  x=next(c for c in self.data["cases"] if c["id"]=="mri:3.3:ts4")
+  self.assertEqual(x["context"],["MS = EXECUTE","IR_IS_MRI = 1","IR_MRI_OPCODE = 010"])
+  self.assertNotIn("IR[11:9] = 010",x["context"])
  def test_iot_context_uses_control_input_names(self):
   x=next(c for c in self.data["cases"] if c["id"]=="iot:9.1:ts2");self.assertIn("IR_IS_IOT = 1",x["context"]);self.assertIn("IR_IOA = 00",x["context"])
  def test_device_zero_iot_uses_iot_op_input(self):
@@ -72,9 +87,11 @@ class RepositoryTests(unittest.TestCase):
  def test_iot_context_has_no_raw_selection_bits(self):
   for c in [x for x in self.data["cases"] if x["id"].startswith("iot:")]:
    joined=" ".join(c["context"]);self.assertNotIn("IR[2:0]",joined);self.assertNotIn("IR[8:6]",joined);self.assertNotIn("IR[5:3]",joined);self.assertNotIn("IR[2]",joined);self.assertNotIn("IR[1]",joined);self.assertNotIn("IR[0]",joined)
- def test_opr_context_uses_group_control_input(self):
+ def test_opr_context_uses_instruction_class_and_group_inputs(self):
   for group in (1,2,3):
-   xs=[c for c in self.data["cases"] if c["id"].startswith(f"opr{group}:")];self.assertTrue(all(f"IR_OPR_GROUP{group} = 1" in x["context"] for x in xs))
+   xs=[c for c in self.data["cases"] if c["id"].startswith(f"opr{group}:")]
+   self.assertTrue(xs)
+   self.assertTrue(all(x["context"] == ["MS = EXECUTE", "IR_IS_OPR = 1", f"IR_OPR_GROUP{group} = 1"] for x in xs))
  def test_group1_predicates_use_control_inputs(self):
   x=next(c for c in self.data["cases"] if c["id"]=="opr1:ts1");self.assertEqual([item["predicate"] for item in x["conditional_micro_operations"]],["IR_OPR_CLA = 1","IR_OPR_CLL = 1"])
  def test_group2_osr_uses_osr_input(self):
@@ -96,7 +113,7 @@ class RepositoryTests(unittest.TestCase):
   xs=[c for c in self.data["cases"] if c["execution_model"]=="console-transaction"];self.assertEqual({x["id"] for x in xs},{"console:6","console:7","console:8","console:10"})
  def test_group2_skip(self):
   x=next(c for c in self.data["cases"] if c["id"]=="opr2:ts1");self.assertEqual(x["conditional_micro_operations"][0]["predicate"],"SKIP_TAKEN = 1")
- def test_case_count(self):self.assertEqual(len(self.data["cases"]),105)
+ def test_case_count(self):self.assertEqual(len(self.data["cases"]),109)
  def test_all_uops_are_normalized(self):
   import re
   for c in self.data["cases"]:
@@ -117,5 +134,24 @@ class RepositoryTests(unittest.TestCase):
   x=next(c for c in self.data["cases"] if c["id"]=="opr3:ts2");self.assertIn({"predicate":"IR[6] = 1 AND IR[4] = 1","micro_operation":"AC_MQ_SWAP"},x["conditional_micro_operations"])
  def test_console_cases_are_tsless(self):
   xs=[c for c in self.data["cases"] if c["execution_model"]=="console-transaction"];self.assertTrue(all(c["timing_state"] is None for c in xs))
+
+ def test_external_iot_phase_binding(self):
+  text="""## 7. External IOT Phase Binding
+- `IO_CLEAR_AC_REQ` selects `AC_CLEAR` during the TS in which the request is asserted.
+- `IO_SKIP_REQ` selects `PC_INC` during TS4.
+## 8. Response Constraints
+"""
+  xs=e.parse_external_iot_phase_binding(text,"doc")
+  self.assertEqual(len(xs),4)
+  self.assertTrue(all(x["context"]==["MS = EXECUTE","IOT_ACTIVE = 1"] for x in xs))
+  self.assertEqual(xs[0]["conditional_micro_operations"],[{"predicate":"IO_CLEAR_AC_REQ = 1","micro_operation":"AC_CLEAR"}])
+  self.assertEqual(xs[3]["conditional_micro_operations"],[{"predicate":"IO_CLEAR_AC_REQ = 1","micro_operation":"AC_CLEAR"},{"predicate":"IO_SKIP_REQ = 1","micro_operation":"PC_INC"}])
+
+ def test_external_iot_response_cases(self):
+  xs=[c for c in self.data["cases"] if c["id"].startswith("iot:external:")]
+  self.assertEqual(len(xs),4)
+  self.assertTrue(all(c["context"]==["MS = EXECUTE","IOT_ACTIVE = 1"] for c in xs))
+  ts4=next(c for c in xs if c["timing_state"]==4)
+  self.assertIn({"predicate":"IO_SKIP_REQ = 1","micro_operation":"PC_INC"},ts4["conditional_micro_operations"])
 
 if __name__=="__main__":unittest.main()
