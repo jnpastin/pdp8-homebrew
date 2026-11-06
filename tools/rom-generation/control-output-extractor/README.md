@@ -2,282 +2,249 @@
 
 ## 1. Purpose
 
-This tool extracts candidate control-output definitions from the authoritative control documentation.
+This tool extracts candidate control-output definitions from the authoritative control-output documentation.
 
-It produces:
+It provides a deterministic, machine-readable representation of:
 
-- a normalized JSON representation of the documented signals
-- a diagnostic report identifying missing, ambiguous, duplicate, or inconsistent information
+- indexed control outputs and their index categories
+- documented scalar attributes
+- normalized bit widths
+- enumerated octal encodings
+- control-word value requirements: default value, explicit-value requirement, and the condition requiring a value
+- per-signal constraints
+- the micro-operations documented as using each signal
+- source traceability
+- extraction diagnostics
 
-The extracted JSON is generated review material. It is not an authoritative control specification.
+The generated output is review material. It is not an authoritative control specification or maintained microcode source.
 
-## 2. Scope
+## 2. Authoritative Inputs
 
-The tool reads:
+The tool reads exactly these maintained documents:
 
-- `docs/04-control/20-control-output-definitions/00-index.md`
-- `docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md`
-- `docs/04-control/20-control-output-definitions/02-architectural-control-signals.md`
-- `docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md`
+```text
+docs/04-control/20-control-output-definitions/00-index.md
+docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md
+docs/04-control/20-control-output-definitions/02-architectural-control-signals.md
+docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md
+```
+
+Unrestricted Markdown discovery is intentionally not used.
+
+The explicitly enumerated source list:
+
+- prevents unrelated Markdown files from becoming accidental inputs
+- makes the extraction boundary reviewable
+- detects missing authoritative documents
+- preserves deterministic processing order
 
 All source documents must reside under the supplied repository root. Source files outside the repository are not supported because generated source references are stored as repository-relative paths.
 
-For each documented control output, the tool attempts to extract:
+The source Markdown remains authoritative.
 
-- signal name
-- descriptive name
-- domain
-- class
-- bit width
-- polarity
-- purpose or description
-- legal encodings
-- constraints
-- source file
-- source heading
-- source line number
+## 3. Signal Categories
 
-## 3. Non-Goals
+Each indexed signal takes its category from the index heading above it. The current index uses:
 
-This tool does not:
+| Index section | Categories |
+|---|---|
+| Microarchitectural Control Signals | Enable Signals, Select Signals, Data Value Signals |
+| Architectural Control Signals | Memory Interface, I/O Interface |
+| Sequencing Control Signals | Control Flow |
 
-- determine whether the documented control design is correct
-- infer missing values
-- repair contradictory definitions
-- modify documentation
-- assign control-word bit positions
-- map micro-operations to control outputs
-- generate control words
-- generate ROM images
+Categories are taken from the index headings as written. An entry before the first category heading has the category `uncategorized`.
 
-Later tools may consume the extractor output after it has been reviewed and validated.
+Two categories carry structural rules (section 8):
 
-## 4. Implementation
+- `Enable Signals` must be one bit wide and document encodings.
+- `Select Signals` and `Control Flow` must document encodings.
 
-The tool is implemented in Python using only the standard library.
+## 4. Source Document Conventions
 
-The initial implementation uses a line-oriented parser tailored to the documented control-output format. It is not intended to be a general-purpose Markdown parser.
+The parser is deliberately strict. Documentation that departs from these conventions produces diagnostics or is silently not extracted, so authors of the source documents should follow them exactly.
 
-Where documentation formatting cannot be interpreted reliably, the tool reports a diagnostic rather than adding inferred behavior.
+### 4.1 Common Text Normalization
 
-## 5. Command-Line Interface
+Names, attribute values, and extracted text have Markdown escapes (`\_`, `\[`, `\]`) and inline-code backticks removed, and surrounding whitespace stripped. Heading section numbers such as `3.` or `4.2` are ignored.
 
-The tool requires the repository root:
+### 4.2 Index
+
+- Each level-three (`###`) heading names the category of the entries that follow it.
+- Each indexed signal is a list item linking to an anchor in one of the three definition documents:
+
+  ```text
+  - [AC_LOAD](./01-microarchitectural-control-signals.md#ac_load)
+  ```
+
+- Links to other files, and links without a `#` anchor, are not index entries.
+
+### 4.3 Definitions
+
+- Definitions are read only from the section of each definition document headed `## Signal Definitions`, ignoring any section number. The section ends at the next level-two heading.
+- Each definition begins at a level-three heading whose text is either the indexed name or ends with the indexed name in parentheses:
+
+  ```text
+  ### AC_SRC
+  ### 4.1 Next Major State (MS_NEXT)
+  ```
+
+- A definition ends at the next level-three heading or the end of the section. Deeper headings are part of the definition.
+- A level-three heading in the section that does not name an indexed signal is reported as `UNINDEXED_DEFINITION`.
+
+### 4.4 Scalar Attributes
+
+A scalar attribute is a bold label at the start of a line, followed by its value on the same line. Labels are case-insensitive, and the colon may be inside or outside the bold markers or omitted. A label whose value is on the next line is not read.
+
+| Label | Attribute |
+|---|---|
+| `**Mnemonic:**` | `mnemonic` |
+| `**Name:**` | `display_name` |
+| `**Class:**` | `signal_class` |
+| `**Type:**` | `signal_type` |
+| `**Domain:**` | `domain` |
+| `**Bit Width:**`, `**Width:**` | normalized into `bit_width` |
+| `**Polarity:**` | `polarity` |
+| `**Purpose:**` | `purpose` |
+| `**Description:**` | `description` |
+| `**Default Value:**` | `default_value` |
+| `**Explicit Value Required:**` | `explicit_value_required` |
+| `**Value Required When:**` | `value_required_when` |
+
+Other bold labels are not scalar attributes.
+
+### 4.5 Sections
+
+Multi-line content follows one of these labels:
+
+| Label | Content |
+|---|---|
+| `**Encoding:**`, `**Value Encoding:**` | encoding lines (section 6), including one on the label line |
+| `**Constraints:**` | each list item is one constraint |
+| `**Used by μops:**`, `**Used by uops:**` | list items `- [NAME](target) = value`, `- NAME = value`, or either without `= value` |
+
+A section ends at the next line-leading bold label that is not one of its own labels. Later occurrences of its label in the same definition are then not read. Within constraint and micro-operation sections, lines that are not list items are ignored.
+
+Nested list items are read as separate entries. For example, both lines of
 
 ```text
---repo-root REPOSITORY_PATH
+- Field-merge encodings preserve other AC bits:
+  - IF → AC[5:3]
 ```
 
-The repository root identifies the base directory used to locate the authoritative input documents and resolve relative output paths.
+become separate constraints.
 
-The following optional arguments override the default output locations:
+## 5. Extracted Representation
+
+For each indexed control output, the generated representation contains:
+
+- indexed signal name
+- index category
+- definition heading
+- documented scalar attributes, with control-word values normalized
+- normalized bit width
+- enumerated encodings
+- documented constraints
+- micro-operations that use the signal, with the value each one assigns
+- index source location
+- definition source location
+- encoding, constraint, and micro-operation source locations
+- extraction status
+
+Attributes are included only when documented. Missing attributes must not be invented.
+
+The JSON layout is described in section 10.
+
+## 6. Encodings
+
+An encoding line has the form `value SEPARATOR meaning`, optionally as a `- ` list item, where the separator is `->`, `→`, `=`, or `:`. The value is a run of letters and digits.
 
 ```text
---json-output OUTPUT_PATH
---report-output OUTPUT_PATH
+0 → IDB
+- 1: load
+2 = pending write
 ```
 
-Relative output paths are resolved from the supplied repository root. Absolute output paths are used unchanged.
+Code-fence markers and blank lines in an encoding section are skipped.
 
-The default output paths are:
+Some fields describe their values in prose rather than listing encodings. These lines are accepted without producing encodings:
 
-```text
-build/simulation_outputs/rom-generation/control-output-extractor/control-outputs.json
-build/simulation_outputs/rom-generation/control-output-extractor/extraction-report.txt
-```
+- value ranges such as `0-7777 (octal)`
+- `external bus value` and `memory bus value`
+- `where:`
+- bit-slice expressions, meaning any line containing `[`
 
-The complete execution commands are documented in Section 17.
+A heading or bold line that is not an encoding ends the section. Any other unparsable line is reported as `MALFORMED_ENCODING`.
 
-## 6. Default Outputs
+Encoding values are octal. When the bit width is known, each value must be valid octal and fit the width. The extractor records values exactly as written and does not store a converted numeric form.
 
-Candidate definitions are written to:
+## 7. Control-Word Attributes
 
-```text
-build/simulation_outputs/rom-generation/control-output-extractor/control-outputs.json
-```
+Every definition must document:
 
-The extraction report is written to:
+| Attribute | Accepted values |
+|---|---|
+| Default Value | `N/A`, or an octal value that fits the bit width |
+| Explicit Value Required | `Yes`, `No`, or `Conditionally`, case-insensitive |
+| Value Required When | a non-empty condition |
 
-```text
-build/simulation_outputs/rom-generation/control-output-extractor/extraction-report.txt
-```
+A `Conditionally` field must give a real condition, not `Always` or `N/A`. A `Yes` or `Conditionally` field must have an encoded default, not `N/A`.
 
-The tool creates missing output directories.
+Default Value is checked, including the `N/A` rule above, only when the bit width is known.
 
-Generated files must not be edited manually.
+In the JSON, Explicit Value Required is written in its normalized form, and Default Value is normalized when the bit width is known. An invalid value becomes `null`.
 
-## 7. Extraction Behavior
+## 8. Validation
 
-The tool processes each definition document as follows:
+The implementation validates:
 
-1. Identifies signal-definition headings.
-2. Captures the content associated with each signal.
-3. Extracts recognized labeled attributes.
-4. Extracts documented encoding entries.
-5. Extracts documented constraints.
-6. Records source traceability.
-7. Compares extracted definitions with the signal index.
-8. Reports unresolved or inconsistent information.
+- all required source files exist
+- all source files are valid UTF-8
+- the index lists at least one signal, without duplicates
+- every indexed signal has exactly one definition
+- every definition heading names an indexed signal
+- scalar attributes are not documented twice
+- a bit width and a purpose or description are documented
+- documented bit widths are positive integers, optionally followed by `bit` or `bits`
+- documented mnemonics agree with indexed names
+- the control-word attributes in section 7 are present and valid
+- encoding lines are well formed and their values are not duplicated
+- encoding values are octal and fit the bit width
+- enable signals are one bit wide
+- enable, select, and control-flow signals document encodings
+- source traceability is retained
 
-Extracted text is normalized only where normalization does not change its meaning.
-
-## 8. Missing Information
-
-The tool does not require every signal definition to be complete before producing output.
-
-When information is missing or ambiguous:
-
-- the affected JSON property is empty or `null`
-- a diagnostic is recorded
-- the source text is not replaced with an inferred value
-
-This behavior allows the extraction results to guide refinement of the authoritative documentation.
-
-## 9. Diagnostics
-
-Each diagnostic contains:
+Diagnostics identify:
 
 - severity
 - diagnostic code
-- source path
-- source line number, when available
-- signal name, when available
+- signal name, when applicable
+- source file
+- source line, when available
 - explanatory message
 
-Supported severity levels are:
+Most findings are `ERROR`. These findings are `WARNING` and do not fail the run:
 
-- `INFO`: an extraction observation that requires no correction
-- `WARNING`: incomplete information that does not prevent extraction
-- `ERROR`: a definition could not be represented reliably
-- `FATAL`: processing could not continue
+| Code | Meaning |
+|---|---|
+| `UNINDEXED_DEFINITION` | a definition heading does not name an indexed signal and is skipped |
+| `MISSING_BIT_WIDTH` | a definition does not document a bit width |
+| `MISSING_DESCRIPTION` | a definition documents neither a purpose nor a description |
+| `MALFORMED_ENCODING` | an encoding line could not be parsed and is skipped |
 
-The text report summarizes all diagnostics and extraction counts.
+## 9. Validation Boundary
 
-## 10. Exit Status
+The extractor does not determine whether:
 
-The tool returns:
-
-- `0` when all source files were processed and outputs were written
-- nonzero when a fatal error prevents reliable output
-
-Warnings and definition-level errors do not initially cause a failing exit status because exposing documentation problems is a primary purpose of the tool.
-
-Extraction diagnostics with severity `WARNING` or `ERROR` do not change the process exit status. A nonzero status is returned only when the tool cannot read its required inputs or write reliable output.
-
-This policy may be tightened when the extracted specification becomes an input to ROM generation.
-
-## 11. Testing
-
-Tests use Python's standard `unittest` framework.
-
-Targeted tests cover:
-
-- extraction of a representative complete definition
-- multiline descriptive text
-- multiple encoding entries
-- missing required attributes
-- duplicate definitions
-- index and definition mismatches
-- missing source files
-- deterministic JSON output
-
-Test fixtures contain only the minimum documentation needed for each test.
-
-Run the tests with:
-
-```text
-python -m unittest discover -s tests -p "test_*.py"
-```
-
-## 12. Directory Structure
-
-```text
-control-output-extractor/
-├── README.md
-├── src/
-│   └── extract_control_outputs.py
-└── tests/
-    ├── fixtures/
-    └── test_extract_control_outputs.py
-```
-
-The initial implementation remains in one Python source file. Additional modules will be introduced only if the implementation becomes materially difficult to understand or test.
-
-## 13. Completion Criteria
-
-The initial tool is complete when it can:
-
-- process all four defined source documents
-- identify indexed control-output signals
-- extract recognized signal attributes
-- preserve source traceability
-- produce readable deterministic JSON
-- produce a readable diagnostic report
-- identify index and definition mismatches
-- report unresolved information without guessing
-- pass the targeted automated tests
-- run on Windows, Linux, and macOS using standard Python
-
-## 14. Current Status
-
-The initial control-output extractor implementation is complete.
-
-The tool currently:
-
-- reads the four explicitly defined control-output documents
-- validates that all required source files exist
-- reads source documents as UTF-8
-- parses the authoritative control-output index
-- preserves deterministic signal ordering
-- matches indexed signals to definition blocks
-- reports missing, duplicate, and unindexed definitions
-- extracts scalar definition attributes
-- validates documented mnemonics against indexed signal names
-- normalizes documented bit widths to positive integers
-- extracts enumerated octal encodings
-- validates octal encoding values against field widths
-- extracts constraints with source-file and source-line traceability
-- validates category-specific structural requirements
-- generates deterministic JSON output
-- generates a human-readable extraction report
-- supports execution from any working directory
-- includes targeted unit tests
-- includes an end-to-end generation test
-
-The current authoritative documentation produces a clean extraction report.
-
-The generated JSON remains review material. It is not an authoritative control specification and must not be edited manually or committed as maintained source.
-
-Constraint text is preserved for later processing, but the tool does not interpret constraints as executable validation rules.
-
-## 15. Extracted Representation
-
-For each indexed control output, the generated JSON contains:
-
-- indexed signal name
-- signal category
-- normalized bit width
-- descriptive attributes
-- enumerated octal encodings, when documented
-- documented constraints
-- definition heading
-- index source location
-- definition source location
-- encoding source locations
-- constraint source locations
-- extraction status
-
-The extractor preserves the distinction between:
-
-- documentation content
-- normalized extracted values
-- validation diagnostics
-- later implementation decisions
+- the documented signal behavior is architecturally correct
+- the documented constraints are mutually consistent
+- constraint text describes an enforceable rule; constraints are preserved as text only
+- the listed micro-operations exist or assign valid encodings
+- the control outputs are sufficient to implement the micro-operation catalog
+- control outputs can be combined into a valid control word
 
 The extractor does not assign:
 
 - control-word bit positions
-- canonical inactive values
 - physical ROM positions
 - micro-operation mappings
 - direct control-event mappings
@@ -286,44 +253,101 @@ The extractor does not assign:
 
 Those decisions belong to later ROM-generation stages.
 
-## 16. Validation Performed
+## 10. Generated Outputs
 
-The tool currently detects:
+The default generated files are:
 
-- missing required source files
-- unreadable or invalid UTF-8 source files
-- missing index entries
-- duplicate index entries
-- missing definition blocks
-- duplicate definition blocks
-- unindexed definition blocks
-- duplicate scalar attributes
-- missing required widths
-- missing purpose or description text
-- invalid bit-width declarations
-- mismatched documented mnemonics
-- malformed enumerated encodings
-- duplicate encoding values
-- non-octal encoding values
-- encoding values that exceed the documented field width
-- enable signals whose width is not one bit
-- missing enumerated encodings for enable signals
-- missing enumerated encodings for select signals
-- missing enumerated encodings for control-flow signals
+```text
+build/
+└── simulation_outputs/
+    └── rom-generation/
+        └── control-output-extractor/
+            ├── control-outputs.json
+            └── extraction-report.txt
+```
 
-The tool does not currently determine whether:
+Generated files:
 
-- the documented signal behavior is architecturally correct
-- the documented constraints are mutually consistent
-- a control output is sufficient to implement the micro-operation catalog
-- a control output is assigned a valid default value
-- control outputs can be combined into a valid control word
-- a documented event requires a micro-operation, direct event, or sequencing rule
-- a generated control word satisfies the complete datapath constraints
+- must not be edited manually
+- must not be treated as authoritative source
+- should not be committed to version control
+- may be deleted and regenerated
+- must be regenerated after relevant documentation changes
 
-These checks belong to later tools.
+The repository-level `.gitignore` excludes the `build/` directory.
 
-## 17. Running the Tool
+### 10.1 JSON Output
+
+`control-outputs.json` is consumed by the control-word schema generator, so changes to its layout must be coordinated with that tool.
+
+The JSON and the report follow the shared ROM-generation output format (`tools/rom-generation/README.md`, section 15.1): UTF-8, LF line endings, one trailing newline, two-space indentation, non-ASCII characters written directly, and object keys in the fixed order the tool builds them, as listed in the tables below.
+
+Top-level fields:
+
+| Field | Content |
+|---|---|
+| `format_version` | `1` |
+| `extraction_stage` | `"category-validation"` |
+| `signals` | one object per indexed signal, in index order |
+| `diagnostics` | all diagnostics, in the order described below |
+
+Each `source` object below is `{"path": ..., "line": ...}`, using the repository-relative path and 1-based line number.
+
+Signal fields:
+
+| Field | Content |
+|---|---|
+| `name`, `category` | from the index |
+| `definition` | the definition object below, or `null` when no definition matched |
+| `source` | location of the index entry |
+| `extraction_status` | `"category-validated"`, or `"definition-missing"` when `definition` is `null` |
+
+Definition fields:
+
+| Field | Content |
+|---|---|
+| `heading` | the definition heading, without its section number |
+| `attributes` | scalar attributes from section 4.4 in source order, excluding bit width; see section 7 for normalization |
+| `bit_width` | integer, or `null` if missing or invalid |
+| `encodings` | list of `{"value", "meaning", "source"}` |
+| `constraints` | list of `{"text", "source"}` |
+| `used_by_micro_operations` | list of `{"micro_operation", "source", "value"}`; `value` is omitted when not documented |
+| `source` | location of the definition heading |
+
+Diagnostic fields are `severity`, `code`, `message`, `source_path`, `line`, and `signal_name`. The last three may be `null`. Diagnostics are ordered by severity (`INFO`, `WARNING`, `ERROR`, `FATAL`), then by code, source path, line, signal name, and message.
+
+### 10.2 Extraction Report
+
+`extraction-report.txt` is a human-readable summary containing:
+
+- extraction counts
+- diagnostic counts by severity
+- every diagnostic with its source location
+
+## 11. Command-Line Interface
+
+The tool requires the repository root:
+
+```text
+--repo-root REPOSITORY_PATH
+```
+
+Optional arguments override the default output locations:
+
+```text
+--json-output OUTPUT_PATH     default: <output directory>/control-outputs.json
+--report-output OUTPUT_PATH   default: <output directory>/extraction-report.txt
+```
+
+The default output directory is `build/simulation_outputs/rom-generation/control-output-extractor/`.
+
+Relative output paths are resolved from the supplied repository root. Absolute output paths are used unchanged.
+
+The tool prints a short summary, followed by any `ERROR` or `FATAL` diagnostics.
+
+The tool exits with status `1` when the repository root or a source file is missing or unreadable, or when any `ERROR` or `FATAL` diagnostic is reported, and with status `0` otherwise. When the repository root or a source file is missing or unreadable, no output files are written.
+
+## 12. Running the Tool
 
 Run the tool from the repository root:
 
@@ -337,120 +361,83 @@ The tool may be run from any working directory by supplying the applicable repos
 python path/to/extract_control_outputs.py --repo-root path/to/repository
 ```
 
-Relative input and output paths are resolved from the supplied repository root.
+The `python` command may be replaced by the applicable local Python 3 launcher.
 
-To specify alternate output paths:
+## 13. Testing
 
-```text
-python tools/rom-generation/control-output-extractor/src/extract_control_outputs.py --repo-root . --json-output build/control-outputs.json --report-output build/extraction-report.txt
-```
+Tests use Python's standard `unittest` framework.
 
-The `python` command may be replaced by the local Python 3 launcher when required by the operating system or Python installation.
-
-Examples include:
-
-```text
-python3 tools/rom-generation/control-output-extractor/src/extract_control_outputs.py --repo-root .
-```
-
-```text
-py tools/rom-generation/control-output-extractor/src/extract_control_outputs.py --repo-root .
-```
-
-## 18. Running the Tests
-
-Run the tests from the control-output extractor directory:
-
-```text
-python -m unittest discover -s tests -p "test_*.py"
-```
-
-Alternatively, run them from the repository root:
+Run the tests from the repository root:
 
 ```text
 python -m unittest discover -s tools/rom-generation/control-output-extractor/tests -p "test_*.py"
 ```
 
-As with the tool command, `python` may be replaced by the applicable local Python 3 launcher.
+The tests use inline document content and temporary directories. Unit tests are grouped by pipeline stage; end-to-end tests write a small four-document repository to a temporary directory and run `main()` against it.
 
-The tests cover representative behavior rather than every possible documentation permutation.
+Two end-to-end tests compare the complete JSON and report with expected files under `tests/golden/`:
 
-Current test coverage includes:
+- `valid/`: the four-document repository, which extracts without diagnostics
+- `invalid/`: the same repository with defects that produce warnings and errors in several files, which fixes diagnostic order
 
-- repository-relative path resolution
-- preservation of absolute output paths
-- required source-file validation
-- UTF-8 source loading
-- deterministic source ordering
-- signal-index extraction
-- indexed bus names containing brackets
-- category-heading extraction
-- duplicate index detection
-- definition-section extraction
-- definition-block matching
-- missing, duplicate, and unindexed definitions
-- scalar attribute extraction
-- alternate attribute-label formatting
-- duplicate attributes
-- required attribute validation
-- mnemonic validation
-- bit-width normalization
-- encoding-line parsing
-- octal encoding validation
-- encoding-width validation
-- constraint extraction
-- Markdown identifier normalization
-- category-specific validation
-- complete command-line execution
-- JSON and report generation
-
-## 19. Generated Outputs
-
-The default generated files are:
+After an intentional output change, regenerate the golden files from the repository root and review the diff before committing:
 
 ```text
-build/
-└── simulation_outputs/
-    └── rom-generation/
-        └── control-output-extractor/
-            ├── control-outputs.json
-            └── extraction-report.txt
+UPDATE_GOLDEN=1 python -m unittest discover -s tools/rom-generation/control-output-extractor/tests -p "test_*.py"
 ```
 
-These files are reproducible build artifacts.
+On Windows PowerShell, set the variable first with `$env:UPDATE_GOLDEN = "1"` and remove it afterwards.
 
-They:
+The golden files are expected outputs, not source fixtures. A persistent fixture directory is not used. It should be added only if multiple tests require the same representative source documents and inline content becomes harder to maintain.
 
-- must not be edited manually
-- must not be treated as authoritative source
-- should not be committed to version control
-- may be deleted and regenerated
-- must be regenerated after relevant documentation changes
+Tests should cover representative behavior rather than every possible input permutation.
 
-The repository-level `.gitignore` excludes the `build/` directory.
+## 14. Implementation Constraints
 
-## 20. Completion Boundary
+The implementation must:
 
-The control-output extractor is complete for its initial purpose.
+- use only the Python standard library
+- support multiple operating systems
+- avoid shell-specific behavior
+- use repository-relative source references
+- emit deterministic output
+- preserve source ordering
+- preserve source traceability
+- report malformed documentation without inventing replacement values
+- keep extraction separate from control-word design
+- remain proportional to the tool's bounded purpose
 
-Further behavior should not be added merely because it relates to control outputs. New behavior belongs in this tool only when it concerns extracting or structurally validating documented control-output definitions.
+Shared code must not be moved into the ROM-generation `common/` directory until actual duplicated requirements exist and a stable common interface can be identified.
 
-The following work belongs to later ROM-generation stages:
+## 15. Implementation Structure
 
-- control-input extraction
-- micro-operation extraction
-- direct control-event extraction
-- sequencing-rule extraction
-- reviewed specification generation
-- micro-operation implementation mapping
-- direct control-event mapping
-- execution-rule representation
-- control-case expansion
-- symbolic control-word validation
-- behavioral signature generation
-- control-address reduction
-- logical control-word layout
-- physical ROM packing
-- ROM image generation
+The implementation is a single module, `src/extract_control_outputs.py`, organized in pipeline order:
 
-The next tool in the ROM-generation process is the control-input extractor.
+1. **Command line and loading:** parse arguments, resolve paths, require the repository root and all sources, and read them as UTF-8.
+2. **Index:** parse `00-index.md` into entries carrying name and category.
+3. **Definition blocks:** split the Signal Definitions section of `01`–`03` into heading blocks and match blocks to entries.
+4. **Per-signal extraction:** read each block's scalar attributes, bit width, encodings, constraints, and micro-operation uses into one `SignalDefinition`.
+5. **Per-signal validation:** check required attributes, mnemonic, control-word attributes, encoding widths, and category rules.
+6. **Output:** sort diagnostics, then write the JSON and the report.
+
+Recognized Markdown labels, control-word values, and category rules are kept in tables near the top of the module.
+
+`extract_control_outputs()` performs steps 2–5 on loaded documents without file access. `main()` handles loading, writing, and console output.
+
+## 16. Completion Boundary
+
+The control-output extractor is complete when it can:
+
+- read the four authoritative control-output documents
+- extract every indexed signal with its category
+- extract documented attributes, bit widths, encodings, constraints, and micro-operation uses
+- validate control-word attributes and category rules
+- retain source traceability
+- produce deterministic JSON
+- produce a human-readable report
+- report no unresolved structural errors against the authoritative documentation
+- pass the targeted unit-test suite
+
+The resulting JSON remains generated review material.
+
+New behavior belongs in this tool only when it concerns extracting or structurally validating documented control-output definitions. Control-word layout, micro-operation mapping, and ROM generation belong to later tools, starting with the control-word schema generator.

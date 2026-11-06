@@ -1,49 +1,89 @@
-"""Extract candidate control-output definitions from project documentation."""
+"""Extract candidate control-output definitions from project documentation.
+
+The extractor reads the four authoritative control-output documents and
+produces deterministic JSON plus a human-readable report.
+
+Pipeline:
+
+1. Load the authoritative documents.
+2. Parse the index into signal names and categories.
+3. Split the definition documents into heading blocks and match each block
+   to an indexed signal.
+4. Extract each block's attributes, bit width, encodings, constraints, and
+   micro-operation uses into a ``SignalDefinition``.
+5. Validate each signal's attributes, encodings, and category rules.
+6. Write the JSON result and the extraction report.
+
+See the tool README for the extraction and validation boundary.
+"""
 
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass
-from pathlib import Path
-from typing import Sequence
 import json
 import re
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Iterable, Sequence
 
-DIAGNOSTIC_SEVERITY_ORDER = {
-    "INFO": 0,
-    "WARNING": 1,
-    "ERROR": 2,
-    "FATAL": 3,
-}
-FAILURE_SEVERITIES = {"ERROR", "FATAL"}
+# ---------------------------------------------------------------------------
+# Paths
+# ---------------------------------------------------------------------------
 
-DEFAULT_JSON_OUTPUT = Path(
-    "build/simulation_outputs/rom-generation/"
-    "control-output-extractor/control-outputs.json"
+SOURCE_DIRECTORY = Path("docs/04-control/20-control-output-definitions")
+INDEX_SOURCE_PATH = SOURCE_DIRECTORY / "00-index.md"
+DEFINITION_SOURCE_PATHS = (
+    SOURCE_DIRECTORY / "01-microarchitectural-control-signals.md",
+    SOURCE_DIRECTORY / "02-architectural-control-signals.md",
+    SOURCE_DIRECTORY / "03-sequencing-control-signals.md",
+)
+SOURCE_PATHS = (INDEX_SOURCE_PATH, *DEFINITION_SOURCE_PATHS)
+
+OUTPUT_DIRECTORY = Path(
+    "build/simulation_outputs/rom-generation/control-output-extractor"
+)
+DEFAULT_JSON_OUTPUT = OUTPUT_DIRECTORY / "control-outputs.json"
+DEFAULT_REPORT_OUTPUT = OUTPUT_DIRECTORY / "extraction-report.txt"
+
+# ---------------------------------------------------------------------------
+# Output format
+# ---------------------------------------------------------------------------
+
+FORMAT_VERSION = 1
+EXTRACTION_STAGE = "category-validation"
+STATUS_VALIDATED = "category-validated"
+STATUS_DEFINITION_MISSING = "definition-missing"
+
+# ---------------------------------------------------------------------------
+# Diagnostics
+# ---------------------------------------------------------------------------
+
+INFO = "INFO"
+WARNING = "WARNING"
+ERROR = "ERROR"
+FATAL = "FATAL"
+
+SEVERITY_ORDER = {INFO: 0, WARNING: 1, ERROR: 2, FATAL: 3}
+FAILURE_SEVERITIES = frozenset({ERROR, FATAL})
+
+# ---------------------------------------------------------------------------
+# Index categories
+# ---------------------------------------------------------------------------
+
+UNCATEGORIZED = "uncategorized"
+ENABLE_SIGNALS = "Enable Signals"
+
+# Categories whose signals must document enumerated encodings.
+CATEGORIES_REQUIRING_ENCODINGS = frozenset(
+    {ENABLE_SIGNALS, "Select Signals", "Control Flow"}
 )
 
-DEFAULT_REPORT_OUTPUT = Path(
-    "build/simulation_outputs/rom-generation/"
-    "control-output-extractor/extraction-report.txt"
-)
+# ---------------------------------------------------------------------------
+# Recognized definition labels
+# ---------------------------------------------------------------------------
 
-SOURCE_PATHS = (
-    Path("docs/04-control/20-control-output-definitions/00-index.md"),
-    Path(
-        "docs/04-control/20-control-output-definitions/"
-        "01-microarchitectural-control-signals.md"
-    ),
-    Path(
-        "docs/04-control/20-control-output-definitions/"
-        "02-architectural-control-signals.md"
-    ),
-    Path(
-        "docs/04-control/20-control-output-definitions/"
-        "03-sequencing-control-signals.md"
-    ),
-)
-
-ATTRIBUTE_NAMES = {
+# Bold labels read as scalar attributes, keyed by their comparison form.
+ATTRIBUTE_LABELS = {
     "mnemonic": "mnemonic",
     "name": "display_name",
     "class": "signal_class",
@@ -59,33 +99,106 @@ ATTRIBUTE_NAMES = {
     "value required when": "value_required_when",
 }
 
+ENCODING_LABELS = frozenset({"encoding", "value encoding"})
+CONSTRAINT_LABELS = frozenset({"constraints"})
+MICRO_OPERATION_USE_LABELS = frozenset({"used by μops", "used by uops"})
+
+# ---------------------------------------------------------------------------
+# Control-word attribute values
+# ---------------------------------------------------------------------------
+
+YES = "Yes"
+CONDITIONALLY = "Conditionally"
+NOT_APPLICABLE = "N/A"
+
 EXPLICIT_VALUE_REQUIRED_VALUES = {
-    "yes": "Yes",
+    "yes": YES,
     "no": "No",
-    "conditionally": "Conditionally",
+    "conditionally": CONDITIONALLY,
 }
 
+# Value Required When texts that are not conditions.
+UNCONDITIONAL_REQUIREMENTS = frozenset({"always", "n/a"})
+
+# ---------------------------------------------------------------------------
+# Encoding-section text that documents values without listing encodings
+# ---------------------------------------------------------------------------
+
+VALUE_SOURCE_DESCRIPTIONS = frozenset(
+    {"external bus value", "memory bus value"}
+)
+EXPLANATORY_LABEL = "where:"
+
+# ---------------------------------------------------------------------------
+# Markdown syntax
+# ---------------------------------------------------------------------------
+
+HEADING_PATTERN = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
+SECTION_NUMBER_PATTERN = re.compile(r"^\d+(?:\.\d+)*\.?\s+")
+LABEL_PATTERN = re.compile(r"^\s*\*\*(.+?):?\*\*\s*:?\s*(.*?)\s*$")
+INDEX_ENTRY_PATTERN = re.compile(r"^\s*-\s+\[(.+?)\]\(([^)]+)\)\s*$")
+TRAILING_PARENTHESIZED_PATTERN = re.compile(r"\(([^()]+)\)\s*$")
+BIT_WIDTH_PATTERN = re.compile(r"\s*(\d+)(?:\s+bits?)?\s*", re.IGNORECASE)
+ENCODING_PATTERN = re.compile(r"^([A-Za-z0-9]+)\s*(?:->|→|=|:)\s*(.+?)\s*$")
+VALUE_RANGE_PATTERN = re.compile(r"^[0-9A-Fa-f]+\s*-\s*[0-9A-Fa-f]+")
+OCTAL_PATTERN = re.compile(r"[0-7]+")
+MICRO_OPERATION_USE_PATTERN = re.compile(
+    r"(?:\[([^]]+)\]\([^)]*\)|([^=]+?))(?:\s*=\s*(\S+))?"
+)
+
+DEFINITION_SECTION_HEADING = "signal definitions"
+DEFINITION_SECTION_LEVEL = 2
+DEFINITION_HEADING_LEVEL = 3
+INDEX_CATEGORY_LEVEL = 3
+LIST_ITEM_PREFIX = "- "
+CODE_FENCE = "```"
+
+# Index links into these documents are signal entries; other links in the
+# index give document context only.
+INDEX_ENTRY_TARGET_PREFIXES = tuple(
+    f"./{path.name}#" for path in DEFINITION_SOURCE_PATHS
+)
+
+
+# ---------------------------------------------------------------------------
+# Data model
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class Diagnostic:
+    """One extraction or validation finding."""
+
+    severity: str
+    code: str
+    message: str
+    source_path: str | None = None
+    line: int | None = None
+    signal_name: str | None = None
 
 
 @dataclass(frozen=True)
 class ToolPaths:
-    """Resolved input and output paths used for one extraction run."""
+    """Resolved input and output paths used by the extractor."""
 
     repo_root: Path
     source_paths: tuple[Path, ...]
     json_output: Path
     report_output: Path
 
+
 @dataclass(frozen=True)
 class SourceDocument:
-    """Text loaded from one authoritative source document."""
+    """One loaded authoritative source document."""
 
     path: Path
+    relative_path: str
     text: str
-    
+
+
 @dataclass(frozen=True)
 class IndexEntry:
-    """One control-output signal listed in the authoritative index."""
+    """One control output listed in the authoritative index."""
 
     name: str
     category: str
@@ -94,25 +207,19 @@ class IndexEntry:
 
 
 @dataclass(frozen=True)
-class Diagnostic:
-    """One informational, warning, or error condition."""
-
-    severity: str
-    code: str
-    message: str
-    source_path: str | None = None
-    line: int | None = None
-    signal_name: str | None = None
-    
-@dataclass(frozen=True)
 class DefinitionBlock:
-    """Markdown content associated with one signal-definition heading."""
+    """Markdown content under one level-three definition heading.
+
+    ``lines`` holds ``(source_line_number, text)`` pairs for the body
+    following the heading.
+    """
 
     heading: str
     source_path: str
     start_line: int
-    lines: tuple[str, ...]
-    
+    lines: tuple[tuple[int, str], ...]
+
+
 @dataclass(frozen=True)
 class EncodingEntry:
     """One documented control-output encoding."""
@@ -120,7 +227,8 @@ class EncodingEntry:
     value: str
     meaning: str
     line: int
-    
+
+
 @dataclass(frozen=True)
 class ConstraintEntry:
     """One documented control-output constraint."""
@@ -128,8 +236,228 @@ class ConstraintEntry:
     text: str
     line: int
 
-def build_argument_parser() -> argparse.ArgumentParser:
-    """Create the command-line argument parser."""
+
+@dataclass(frozen=True)
+class MicroOperationUse:
+    """One micro-operation listed under a definition's Used by μops label."""
+
+    micro_operation: str
+    value: str | None
+    line: int
+
+
+@dataclass(frozen=True)
+class SignalDefinition:
+    """Everything extracted from one matched definition block.
+
+    ``attributes`` holds documented scalar attribute values as written,
+    after Markdown normalization, in source order.
+    """
+
+    entry: IndexEntry
+    block: DefinitionBlock
+    attributes: dict[str, str]
+    bit_width: int | None
+    encodings: tuple[EncodingEntry, ...]
+    constraints: tuple[ConstraintEntry, ...]
+    micro_operation_uses: tuple[MicroOperationUse, ...]
+
+    @property
+    def name(self) -> str:
+        return self.entry.name
+
+
+@dataclass(frozen=True)
+class ExtractionResult:
+    """Complete extraction and validation result.
+
+    ``signals`` contains only indexed signals with a matched definition.
+    """
+
+    entries: tuple[IndexEntry, ...]
+    signals: dict[str, SignalDefinition]
+    diagnostics: tuple[Diagnostic, ...]
+
+    @property
+    def failed(self) -> bool:
+        return any(
+            diagnostic.severity in FAILURE_SEVERITIES
+            for diagnostic in self.diagnostics
+        )
+
+
+# ---------------------------------------------------------------------------
+# Diagnostic helpers
+# ---------------------------------------------------------------------------
+
+
+def block_diagnostic(
+    block: DefinitionBlock,
+    signal_name: str,
+    code: str,
+    message: str,
+    *,
+    line: int | None = None,
+    severity: str = ERROR,
+) -> Diagnostic:
+    """Build a diagnostic located in a definition block.
+
+    The location defaults to the block's heading line.
+    """
+
+    return Diagnostic(
+        severity=severity,
+        code=code,
+        message=message,
+        source_path=block.source_path,
+        line=block.start_line if line is None else line,
+        signal_name=signal_name,
+    )
+
+
+def diagnostic_sort_key(diagnostic: Diagnostic) -> tuple:
+    """Order diagnostics deterministically, least severe first."""
+
+    return (
+        SEVERITY_ORDER.get(diagnostic.severity, 99),
+        diagnostic.code,
+        diagnostic.source_path or "",
+        diagnostic.line if diagnostic.line is not None else -1,
+        diagnostic.signal_name or "",
+        diagnostic.message,
+    )
+
+
+def format_diagnostic(diagnostic: Diagnostic) -> list[str]:
+    """Format one diagnostic as report lines."""
+
+    location = diagnostic.source_path or "<unknown source>"
+    if diagnostic.line is not None:
+        location = f"{location}:{diagnostic.line}"
+
+    signal = f" [{diagnostic.signal_name}]" if diagnostic.signal_name else ""
+
+    return [
+        f"{diagnostic.severity} {diagnostic.code}{signal}",
+        f"  Source: {location}",
+        f"  {diagnostic.message}",
+    ]
+
+
+# ---------------------------------------------------------------------------
+# Markdown helpers
+# ---------------------------------------------------------------------------
+
+
+def normalize_markdown_text(value: str) -> str:
+    """Remove Markdown escaping and inline-code markers."""
+
+    return (
+        value.replace("\\_", "_")
+        .replace("\\[", "[")
+        .replace("\\]", "]")
+        .replace("`", "")
+        .strip()
+    )
+
+
+def remove_section_number(heading: str) -> str:
+    """Remove an optional numeric prefix such as ``4.`` or ``4.1``."""
+
+    return SECTION_NUMBER_PATTERN.sub("", heading).strip()
+
+
+def normalize_label(label: str) -> str:
+    """Return the comparison form of a bold definition label."""
+
+    return label.strip().rstrip(":").casefold()
+
+
+def list_item_text(stripped_line: str) -> str | None:
+    """Return the text of a ``- `` list item, or None for other lines."""
+
+    if not stripped_line.startswith(LIST_ITEM_PREFIX):
+        return None
+
+    return stripped_line[len(LIST_ITEM_PREFIX):].strip()
+
+
+@dataclass(frozen=True)
+class SectionLine:
+    """One line of a labeled section.
+
+    For a label line, ``text`` is the text following the label.
+    """
+
+    line: int
+    text: str
+    is_label: bool = False
+
+
+def find_labeled_section(
+    block: DefinitionBlock,
+    labels: Iterable[str],
+) -> list[SectionLine]:
+    """Return the lines of the section introduced by any of ``labels``.
+
+    A bold label must begin its line. The section runs from the first
+    matching label to the next bold label that does not match; a repeated
+    matching label continues the section. Later occurrences of the label
+    after the section has ended are not read.
+    """
+
+    labels = frozenset(labels)
+    section: list[SectionLine] = []
+
+    for source_line, line in block.lines:
+        label_match = LABEL_PATTERN.match(line)
+
+        if label_match is not None:
+            if normalize_label(label_match.group(1)) in labels:
+                section.append(
+                    SectionLine(
+                        source_line, label_match.group(2).strip(), True
+                    )
+                )
+                continue
+
+            if section:
+                break
+
+        if section:
+            section.append(SectionLine(source_line, line))
+
+    return section
+
+
+def section_list_items(
+    section: Iterable[SectionLine],
+) -> list[tuple[int, str]]:
+    """Return ``(source_line, item_text)`` for each list item in a section."""
+
+    items = []
+
+    for item in section:
+        if item.is_label:
+            continue
+
+        text = list_item_text(item.text.strip())
+
+        if text is not None:
+            items.append((item.line, text))
+
+    return items
+
+
+# ---------------------------------------------------------------------------
+# Paths and source loading
+# ---------------------------------------------------------------------------
+
+
+def parse_arguments(
+    arguments: Sequence[str] | None = None,
+) -> argparse.Namespace:
+    """Parse command-line arguments."""
 
     parser = argparse.ArgumentParser(
         description=(
@@ -137,39 +465,35 @@ def build_argument_parser() -> argparse.ArgumentParser:
             "authoritative Markdown documentation."
         )
     )
-
     parser.add_argument(
         "--repo-root",
         required=True,
         type=Path,
-        help="Path to the root of the pdp8-homebrew repository.",
+        help="Path to the repository root.",
     )
-
     parser.add_argument(
         "--json-output",
         type=Path,
         default=DEFAULT_JSON_OUTPUT,
         help=(
-            "JSON output path. Relative paths are resolved from the "
-            "repository root."
+            "JSON output path. Relative paths are resolved from "
+            "the repository root."
         ),
     )
-
     parser.add_argument(
         "--report-output",
         type=Path,
         default=DEFAULT_REPORT_OUTPUT,
         help=(
-            "Text report output path. Relative paths are resolved from the "
-            "repository root."
+            "Diagnostic report output path. Relative paths are "
+            "resolved from the repository root."
         ),
     )
+    return parser.parse_args(arguments)
 
-    return parser
 
-
-def resolve_from_repo(repo_root: Path, path: Path) -> Path:
-    """Resolve a path relative to the repository unless already absolute."""
+def resolve_from_repo_root(path: Path, repo_root: Path) -> Path:
+    """Resolve a relative path from the repository root."""
 
     if path.is_absolute():
         return path.resolve()
@@ -177,227 +501,137 @@ def resolve_from_repo(repo_root: Path, path: Path) -> Path:
     return (repo_root / path).resolve()
 
 
-def resolve_tool_paths(
-    repo_root: Path,
-    json_output: Path = DEFAULT_JSON_OUTPUT,
-    report_output: Path = DEFAULT_REPORT_OUTPUT,
-) -> ToolPaths:
-    """Resolve and validate paths needed by the extractor."""
+def resolve_tool_paths(arguments: argparse.Namespace) -> ToolPaths:
+    """Resolve all maintained source and generated output paths."""
 
-    resolved_repo_root = repo_root.expanduser().resolve()
-
-    if not resolved_repo_root.is_dir():
-        raise ValueError(
-            f"Repository root does not exist or is not a directory: "
-            f"{resolved_repo_root}"
-        )
+    repo_root = arguments.repo_root.expanduser().resolve()
 
     return ToolPaths(
-        repo_root=resolved_repo_root,
+        repo_root=repo_root,
         source_paths=tuple(
-            resolve_from_repo(resolved_repo_root, path)
-            for path in SOURCE_PATHS
+            resolve_from_repo_root(path, repo_root) for path in SOURCE_PATHS
         ),
-        json_output=resolve_from_repo(resolved_repo_root, json_output),
-        report_output=resolve_from_repo(resolved_repo_root, report_output),
+        json_output=resolve_from_repo_root(arguments.json_output, repo_root),
+        report_output=resolve_from_repo_root(
+            arguments.report_output, repo_root
+        ),
     )
 
-def validate_source_paths(source_paths: Sequence[Path]) -> None:
-    """Verify that every required source exists and is a regular file."""
+
+def validate_source_paths(
+    repo_root: Path,
+    source_paths: Sequence[Path],
+) -> None:
+    """Require the repository root and every authoritative source to exist."""
+
+    if not repo_root.is_dir():
+        raise FileNotFoundError(
+            "Repository root does not exist or is not a directory: "
+            f"{repo_root}"
+        )
 
     missing_paths = [path for path in source_paths if not path.is_file()]
 
     if missing_paths:
-        formatted_paths = "\n".join(
-            f"  - {path}" for path in missing_paths
-        )
+        formatted_paths = "\n".join(f"  - {path}" for path in missing_paths)
         raise FileNotFoundError(
-            "Required source files are missing:\n"
+            "Required control-output source files are missing:\n"
             f"{formatted_paths}"
         )
 
 
-def read_document(path: Path) -> SourceDocument:
-    """Read one source document as UTF-8 text."""
-
-    try:
-        text = path.read_text(encoding="utf-8")
-    except UnicodeDecodeError as error:
-        raise ValueError(
-            f"Source file is not valid UTF-8: {path}"
-        ) from error
-    except OSError as error:
-        raise OSError(
-            f"Unable to read source file: {path}"
-        ) from error
-
-    return SourceDocument(path=path, text=text)
-
-
-def read_source_documents(
-    source_paths: Sequence[Path],
-) -> tuple[SourceDocument, ...]:
-    """Validate and load all required source documents."""
-
-    validate_source_paths(source_paths)
-    return tuple(read_document(path) for path in source_paths)
-    
-
-def parse_arguments(arguments: Sequence[str] | None = None) -> ToolPaths:
-    """Parse command-line arguments and return resolved tool paths."""
-
-    parser = build_argument_parser()
-    namespace = parser.parse_args(arguments)
-
-    try:
-        return resolve_tool_paths(
-            repo_root=namespace.repo_root,
-            json_output=namespace.json_output,
-            report_output=namespace.report_output,
-        )
-    except ValueError as error:
-        parser.error(str(error))
-
 def repository_relative_path(path: Path, repo_root: Path) -> str:
-    """Return a POSIX-style path for a source located under the repository"""
+    """Return a POSIX-style path for a source under the repository."""
 
     return path.relative_to(repo_root).as_posix()
 
 
-def extract_definition_blocks(
-    document: SourceDocument,
+def read_source_document(path: Path, repo_root: Path) -> SourceDocument:
+    """Read one authoritative source document as UTF-8 text."""
+
+    try:
+        text = path.read_text(encoding="utf-8")
+    except UnicodeDecodeError as error:
+        raise ValueError(f"Source file is not valid UTF-8: {path}") from error
+
+    return SourceDocument(
+        path=path,
+        relative_path=repository_relative_path(path, repo_root),
+        text=text,
+    )
+
+
+def load_source_documents(
+    source_paths: Sequence[Path],
     repo_root: Path,
-) -> list[DefinitionBlock]:
-    """Split a control-output document into signal-definition blocks."""
+) -> tuple[SourceDocument, ...]:
+    """Load authoritative source documents in the supplied order."""
 
-    lines = document.text.splitlines()
-    source_path = repository_relative_path(document.path, repo_root)
+    return tuple(
+        read_source_document(path, repo_root) for path in source_paths
+    )
 
-    blocks: list[DefinitionBlock] = []
-    in_definition_section = False
-    current_heading: str | None = None
-    current_start_line: int | None = None
-    current_lines: list[str] = []
 
-    def finish_current_block() -> None:
-        if current_heading is None or current_start_line is None:
-            return
+# ---------------------------------------------------------------------------
+# Index
+# ---------------------------------------------------------------------------
 
-        blocks.append(
-            DefinitionBlock(
-                heading=normalize_signal_name(current_heading),
-                source_path=source_path,
-                start_line=current_start_line,
-                lines=tuple(current_lines),
-            )
-        )
-
-    for line_number, line in enumerate(lines, start=1):
-        heading_match = re.match(r"^(#{1,6})\s+(.+?)\s*$", line)
-
-        if heading_match:
-            heading_level = len(heading_match.group(1))
-            heading_text = heading_match.group(2).strip()
-
-            # Remove an optional numeric section prefix such as "4." or "4.1".
-            normalized_heading = re.sub(
-                r"^\d+(?:\.\d+)*\.?\s+",
-                "",
-                heading_text,
-            )
-
-            if heading_level == 2:
-                if normalized_heading.casefold() == "signal definitions":
-                    in_definition_section = True
-                    continue
-
-                if in_definition_section:
-                    finish_current_block()
-                    break
-
-            if in_definition_section and heading_level == 3:
-                finish_current_block()
-                current_heading = normalized_heading
-                current_start_line = line_number
-                current_lines = []
-                continue
-
-        if in_definition_section and current_heading is not None:
-            current_lines.append(line)
-
-    else:
-        finish_current_block()
-
-    return blocks
 
 def parse_index(
     document: SourceDocument,
-    repo_root: Path,
 ) -> tuple[list[IndexEntry], list[Diagnostic]]:
-    """Extract linked signal entries from the control-output index."""
+    """Extract linked signal entries and their categories from the index.
+
+    Each level-three heading names the category of the entries below it.
+    """
 
     entries: list[IndexEntry] = []
     diagnostics: list[Diagnostic] = []
-    category = "uncategorized"
-    source_path = repository_relative_path(document.path, repo_root)
-
-    category_pattern = re.compile(
-        r"^#{3}\s+(?:\d+(?:\.\d+)*\s+)?(.+?)\s*$"
-    )
-    
-    entry_pattern = re.compile(
-        r"^\s*-\s+\[(.+?)\]\(([^)]+)\)\s*$"
-    )
-
-    seen_names: dict[str, int] = {}
+    first_lines: dict[str, int] = {}
+    category = UNCATEGORIZED
 
     for line_number, line in enumerate(document.text.splitlines(), start=1):
-        category_match = category_pattern.match(line)
-        if category_match:
-            category = category_match.group(1).strip()
+        heading_match = HEADING_PATTERN.match(line)
+
+        if heading_match is not None:
+            if len(heading_match.group(1)) == INDEX_CATEGORY_LEVEL:
+                category = remove_section_number(heading_match.group(2))
             continue
 
-        entry_match = entry_pattern.match(line)
-        if not entry_match:
+        entry_match = INDEX_ENTRY_PATTERN.match(line)
+
+        if entry_match is None:
             continue
 
         link_text, link_target = entry_match.groups()
 
-        # Only links to the three control-output definition documents are
-        # signal index entries. Other links provide document context.
-        if not link_target.startswith(
-            (
-                "./01-microarchitectural-control-signals.md#",
-                "./02-architectural-control-signals.md#",
-                "./03-sequencing-control-signals.md#",
-            )
-        ):
+        if not link_target.startswith(INDEX_ENTRY_TARGET_PREFIXES):
             continue
 
-        signal_name = normalize_signal_name(link_text.strip())
+        name = normalize_markdown_text(link_text)
 
-        if signal_name in seen_names:
+        if name in first_lines:
             diagnostics.append(
                 Diagnostic(
-                    severity="ERROR",
+                    severity=ERROR,
                     code="DUPLICATE_INDEX_ENTRY",
                     message=(
                         f"Signal is already indexed at line "
-                        f"{seen_names[signal_name]}."
+                        f"{first_lines[name]}."
                     ),
-                    source_path=source_path,
+                    source_path=document.relative_path,
                     line=line_number,
-                    signal_name=signal_name,
+                    signal_name=name,
                 )
             )
             continue
 
-        seen_names[signal_name] = line_number
+        first_lines[name] = line_number
         entries.append(
             IndexEntry(
-                name=signal_name,
+                name=name,
                 category=category,
-                source_path=source_path,
+                source_path=document.relative_path,
                 line=line_number,
             )
         )
@@ -405,261 +639,93 @@ def parse_index(
     if not entries:
         diagnostics.append(
             Diagnostic(
-                severity="ERROR",
+                severity=ERROR,
                 code="NO_INDEX_ENTRIES",
                 message="No control-output signal entries were found.",
-                source_path=source_path,
+                source_path=document.relative_path,
             )
         )
 
     return entries, diagnostics
 
 
-def diagnostic_to_dict(diagnostic: Diagnostic) -> dict[str, object]:
-    """Convert a diagnostic into its JSON representation."""
-
-    return {
-        "severity": diagnostic.severity,
-        "code": diagnostic.code,
-        "message": diagnostic.message,
-        "source_path": diagnostic.source_path,
-        "line": diagnostic.line,
-        "signal_name": diagnostic.signal_name,
-    }
+# ---------------------------------------------------------------------------
+# Definition blocks
+# ---------------------------------------------------------------------------
 
 
-def build_index_result(
-    entries: Sequence[IndexEntry],
-    definitions: dict[str, DefinitionBlock],
-    attributes: dict[str, dict[str, str]],
-    bit_widths: dict[str, int],
-    encodings: dict[str, list[EncodingEntry]],
-    constraints: dict[str, list[ConstraintEntry]],
-    micro_operation_uses: dict[str, list[dict[str, object]]],
-    diagnostics: Sequence[Diagnostic],
-) -> dict[str, object]:
-    """Build the generated control-output extraction result."""
+def extract_definition_blocks(
+    document: SourceDocument,
+) -> list[DefinitionBlock]:
+    """Split a document's Signal Definitions section into heading blocks.
 
-    signals = []
+    The section runs from a level-two "Signal Definitions" heading to the
+    next level-two heading. Each level-three heading inside it starts a
+    block; deeper headings are part of the block's content.
+    """
 
-    for entry in entries:
-        block = definitions.get(entry.name)
+    blocks: list[DefinitionBlock] = []
+    in_section = False
+    heading: str | None = None
+    start_line = 0
+    lines: list[tuple[int, str]] = []
 
-        if block is None:
-            definition = None
-            extraction_status = "definition-missing"
-        else:
-            definition = {
-                "heading": block.heading,
-                "attributes": {
-                    key: (
-                        normalize_explicit_value_required(value)
-                        if key == "explicit_value_required"
-                        else (
-                            normalize_default_value(
-                                value,
-                                bit_widths[entry.name],
-                            )
-                            if (
-                                key == "default_value"
-                                and entry.name in bit_widths
-                            )
-                            else value
-                        )
-                    )
-                    for key, value in attributes.get(entry.name, {}).items()
-                    if key != "bit_width"
-                },
-                "bit_width": bit_widths.get(entry.name),
-                "encodings": [
-                    {
-                        "value": encoding.value,
-                        "meaning": encoding.meaning,
-                        "source": {
-                            "path": block.source_path,
-                            "line": encoding.line,
-                        },
-                    }
-                    for encoding in encodings.get(entry.name, [])
-                ],
-                "constraints": [
-                    {
-                        "text": constraint.text,
-                        "source": {
-                            "path": block.source_path,
-                            "line": constraint.line,
-                        },
-                    }
-                    for constraint in constraints.get(entry.name, [])
-                ],
-                "used_by_micro_operations": micro_operation_uses.get(
-                    entry.name, []
-                ),
-                "source": {
-                    "path": block.source_path,
-                    "line": block.start_line,
-                },
-            }
-            extraction_status = "category-validated"
-
-        signals.append(
-            {
-                "name": entry.name,
-                "category": entry.category,
-                "definition": definition,
-                "source": {
-                    "path": entry.source_path,
-                    "line": entry.line,
-                },
-                "extraction_status": extraction_status,
-            }
-        )
-
-    return {
-        "format_version": 1,
-        "extraction_stage": "category-validation",
-        "signals": signals,
-        "diagnostics": [
-            diagnostic_to_dict(diagnostic)
-            for diagnostic in diagnostics
-        ],
-    }
-
-def write_json_output(result: dict[str, object], path: Path) -> None:
-    """Write deterministic, human-readable JSON output."""
-
-    path.parent.mkdir(parents=True, exist_ok=True)
-    serialized = json.dumps(
-        result,
-        indent=2,
-        ensure_ascii=False,
-    )
-    path.write_text(serialized + "\n", encoding="utf-8", newline="\n")
-
-
-def write_report(
-    entries: Sequence[IndexEntry],
-    definitions: dict[str, DefinitionBlock],
-    attributes: dict[str, dict[str, str]],
-    bit_widths: dict[str, int],
-    encodings: dict[str, list[EncodingEntry]],
-    constraints: dict[str, list[ConstraintEntry]],
-    diagnostics: Sequence[Diagnostic],
-    path: Path,
-) -> None:
-    """Write a readable extraction summary and diagnostic report."""
-
-    path.parent.mkdir(parents=True, exist_ok=True)
-
-    severity_counts = {
-        severity: sum(
-            diagnostic.severity == severity
-            for diagnostic in diagnostics
-        )
-        for severity in ("INFO", "WARNING", "ERROR", "FATAL")
-    }
-
-    signals_with_attributes = sum(
-        bool(signal_attributes)
-        for signal_attributes in attributes.values()
-    )
-    
-    signals_with_encodings = sum(
-        bool(signal_encodings)
-        for signal_encodings in encodings.values()
-    )
-
-    encoding_count = sum(
-        len(signal_encodings)
-        for signal_encodings in encodings.values()
-    )
-    
-    signals_with_constraints = sum(
-        bool(signal_constraints)
-        for signal_constraints in constraints.values()
-    )
-
-    constraint_count = sum(
-        len(signal_constraints)
-        for signal_constraints in constraints.values()
-    )
-    
-    lines = [
-        "Control Output Extraction Report",
-        "================================",
-        "",
-        "Stage: category validation",
-        f"Indexed signals: {len(entries)}",
-        f"Matched definitions: {len(definitions)}",
-        f"Definitions with extracted attributes: {signals_with_attributes}",
-        f"Definitions with normalized bit widths: {len(bit_widths)}",
-        f"Definitions with extracted encodings: {signals_with_encodings}",
-        f"Encoding entries extracted: {encoding_count}",
-        f"Definitions with extracted constraints: {signals_with_constraints}",
-        f"Constraint entries extracted: {constraint_count}",
-        f"Missing definitions: {len(entries) - len(definitions)}",
-        f"Informational diagnostics: {severity_counts['INFO']}",
-        f"Warnings: {severity_counts['WARNING']}",
-        f"Errors: {severity_counts['ERROR']}",
-        f"Fatal errors: {severity_counts['FATAL']}",
-        "",
-        "Diagnostics",
-        "-----------",
-    ]
-    
-    if not diagnostics:
-        lines.append("None.")
-    else:
-        for diagnostic in diagnostics:
-            location = diagnostic.source_path or "<unknown source>"
-
-            if diagnostic.line is not None:
-                location = f"{location}:{diagnostic.line}"
-
-            signal = (
-                f" [{diagnostic.signal_name}]"
-                if diagnostic.signal_name
-                else ""
+    def finish_block() -> None:
+        if heading is not None:
+            blocks.append(
+                DefinitionBlock(
+                    heading=heading,
+                    source_path=document.relative_path,
+                    start_line=start_line,
+                    lines=tuple(lines),
+                )
             )
 
-            lines.append(
-                f"{diagnostic.severity} {diagnostic.code}{signal}"
-            )
-            lines.append(f"  Source: {location}")
-            lines.append(f"  {diagnostic.message}")
-            lines.append("")
+    for line_number, line in enumerate(document.text.splitlines(), start=1):
+        heading_match = HEADING_PATTERN.match(line)
 
-    path.write_text(
-        "\n".join(lines).rstrip() + "\n",
-        encoding="utf-8",
-        newline="\n",
-    )
+        if heading_match is not None:
+            level = len(heading_match.group(1))
+            text = remove_section_number(heading_match.group(2))
+
+            if level == DEFINITION_SECTION_LEVEL:
+                in_section = text.casefold() == DEFINITION_SECTION_HEADING
+                continue
+
+            if in_section and level == DEFINITION_HEADING_LEVEL:
+                finish_block()
+                heading = normalize_markdown_text(text)
+                start_line = line_number
+                lines = []
+                continue
+
+        if in_section and heading is not None:
+            lines.append((line_number, line))
+
+    finish_block()
+    return blocks
+
 
 def find_signal_in_heading(
     heading: str,
     indexed_names: set[str],
 ) -> str | None:
-    """Find the indexed signal name represented by a definition heading."""
+    """Return the indexed signal a definition heading names, if any.
 
-    normalized_heading = normalize_signal_name(heading)
+    A heading names a signal when it is the signal name or ends with the
+    signal name in parentheses.
+    """
 
-    if normalized_heading in indexed_names:
-        return normalized_heading
+    if heading in indexed_names:
+        return heading
 
-    parenthesized_name = re.search(
-        r"\(([^()]+)\)\s*$",
-        normalized_heading,
-    )
+    parenthesized = TRAILING_PARENTHESIZED_PATTERN.search(heading)
 
-    if parenthesized_name is None:
+    if parenthesized is None:
         return None
 
-    candidate = parenthesized_name.group(1).strip()
-
-    if candidate in indexed_names:
-        return candidate
-
-    return None
+    candidate = parenthesized.group(1).strip()
+    return candidate if candidate in indexed_names else None
 
 
 def match_definition_blocks(
@@ -669,21 +735,16 @@ def match_definition_blocks(
     """Match definition blocks to indexed signals and report mismatches."""
 
     indexed_names = {entry.name for entry in entries}
-    entry_by_name = {entry.name: entry for entry in entries}
-
-    matched_blocks: dict[str, DefinitionBlock] = {}
+    matched: dict[str, DefinitionBlock] = {}
     diagnostics: list[Diagnostic] = []
 
     for block in blocks:
-        signal_name = find_signal_in_heading(
-            block.heading,
-            indexed_names,
-        )
+        name = find_signal_in_heading(block.heading, indexed_names)
 
-        if signal_name is None:
+        if name is None:
             diagnostics.append(
                 Diagnostic(
-                    severity="WARNING",
+                    severity=WARNING,
                     code="UNINDEXED_DEFINITION",
                     message=(
                         "Definition heading does not identify an indexed "
@@ -695,1033 +756,932 @@ def match_definition_blocks(
             )
             continue
 
-        if signal_name in matched_blocks:
-            first_block = matched_blocks[signal_name]
+        if name in matched:
+            first = matched[name]
             diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="DUPLICATE_DEFINITION",
-                    message=(
-                        "Signal has more than one definition block. "
-                        f"The first definition is at "
-                        f"{first_block.source_path}:"
-                        f"{first_block.start_line}."
-                    ),
-                    source_path=block.source_path,
-                    line=block.start_line,
-                    signal_name=signal_name,
+                block_diagnostic(
+                    block,
+                    name,
+                    "DUPLICATE_DEFINITION",
+                    "Signal has more than one definition block. "
+                    f"The first definition is at "
+                    f"{first.source_path}:{first.start_line}.",
                 )
             )
             continue
 
-        matched_blocks[signal_name] = block
+        matched[name] = block
 
-    for signal_name in sorted(indexed_names - matched_blocks.keys()):
-        entry = entry_by_name[signal_name]
-        diagnostics.append(
-            Diagnostic(
-                severity="ERROR",
-                code="MISSING_DEFINITION",
-                message="Indexed signal has no matching definition block.",
-                source_path=entry.source_path,
-                line=entry.line,
-                signal_name=signal_name,
+    for entry in entries:
+        if entry.name not in matched:
+            diagnostics.append(
+                Diagnostic(
+                    severity=ERROR,
+                    code="MISSING_DEFINITION",
+                    message="Indexed signal has no matching definition block.",
+                    source_path=entry.source_path,
+                    line=entry.line,
+                    signal_name=entry.name,
+                )
             )
-        )
 
-    return matched_blocks, diagnostics
-
-def normalize_explicit_value_required(
-    value: str,
-) -> str | None:
-    """Normalize the documented explicit-value requirement."""
-
-    return EXPLICIT_VALUE_REQUIRED_VALUES.get(
-        value.strip().casefold()
-    )
+    return matched, diagnostics
 
 
-def normalize_default_value(
-    value: str,
-    bit_width: int,
-) -> str | None:
-    """Normalize an octal default value or the N/A marker."""
+# ---------------------------------------------------------------------------
+# Scalar attributes and bit width
+# ---------------------------------------------------------------------------
 
-    stripped = value.strip()
 
-    if stripped.casefold() == "n/a":
-        return "N/A"
-
-    numeric_value = parse_octal_encoding(stripped)
-    if numeric_value is None:
-        return None
-
-    if numeric_value >= (1 << bit_width):
-        return None
-
-    return stripped
-    
 def parse_definition_attributes(
     signal_name: str,
     block: DefinitionBlock,
 ) -> tuple[dict[str, str], list[Diagnostic]]:
-    """Extract scalar attributes from one definition block."""
+    """Extract recognized scalar attributes from one definition block.
+
+    An attribute is a line-leading bold label with its value on the same
+    line. Labels without a same-line value are ignored.
+    """
 
     attributes: dict[str, str] = {}
     diagnostics: list[Diagnostic] = []
 
-    attribute_pattern = re.compile(
-        r"^\s*\*\*(.+?):?\*\*\s*:?\s*(.*?)\s*$"
-    )
+    for source_line, line in block.lines:
+        label_match = LABEL_PATTERN.match(line)
 
-    for offset, line in enumerate(block.lines, start=1):
-        match = attribute_pattern.match(line)
-
-        if not match:
+        if label_match is None:
             continue
 
-        documented_name = match.group(1).strip().rstrip(":").casefold()
-        value = match.group(2).strip()
-        attribute_name = ATTRIBUTE_NAMES.get(documented_name)
+        attribute = ATTRIBUTE_LABELS.get(normalize_label(label_match.group(1)))
+        value = label_match.group(2).strip()
 
-        if attribute_name is None or not value:
+        if attribute is None or not value:
             continue
 
-        if attribute_name in attributes:
+        if attribute in attributes:
             diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="DUPLICATE_ATTRIBUTE",
-                    message=(
-                        f"Attribute '{attribute_name}' is defined more "
-                        "than once."
-                    ),
-                    source_path=block.source_path,
-                    line=block.start_line + offset,
-                    signal_name=signal_name,
+                block_diagnostic(
+                    block,
+                    signal_name,
+                    "DUPLICATE_ATTRIBUTE",
+                    f"Attribute '{attribute}' is defined more than once.",
+                    line=source_line,
                 )
             )
             continue
 
-        attributes[attribute_name] = normalize_signal_name(value)
+        attributes[attribute] = normalize_markdown_text(value)
 
     return attributes, diagnostics
 
-ENCODING_LABELS = {
-    "encoding",
-    "value encoding",
-}
+
+def parse_bit_width(value: str) -> int | None:
+    """Parse a positive bit width, optionally followed by ``bit``/``bits``."""
+
+    match = BIT_WIDTH_PATTERN.fullmatch(value)
+
+    if match is None:
+        return None
+
+    bit_width = int(match.group(1))
+    return bit_width if bit_width >= 1 else None
+
+
+def normalize_bit_width(
+    signal_name: str,
+    block: DefinitionBlock,
+    attributes: dict[str, str],
+) -> tuple[int | None, list[Diagnostic]]:
+    """Return the documented bit width, reporting an invalid value.
+
+    A missing width is reported by ``validate_required_attributes``.
+    """
+
+    documented = attributes.get("bit_width")
+
+    if documented is None:
+        return None, []
+
+    bit_width = parse_bit_width(documented)
+
+    if bit_width is None:
+        return None, [
+            block_diagnostic(
+                block,
+                signal_name,
+                "INVALID_BIT_WIDTH",
+                "Bit width must be a positive integer, optionally "
+                f"followed by 'bit' or 'bits': {documented}",
+            )
+        ]
+
+    return bit_width, []
+
+
+def parse_octal(value: str) -> int | None:
+    """Parse an unsigned octal digit string."""
+
+    if OCTAL_PATTERN.fullmatch(value) is None:
+        return None
+
+    return int(value, 8)
+
+
+def normalize_explicit_value_required(value: str) -> str | None:
+    """Return ``Yes``, ``No``, or ``Conditionally``, or None if invalid."""
+
+    return EXPLICIT_VALUE_REQUIRED_VALUES.get(value.strip().casefold())
+
+
+def normalize_default_value(value: str, bit_width: int) -> str | None:
+    """Return ``N/A`` or an octal value that fits ``bit_width``, else None."""
+
+    stripped = value.strip()
+
+    if stripped.casefold() == NOT_APPLICABLE.casefold():
+        return NOT_APPLICABLE
+
+    numeric_value = parse_octal(stripped)
+
+    if numeric_value is None or numeric_value >= 1 << bit_width:
+        return None
+
+    return stripped
+
+
+# ---------------------------------------------------------------------------
+# Encodings
+# ---------------------------------------------------------------------------
 
 
 def parse_encoding_line(line: str) -> tuple[str, str] | None:
-    """Parse one enumerated encoding entry."""
+    """Parse ``value SEPARATOR meaning``, optionally as a list item.
+
+    The separator is ``->``, ``→``, ``=``, or ``:``.
+    """
 
     stripped = line.strip()
+    item_text = list_item_text(stripped)
 
-    if stripped.startswith("- "):
-        stripped = stripped[2:].strip()
+    if item_text is not None:
+        stripped = item_text
 
-    match = re.match(
-        r"^([A-Za-z0-9]+)\s*(?:->|→|=|:)\s*(.+?)\s*$",
-        stripped,
+    match = ENCODING_PATTERN.match(stripped)
+
+    if match is None:
+        return None
+
+    meaning = normalize_markdown_text(match.group(2))
+
+    if not meaning:
+        return None
+
+    return match.group(1), meaning
+
+
+def is_encoding_description(stripped_line: str) -> bool:
+    """Recognize encoding-section text that describes values in prose.
+
+    Value ranges, bus-value descriptions, ``where:`` labels, and bit-slice
+    expressions document a field without enumerating its encodings.
+    """
+
+    return (
+        VALUE_RANGE_PATTERN.match(stripped_line) is not None
+        or stripped_line.casefold() in VALUE_SOURCE_DESCRIPTIONS
+        or stripped_line.casefold() == EXPLANATORY_LABEL
+        or "[" in stripped_line
     )
-
-    if not match:
-        return None
-
-    value = normalize_signal_name(match.group(1).strip())
-    meaning = normalize_signal_name(match.group(2).strip())
-
-    if not value or not meaning:
-        return None
-
-    return value, meaning
 
 
 def parse_definition_encodings(
     signal_name: str,
     block: DefinitionBlock,
 ) -> tuple[list[EncodingEntry], list[Diagnostic]]:
-    """Extract enumerated encodings from one definition block."""
+    """Extract enumerated encodings from one definition block.
+
+    An encoding may follow the label on the same line. Code-fence markers
+    and blank lines are skipped. A heading or bold line that is not an
+    encoding ends the section.
+    """
 
     encodings: list[EncodingEntry] = []
     diagnostics: list[Diagnostic] = []
-    in_encoding_section = False
 
-    label_pattern = re.compile(
-        r"^\s*\*\*(.+?):?\*\*\s*:?\s*(.*?)\s*$"
-    )
+    def malformed(line: int, message: str) -> None:
+        diagnostics.append(
+            block_diagnostic(
+                block,
+                signal_name,
+                "MALFORMED_ENCODING",
+                message,
+                line=line,
+                severity=WARNING,
+            )
+        )
 
-    for offset, line in enumerate(block.lines, start=1):
-        source_line = block.start_line + offset
-        stripped = line.strip()
-
-        if stripped.startswith("```"):
-            continue
-
-        label_match = label_pattern.match(line)
-
-        if label_match:
-            label = label_match.group(1).strip().rstrip(":").casefold()
-            trailing_text = label_match.group(2).strip()
-
-            if label in ENCODING_LABELS:
-                in_encoding_section = True
-
-                if trailing_text:
-                    parsed = parse_encoding_line(trailing_text)
-
-                    if parsed is None:
-                        diagnostics.append(
-                            Diagnostic(
-                                severity="WARNING",
-                                code="MALFORMED_ENCODING",
-                                message=(
-                                    "Encoding text could not be parsed: "
-                                    f"{trailing_text}"
-                                ),
-                                source_path=block.source_path,
-                                line=source_line,
-                                signal_name=signal_name,
-                            )
-                        )
-                    else:
-                        value, meaning = parsed
-                        encodings.append(
-                            EncodingEntry(
-                                value=value,
-                                meaning=meaning,
-                                line=source_line,
-                            )
-                        )
-
+    for item in find_labeled_section(block, ENCODING_LABELS):
+        if item.is_label:
+            if not item.text:
                 continue
 
-            if in_encoding_section:
-                break
+            parsed = parse_encoding_line(item.text)
 
-        if not in_encoding_section:
+            if parsed is None:
+                malformed(
+                    item.line,
+                    f"Encoding text could not be parsed: {item.text}",
+                )
+            else:
+                encodings.append(EncodingEntry(*parsed, item.line))
             continue
 
-        if not stripped:
+        stripped = item.text.strip()
+
+        if not stripped or stripped.startswith(CODE_FENCE):
             continue
 
-        parsed = parse_encoding_line(line)
+        parsed = parse_encoding_line(stripped)
 
         if parsed is not None:
-            value, meaning = parsed
-            encodings.append(
-                EncodingEntry(
-                    value=value,
-                    meaning=meaning,
-                    line=source_line,
-                )
-            )
+            encodings.append(EncodingEntry(*parsed, item.line))
             continue
 
-        if stripped.startswith("#") or stripped.startswith("**"):
+        if stripped.startswith(("#", "**")):
             break
 
-        is_range = re.match(
-            r"^[0-9A-Fa-f]+\s*-\s*[0-9A-Fa-f]+",
-            stripped,
-        )
-        is_source_description = stripped.casefold() in {
-            "external bus value",
-            "memory bus value",
-        }
-        is_explanatory_label = stripped.casefold() == "where:"
-        is_bit_slice_expression = "[" in stripped
-
-        if (
-            is_range
-            or is_source_description
-            or is_explanatory_label
-            or is_bit_slice_expression
-        ):
-            continue
-
-        diagnostics.append(
-            Diagnostic(
-                severity="WARNING",
-                code="MALFORMED_ENCODING",
-                message=f"Encoding line could not be parsed: {stripped}",
-                source_path=block.source_path,
-                line=source_line,
-                signal_name=signal_name,
+        if not is_encoding_description(stripped):
+            malformed(
+                item.line, f"Encoding line could not be parsed: {stripped}"
             )
-        )
 
-    seen_values: dict[str, int] = {}
+    first_lines: dict[str, int] = {}
 
     for encoding in encodings:
-        if encoding.value in seen_values:
+        if encoding.value in first_lines:
             diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="DUPLICATE_ENCODING_VALUE",
-                    message=(
-                        f"Encoding value '{encoding.value}' is already "
-                        f"defined at line {seen_values[encoding.value]}."
-                    ),
-                    source_path=block.source_path,
+                block_diagnostic(
+                    block,
+                    signal_name,
+                    "DUPLICATE_ENCODING_VALUE",
+                    f"Encoding value '{encoding.value}' is already "
+                    f"defined at line {first_lines[encoding.value]}.",
                     line=encoding.line,
-                    signal_name=signal_name,
                 )
             )
             continue
 
-        seen_values[encoding.value] = encoding.line
+        first_lines[encoding.value] = encoding.line
 
     return encodings, diagnostics
 
-def extract_all_definition_encodings(
-    definitions: dict[str, DefinitionBlock],
-) -> tuple[dict[str, list[EncodingEntry]], list[Diagnostic]]:
-    """Extract encodings from all matched definitions."""
 
-    extracted: dict[str, list[EncodingEntry]] = {}
-    diagnostics: list[Diagnostic] = []
+# ---------------------------------------------------------------------------
+# Constraints and micro-operation uses
+# ---------------------------------------------------------------------------
 
-    for signal_name, block in definitions.items():
-        encodings, block_diagnostics = parse_definition_encodings(
-            signal_name,
-            block,
-        )
-
-        extracted[signal_name] = encodings
-        diagnostics.extend(block_diagnostics)
-
-    return extracted, diagnostics
 
 def parse_definition_constraints(
     block: DefinitionBlock,
 ) -> list[ConstraintEntry]:
-    """Extract top-level items from a definition's Constraints section."""
+    """Extract list items, including nested items, from Constraints."""
 
-    constraints: list[ConstraintEntry] = [] 
-    in_constraints_section = False
-
-    label_pattern = re.compile(
-        r"^\s*\*\*(.+?):?\*\*\s*:?\s*(.*?)\s*$"
-    )
-
-    for offset, line in enumerate(block.lines, start=1):
-        source_line = block.start_line + offset
-        stripped = line.strip()
-        label_match = label_pattern.match(line)
-
-        if label_match:
-            label = label_match.group(1).strip().rstrip(":").casefold()
-
-            if label == "constraints":
-                in_constraints_section = True
-                continue
-
-            if in_constraints_section:
-                break
-
-        if not in_constraints_section:
-            continue
-
-        if stripped.startswith("- "):
-            constraints.append(
-                ConstraintEntry(
-                    text=normalize_signal_name(stripped[2:].strip()),
-                    line=source_line,
-                )
-            )
-
-    return constraints
-
-
-def extract_all_definition_constraints(
-    definitions: dict[str, DefinitionBlock],
-) -> dict[str, list[ConstraintEntry]]:
-    """Extract constraints from all matched definitions."""
-
-    return {
-        signal_name: parse_definition_constraints(block)
-        for signal_name, block in definitions.items()
-    }
-    
-    
-def parse_definition_micro_operation_uses(
-    block: DefinitionBlock,
-) -> list[dict[str, object]]:
-    """Extract entries from a definition's Used by μops section."""
-    uses: list[dict[str, object]] = []
-    in_section = False
-    label_pattern = re.compile(
-        r"^\s*\*\*(.+?):?\*\*\s*:?\s*(.*?)\s*$"
-    )
-    for offset, line in enumerate(block.lines, start=1):
-        source_line = block.start_line + offset
-        stripped = line.strip()
-        label_match = label_pattern.match(line)
-        if label_match:
-            label = label_match.group(1).strip().rstrip(":").casefold()
-            if label in {"used by μops", "used by uops"}:
-                in_section = True
-                continue
-            if in_section:
-                break
-        if in_section and stripped.startswith("- "):
-            item = stripped[2:].strip()
-            item_match = re.fullmatch(
-                r"(?:\[([^]]+)\]\([^)]*\)|([^=]+?))(?:\s*=\s*(\S+))?",
-                item,
-            )
-            if item_match is None:
-                continue
-            micro_operation = (
-                item_match.group(1) or item_match.group(2)
-            ).strip()
-            use = {
-                "micro_operation": normalize_signal_name(micro_operation),
-                "source": {"path": block.source_path, "line": source_line},
-            }
-            if item_match.group(3) is not None:
-                use["value"] = normalize_signal_name(item_match.group(3))
-            uses.append(use)
-    return uses
-
-def extract_all_definition_micro_operation_uses(
-    definitions: dict[str, DefinitionBlock],
-) -> dict[str, list[dict[str, object]]]:
-    """Extract Used by μops entries from all definitions."""
-    return {
-        name: parse_definition_micro_operation_uses(block)
-        for name, block in definitions.items()
-    }
-
-def extract_all_definition_attributes(
-    definitions: dict[str, DefinitionBlock],
-) -> tuple[dict[str, dict[str, str]], list[Diagnostic]]:
-    """Extract scalar attributes from all matched definitions."""
-
-    extracted: dict[str, dict[str, str]] = {}
-    diagnostics: list[Diagnostic] = []
-
-    for signal_name, block in definitions.items():
-        attributes, block_diagnostics = parse_definition_attributes(
-            signal_name,
-            block,
+    return [
+        ConstraintEntry(text=normalize_markdown_text(text), line=line)
+        for line, text in section_list_items(
+            find_labeled_section(block, CONSTRAINT_LABELS)
         )
+    ]
 
-        extracted[signal_name] = attributes
-        diagnostics.extend(block_diagnostics)
 
-    return extracted, diagnostics
+def parse_micro_operation_use(
+    item_text: str,
+    line: int,
+) -> MicroOperationUse | None:
+    """Parse ``[NAME](target) = value`` or ``NAME = value``.
 
-def validate_definition_attributes(
-    entries: Sequence[IndexEntry],
-    definitions: dict[str, DefinitionBlock],
-    attributes: dict[str, dict[str, str]],
-) -> list[Diagnostic]:
-    """Report missing attributes required for usable signal definitions."""
+    The link and the ``= value`` part are both optional.
+    """
 
-    diagnostics = []
-
-    for entry in entries:
-        block = definitions.get(entry.name)
-
-        if block is None:
-            continue
-
-        signal_attributes = attributes.get(entry.name, {})
-
-        if "bit_width" not in signal_attributes:
-            diagnostics.append(
-                Diagnostic(
-                    severity="WARNING",
-                    code="MISSING_BIT_WIDTH",
-                    message="Definition does not specify a bit width.",
-                    source_path=block.source_path,
-                    line=block.start_line,
-                    signal_name=entry.name,
-                )
-            )
-
-        if not any(
-            name in signal_attributes
-            for name in ("purpose", "description")
-        ):
-            diagnostics.append(
-                Diagnostic(
-                    severity="WARNING",
-                    code="MISSING_DESCRIPTION",
-                    message=(
-                        "Definition does not specify a purpose or "
-                        "description."
-                    ),
-                    source_path=block.source_path,
-                    line=block.start_line,
-                    signal_name=entry.name,
-                )
-            )
-
-    return diagnostics
-
-def validate_documented_mnemonics(
-    definitions: dict[str, DefinitionBlock],
-    attributes: dict[str, dict[str, str]],
-) -> list[Diagnostic]:
-    """Report documented mnemonics that differ from indexed signal names."""
-
-    diagnostics: list[Diagnostic] = []
-
-    for signal_name, block in definitions.items():
-        documented_mnemonic = attributes.get(
-            signal_name,
-            {},
-        ).get("mnemonic")
-
-        if documented_mnemonic is None:
-            continue
-
-        if documented_mnemonic != signal_name:
-            diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="MNEMONIC_MISMATCH",
-                    message=(
-                        f"Documented mnemonic '{documented_mnemonic}' "
-                        f"does not match indexed signal '{signal_name}'."
-                    ),
-                    source_path=block.source_path,
-                    line=block.start_line,
-                    signal_name=signal_name,
-                )
-            )
-
-    return diagnostics
-
-def validate_category_requirements(
-    entries: Sequence[IndexEntry],
-    definitions: dict[str, DefinitionBlock],
-    bit_widths: dict[str, int],
-    encodings: dict[str, list[EncodingEntry]],
-) -> list[Diagnostic]:
-    """Validate structural requirements associated with signal categories."""
-
-    diagnostics: list[Diagnostic] = []
-
-    categories_requiring_encodings = {
-        "Enable Signals",
-        "Select Signals",
-        "Control Flow",
-    }
-
-    for entry in entries:
-        block = definitions.get(entry.name)
-
-        if block is None:
-            continue
-
-        bit_width = bit_widths.get(entry.name)
-        signal_encodings = encodings.get(entry.name, [])
-
-        if entry.category == "Enable Signals" and bit_width != 1:
-            diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="INVALID_ENABLE_WIDTH",
-                    message=(
-                        "An enable signal must have a bit width of 1."
-                    ),
-                    source_path=block.source_path,
-                    line=block.start_line,
-                    signal_name=entry.name,
-                )
-            )
-
-        if (
-            entry.category in categories_requiring_encodings
-            and not signal_encodings
-        ):
-            diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="MISSING_ENUMERATED_ENCODINGS",
-                    message=(
-                        f"Signals in category '{entry.category}' must "
-                        "define enumerated encodings."
-                    ),
-                    source_path=block.source_path,
-                    line=block.start_line,
-                    signal_name=entry.name,
-                )
-            )
-
-    return diagnostics
-
-def parse_bit_width(value: str) -> int | None:
-    """Parse a documented bit width into a positive integer."""
-
-    match = re.fullmatch(
-        r"\s*(\d+)(?:\s+bits?)?\s*",
-        value,
-        re.IGNORECASE,
-    )
+    match = MICRO_OPERATION_USE_PATTERN.fullmatch(item_text)
 
     if match is None:
         return None
 
-    bit_width = int(match.group(1))
+    linked_name, plain_name, value = match.groups()
 
-    if bit_width < 1:
-        return None
+    return MicroOperationUse(
+        micro_operation=normalize_markdown_text(linked_name or plain_name),
+        value=None if value is None else normalize_markdown_text(value),
+        line=line,
+    )
 
-    return bit_width
+
+def parse_definition_micro_operation_uses(
+    block: DefinitionBlock,
+) -> list[MicroOperationUse]:
+    """Extract list items from a definition's Used by μops section."""
+
+    uses = []
+
+    for line, text in section_list_items(
+        find_labeled_section(block, MICRO_OPERATION_USE_LABELS)
+    ):
+        use = parse_micro_operation_use(text, line)
+
+        if use is not None:
+            uses.append(use)
+
+    return uses
 
 
-def normalize_bit_widths(
-    definitions: dict[str, DefinitionBlock],
-    attributes: dict[str, dict[str, str]],
-) -> tuple[dict[str, int], list[Diagnostic]]:
-    """Normalize documented bit widths and report invalid values."""
+# ---------------------------------------------------------------------------
+# Per-signal extraction
+# ---------------------------------------------------------------------------
 
-    bit_widths: dict[str, int] = {}
-    diagnostics: list[Diagnostic] = []
 
-    for signal_name, block in definitions.items():
-        documented_width = attributes.get(
-            signal_name,
-            {},
-        ).get("bit_width")
+def extract_signal(
+    entry: IndexEntry,
+    block: DefinitionBlock,
+) -> tuple[SignalDefinition, list[Diagnostic]]:
+    """Extract every property of one matched definition block."""
 
-        if documented_width is None:
-            continue
+    attributes, diagnostics = parse_definition_attributes(entry.name, block)
 
-        bit_width = parse_bit_width(documented_width)
+    bit_width, found = normalize_bit_width(entry.name, block, attributes)
+    diagnostics += found
 
-        if bit_width is None:
-            diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="INVALID_BIT_WIDTH",
-                    message=(
-                        "Bit width must be a positive integer, optionally "
-                        f"followed by 'bit' or 'bits': {documented_width}"
-                    ),
-                    source_path=block.source_path,
-                    line=block.start_line,
-                    signal_name=signal_name,
-                )
+    encodings, found = parse_definition_encodings(entry.name, block)
+    diagnostics += found
+
+    signal = SignalDefinition(
+        entry=entry,
+        block=block,
+        attributes=attributes,
+        bit_width=bit_width,
+        encodings=tuple(encodings),
+        constraints=tuple(parse_definition_constraints(block)),
+        micro_operation_uses=tuple(
+            parse_definition_micro_operation_uses(block)
+        ),
+    )
+    return signal, diagnostics
+
+
+# ---------------------------------------------------------------------------
+# Per-signal validation
+# ---------------------------------------------------------------------------
+
+
+def signal_diagnostic(
+    signal: SignalDefinition,
+    code: str,
+    message: str,
+    *,
+    line: int | None = None,
+    severity: str = ERROR,
+) -> Diagnostic:
+    """Build a diagnostic located in a signal's definition block."""
+
+    return block_diagnostic(
+        signal.block,
+        signal.name,
+        code,
+        message,
+        line=line,
+        severity=severity,
+    )
+
+
+def validate_required_attributes(signal: SignalDefinition) -> list[Diagnostic]:
+    """Warn when a definition lacks a bit width or a description."""
+
+    diagnostics = []
+
+    if "bit_width" not in signal.attributes:
+        diagnostics.append(
+            signal_diagnostic(
+                signal,
+                "MISSING_BIT_WIDTH",
+                "Definition does not specify a bit width.",
+                severity=WARNING,
             )
-            continue
+        )
 
-        bit_widths[signal_name] = bit_width
+    if not {"purpose", "description"} & signal.attributes.keys():
+        diagnostics.append(
+            signal_diagnostic(
+                signal,
+                "MISSING_DESCRIPTION",
+                "Definition does not specify a purpose or description.",
+                severity=WARNING,
+            )
+        )
 
-    return bit_widths, diagnostics
+    return diagnostics
+
+
+def validate_mnemonic(signal: SignalDefinition) -> list[Diagnostic]:
+    """Report a documented mnemonic that differs from the indexed name."""
+
+    mnemonic = signal.attributes.get("mnemonic")
+
+    if mnemonic is None or mnemonic == signal.name:
+        return []
+
+    return [
+        signal_diagnostic(
+            signal,
+            "MNEMONIC_MISMATCH",
+            f"Documented mnemonic '{mnemonic}' does not match indexed "
+            f"signal '{signal.name}'.",
+        )
+    ]
+
 
 def validate_control_word_attributes(
-    entries: Sequence[IndexEntry],
-    definitions: dict[str, DefinitionBlock],
-    attributes: dict[str, dict[str, str]],
-    bit_widths: dict[str, int],
+    signal: SignalDefinition,
 ) -> list[Diagnostic]:
-    """Validate documented control-word value requirements."""
+    """Validate the attributes that govern control-word value assignment.
 
-    diagnostics: list[Diagnostic] = []
+    These are Default Value, Explicit Value Required, and Value Required
+    When.
+    """
+
+    diagnostics = []
+    attributes = signal.attributes
+
+    default_value = attributes.get("default_value")
+    normalized_default = None
+
+    if default_value is None:
+        diagnostics.append(
+            signal_diagnostic(
+                signal,
+                "MISSING_DEFAULT_VALUE",
+                "Definition does not specify Default Value.",
+            )
+        )
+    elif signal.bit_width is not None:
+        normalized_default = normalize_default_value(
+            default_value, signal.bit_width
+        )
+
+        if normalized_default is None:
+            diagnostics.append(
+                signal_diagnostic(
+                    signal,
+                    "INVALID_DEFAULT_VALUE",
+                    "Default Value must be N/A or an octal value that fits "
+                    f"the documented {signal.bit_width}-bit width: "
+                    f"{default_value}",
+                )
+            )
+
+    explicit_required = attributes.get("explicit_value_required")
+    requirement = None
+
+    if explicit_required is None:
+        diagnostics.append(
+            signal_diagnostic(
+                signal,
+                "MISSING_EXPLICIT_VALUE_REQUIRED",
+                "Definition does not specify Explicit Value Required.",
+            )
+        )
+    else:
+        requirement = normalize_explicit_value_required(explicit_required)
+
+        if requirement is None:
+            diagnostics.append(
+                signal_diagnostic(
+                    signal,
+                    "INVALID_EXPLICIT_VALUE_REQUIRED",
+                    "Explicit Value Required must be Yes, No, or "
+                    f"Conditionally: {explicit_required}",
+                )
+            )
+
+    condition = attributes.get("value_required_when")
+
+    if condition is None:
+        diagnostics.append(
+            signal_diagnostic(
+                signal,
+                "MISSING_VALUE_REQUIRED_WHEN",
+                "Definition does not specify Value Required When.",
+            )
+        )
+    elif not condition:
+        # Only possible when the value is Markdown markup alone, such as ``.
+        diagnostics.append(
+            signal_diagnostic(
+                signal,
+                "EMPTY_VALUE_REQUIRED_WHEN",
+                "Value Required When must not be empty.",
+            )
+        )
+    elif (
+        requirement == CONDITIONALLY
+        and condition.casefold() in UNCONDITIONAL_REQUIREMENTS
+    ):
+        diagnostics.append(
+            signal_diagnostic(
+                signal,
+                "INVALID_CONDITIONAL_REQUIREMENT",
+                "A conditionally explicit field must specify a conditional "
+                "Value Required When expression.",
+            )
+        )
+
+    if (
+        requirement in {YES, CONDITIONALLY}
+        and normalized_default == NOT_APPLICABLE
+    ):
+        diagnostics.append(
+            signal_diagnostic(
+                signal,
+                "EXPLICIT_FIELD_HAS_NO_DEFAULT",
+                "A field explicitly assigned by control must define an "
+                "encoded Default Value.",
+            )
+        )
+
+    return diagnostics
+
+
+def validate_encoding_widths(signal: SignalDefinition) -> list[Diagnostic]:
+    """Require encodings to be octal values that fit the bit width."""
+
+    if signal.bit_width is None:
+        return []
+
+    diagnostics = []
+    maximum_value = (1 << signal.bit_width) - 1
+
+    for encoding in signal.encodings:
+        numeric_value = parse_octal(encoding.value)
+
+        if numeric_value is None:
+            diagnostics.append(
+                signal_diagnostic(
+                    signal,
+                    "INVALID_OCTAL_ENCODING",
+                    f"Encoding value is not valid octal: {encoding.value}",
+                    line=encoding.line,
+                )
+            )
+        elif numeric_value > maximum_value:
+            diagnostics.append(
+                signal_diagnostic(
+                    signal,
+                    "ENCODING_EXCEEDS_BIT_WIDTH",
+                    f"Octal encoding {encoding.value} has numeric value "
+                    f"{numeric_value}, which does not fit in the documented "
+                    f"{signal.bit_width}-bit field.",
+                    line=encoding.line,
+                )
+            )
+
+    return diagnostics
+
+
+def validate_category_requirements(
+    signal: SignalDefinition,
+) -> list[Diagnostic]:
+    """Apply the structural rules of the signal's index category."""
+
+    diagnostics = []
+    category = signal.entry.category
+
+    if category == ENABLE_SIGNALS and signal.bit_width != 1:
+        diagnostics.append(
+            signal_diagnostic(
+                signal,
+                "INVALID_ENABLE_WIDTH",
+                "An enable signal must have a bit width of 1.",
+            )
+        )
+
+    if category in CATEGORIES_REQUIRING_ENCODINGS and not signal.encodings:
+        diagnostics.append(
+            signal_diagnostic(
+                signal,
+                "MISSING_ENUMERATED_ENCODINGS",
+                f"Signals in category '{category}' must define enumerated "
+                "encodings.",
+            )
+        )
+
+    return diagnostics
+
+
+def validate_signal(signal: SignalDefinition) -> list[Diagnostic]:
+    """Run every per-signal validation."""
+
+    return [
+        *validate_required_attributes(signal),
+        *validate_mnemonic(signal),
+        *validate_control_word_attributes(signal),
+        *validate_encoding_widths(signal),
+        *validate_category_requirements(signal),
+    ]
+
+
+# ---------------------------------------------------------------------------
+# Extraction
+# ---------------------------------------------------------------------------
+
+
+def extract_control_outputs(
+    index_document: SourceDocument,
+    definition_documents: Sequence[SourceDocument],
+) -> ExtractionResult:
+    """Run the full extraction and validation over loaded documents."""
+
+    entries, diagnostics = parse_index(index_document)
+
+    blocks = [
+        block
+        for document in definition_documents
+        for block in extract_definition_blocks(document)
+    ]
+    definitions, found = match_definition_blocks(entries, blocks)
+    diagnostics += found
+
+    signals: dict[str, SignalDefinition] = {}
 
     for entry in entries:
         block = definitions.get(entry.name)
+
         if block is None:
             continue
 
-        signal_attributes = attributes.get(entry.name, {})
-        bit_width = bit_widths.get(entry.name)
+        signal, found = extract_signal(entry, block)
+        diagnostics += found
+        diagnostics += validate_signal(signal)
+        signals[entry.name] = signal
 
-        default_value = signal_attributes.get("default_value")
-        explicit_required = signal_attributes.get(
-            "explicit_value_required"
-        )
-        value_required_when = signal_attributes.get(
-            "value_required_when"
-        )
-
-        normalized_default: str | None = None
-
-        if default_value is None:
-            diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="MISSING_DEFAULT_VALUE",
-                    message="Definition does not specify Default Value.",
-                    source_path=block.source_path,
-                    line=block.start_line,
-                    signal_name=entry.name,
-                )
-            )
-        elif bit_width is not None:
-            normalized_default = normalize_default_value(
-                default_value,
-                bit_width,
-            )
-
-            if normalized_default is None:
-                diagnostics.append(
-                    Diagnostic(
-                        severity="ERROR",
-                        code="INVALID_DEFAULT_VALUE",
-                        message=(
-                            "Default Value must be N/A or an octal value "
-                            f"that fits the documented {bit_width}-bit "
-                            f"width: {default_value}"
-                        ),
-                        source_path=block.source_path,
-                        line=block.start_line,
-                        signal_name=entry.name,
-                    )
-                )
-
-        normalized_requirement: str | None = None
-
-        if explicit_required is None:
-            diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="MISSING_EXPLICIT_VALUE_REQUIRED",
-                    message=(
-                        "Definition does not specify "
-                        "Explicit Value Required."
-                    ),
-                    source_path=block.source_path,
-                    line=block.start_line,
-                    signal_name=entry.name,
-                )
-            )
-        else:
-            normalized_requirement = (
-                normalize_explicit_value_required(
-                    explicit_required
-                )
-            )
-
-            if normalized_requirement is None:
-                diagnostics.append(
-                    Diagnostic(
-                        severity="ERROR",
-                        code="INVALID_EXPLICIT_VALUE_REQUIRED",
-                        message=(
-                            "Explicit Value Required must be Yes, No, "
-                            f"or Conditionally: {explicit_required}"
-                        ),
-                        source_path=block.source_path,
-                        line=block.start_line,
-                        signal_name=entry.name,
-                    )
-                )
-
-        if value_required_when is None:
-            diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="MISSING_VALUE_REQUIRED_WHEN",
-                    message=(
-                        "Definition does not specify Value Required When."
-                    ),
-                    source_path=block.source_path,
-                    line=block.start_line,
-                    signal_name=entry.name,
-                )
-            )
-            continue
-
-        normalized_condition = value_required_when.strip()
-
-        if not normalized_condition:
-            diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="EMPTY_VALUE_REQUIRED_WHEN",
-                    message="Value Required When must not be empty.",
-                    source_path=block.source_path,
-                    line=block.start_line,
-                    signal_name=entry.name,
-                )
-            )
-
-        if (
-            normalized_requirement == "Conditionally"
-            and normalized_condition.casefold() in {"always", "n/a"}
-        ):
-            diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="INVALID_CONDITIONAL_REQUIREMENT",
-                    message=(
-                        "A conditionally explicit field must specify "
-                        "a conditional Value Required When expression."
-                    ),
-                    source_path=block.source_path,
-                    line=block.start_line,
-                    signal_name=entry.name,
-                )
-            )
-
-        if (
-            normalized_requirement in {"Yes", "Conditionally"}
-            and normalized_default == "N/A"
-        ):
-            diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="EXPLICIT_FIELD_HAS_NO_DEFAULT",
-                    message=(
-                        "A field explicitly assigned by control must "
-                        "define an encoded Default Value."
-                    ),
-                    source_path=block.source_path,
-                    line=block.start_line,
-                    signal_name=entry.name,
-                )
-            )
-
-    return diagnostics
-
-
-def parse_octal_encoding(value: str) -> int | None:
-    """Parse an octal encoding value."""
-
-    if re.fullmatch(r"[0-7]+", value) is None:
-        return None
-
-    return int(value, 8)
-
-
-def validate_encoding_widths(
-    definitions: dict[str, DefinitionBlock],
-    bit_widths: dict[str, int],
-    encodings: dict[str, list[EncodingEntry]],
-) -> list[Diagnostic]:
-    """Validate octal encoding values against documented bit widths."""
-
-    diagnostics: list[Diagnostic] = []
-    for signal_name, signal_encodings in encodings.items():
-        block = definitions.get(signal_name)
-        bit_width = bit_widths.get(signal_name)
-
-        if block is None or bit_width is None:
-            continue
-
-        maximum_value = (1 << bit_width) - 1
-
-        for encoding in signal_encodings:
-            numeric_value = parse_octal_encoding(encoding.value)
-
-            if numeric_value is None:
-                diagnostics.append(
-                    Diagnostic(
-                        severity="ERROR",
-                        code="INVALID_OCTAL_ENCODING",
-                        message=(
-                            "Encoding value is not valid octal: "
-                            f"{encoding.value}"
-                        ),
-                        source_path=block.source_path,
-                        line=encoding.line,
-                        signal_name=signal_name,
-                    )
-                )
-                continue
-
-            if numeric_value > maximum_value:
-                diagnostics.append(
-                    Diagnostic(
-                        severity="ERROR",
-                        code="ENCODING_EXCEEDS_BIT_WIDTH",
-                        message=(
-                            f"Octal encoding {encoding.value} has numeric "
-                            f"value {numeric_value}, which does not fit in "
-                            f"the documented {bit_width}-bit field."
-                        ),
-                        source_path=block.source_path,
-                        line=encoding.line,
-                        signal_name=signal_name,
-                    )
-                )
-
-    return diagnostics
-
-def normalize_signal_name(value: str) -> str:
-    """Remove Markdown escaping and inline-code markers."""
-
-    return (
-        value.replace("\\_", "_")
-        .replace("\\[", "[")
-        .replace("\\]", "]")
-        .replace("`", "")
-        .strip()
+    return ExtractionResult(
+        entries=tuple(entries),
+        signals=signals,
+        diagnostics=tuple(sorted(diagnostics, key=diagnostic_sort_key)),
     )
 
-def main(arguments: Sequence[str] | None = None) -> int:
-    """Match documented control-output definitions to the signal index."""
 
-    paths = parse_arguments(arguments)
+# ---------------------------------------------------------------------------
+# JSON output
+# ---------------------------------------------------------------------------
 
-    try:
-        documents = read_source_documents(paths.source_paths)
 
-        index_entries, index_diagnostics = parse_index(
-            documents[0],
-            paths.repo_root,
-        )
+def source_reference(path: str, line: int) -> dict[str, object]:
+    """Return the JSON form of a source location."""
 
-        definition_blocks: list[DefinitionBlock] = []
+    return {"path": path, "line": line}
 
-        for document in documents[1:]:
-            definition_blocks.extend(
-                extract_definition_blocks(
-                    document,
-                    paths.repo_root,
-                )
-            )
 
-        definitions, definition_diagnostics = match_definition_blocks(
-            index_entries,
-            definition_blocks,
-        )
-        
-        attributes, attribute_diagnostics = (
-            extract_all_definition_attributes(definitions)
-        )
+def diagnostic_to_dict(diagnostic: Diagnostic) -> dict[str, object]:
+    """Convert one diagnostic to a JSON-compatible dictionary."""
 
-        mnemonic_diagnostics = validate_documented_mnemonics(
-            definitions,
-            attributes,
-        )
-        
-        attribute_validation_diagnostics = (
-            validate_definition_attributes(
-                index_entries,
-                definitions,
-                attributes,
-            )
-        )
-        
-        bit_widths, bit_width_diagnostics = normalize_bit_widths(
-            definitions,
-            attributes,
-        )
- 
-        control_word_attribute_diagnostics = (
-            validate_control_word_attributes(
-                index_entries,
-                definitions,
-                attributes,
-                bit_widths,
-            )
-        )
+    return {
+        "severity": diagnostic.severity,
+        "code": diagnostic.code,
+        "message": diagnostic.message,
+        "source_path": diagnostic.source_path,
+        "line": diagnostic.line,
+        "signal_name": diagnostic.signal_name,
+    }
 
-        encodings, encoding_diagnostics = (
-            extract_all_definition_encodings(definitions)
-        )
-        
-        encoding_width_diagnostics = validate_encoding_widths(
-            definitions,
-            bit_widths,
-            encodings,
-        )
- 
-        category_diagnostics = validate_category_requirements(
-            index_entries,
-            definitions,
-            bit_widths,
-            encodings,
-        )
 
-        constraints = extract_all_definition_constraints(
-            definitions
-        )
-        micro_operation_uses = (
-            extract_all_definition_micro_operation_uses(definitions)
-        )
-        
-        diagnostics = [
-            *index_diagnostics,
-            *definition_diagnostics,
-            *attribute_diagnostics,
-            *attribute_validation_diagnostics,
-            *mnemonic_diagnostics,
-            *bit_width_diagnostics,
-            *control_word_attribute_diagnostics,
-            *encoding_diagnostics,
-            *encoding_width_diagnostics,
-            *category_diagnostics,
-        ]
+def output_attributes(signal: SignalDefinition) -> dict[str, str | None]:
+    """Return the JSON attributes, excluding the bit width.
 
-        diagnostics = sorted(
-            diagnostics,
-            key=lambda item: (
-                DIAGNOSTIC_SEVERITY_ORDER.get(item.severity, 99),
-                item.code,
-                item.source_path or "",
-                item.line if item.line is not None else -1,
-                item.signal_name or "",
-                item.message,
-            ),
-        )
+    Explicit Value Required is normalized, and Default Value is normalized
+    when the bit width is known. Either becomes None if invalid.
+    """
 
-        result = build_index_result(
-            index_entries,
-            definitions,
-            attributes,
-            bit_widths,
-            encodings,
-            constraints,
-            micro_operation_uses,
-            diagnostics,
-        )
+    attributes: dict[str, str | None] = {}
 
-        write_json_output(result, paths.json_output)
-        write_report(
-            index_entries,
-            definitions,
-            attributes,
-            bit_widths,
-            encodings,
-            constraints,
-            diagnostics,
-            paths.report_output,
-        )
-    except (FileNotFoundError, OSError, ValueError) as error:
-        print(f"ERROR: {error}")
-        return 1
+    for key, value in signal.attributes.items():
+        if key == "bit_width":
+            continue
 
-    failure_diagnostics = [
-        item
-        for item in diagnostics
-        if item.severity in FAILURE_SEVERITIES
+        if key == "explicit_value_required":
+            attributes[key] = normalize_explicit_value_required(value)
+        elif key == "default_value" and signal.bit_width is not None:
+            attributes[key] = normalize_default_value(value, signal.bit_width)
+        else:
+            attributes[key] = value
+
+    return attributes
+
+
+def micro_operation_use_to_dict(
+    use: MicroOperationUse,
+    source_path: str,
+) -> dict[str, object]:
+    """Convert one micro-operation use; ``value`` is omitted when absent."""
+
+    result: dict[str, object] = {
+        "micro_operation": use.micro_operation,
+        "source": source_reference(source_path, use.line),
+    }
+
+    if use.value is not None:
+        result["value"] = use.value
+
+    return result
+
+
+def definition_to_dict(signal: SignalDefinition) -> dict[str, object]:
+    """Convert one matched definition to its JSON representation."""
+
+    source_path = signal.block.source_path
+
+    return {
+        "heading": signal.block.heading,
+        "attributes": output_attributes(signal),
+        "bit_width": signal.bit_width,
+        "encodings": [
+            {
+                "value": encoding.value,
+                "meaning": encoding.meaning,
+                "source": source_reference(source_path, encoding.line),
+            }
+            for encoding in signal.encodings
+        ],
+        "constraints": [
+            {
+                "text": constraint.text,
+                "source": source_reference(source_path, constraint.line),
+            }
+            for constraint in signal.constraints
+        ],
+        "used_by_micro_operations": [
+            micro_operation_use_to_dict(use, source_path)
+            for use in signal.micro_operation_uses
+        ],
+        "source": source_reference(source_path, signal.block.start_line),
+    }
+
+
+def signal_to_dict(
+    entry: IndexEntry,
+    signal: SignalDefinition | None,
+) -> dict[str, object]:
+    """Convert one indexed signal to its JSON representation."""
+
+    return {
+        "name": entry.name,
+        "category": entry.category,
+        "definition": None if signal is None else definition_to_dict(signal),
+        "source": source_reference(entry.source_path, entry.line),
+        "extraction_status": (
+            STATUS_DEFINITION_MISSING if signal is None else STATUS_VALIDATED
+        ),
+    }
+
+
+def build_json_result(result: ExtractionResult) -> dict[str, object]:
+    """Build the generated control-output representation."""
+
+    return {
+        "format_version": FORMAT_VERSION,
+        "extraction_stage": EXTRACTION_STAGE,
+        "signals": [
+            signal_to_dict(entry, result.signals.get(entry.name))
+            for entry in result.entries
+        ],
+        "diagnostics": [
+            diagnostic_to_dict(diagnostic)
+            for diagnostic in result.diagnostics
+        ],
+    }
+
+
+def serialize_json(data: dict[str, object]) -> str:
+    """Serialize JSON in construction order, with a trailing newline."""
+
+    return json.dumps(data, indent=2, ensure_ascii=False) + "\n"
+
+
+# ---------------------------------------------------------------------------
+# Text report
+# ---------------------------------------------------------------------------
+
+
+def build_extraction_report(result: ExtractionResult) -> str:
+    """Build the human-readable extraction report."""
+
+    signals = list(result.signals.values())
+    diagnostics = result.diagnostics
+
+    def severity_count(severity: str) -> int:
+        return sum(item.severity == severity for item in diagnostics)
+
+    summary = [
+        ("Indexed signals", len(result.entries)),
+        ("Matched definitions", len(signals)),
+        (
+            "Definitions with extracted attributes",
+            sum(bool(signal.attributes) for signal in signals),
+        ),
+        (
+            "Definitions with normalized bit widths",
+            sum(signal.bit_width is not None for signal in signals),
+        ),
+        (
+            "Definitions with extracted encodings",
+            sum(bool(signal.encodings) for signal in signals),
+        ),
+        (
+            "Encoding entries extracted",
+            sum(len(signal.encodings) for signal in signals),
+        ),
+        (
+            "Definitions with extracted constraints",
+            sum(bool(signal.constraints) for signal in signals),
+        ),
+        (
+            "Constraint entries extracted",
+            sum(len(signal.constraints) for signal in signals),
+        ),
+        ("Missing definitions", len(result.entries) - len(signals)),
+        ("Informational diagnostics", severity_count(INFO)),
+        ("Warnings", severity_count(WARNING)),
+        ("Errors", severity_count(ERROR)),
+        ("Fatal errors", severity_count(FATAL)),
     ]
-    exit_code = 1 if failure_diagnostics else 0
+
+    title = "Control Output Extraction Report"
+    lines = [title, "=" * len(title), "", "Stage: category validation"]
+    lines += [f"{label}: {count}" for label, count in summary]
+    lines += ["", "Diagnostics", "-----------"]
+
+    if not diagnostics:
+        lines.append("None.")
+    for diagnostic in diagnostics:
+        lines += [*format_diagnostic(diagnostic), ""]
+
+    return "\n".join(lines).rstrip() + "\n"
+
+
+# ---------------------------------------------------------------------------
+# Command line
+# ---------------------------------------------------------------------------
+
+
+def write_text(path: Path, text: str) -> None:
+    """Write UTF-8 text with LF line endings, creating parent directories."""
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8", newline="\n")
+
+
+def print_summary(result: ExtractionResult, paths: ToolPaths) -> None:
+    """Print the run summary and any failure diagnostics."""
 
     print("Control-output extraction")
-    print(f"Status: {'FAILED' if exit_code else 'SUCCEEDED'}")
-    print(f"Control outputs: {len(index_entries)}")
-    print(f"Definitions matched: {len(definitions)}")
-    print(f"Diagnostics: {len(diagnostics)}")
+    print(f"Status: {'FAILED' if result.failed else 'SUCCEEDED'}")
+    print(f"Control outputs: {len(result.entries)}")
+    print(f"Definitions matched: {len(result.signals)}")
+    print(f"Diagnostics: {len(result.diagnostics)}")
     print(f"JSON output: {paths.json_output}")
     print(f"Report output: {paths.report_output}")
 
-    if exit_code:
-        print()
-        print("Failure diagnostics")
-        print("-------------------")
+    if not result.failed:
+        return
 
-        for item in failure_diagnostics:
-            location = item.source_path or "<unknown source>"
-            if item.line is not None:
-                location = f"{location}:{item.line}"
-            signal = f" [{item.signal_name}]" if item.signal_name else ""
-            print(f"{item.severity} {item.code}{signal}")
-            print(f"  Source: {location}")
-            print(f"  {item.message}")
+    print()
+    print("Failure diagnostics")
+    print("-------------------")
 
-    return exit_code
+    for diagnostic in result.diagnostics:
+        if diagnostic.severity in FAILURE_SEVERITIES:
+            print("\n".join(format_diagnostic(diagnostic)))
 
+
+def main(arguments: Sequence[str] | None = None) -> int:
+    """Run the extractor; return 1 if any error-level diagnostic exists."""
+
+    paths = resolve_tool_paths(parse_arguments(arguments))
+
+    try:
+        validate_source_paths(paths.repo_root, paths.source_paths)
+        index_document, *definition_documents = load_source_documents(
+            paths.source_paths, paths.repo_root
+        )
+    except (OSError, ValueError) as error:
+        print(f"ERROR: {error}")
+        return 1
+
+    result = extract_control_outputs(index_document, definition_documents)
+
+    write_text(paths.json_output, serialize_json(build_json_result(result)))
+    write_text(paths.report_output, build_extraction_report(result))
+    print_summary(result, paths)
+
+    return 1 if result.failed else 0
 
 
 if __name__ == "__main__":
