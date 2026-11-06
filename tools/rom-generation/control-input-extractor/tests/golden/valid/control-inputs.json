@@ -1,0 +1,325 @@
+{
+  "constraints": [
+    {
+      "inputs": [
+        "IR_IS_MRI",
+        "IR_IS_OPR"
+      ],
+      "kind": "at_most_one",
+      "source": {
+        "line": 4,
+        "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md"
+      }
+    }
+  ],
+  "diagnostics": [],
+  "extraction_stage": "final-structure-validation",
+  "format_version": 1,
+  "signals": [
+    {
+      "attributes": {
+        "display_name": "AC Negative",
+        "purpose": "Indicates whether AC is negative.",
+        "source_register": "AC"
+      },
+      "bit_width": 1,
+      "category": null,
+      "constraints": [],
+      "consumers": [],
+      "definition_source": {
+        "heading": "ACN",
+        "line": 3,
+        "path": "docs/04-control/10-control-input-definitions/01-flags.md"
+      },
+      "dependencies": [],
+      "domain": "Primitive Flags",
+      "enumerated_values": [
+        {
+          "meaning": "non-negative",
+          "source": {
+            "line": 10,
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md"
+          },
+          "value": "0"
+        },
+        {
+          "meaning": "negative",
+          "source": {
+            "line": 11,
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md"
+          },
+          "value": "1"
+        }
+      ],
+      "extraction_status": "structure-validated",
+      "index_source": {
+        "line": 5,
+        "path": "docs/04-control/10-control-input-definitions/00-index.md"
+      },
+      "logic": {},
+      "name": "ACN",
+      "polarity": {
+        "source": "defaulted",
+        "value": "active-high"
+      },
+      "value_ranges": []
+    },
+    {
+      "attributes": {
+        "display_name": "MRI Flag",
+        "input_type": "IR Class",
+        "mnemonic": "IR_IS_MRI",
+        "purpose": "Indicates an MRI."
+      },
+      "bit_width": 1,
+      "category": "Instruction Class",
+      "constraints": [],
+      "consumers": [],
+      "definition_source": {
+        "heading": "IR_IS_MRI",
+        "line": 6,
+        "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md"
+      },
+      "dependencies": [],
+      "domain": "IR-Derived Signals",
+      "enumerated_values": [
+        {
+          "meaning": "not MRI",
+          "source": {
+            "line": 20,
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md"
+          },
+          "value": "0"
+        },
+        {
+          "meaning": "MRI",
+          "source": {
+            "line": 21,
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md"
+          },
+          "value": "1"
+        }
+      ],
+      "extraction_status": "structure-validated",
+      "index_source": {
+        "line": 11,
+        "path": "docs/04-control/10-control-input-definitions/00-index.md"
+      },
+      "logic": {
+        "derivation": {
+          "source": {
+            "line": 14,
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md"
+          },
+          "text": "IR_IS_MRI = IR[11:9] < 6"
+        }
+      },
+      "name": "IR_IS_MRI",
+      "polarity": {
+        "source": "defaulted",
+        "value": "active-high"
+      },
+      "value_ranges": []
+    },
+    {
+      "attributes": {
+        "display_name": "OPR Flag",
+        "input_type": "IR Class",
+        "mnemonic": "IR_IS_OPR",
+        "purpose": "Indicates an OPR."
+      },
+      "bit_width": 1,
+      "category": "Instruction Class",
+      "constraints": [],
+      "consumers": [],
+      "definition_source": {
+        "heading": "IR_IS_OPR",
+        "line": 23,
+        "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md"
+      },
+      "dependencies": [],
+      "domain": "IR-Derived Signals",
+      "enumerated_values": [
+        {
+          "meaning": "not OPR",
+          "source": {
+            "line": 34,
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md"
+          },
+          "value": "0"
+        },
+        {
+          "meaning": "OPR",
+          "source": {
+            "line": 35,
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md"
+          },
+          "value": "1"
+        }
+      ],
+      "extraction_status": "structure-validated",
+      "index_source": {
+        "line": 12,
+        "path": "docs/04-control/10-control-input-definitions/00-index.md"
+      },
+      "logic": {
+        "derivation": {
+          "source": {
+            "line": 31,
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md"
+          },
+          "text": "IR_IS_OPR = IR[11:9] == 7"
+        }
+      },
+      "name": "IR_IS_OPR",
+      "polarity": {
+        "source": "defaulted",
+        "value": "active-high"
+      },
+      "value_ranges": []
+    },
+    {
+      "attributes": {
+        "display_name": "MRI or OPR",
+        "mnemonic": "MRI_OR_OPR",
+        "purpose": "Combines two classes."
+      },
+      "bit_width": 1,
+      "category": null,
+      "constraints": [],
+      "consumers": [],
+      "definition_source": {
+        "heading": "MRI_OR_OPR",
+        "line": 3,
+        "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md"
+      },
+      "dependencies": [
+        {
+          "name": "IR_IS_MRI",
+          "source": {
+            "line": 10,
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md"
+          }
+        },
+        {
+          "name": "IR_IS_OPR",
+          "source": {
+            "line": 11,
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md"
+          }
+        }
+      ],
+      "domain": "Derived Flags",
+      "enumerated_values": [
+        {
+          "meaning": "neither",
+          "source": {
+            "line": 21,
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md"
+          },
+          "value": "0"
+        },
+        {
+          "meaning": "either",
+          "source": {
+            "line": 22,
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md"
+          },
+          "value": "1"
+        }
+      ],
+      "extraction_status": "structure-validated",
+      "index_source": {
+        "line": 16,
+        "path": "docs/04-control/10-control-input-definitions/00-index.md"
+      },
+      "logic": {
+        "expression": {
+          "source": {
+            "line": 15,
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md"
+          },
+          "text": "MRI_OR_OPR = IR_IS_MRI OR IR_IS_OPR"
+        }
+      },
+      "name": "MRI_OR_OPR",
+      "polarity": {
+        "source": "defaulted",
+        "value": "active-high"
+      },
+      "value_ranges": []
+    },
+    {
+      "attributes": {
+        "display_name": "Front Panel Start",
+        "input_type": "External Command Input",
+        "purpose": "Requests a start."
+      },
+      "bit_width": 1,
+      "category": null,
+      "constraints": [
+        {
+          "source": {
+            "line": 15,
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md"
+          },
+          "text": "meaningful only when RUN = 0"
+        }
+      ],
+      "consumers": [
+        {
+          "source": {
+            "line": 18,
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md"
+          },
+          "target": "../../03-microarchitecture/02-micro-operations.md#run_set",
+          "text": "RUN_SET"
+        }
+      ],
+      "definition_source": {
+        "heading": "Start Command (FP_START)",
+        "line": 3,
+        "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md"
+      },
+      "dependencies": [],
+      "domain": "External Inputs",
+      "enumerated_values": [
+        {
+          "meaning": "idle",
+          "source": {
+            "line": 11,
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md"
+          },
+          "value": "0"
+        },
+        {
+          "meaning": "start",
+          "source": {
+            "line": 12,
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md"
+          },
+          "value": "1"
+        }
+      ],
+      "extraction_status": "structure-validated",
+      "index_source": {
+        "line": 20,
+        "path": "docs/04-control/10-control-input-definitions/00-index.md"
+      },
+      "logic": {},
+      "name": "FP_START",
+      "polarity": {
+        "source": "defaulted",
+        "value": "active-high"
+      },
+      "value_ranges": []
+    }
+  ],
+  "sources": [
+    "docs/04-control/10-control-input-definitions/00-index.md",
+    "docs/04-control/10-control-input-definitions/01-flags.md",
+    "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+    "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+    "docs/04-control/10-control-input-definitions/04-external-inputs.md"
+  ]
+}

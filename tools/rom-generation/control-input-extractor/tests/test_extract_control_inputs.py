@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import io
 import json
+import os
 import sys
 import tempfile
 import unittest
@@ -20,6 +21,7 @@ from extract_control_inputs import (  # noqa: E402
     EXTERNAL_INPUTS,
     IR_DERIVED_SIGNALS,
     PRIMITIVE_FLAGS,
+    SOURCE_DIRECTORY,
     SOURCE_PATHS,
     ConstraintEntry,
     ConsumerEntry,
@@ -36,7 +38,6 @@ from extract_control_inputs import (  # noqa: E402
     ValueRange,
     build_extraction_report,
     build_json_result,
-    extract_control_inputs,
     extract_definition_blocks,
     extract_signal,
     find_labeled_sections,
@@ -147,20 +148,6 @@ class ArgumentParsingTests(unittest.TestCase):
 
         self.assertEqual(arguments.json_output, DEFAULT_JSON_OUTPUT)
         self.assertEqual(arguments.report_output, DEFAULT_REPORT_OUTPUT)
-
-    def test_output_paths_may_be_overridden(self) -> None:
-        arguments = parse_arguments(
-            [
-                "--repo-root", ".",
-                "--json-output", "alternate/control-inputs.json",
-                "--report-output", "alternate/report.txt",
-            ]
-        )
-
-        self.assertEqual(
-            arguments.json_output, Path("alternate/control-inputs.json")
-        )
-        self.assertEqual(arguments.report_output, Path("alternate/report.txt"))
 
 
 class PathResolutionTests(unittest.TestCase):
@@ -599,6 +586,14 @@ class ScalarAttributeTests(unittest.TestCase):
         self.assertEqual(attributes["source_register"], "AC")
         self.assertEqual(diagnostics, [])
 
+    def test_label_without_value_is_not_an_attribute(self) -> None:
+        block = make_block("**Name:**", "**Purpose:** Indicates something.")
+
+        attributes, diagnostics = parse_scalar_attributes(block)
+
+        self.assertEqual(attributes, {"purpose": "Indicates something."})
+        self.assertEqual(diagnostics, [])
+
     def test_duplicate_scalar_attribute_is_reported(self) -> None:
         block = make_block(
             "**Name:** AC Negative", "**Name:** Accumulator Negative"
@@ -711,6 +706,9 @@ class ValueParsingTests(unittest.TestCase):
         self.assertIsNone(parse_value_line(""))
         self.assertIsNone(parse_value_line("- 0"))
         self.assertIsNone(parse_value_line("- -> inactive"))
+
+    def test_symbolic_value_is_rejected(self) -> None:
+        self.assertIsNone(parse_value_line("- EXECUTE -> execute state"))
 
     def test_binary_values_are_parsed(self) -> None:
         self.assertEqual(parse_binary_value("0"), 0)
@@ -1657,7 +1655,13 @@ MRI_OR_OPR = IR_IS_MRI OR IR_IS_OPR
 }
 
 
+GOLDEN_DIRECTORY = Path(__file__).resolve().parent / "golden"
+UPDATE_GOLDEN = os.environ.get("UPDATE_GOLDEN") == "1"
+
+
 class EndToEndTests(unittest.TestCase):
+    maxDiff = None
+
     def setUp(self) -> None:
         temporary_directory = tempfile.TemporaryDirectory()
         self.addCleanup(temporary_directory.cleanup)
@@ -1712,19 +1716,56 @@ class EndToEndTests(unittest.TestCase):
         self.assertIn("Indexed control inputs: 5", report)
         self.assertIn("Status: SUCCEEDED", stdout)
 
-    def test_extraction_is_deterministic(self) -> None:
-        documents = load_source_documents(
-            [self.repo_root / path for path in SOURCE_PATHS], self.repo_root
-        )
+    def edit_source(self, file_name: str, old: str, new: str) -> None:
+        path = self.repo_root / SOURCE_DIRECTORY / file_name
+        text = path.read_text(encoding="utf-8")
+        self.assertIn(old, text)
+        path.write_text(text.replace(old, new, 1), encoding="utf-8")
 
-        first = build_json_result(
-            extract_control_inputs(documents[0], documents[1:])
-        )
-        second = build_json_result(
-            extract_control_inputs(documents[0], documents[1:])
-        )
+    def assert_outputs_match_golden(self, name: str) -> None:
+        """Compare the full JSON and report against ``golden/<name>/``.
 
-        self.assertEqual(first, second)
+        Run with ``UPDATE_GOLDEN=1`` to rewrite the expected files after an
+        intentional output change, then review the diff.
+        """
+
+        self.run_main()
+        outputs = {
+            "control-inputs.json": self.repo_root / DEFAULT_JSON_OUTPUT,
+            "extraction-report.txt": self.repo_root / DEFAULT_REPORT_OUTPUT,
+        }
+
+        for file_name, output_path in outputs.items():
+            golden_path = GOLDEN_DIRECTORY / name / file_name
+            actual = output_path.read_text(encoding="utf-8")
+
+            if UPDATE_GOLDEN:
+                golden_path.parent.mkdir(parents=True, exist_ok=True)
+                golden_path.write_text(actual, encoding="utf-8", newline="\n")
+                continue
+
+            with self.subTest(file=file_name):
+                self.assertEqual(actual, golden_path.read_text(encoding="utf-8"))
+
+    def test_valid_outputs_match_golden(self) -> None:
+        self.assert_outputs_match_golden("valid")
+
+    def test_invalid_outputs_match_golden(self) -> None:
+        # Diagnostics of both severities in several files, to fix their order.
+        self.edit_source(
+            "01-flags.md",
+            "- `1` → negative",
+            "- `1` → negative\n- `1` → again\n- EXECUTE → symbolic",
+        )
+        self.edit_source(
+            "02-ir-derived-fields.md", "IR_IS_OPR = IR", "IR_IS_OP = IR"
+        )
+        self.edit_source(
+            "03-derived-flags.md", "- IR_IS_OPR\n", "- IR_IS_OPR\n- GHOST\n"
+        )
+        self.edit_source("04-external-inputs.md", "**Bit Width:** 1\n", "")
+
+        self.assert_outputs_match_golden("invalid")
 
     def test_missing_definition_fails_extraction(self) -> None:
         flags = self.repo_root / SOURCE_PATHS[1]

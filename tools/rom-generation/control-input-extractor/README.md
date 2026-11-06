@@ -338,7 +338,6 @@ Most findings are `ERROR`. These findings are `WARNING` and do not fail the run:
 | Code | Meaning |
 |---|---|
 | `INDEX_ENTRY_WITHOUT_DOMAIN` | an index entry appears outside any recognized domain and is skipped |
-| `UNINDEXED_DEFINITION` | a definition does not match an indexed input |
 | `MALFORMED_VALUE_ENCODING` | a value-encoding list item could not be parsed and is skipped |
 
 ## 11. Validation Boundary
@@ -485,7 +484,22 @@ python -m unittest discover -s tools/rom-generation/control-input-extractor/test
 
 The tests use inline document content and temporary directories. Unit tests are grouped by pipeline stage; end-to-end tests write a small five-document repository to a temporary directory and run `main()` against it.
 
-A persistent fixture directory is not used. It should be added only if multiple tests require the same representative source documents and inline content becomes harder to maintain.
+Two end-to-end tests compare the complete JSON and report with expected files under `tests/golden/`:
+
+- `valid/`: the five-document repository, which extracts without diagnostics
+- `invalid/`: the same repository with defects that produce warnings and errors in several files, which fixes diagnostic order
+
+The golden JSON is also the reference the control-input schema generator's tests use for this tool's output format, so a format change fails both tools' tests until both are updated.
+
+After an intentional output change, regenerate the golden files from the repository root and review the diff before committing:
+
+```text
+UPDATE_GOLDEN=1 python -m unittest discover -s tools/rom-generation/control-input-extractor/tests -p "test_*.py"
+```
+
+On Windows PowerShell, set the variable first with `$env:UPDATE_GOLDEN = "1"` and remove it afterwards.
+
+The golden files are expected outputs, not source fixtures. A persistent fixture directory is not used. It should be added only if multiple tests require the same representative source documents and inline content becomes harder to maintain.
 
 Tests should cover representative behavior rather than every possible input permutation.
 

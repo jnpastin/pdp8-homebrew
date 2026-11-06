@@ -858,24 +858,16 @@ def match_definition_blocks(
     entries: Sequence[IndexEntry],
     blocks: Sequence[DefinitionBlock],
 ) -> tuple[dict[str, DefinitionBlock], list[Diagnostic]]:
-    """Match definition blocks to indexed control inputs."""
+    """Match definition blocks to indexed control inputs.
 
-    indexed_names = {entry.name for entry in entries}
+    Blocks come from ``extract_definition_blocks``, which only produces
+    blocks for indexed names.
+    """
+
     definitions: dict[str, DefinitionBlock] = {}
     diagnostics: list[Diagnostic] = []
 
     for block in blocks:
-        if block.signal_name not in indexed_names:
-            diagnostics.append(
-                block_diagnostic(
-                    block,
-                    "UNINDEXED_DEFINITION",
-                    "Definition does not match an indexed control input.",
-                    severity=WARNING,
-                )
-            )
-            continue
-
         first = definitions.get(block.signal_name)
 
         if first is not None:

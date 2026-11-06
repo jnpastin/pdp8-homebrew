@@ -37,7 +37,7 @@ Default path:
 build/simulation_outputs/rom-generation/control-input-extractor/control-inputs.json
 ```
 
-The generated catalog provides the documented control-input definitions and source traceability.
+The generated catalog provides the documented control-input definitions and source traceability. Its layout is described in the control-input extractor README.
 
 The authoritative sources remain the documents under:
 
@@ -55,9 +55,11 @@ rom/microcode/v1/control-input-schema.json
 
 The maintained schema contains reviewed decisions not safely inferred from documentation structure alone.
 
-The file may be missing during initial generation.
+The generator reads only the maintained schema's header (`specification_type`, `schema_version`, `control_design_version`) and each field's `name` and `control_uses`. Every other property is refreshed from the extractor output. The maintained schema is normally a promoted candidate, so it contains those other properties too, but they are not read.
 
-The generator must not overwrite it automatically.
+A missing or blank maintained schema is treated as absent. This is allowed during initial generation; every input is then unresolved.
+
+The generator never writes the maintained schema.
 
 ## 4. Generated Outputs
 
@@ -71,6 +73,10 @@ build/
             ├── control-input-schema.candidate.json
             └── generation-report.txt
 ```
+
+The report is written on every run. The candidate is written only when the run reports no `ERROR` or `FATAL` diagnostics.
+
+A failed run does not delete a candidate left by an earlier successful run. Check the report's `Candidate written:` line, or the exit status, before reviewing a candidate file.
 
 Generated outputs:
 
@@ -146,7 +152,7 @@ predicate
 value
 ```
 
-The array may contain either or both values.
+The array may contain either or both values, each at most once. An empty array is valid but means the input is still unresolved.
 
 The extracted documentation determines whether an input is primitive, derived, or external. `control_uses` identifies how ROM-generation tools may consume it.
 
@@ -172,7 +178,7 @@ Example:
 }
 ```
 
-The generator must not infer `control_uses` solely from the input name.
+The generator must not infer `control_uses` solely from the input name. It never infers `control_uses` at all; it only carries forward reviewed values.
 
 ## 8. Candidate Structure
 
@@ -190,46 +196,73 @@ The candidate uses this top-level structure:
     "extraction_stage": "final-structure-validation"
   },
   "fields": [],
+  "constraints": [],
   "diagnostics": []
 }
 ```
 
+| Property | Content |
+|---|---|
+| `fields` | one field per extracted input, in extracted order (section 9) |
+| `constraints` | the extractor's global constraints (`exactly_one` / `at_most_one`), copied unchanged |
+| `diagnostics` | the warnings found while building the candidate, in the order they were found (section 21) |
+
 ## 9. Field Structure
 
-Each field uses this structure:
+Each field uses this structure. The example is the actual field for `ACZ`, shortened:
 
 ```json
 {
   "name": "ACZ",
-  "category": "Primitive Flags",
+  "category": null,
   "width": 1,
-  "control_uses": [
-    "predicate"
-  ],
-  "polarity": "active-high",
+  "control_uses": ["predicate"],
+  "attributes": {
+    "display_name": "AC_IS_ZERO",
+    "purpose": "Indicates whether the accumulator value is zero.",
+    "source_register": "AC"
+  },
+  "polarity": {"source": "defaulted", "value": "active-high"},
   "domain": "Primitive Flags",
   "values": [
-    {
-      "encoding": "0",
-      "meaning": "AC is nonzero"
-    },
-    {
-      "encoding": "1",
-      "meaning": "AC is zero"
-    }
+    {"meaning": "AC ≠ 0", "source": {"line": 67, "path": "docs/.../01-flags.md"}, "value": "0"},
+    {"meaning": "AC = 0", "source": {"line": 68, "path": "docs/.../01-flags.md"}, "value": "1"}
   ],
   "ranges": [],
   "dependencies": [],
   "derivation": null,
   "constraints": [],
+  "consumers": [
+    {"source": {"line": 72, "path": "docs/.../01-flags.md"}, "target": "../../03-microarchitecture/02-micro-operations.md#pc_inc", "text": "PC_INC μop"}
+  ],
   "sources": {
-    "index": {},
-    "definition": {}
+    "index": {"line": 35, "path": "docs/.../00-index.md"},
+    "definition": {"heading": "ACZ", "line": 60, "path": "docs/.../01-flags.md"}
   }
 }
 ```
 
-This example defines structure only. Values must be copied from the generated extractor output.
+Each property is taken from the extractor's signal:
+
+| Field property | Extractor signal property |
+|---|---|
+| `name` | `name` |
+| `category` | `category`: the index subcategory, `null` for domains without categories |
+| `width` | `bit_width` |
+| `control_uses` | the maintained field's `control_uses`, or `[]` |
+| `attributes` | `attributes` |
+| `polarity` | `polarity` |
+| `domain` | `domain` |
+| `values` | `enumerated_values` |
+| `ranges` | `value_ranges` |
+| `dependencies` | `dependencies` |
+| `derivation` | the first non-empty of `logic.derivation`, `logic.expression`, `logic.internal_composition`, as a `{"text", "source"}` object, or `null` |
+| `constraints` | `constraints`, per-input documented constraints |
+| `consumers` | `consumers` |
+| `sources.index` | `index_source` |
+| `sources.definition` | `definition_source` |
+
+Values are copied unchanged from the extractor output, including the extractor's key order within nested objects. The field properties themselves always appear in the order shown.
 
 ## 10. Candidate Generation
 
@@ -240,7 +273,7 @@ For each extracted control input:
 3. Refresh all extracted properties and source metadata.
 4. Emit the candidate field in extracted input order.
 
-If no maintained field exists:
+If no maintained field exists, or its `control_uses` is empty:
 
 - emit `control_uses` as an empty array
 - report `CONTROL_USES_UNRESOLVED`
@@ -252,15 +285,13 @@ If a maintained field is absent from the current extraction:
 
 ## 11. Extracted Properties
 
-The generator must preserve, when present:
+The generator preserves, when present:
 
 - input name
-- display name
+- display name, purpose, type, mnemonic, and source register, within `attributes`
 - category
 - bit width
-- purpose
-- source register or external source
-- polarity
+- polarity and its provenance
 - legal enumerated values
 - legal ranges
 - dependencies
@@ -273,17 +304,11 @@ The generator must not infer replacement values for missing extracted data.
 
 ## 12. Value Domains
 
-An input domain may be represented by:
-
-- enumerated values
-- numeric ranges
-- a combination explicitly supported by the input documentation
+An input domain is represented by either enumerated values or binary ranges. The extractor rejects definitions that mix the two.
 
 Enumerated encodings must be preserved exactly as documented.
 
 Ranges must retain their documented bounds and interpretation.
-
-Reserved or invalid values must remain identifiable.
 
 Later control-rule validation must reject values outside the maintained schema domain.
 
@@ -317,15 +342,17 @@ A `from_input` binding does not imply that the source input is independently enc
 
 Derived inputs must retain:
 
-- their derivation expression
+- their derivation text
 - their direct dependencies
 - source traceability for the derivation
 
-The generator preserves derivation text without converting it into executable logic in the initial implementation.
+Each field carries a single derivation. When the extractor provides more than one logic section, the first non-empty section in the order `derivation`, `expression`, `internal_composition` is used.
+
+The generator preserves derivation text without converting it into executable logic.
 
 Later semantic validation may parse or evaluate supported derivation expressions.
 
-The initial schema generator must detect references to undefined dependencies when the extractor provides structured dependency names.
+The generator reports `UNDEFINED_DEPENDENCY` for any structured dependency name that is not an extracted input.
 
 ## 15. Consumers
 
@@ -344,44 +371,44 @@ A consumer reference does not automatically prove that an input is a predicate, 
 
 ## 16. Input Validation
 
-The generator must validate the extractor artifact for:
+The generator validates the extractor artifact for:
 
-- supported format version
-- expected extraction stage
-- empty extractor diagnostics
-- presence of the signals array
-- unique input names
-- expected extraction status
-- valid bit widths
-- valid categories
-- valid enumerated values
-- valid ranges
-- valid dependencies
-- valid source traceability
+- `format_version` equal to `1`
+- `extraction_stage` equal to `final-structure-validation`
+- an empty `diagnostics` array
+- a `signals` array
+- a `constraints` array
+- global constraints with a known `kind`, at least two inputs, and only extracted input names
+- signals that are objects with non-empty, unique names
+- `extraction_status` equal to `structure-validated`
+- positive integer bit widths
+- `enumerated_values` arrays whose entries are objects with unique string `value`s
+- `value_ranges` and `dependencies` arrays
+- `definition_source` objects with string `path` and `heading` and integer `line`
 
-Invalid extractor input must prevent candidate generation when reliable processing is not possible.
+The generator does not validate categories, attributes, polarity, range bounds, or the contents of consumers and constraints. Those are the extractor's responsibility.
+
+Any extractor validation error prevents candidate construction.
 
 ## 17. Maintained Schema Validation
 
-The maintained schema must be validated for:
+When present, the maintained schema is validated for:
 
-- expected specification type
-- supported schema version
-- matching control-design version
-- presence of the fields array
-- unique field names
-- valid `control_uses` arrays
-- recognized `control_uses` values
+- `specification_type` equal to `control-input-schema`
+- `schema_version` equal to `1`
+- `control_design_version` equal to `v1`
+- a `fields` array
+- fields that are objects with non-empty, unique names
+- `control_uses` arrays containing only unique `predicate` and `value` entries
 
-A missing maintained schema is allowed during initial generation.
+Any maintained-schema validation error prevents candidate construction.
 
 ## 18. Cross-Reference Validation
 
-The initial generator should validate structural cross-references that can be evaluated without interpreting prose.
-
-Validation should detect:
+The generator validates structural cross-references that can be evaluated without interpreting prose:
 
 - a dependency on an undefined input
+- a global constraint naming an undefined input
 - a maintained input absent from extraction
 - a duplicate enumerated encoding
 - a duplicate field name
@@ -407,47 +434,52 @@ That analysis consumes the completed control rules, not only the input catalog.
 
 ## 20. Deterministic Output
 
-Given identical inputs, the generator must produce identical output.
+Given identical inputs, the generator produces identical output:
 
-To preserve determinism:
-
-- field order must follow extracted input order
-- value order must follow documented order
-- dependency order must be preserved
-- constraint order must be preserved
-- object property order must be consistent
-- JSON indentation must be consistent
-- output must use UTF-8
-- output must end with one newline
-- timestamps must not be included
-- absolute paths must not be included
+- field order follows extracted input order
+- value, range, dependency, constraint, and consumer order is preserved from the extractor
+- field properties appear in the fixed order of section 9; keys are not sorted
+- JSON is indented by two spaces, with non-ASCII characters written directly
+- output is UTF-8 with LF line endings and ends with one newline
+- timestamps are not included
+- the candidate contains only repository-relative paths
 
 ## 21. Diagnostics
 
-Each diagnostic should contain:
+Each diagnostic contains:
 
 - severity
 - diagnostic code
-- input name when applicable
-- referenced input when applicable
-- source path when available
-- source line when available
 - explanatory message
 
-Supported severities are:
+and, when applicable:
 
-- `INFO`
-- `WARNING`
-- `ERROR`
-- `FATAL`
+- input name
+- referenced input
+- source path
+- source line
 
-Warnings identify unresolved or stale reviewed classifications that do not prevent candidate construction.
+In the candidate JSON, these are the properties `severity`, `code`, `message`, `input_name`, `referenced_input`, `source_path`, and `source_line`; properties without a value are omitted.
 
-Errors identify invalid input that prevents reliable candidate generation.
+Severities:
+
+| Severity | Meaning | Effect |
+|---|---|---|
+| `WARNING` | unresolved or stale reviewed classification | candidate is written |
+| `ERROR` | invalid extractor or maintained-schema content, or an undefined dependency | no candidate; exit status `1` |
+| `FATAL` | an input file is missing, unreadable, not UTF-8, not JSON, or not a JSON object | no candidate; exit status `1` |
+
+`INFO` is defined but not currently emitted.
+
+Warning codes are `CONTROL_USES_UNRESOLVED` and `STALE_MAINTAINED_FIELD`. The only fatal code is `GENERATION_FAILURE`. Every other code is an error.
+
+Because a candidate is written only when there are no errors, the candidate's `diagnostics` array contains only warnings. It lists them in the order they were found: unresolved inputs in field order, then stale fields in maintained order.
+
+The report lists every diagnostic, sorted by severity, code, source path, source line, input name, referenced input, and message.
 
 ## 22. Command-Line Interface
 
-The intended command form is:
+Run from the repository root:
 
 ```text
 python tools/rom-generation/control-input-schema-generator/src/generate_control_input_schema.py --repo-root .
@@ -459,22 +491,24 @@ The required option is:
 --repo-root REPOSITORY_PATH
 ```
 
-Optional overrides should include:
+Optional overrides:
 
 ```text
---input INPUT_PATH
---maintained-schema INPUT_PATH
---candidate-output OUTPUT_PATH
---report-output OUTPUT_PATH
+--input INPUT_PATH                 default: the extractor output (section 3.1)
+--maintained-schema INPUT_PATH     default: rom/microcode/v1/control-input-schema.json
+--candidate-output OUTPUT_PATH     default: <output directory>/control-input-schema.candidate.json
+--report-output OUTPUT_PATH        default: <output directory>/generation-report.txt
 ```
 
-Relative paths must be resolved from the supplied repository root.
+Relative paths are resolved from the supplied repository root. Absolute paths are used unchanged.
 
-Absolute paths must be used unchanged.
+The tool prints a short summary, followed by any `ERROR` or `FATAL` diagnostics.
+
+The tool exits with status `1` when any `ERROR` or `FATAL` diagnostic is reported, and with status `0` otherwise.
 
 ## 23. Testing
 
-Tests must use Python's standard `unittest` framework.
+Tests use Python's standard `unittest` framework.
 
 Run the tests from the repository root:
 
@@ -482,29 +516,17 @@ Run the tests from the repository root:
 python -m unittest discover -s tools/rom-generation/control-input-schema-generator/tests -p "test_*.py"
 ```
 
-Required test coverage includes:
+Tests build small extractor and maintained-schema documents inline and use temporary directories. They are grouped by stage:
 
-- repository-relative path resolution
-- absolute-path preservation
-- missing required input handling
-- missing maintained schema handling
-- invalid UTF-8 handling
-- invalid JSON handling
-- unsupported format versions
-- unexpected extraction stages
-- extractor diagnostics handling
-- duplicate input names
-- invalid bit widths
-- duplicate enumerated encodings
-- maintained classification preservation
-- unresolved new inputs
-- stale maintained fields
-- invalid `control_uses` values
-- extracted field ordering
-- source metadata refresh
-- deterministic candidate output
-- diagnostic-report generation
-- complete command-line execution
+- path resolution, argument defaults, and JSON reading, including missing, blank, invalid UTF-8, invalid JSON, non-object, and unreadable inputs
+- extractor validation
+- maintained-schema validation
+- candidate construction: classification carry-forward, unresolved and stale fields, ordering, refreshed properties, derivation selection, global constraints, and undefined dependencies
+- output formatting and report content, including diagnostic order
+- the contract with the control-input extractor
+- complete runs through `main()`
+
+The contract tests read the extractor's golden output, `tools/rom-generation/control-input-extractor/tests/golden/valid/control-inputs.json`. They check that real extractor output builds a candidate, and that the test helpers' extractor-shaped data has the same keys as the real output. If the extractor's output format changes, these tests fail until this tool and its test helpers are updated to match.
 
 Tests should cover representative behavior rather than every possible JSON permutation.
 
@@ -519,9 +541,10 @@ The implementation must:
 - preserve deterministic ordering
 - retain source traceability
 - report malformed input without inventing replacements
+- report malformed input as diagnostics rather than failing with an exception
 - remain proportional to the bounded schema task
 
-The initial implementation should remain in one Python source file.
+The implementation remains in one Python source file, `src/generate_control_input_schema.py`, organized in pipeline order: reading inputs, extractor validation, maintained-schema validation, candidate construction, output, and the command line. Expected versions, stages, and allowed `control_uses` values are constants at the top of the module.
 
 ## 25. Workflow
 
@@ -583,6 +606,7 @@ The initial stage is complete when the generator can:
 - create one candidate field per extracted input
 - preserve reviewed `control_uses`
 - preserve extracted domains and traceability
+- preserve global constraints
 - identify unresolved new inputs
 - identify stale maintained fields
 - validate structural input references

@@ -1,0 +1,59 @@
+Control-Input Extraction Report
+===============================
+
+Summary
+-------
+Indexed control inputs: 5
+Matched definitions: 5
+Definitions with extracted attributes: 5
+Normalized bit widths: 4
+Normalized polarities: 5
+Definitions with enumerated values: 5
+Definitions with value ranges: 0
+Enumerated values: 10
+Value ranges: 0
+Definitions with explicit dependencies: 1
+Dependencies: 3
+Definitions with logic sections: 3
+Logic sections: 3
+Definitions with constraints: 1
+Constraints: 1
+Global constraints: 1
+Definitions with consumers: 1
+Consumers: 1
+Linked consumers: 1
+Diagnostics: 5
+
+Inputs by Domain
+----------------
+Derived Flags: 1
+External Inputs: 1
+IR-Derived Signals: 2
+Primitive Flags: 1
+
+Diagnostics by Severity
+-----------------------
+ERROR: 4
+WARNING: 1
+
+Diagnostic Details
+------------------
+WARNING MALFORMED_VALUE_ENCODING [ACN]
+  Source: docs/04-control/10-control-input-definitions/01-flags.md:13
+  Value encoding could not be parsed: - EXECUTE → symbolic
+
+ERROR DERIVATION_RESULT_MISMATCH [IR_IS_OPR]
+  Source: docs/04-control/10-control-input-definitions/02-ir-derived-fields.md:31
+  Derivation does not assign the indexed signal 'IR_IS_OPR'.
+
+ERROR DUPLICATE_VALUE_ENCODING [ACN]
+  Source: docs/04-control/10-control-input-definitions/01-flags.md:12
+  Value '1' was already defined at line 11.
+
+ERROR MISSING_BIT_WIDTH [FP_START]
+  Source: docs/04-control/10-control-input-definitions/04-external-inputs.md:3
+  Definition does not specify a bit width.
+
+ERROR UNKNOWN_DEPENDENCY [MRI_OR_OPR]
+  Source: docs/04-control/10-control-input-definitions/03-derived-flags.md:12
+  Dependency does not match an indexed control input: GHOST

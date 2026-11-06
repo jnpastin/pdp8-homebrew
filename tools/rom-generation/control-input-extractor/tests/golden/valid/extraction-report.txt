@@ -1,0 +1,40 @@
+Control-Input Extraction Report
+===============================
+
+Summary
+-------
+Indexed control inputs: 5
+Matched definitions: 5
+Definitions with extracted attributes: 5
+Normalized bit widths: 5
+Normalized polarities: 5
+Definitions with enumerated values: 5
+Definitions with value ranges: 0
+Enumerated values: 10
+Value ranges: 0
+Definitions with explicit dependencies: 1
+Dependencies: 2
+Definitions with logic sections: 3
+Logic sections: 3
+Definitions with constraints: 1
+Constraints: 1
+Global constraints: 1
+Definitions with consumers: 1
+Consumers: 1
+Linked consumers: 1
+Diagnostics: 0
+
+Inputs by Domain
+----------------
+Derived Flags: 1
+External Inputs: 1
+IR-Derived Signals: 2
+Primitive Flags: 1
+
+Diagnostics by Severity
+-----------------------
+None
+
+Diagnostic Details
+------------------
+No diagnostics.
