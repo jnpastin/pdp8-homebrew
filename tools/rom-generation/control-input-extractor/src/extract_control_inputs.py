@@ -1,31 +1,215 @@
-"""Extract structured control-input definitions from project documentation."""
+"""Extract structured control-input definitions from project documentation.
+
+The extractor reads the five authoritative control-input documents and
+produces deterministic JSON plus a human-readable report.
+
+Pipeline:
+
+1. Load the authoritative documents.
+2. Parse the index into signal names, domains, and categories.
+3. Split the definition documents into one block per indexed signal.
+4. Extract each block's attributes, values, dependencies, logic,
+   constraints, and consumers into a ``SignalDefinition``.
+5. Validate each signal against its domain's structural rules.
+6. Write the JSON result and the extraction report.
+
+See the tool README for the extraction and validation boundary.
+"""
 
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass
-from pathlib import Path
-from typing import Sequence
-import re
 import json
+import re
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Iterable, Iterator, Sequence
 
-DIAGNOSTIC_SEVERITY_ORDER = {
-    "INFO": 0,
-    "WARNING": 1,
-    "ERROR": 2,
-    "FATAL": 3,
+# ---------------------------------------------------------------------------
+# Paths
+# ---------------------------------------------------------------------------
+
+SOURCE_DIRECTORY = Path("docs/04-control/10-control-input-definitions")
+INDEX_SOURCE_PATH = SOURCE_DIRECTORY / "00-index.md"
+DEFINITION_SOURCE_PATHS = (
+    SOURCE_DIRECTORY / "01-flags.md",
+    SOURCE_DIRECTORY / "02-ir-derived-fields.md",
+    SOURCE_DIRECTORY / "03-derived-flags.md",
+    SOURCE_DIRECTORY / "04-external-inputs.md",
+)
+SOURCE_PATHS = (INDEX_SOURCE_PATH, *DEFINITION_SOURCE_PATHS)
+
+OUTPUT_DIRECTORY = Path(
+    "build/simulation_outputs/rom-generation/control-input-extractor"
+)
+DEFAULT_JSON_OUTPUT = OUTPUT_DIRECTORY / "control-inputs.json"
+DEFAULT_REPORT_OUTPUT = OUTPUT_DIRECTORY / "extraction-report.txt"
+
+# ---------------------------------------------------------------------------
+# Output format
+# ---------------------------------------------------------------------------
+
+FORMAT_VERSION = 1
+EXTRACTION_STAGE = "final-structure-validation"
+STATUS_VALIDATED = "structure-validated"
+STATUS_DEFINITION_MISSING = "definition-missing"
+
+# ---------------------------------------------------------------------------
+# Diagnostics
+# ---------------------------------------------------------------------------
+
+INFO = "INFO"
+WARNING = "WARNING"
+ERROR = "ERROR"
+FATAL = "FATAL"
+
+SEVERITY_ORDER = {INFO: 0, WARNING: 1, ERROR: 2, FATAL: 3}
+FAILURE_SEVERITIES = frozenset({ERROR, FATAL})
+
+# ---------------------------------------------------------------------------
+# Input domains and per-domain rules
+# ---------------------------------------------------------------------------
+
+PRIMITIVE_FLAGS = "Primitive Flags"
+IR_DERIVED_SIGNALS = "IR-Derived Signals"
+DERIVED_FLAGS = "Derived Flags"
+EXTERNAL_INPUTS = "External Inputs"
+
+# Index heading text (casefolded, unnumbered) -> domain.
+INDEX_DOMAINS = {
+    "primitive flags": PRIMITIVE_FLAGS,
+    "ir-derived signals": IR_DERIVED_SIGNALS,
+    "derived flags": DERIVED_FLAGS,
+    "external inputs": EXTERNAL_INPUTS,
 }
-FAILURE_SEVERITIES = {"ERROR", "FATAL"}
+
+REQUIRED_ATTRIBUTES_BY_DOMAIN = {
+    PRIMITIVE_FLAGS: frozenset({"display_name", "purpose", "source_register"}),
+    IR_DERIVED_SIGNALS: frozenset(
+        {"display_name", "input_type", "mnemonic", "purpose"}
+    ),
+    DERIVED_FLAGS: frozenset({"display_name", "mnemonic", "purpose"}),
+    EXTERNAL_INPUTS: frozenset({"display_name", "input_type", "purpose"}),
+}
+
+# Domains whose width defaults to one bit when not documented.
+ONE_BIT_DEFAULT_DOMAINS = frozenset({PRIMITIVE_FLAGS, DERIVED_FLAGS})
+
+# Domains whose documented mnemonic must equal the indexed name.
+MNEMONIC_DOMAINS = frozenset({IR_DERIVED_SIGNALS, DERIVED_FLAGS})
+
 
 @dataclass(frozen=True)
-class IndexEntry:
-    """One control input listed in the authoritative index."""
+class LogicRule:
+    """Logic a domain must document and the signal it must assign.
 
-    name: str
-    domain: str
-    category: str | None
-    source_path: str
-    line: int
+    ``sections`` lists acceptable logic sections in preference order.  At
+    least one must be present; the first present one must assign the
+    signal.
+    """
+
+    sections: tuple[str, ...]
+    missing_code: str
+    missing_message: str
+    mismatch_code: str
+    mismatch_message: str
+
+
+LOGIC_RULES_BY_DOMAIN = {
+    IR_DERIVED_SIGNALS: LogicRule(
+        sections=("derivation",),
+        missing_code="MISSING_DERIVATION",
+        missing_message="An IR-derived signal must document a derivation.",
+        mismatch_code="DERIVATION_RESULT_MISMATCH",
+        mismatch_message=(
+            "Derivation does not assign the indexed signal '{name}'."
+        ),
+    ),
+    DERIVED_FLAGS: LogicRule(
+        sections=("expression", "internal_composition"),
+        missing_code="MISSING_DERIVED_LOGIC",
+        missing_message=(
+            "A derived flag must document an expression or "
+            "internal composition."
+        ),
+        mismatch_code="DERIVED_RESULT_MISMATCH",
+        mismatch_message=(
+            "Derived logic does not assign the indexed signal '{name}'."
+        ),
+    ),
+}
+
+# ---------------------------------------------------------------------------
+# Definition labels
+# ---------------------------------------------------------------------------
+
+# Bold label -> attribute key.
+SCALAR_ATTRIBUTE_LABELS = {
+    "mnemonic": "mnemonic",
+    "name": "display_name",
+    "type": "input_type",
+    "bit width": "bit_width",
+    "polarity": "polarity",
+    "purpose": "purpose",
+    "source register": "source_register",
+}
+# Attributes normalized into dedicated output fields.
+NORMALIZED_ATTRIBUTES = frozenset({"bit_width", "polarity"})
+
+VALUE_LABELS = frozenset({"value encoding"})
+DEPENDENCY_LABELS = frozenset({"inputs"})
+CONSTRAINT_LABELS = frozenset({"constraint", "constraints"})
+CONSUMER_LABELS = frozenset({"consumed by", "used by μops", "used by uops"})
+
+# Bold label -> logic-section key.
+LOGIC_SECTION_LABELS = {
+    "derivation": "derivation",
+    "expression": "expression",
+    "internal composition (local to this definition)": "internal_composition",
+}
+
+POLARITY_VALUES = {
+    "active-high": "active-high",
+    "active high": "active-high",
+    "active-low": "active-low",
+    "active low": "active-low",
+}
+
+GLOBAL_CONSTRAINT_KINDS = {
+    "EXACTLY_ONE": "exactly_one",
+    "AT_MOST_ONE": "at_most_one",
+}
+
+# ---------------------------------------------------------------------------
+# Patterns
+# ---------------------------------------------------------------------------
+
+HEADING_PATTERN = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
+SECTION_NUMBER_PATTERN = re.compile(r"^\d+(?:\.\d+)*\.?\s+")
+LABEL_PATTERN = re.compile(r"\*\*([^*]+?):?\*\*")
+INDEX_ENTRY_PATTERN = re.compile(
+    r"^\s*-\s+\[(.+?)\]\(([^)]+)\)\s*(?:-\s*.*)?$"
+)
+TRAILING_PARENTHESIZED_PATTERN = re.compile(r"\(([^()]+)\)\s*$")
+BIT_WIDTH_PATTERN = re.compile(r"\s*(\d+)(?:\s+bits?)?\s*", re.IGNORECASE)
+VALUE_SEPARATOR_PATTERN = re.compile(r"\s*(?:->|→|:)\s*")
+HEX_DIGITS_PATTERN = re.compile(r"[0-9A-Fa-f]+")
+VALUE_RANGE_PATTERN = re.compile(r"([0-9A-Fa-f]+)\s*[-–]\s*([0-9A-Fa-f]+)")
+BINARY_PATTERN = re.compile(r"[01]+")
+MARKDOWN_LINK_PATTERN = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
+GLOBAL_CONSTRAINT_PATTERN = re.compile(
+    r"^\s{2,}-\s+`?(EXACTLY_ONE|AT_MOST_ONE)\(([^)]+)\)`?\s*$"
+)
+
+DEFINITION_HEADING_LEVEL = 3
+LIST_ITEM_PREFIX = "- "
+HORIZONTAL_RULE = "---"
+CODE_FENCE = "```"
+
+
+# ---------------------------------------------------------------------------
+# Data model
+# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -38,55 +222,6 @@ class Diagnostic:
     source_path: str | None = None
     line: int | None = None
     signal_name: str | None = None
-    
-DEFAULT_JSON_OUTPUT = Path(
-    "build"
-    "/simulation_outputs"
-    "/rom-generation"
-    "/control-input-extractor"
-    "/control-inputs.json"
-)
-
-DEFAULT_REPORT_OUTPUT = Path(
-    "build"
-    "/simulation_outputs"
-    "/rom-generation"
-    "/control-input-extractor"
-    "/extraction-report.txt"
-)
-
-SOURCE_PATHS = (
-    Path(
-        "docs"
-        "/04-control"
-        "/10-control-input-definitions"
-        "/00-index.md"
-    ),
-    Path(
-        "docs"
-        "/04-control"
-        "/10-control-input-definitions"
-        "/01-flags.md"
-    ),
-    Path(
-        "docs"
-        "/04-control"
-        "/10-control-input-definitions"
-        "/02-ir-derived-fields.md"
-    ),
-    Path(
-        "docs"
-        "/04-control"
-        "/10-control-input-definitions"
-        "/03-derived-flags.md"
-    ),
-    Path(
-        "docs"
-        "/04-control"
-        "/10-control-input-definitions"
-        "/04-external-inputs.md"
-    ),
-)
 
 
 @dataclass(frozen=True)
@@ -107,15 +242,40 @@ class SourceDocument:
     relative_path: str
     text: str
 
+
+@dataclass(frozen=True)
+class IndexEntry:
+    """One control input listed in the authoritative index."""
+
+    name: str
+    domain: str
+    category: str | None
+    source_path: str
+    line: int
+
+
 @dataclass(frozen=True)
 class DefinitionBlock:
-    """Markdown content associated with one control-input definition."""
+    """Markdown content of one control-input definition.
+
+    ``lines`` holds ``(source_line_number, text)`` pairs for the body
+    following the definition heading.
+    """
 
     signal_name: str
     heading: str
     source_path: str
     start_line: int
-    lines: tuple[str, ...]
+    lines: tuple[tuple[int, str], ...]
+
+
+@dataclass(frozen=True)
+class Polarity:
+    """Normalized polarity and how it was determined."""
+
+    value: str
+    source: str  # "explicit", "name-derived", or "defaulted"
+
 
 @dataclass(frozen=True)
 class EnumeratedValue:
@@ -134,7 +294,8 @@ class ValueRange:
     end: str
     meaning: str
     line: int
-    
+
+
 @dataclass(frozen=True)
 class DependencyEntry:
     """One explicitly documented input dependency."""
@@ -142,12 +303,14 @@ class DependencyEntry:
     name: str
     line: int
 
+
 @dataclass(frozen=True)
 class TextSection:
-    """One source-traceable multiline definition section."""
+    """One source-traceable multiline logic section."""
 
     text: str
     line: int
+
 
 @dataclass(frozen=True)
 class ConstraintEntry:
@@ -155,6 +318,7 @@ class ConstraintEntry:
 
     text: str
     line: int
+
 
 @dataclass(frozen=True)
 class ConsumerEntry:
@@ -175,16 +339,227 @@ class GlobalConstraintEntry:
     line: int
 
 
-CONSUMER_SECTION_LABELS = {
-    "consumed by",
-    "used by μops",
-    "used by uops",
-}
-GLOBAL_CONSTRAINT_KINDS = {
-    "EXACTLY_ONE": "exactly_one",
-    "AT_MOST_ONE": "at_most_one",
-}
+@dataclass(frozen=True)
+class SignalDefinition:
+    """Everything extracted from one matched definition block."""
 
+    block: DefinitionBlock
+    attributes: dict[str, str] = field(default_factory=dict)
+    bit_width: int | None = None
+    polarity: Polarity | None = None
+    enumerated_values: tuple[EnumeratedValue, ...] = ()
+    value_ranges: tuple[ValueRange, ...] = ()
+    dependencies: tuple[DependencyEntry, ...] = ()
+    logic: dict[str, TextSection] = field(default_factory=dict)
+    constraints: tuple[ConstraintEntry, ...] = ()
+    consumers: tuple[ConsumerEntry, ...] = ()
+
+
+@dataclass(frozen=True)
+class ExtractionResult:
+    """Complete in-memory result of one extraction run."""
+
+    entries: tuple[IndexEntry, ...]
+    signals: dict[str, SignalDefinition]
+    global_constraints: tuple[GlobalConstraintEntry, ...]
+    diagnostics: tuple[Diagnostic, ...]
+
+    @property
+    def failed(self) -> bool:
+        return any(
+            diagnostic.severity in FAILURE_SEVERITIES
+            for diagnostic in self.diagnostics
+        )
+
+
+# ---------------------------------------------------------------------------
+# Diagnostic helpers
+# ---------------------------------------------------------------------------
+
+
+def block_diagnostic(
+    block: DefinitionBlock,
+    code: str,
+    message: str,
+    *,
+    line: int | None = None,
+    severity: str = ERROR,
+) -> Diagnostic:
+    """Build a diagnostic located in a definition block.
+
+    The location defaults to the block's heading line.
+    """
+
+    return Diagnostic(
+        severity=severity,
+        code=code,
+        message=message,
+        source_path=block.source_path,
+        line=block.start_line if line is None else line,
+        signal_name=block.signal_name,
+    )
+
+
+def diagnostic_sort_key(diagnostic: Diagnostic) -> tuple:
+    """Order diagnostics deterministically, least severe first."""
+
+    return (
+        SEVERITY_ORDER.get(diagnostic.severity, 99),
+        diagnostic.code,
+        diagnostic.source_path or "",
+        diagnostic.line if diagnostic.line is not None else -1,
+        diagnostic.signal_name or "",
+        diagnostic.message,
+    )
+
+
+def format_diagnostic(diagnostic: Diagnostic) -> list[str]:
+    """Format one diagnostic as report lines."""
+
+    location = diagnostic.source_path or "<unknown source>"
+    if diagnostic.line is not None:
+        location = f"{location}:{diagnostic.line}"
+
+    signal = f" [{diagnostic.signal_name}]" if diagnostic.signal_name else ""
+
+    return [
+        f"{diagnostic.severity} {diagnostic.code}{signal}",
+        f"  Source: {location}",
+        f"  {diagnostic.message}",
+    ]
+
+
+# ---------------------------------------------------------------------------
+# Markdown helpers
+# ---------------------------------------------------------------------------
+
+
+def normalize_markdown_text(value: str) -> str:
+    """Remove Markdown escaping and inline-code markers."""
+
+    return (
+        value.replace("\\_", "_")
+        .replace("\\[", "[")
+        .replace("\\]", "]")
+        .replace("`", "")
+        .strip()
+    )
+
+
+def remove_section_number(heading: str) -> str:
+    """Remove an optional numeric prefix from a Markdown heading."""
+
+    return SECTION_NUMBER_PATTERN.sub("", heading).strip()
+
+
+def normalize_heading(heading: str) -> str:
+    """Return heading text without its section number or Markdown markup."""
+
+    return normalize_markdown_text(remove_section_number(heading))
+
+
+def normalize_label(label: str) -> str:
+    """Return the comparison form of a bold definition label."""
+
+    return label.strip().rstrip(":").casefold()
+
+
+def text_after_label(line: str, label_match: re.Match[str]) -> str:
+    """Return the text following a label on the same line."""
+
+    return line[label_match.end():].strip().lstrip(":").strip()
+
+
+def list_item_text(stripped_line: str) -> str | None:
+    """Return the text of a ``- `` list item, or None for other lines."""
+
+    if not stripped_line.startswith(LIST_ITEM_PREFIX):
+        return None
+
+    return stripped_line[len(LIST_ITEM_PREFIX):].strip()
+
+
+@dataclass(frozen=True)
+class LabeledSection:
+    """Lines following one bold label within a definition block."""
+
+    label: str
+    line: int
+    trailing_text: str
+    body: tuple[tuple[int, str], ...]
+
+
+def find_labeled_sections(
+    block: DefinitionBlock,
+    labels: Iterable[str],
+    *,
+    ends_at_rule: bool,
+) -> list[LabeledSection]:
+    """Collect the sections introduced by any of ``labels``.
+
+    A section runs from its label to the next bold label.  An unrelated
+    label ends the search entirely; a repeated matching label starts a new
+    section.  When ``ends_at_rule`` is set, a ``---`` line also closes the
+    current section, and a later matching label may open another.
+    """
+
+    labels = frozenset(labels)
+    sections: list[LabeledSection] = []
+    current: tuple[str, int, str] | None = None
+    body: list[tuple[int, str]] = []
+
+    def close() -> None:
+        nonlocal current, body
+        if current is not None:
+            sections.append(LabeledSection(*current, tuple(body)))
+        current, body = None, []
+
+    for source_line, line in block.lines:
+        label_match = LABEL_PATTERN.search(line)
+
+        if label_match is not None:
+            label = normalize_label(label_match.group(1))
+
+            if label in labels:
+                close()
+                current = (
+                    label,
+                    source_line,
+                    text_after_label(line, label_match),
+                )
+                continue
+
+            if current is not None:
+                break
+
+        if current is None:
+            continue
+
+        if ends_at_rule and line.strip() == HORIZONTAL_RULE:
+            close()
+            continue
+
+        body.append((source_line, line))
+
+    close()
+    return sections
+
+
+def iter_section_list_items(
+    sections: Iterable[LabeledSection],
+) -> Iterator[tuple[int, str]]:
+    """Yield ``(source_line, stripped_line)`` for each list item."""
+
+    for section in sections:
+        for source_line, line in section.body:
+            stripped = line.strip()
+            if stripped.startswith(LIST_ITEM_PREFIX):
+                yield source_line, stripped
+
+
+# ---------------------------------------------------------------------------
+# Paths and source loading
+# ---------------------------------------------------------------------------
 
 
 def parse_arguments(
@@ -198,14 +573,12 @@ def parse_arguments(
             "the authoritative project documentation."
         )
     )
-
     parser.add_argument(
         "--repo-root",
         required=True,
         type=Path,
         help="Path to the repository root.",
     )
-
     parser.add_argument(
         "--json-output",
         type=Path,
@@ -215,7 +588,6 @@ def parse_arguments(
             "the repository root."
         ),
     )
-
     parser.add_argument(
         "--report-output",
         type=Path,
@@ -225,14 +597,10 @@ def parse_arguments(
             "resolved from the repository root."
         ),
     )
-
     return parser.parse_args(arguments)
 
 
-def resolve_from_repo_root(
-    path: Path,
-    repo_root: Path,
-) -> Path:
+def resolve_from_repo_root(path: Path, repo_root: Path) -> Path:
     """Resolve a relative path from the repository root."""
 
     if path.is_absolute():
@@ -241,73 +609,41 @@ def resolve_from_repo_root(
     return (repo_root / path).resolve()
 
 
-def resolve_tool_paths(
-    arguments: argparse.Namespace,
-) -> ToolPaths:
+def resolve_tool_paths(arguments: argparse.Namespace) -> ToolPaths:
     """Resolve all maintained source and generated output paths."""
 
     repo_root = arguments.repo_root.resolve()
 
-    source_paths = tuple(
-        resolve_from_repo_root(path, repo_root)
-        for path in SOURCE_PATHS
-    )
-
     return ToolPaths(
         repo_root=repo_root,
-        source_paths=source_paths,
-        json_output=resolve_from_repo_root(
-            arguments.json_output,
-            repo_root,
+        source_paths=tuple(
+            resolve_from_repo_root(path, repo_root) for path in SOURCE_PATHS
         ),
+        json_output=resolve_from_repo_root(arguments.json_output, repo_root),
         report_output=resolve_from_repo_root(
-            arguments.report_output,
-            repo_root,
+            arguments.report_output, repo_root
         ),
     )
 
 
-def validate_source_paths(
-    source_paths: Sequence[Path],
-) -> None:
+def validate_source_paths(source_paths: Sequence[Path]) -> None:
     """Require every authoritative source path to be a file."""
 
-    missing_paths = [
-        path
-        for path in source_paths
-        if not path.is_file()
-    ]
+    missing_paths = [path for path in source_paths if not path.is_file()]
 
     if missing_paths:
-        formatted_paths = "\n".join(
-            f"- {path}"
-            for path in missing_paths
-        )
-
+        formatted_paths = "\n".join(f"- {path}" for path in missing_paths)
         raise FileNotFoundError(
             "Required control-input source files are missing:\n"
             f"{formatted_paths}"
         )
 
 
-def repository_relative_path(
-    path: Path,
-    repo_root: Path,
-) -> str:
+def repository_relative_path(path: Path, repo_root: Path) -> str:
     """Return a POSIX-style path for a source under the repository."""
 
     return path.relative_to(repo_root).as_posix()
 
-def normalize_markdown_text(value: str) -> str:
-    """Remove Markdown escaping and inline-code markers."""
-
-    return (
-        value.replace("\\_", "_")
-        .replace("\\[", "[")
-        .replace("\\]", "]")
-        .replace("`", "")
-        .strip()
-    )
 
 def load_source_documents(
     source_paths: Sequence[Path],
@@ -318,97 +654,53 @@ def load_source_documents(
     return tuple(
         SourceDocument(
             path=path,
-            relative_path=repository_relative_path(
-                path,
-                repo_root,
-            ),
+            relative_path=repository_relative_path(path, repo_root),
             text=path.read_text(encoding="utf-8"),
         )
         for path in source_paths
     )
 
-INDEX_DOMAINS = {
-    "primitive flags": "Primitive Flags",
-    "ir-derived signals": "IR-Derived Signals",
-    "derived flags": "Derived Flags",
-    "external inputs": "External Inputs",
-}
 
-
-def remove_section_number(heading: str) -> str:
-    """Remove an optional numeric prefix from a Markdown heading."""
-
-    return re.sub(
-        r"^\d+(?:\.\d+)*\.?\s+",
-        "",
-        heading,
-    ).strip()
+# ---------------------------------------------------------------------------
+# Index
+# ---------------------------------------------------------------------------
 
 
 def parse_index(
     document: SourceDocument,
 ) -> tuple[list[IndexEntry], list[Diagnostic]]:
-    """Extract control inputs, domains, and categories from the index."""
+    """Extract control inputs, domains, and categories from the index.
+
+    A domain heading opens a domain; deeper headings name categories within
+    it; a heading at the same or a shallower level closes it.
+    """
 
     entries: list[IndexEntry] = []
     diagnostics: list[Diagnostic] = []
+    first_line_by_name: dict[str, int] = {}
 
-    current_domain: str | None = None
-    current_domain_level: int | None = None
-    current_category: str | None = None
+    domain: str | None = None
+    domain_level = 0
+    category: str | None = None
 
-    heading_pattern = re.compile(
-        r"^(#{1,6})\s+(.+?)\s*$"
-    )
-    entry_pattern = re.compile(
-        r"^\s*-\s+\[(.+?)\]\(([^)]+)\)\s*(?:-\s*.*)?$"
-    )
+    for line_number, line in enumerate(document.text.splitlines(), start=1):
+        heading_match = HEADING_PATTERN.match(line)
 
-    seen_names: dict[str, int] = {}
-
-    for line_number, line in enumerate(
-        document.text.splitlines(),
-        start=1,
-    ):
-        heading_match = heading_pattern.match(line)
-
-        if heading_match:
-            heading_level = len(heading_match.group(1))
-            heading_text = normalize_markdown_text(
-                remove_section_number(
-                    heading_match.group(2)
-                )
-            )
-
-            recognized_domain = INDEX_DOMAINS.get(
-                heading_text.casefold()
-            )
+        if heading_match is not None:
+            level = len(heading_match.group(1))
+            heading = normalize_heading(heading_match.group(2))
+            recognized_domain = INDEX_DOMAINS.get(heading.casefold())
 
             if recognized_domain is not None:
-                current_domain = recognized_domain
-                current_domain_level = heading_level
-                current_category = None
-                continue
-
-            if (
-                current_domain is not None
-                and current_domain_level is not None
-                and heading_level > current_domain_level
-            ):
-                current_category = heading_text
-                continue
-
-            if (
-                current_domain_level is not None
-                and heading_level <= current_domain_level
-            ):
-                current_domain = None
-                current_domain_level = None
-                current_category = None
+                domain, domain_level, category = recognized_domain, level, None
+            elif domain is not None and level > domain_level:
+                category = heading
+            elif domain is not None:
+                domain, category = None, None
 
             continue
 
-        entry_match = entry_pattern.match(line)
+        entry_match = INDEX_ENTRY_PATTERN.match(line)
 
         if entry_match is None:
             continue
@@ -418,47 +710,43 @@ def parse_index(
         if ".md#" not in link_target:
             continue
 
-        signal_name = normalize_markdown_text(link_text)
+        name = normalize_markdown_text(link_text)
+        location = {
+            "source_path": document.relative_path,
+            "line": line_number,
+            "signal_name": name,
+        }
 
-        if current_domain is None:
+        if domain is None:
             diagnostics.append(
                 Diagnostic(
-                    severity="WARNING",
-                    code="INDEX_ENTRY_WITHOUT_DOMAIN",
-                    message=(
-                        "Indexed control input appears outside a "
-                        "recognized input domain."
-                    ),
-                    source_path=document.relative_path,
-                    line=line_number,
-                    signal_name=signal_name,
+                    WARNING,
+                    "INDEX_ENTRY_WITHOUT_DOMAIN",
+                    "Indexed control input appears outside a "
+                    "recognized input domain.",
+                    **location,
                 )
             )
             continue
 
-        if signal_name in seen_names:
+        if name in first_line_by_name:
             diagnostics.append(
                 Diagnostic(
-                    severity="ERROR",
-                    code="DUPLICATE_INDEX_ENTRY",
-                    message=(
-                        "Control input is already indexed at line "
-                        f"{seen_names[signal_name]}."
-                    ),
-                    source_path=document.relative_path,
-                    line=line_number,
-                    signal_name=signal_name,
+                    ERROR,
+                    "DUPLICATE_INDEX_ENTRY",
+                    "Control input is already indexed at line "
+                    f"{first_line_by_name[name]}.",
+                    **location,
                 )
             )
             continue
 
-        seen_names[signal_name] = line_number
-
+        first_line_by_name[name] = line_number
         entries.append(
             IndexEntry(
-                name=signal_name,
-                domain=current_domain,
-                category=current_category,
+                name=name,
+                domain=domain,
+                category=category,
                 source_path=document.relative_path,
                 line=line_number,
             )
@@ -467,7 +755,7 @@ def parse_index(
     if not entries:
         diagnostics.append(
             Diagnostic(
-                severity="ERROR",
+                severity=ERROR,
                 code="NO_INDEX_ENTRIES",
                 message=(
                     "No control-input entries were extracted from "
@@ -478,786 +766,1059 @@ def parse_index(
         )
 
     return entries, diagnostics
-    
+
+
+# ---------------------------------------------------------------------------
+# Definition blocks
+# ---------------------------------------------------------------------------
+
+
 def find_signal_in_heading(
     heading: str,
     indexed_names: set[str],
 ) -> str | None:
-    """Find the indexed signal represented by a definition heading."""
+    """Find the indexed signal named by a definition heading.
 
-    normalized_heading = normalize_markdown_text(
-        remove_section_number(heading)
-    )
+    The heading either is the signal name or ends with it in parentheses,
+    e.g. ``AC Negative (ACN)``.
+    """
 
-    if normalized_heading in indexed_names:
-        return normalized_heading
+    normalized = normalize_heading(heading)
 
-    parenthesized_name = re.search(
-        r"\(([^()]+)\)\s*$",
-        normalized_heading,
-    )
+    if normalized in indexed_names:
+        return normalized
 
-    if parenthesized_name is None:
+    parenthesized = TRAILING_PARENTHESIZED_PATTERN.search(normalized)
+
+    if parenthesized is None:
         return None
 
-    candidate = normalize_markdown_text(
-        parenthesized_name.group(1)
-    )
-
-    if candidate in indexed_names:
-        return candidate
-
-    return None
+    candidate = normalize_markdown_text(parenthesized.group(1))
+    return candidate if candidate in indexed_names else None
 
 
 def extract_definition_blocks(
     document: SourceDocument,
     indexed_names: set[str],
-) -> list:
-    """Extract indexed definitions beginning at level-three headings."""
+) -> list[DefinitionBlock]:
+    """Extract indexed definitions introduced by level-three headings.
+
+    A block ends at the next heading of level three or shallower.  Deeper
+    headings inside a block are not part of its body.
+    """
 
     blocks: list[DefinitionBlock] = []
-    heading_pattern = re.compile(
-        r"^(#{1,6})\s+(.+?)\s*$"
-    )
+    current: tuple[str, str, int] | None = None
+    body: list[tuple[int, str]] = []
 
-    current_signal: str | None = None
-    current_heading: str | None = None
-    current_start_line: int | None = None
-    current_lines: list[str] = []
-
-    def finish_current_block() -> None:
-        if (
-            current_signal is None
-            or current_heading is None
-            or current_start_line is None
-        ):
-            return
-
-        blocks.append(
-            DefinitionBlock(
-                signal_name=current_signal,
-                heading=current_heading,
-                source_path=document.relative_path,
-                start_line=current_start_line,
-                lines=tuple(current_lines),
+    def close() -> None:
+        nonlocal current, body
+        if current is not None:
+            signal_name, heading, start_line = current
+            blocks.append(
+                DefinitionBlock(
+                    signal_name=signal_name,
+                    heading=heading,
+                    source_path=document.relative_path,
+                    start_line=start_line,
+                    lines=tuple(body),
+                )
             )
-        )
+        current, body = None, []
 
-    for line_number, line in enumerate(
-        document.text.splitlines(),
-        start=1,
-    ):
-        heading_match = heading_pattern.match(line)
+    for line_number, line in enumerate(document.text.splitlines(), start=1):
+        heading_match = HEADING_PATTERN.match(line)
 
         if heading_match is None:
-            if current_signal is not None:
-                current_lines.append(line)
-
+            if current is not None:
+                body.append((line_number, line))
             continue
 
-        heading_level = len(heading_match.group(1))
-        heading_text = heading_match.group(2).strip()
+        level = len(heading_match.group(1))
 
-        if heading_level <= 3:
-            finish_current_block()
-            current_signal = None
-            current_heading = None
-            current_start_line = None
-            current_lines = []
-
-        if heading_level != 3:
+        if level > DEFINITION_HEADING_LEVEL:
             continue
 
-        signal_name = find_signal_in_heading(
-            heading_text,
-            indexed_names,
-        )
+        close()
 
-        if signal_name is None:
+        if level < DEFINITION_HEADING_LEVEL:
             continue
 
-        current_signal = signal_name
-        current_heading = normalize_markdown_text(
-            remove_section_number(heading_text)
-        )
-        current_start_line = line_number
-        current_lines = []
+        heading = heading_match.group(2).strip()
+        signal_name = find_signal_in_heading(heading, indexed_names)
 
-    finish_current_block()
+        if signal_name is not None:
+            current = (signal_name, normalize_heading(heading), line_number)
 
+    close()
     return blocks
 
-    
+
 def match_definition_blocks(
     entries: Sequence[IndexEntry],
     blocks: Sequence[DefinitionBlock],
 ) -> tuple[dict[str, DefinitionBlock], list[Diagnostic]]:
     """Match definition blocks to indexed control inputs."""
 
-    entry_by_name = {
-        entry.name: entry
-        for entry in entries
-    }
-
+    indexed_names = {entry.name for entry in entries}
     definitions: dict[str, DefinitionBlock] = {}
     diagnostics: list[Diagnostic] = []
 
     for block in blocks:
-        signal_name = block.signal_name
-
-        if signal_name not in entry_by_name:
+        if block.signal_name not in indexed_names:
             diagnostics.append(
-                Diagnostic(
-                    severity="WARNING",
-                    code="UNINDEXED_DEFINITION",
-                    message=(
-                        "Definition does not match an indexed "
-                        "control input."
-                    ),
-                    source_path=block.source_path,
-                    line=block.start_line,
-                    signal_name=signal_name,
+                block_diagnostic(
+                    block,
+                    "UNINDEXED_DEFINITION",
+                    "Definition does not match an indexed control input.",
+                    severity=WARNING,
                 )
             )
             continue
 
-        if signal_name in definitions:
-            first_block = definitions[signal_name]
+        first = definitions.get(block.signal_name)
 
+        if first is not None:
             diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="DUPLICATE_DEFINITION",
-                    message=(
-                        "Control input has more than one definition. "
-                        f"The first definition is at "
-                        f"{first_block.source_path}:"
-                        f"{first_block.start_line}."
-                    ),
-                    source_path=block.source_path,
-                    line=block.start_line,
-                    signal_name=signal_name,
+                block_diagnostic(
+                    block,
+                    "DUPLICATE_DEFINITION",
+                    "Control input has more than one definition. "
+                    "The first definition is at "
+                    f"{first.source_path}:{first.start_line}.",
                 )
             )
             continue
 
-        definitions[signal_name] = block
+        definitions[block.signal_name] = block
 
     for entry in entries:
-        if entry.name in definitions:
-            continue
-
-        diagnostics.append(
-            Diagnostic(
-                severity="ERROR",
-                code="MISSING_DEFINITION",
-                message=(
-                    "Indexed control input has no matching "
-                    "definition block."
-                ),
-                source_path=entry.source_path,
-                line=entry.line,
-                signal_name=entry.name,
+        if entry.name not in definitions:
+            diagnostics.append(
+                Diagnostic(
+                    severity=ERROR,
+                    code="MISSING_DEFINITION",
+                    message=(
+                        "Indexed control input has no matching "
+                        "definition block."
+                    ),
+                    source_path=entry.source_path,
+                    line=entry.line,
+                    signal_name=entry.name,
+                )
             )
-        )
 
     return definitions, diagnostics
-    
-SCALAR_ATTRIBUTE_NAMES = {
-    "mnemonic": "mnemonic",
-    "name": "display_name",
-    "type": "input_type",
-    "bit width": "bit_width",
-    "polarity": "polarity",
-    "purpose": "purpose",
-    "source register": "source_register",
-}
+
+
+# ---------------------------------------------------------------------------
+# Scalar attributes, bit width, and polarity
+# ---------------------------------------------------------------------------
 
 
 def parse_scalar_attributes(
     block: DefinitionBlock,
 ) -> tuple[dict[str, str], list[Diagnostic]]:
-    """Extract scalar attributes from one control-input definition."""
+    """Extract scalar attributes; one line may hold several labels."""
 
     attributes: dict[str, str] = {}
     diagnostics: list[Diagnostic] = []
 
-    label_pattern = re.compile(
-        r"\*\*([^*]+?):?\*\*"
-    )
-
-    for offset, line in enumerate(block.lines, start=1):
-        matches = list(label_pattern.finditer(line))
+    for source_line, line in block.lines:
+        matches = list(LABEL_PATTERN.finditer(line))
 
         for index, match in enumerate(matches):
-            label = (
-                match.group(1)
-                .strip()
-                .rstrip(":")
-                .casefold()
-            )
+            key = SCALAR_ATTRIBUTE_LABELS.get(normalize_label(match.group(1)))
 
-            attribute_name = SCALAR_ATTRIBUTE_NAMES.get(label)
-
-            if attribute_name is None:
+            if key is None:
                 continue
 
-            value_start = match.end()
-
-            if index + 1 < len(matches):
-                value_end = matches[index + 1].start()
-            else:
-                value_end = len(line)
-
+            value_end = (
+                matches[index + 1].start()
+                if index + 1 < len(matches)
+                else len(line)
+            )
             value = normalize_markdown_text(
-                line[value_start:value_end]
-                .strip()
-                .lstrip(":")
-                .strip()
+                line[match.end():value_end].strip().lstrip(":").strip()
             )
 
             if not value:
                 continue
 
-            if attribute_name in attributes:
+            if key in attributes:
                 diagnostics.append(
-                    Diagnostic(
-                        severity="ERROR",
-                        code="DUPLICATE_ATTRIBUTE",
-                        message=(
-                            f"Attribute '{attribute_name}' is "
-                            "defined more than once."
-                        ),
-                        source_path=block.source_path,
-                        line=block.start_line + offset,
-                        signal_name=block.signal_name,
+                    block_diagnostic(
+                        block,
+                        "DUPLICATE_ATTRIBUTE",
+                        f"Attribute '{key}' is defined more than once.",
+                        line=source_line,
                     )
                 )
                 continue
 
-            attributes[attribute_name] = value
+            attributes[key] = value
 
     return attributes, diagnostics
 
 
-def extract_all_scalar_attributes(
-    definitions: dict[str, DefinitionBlock],
-) -> tuple[dict[str, dict[str, str]], list[Diagnostic]]:
-    """Extract scalar attributes from all matched definitions."""
-
-    extracted: dict[str, dict[str, str]] = {}
-    diagnostics: list[Diagnostic] = []
-
-    for signal_name, block in definitions.items():
-        attributes, block_diagnostics = parse_scalar_attributes(block)
-        extracted[signal_name] = attributes
-        diagnostics.extend(block_diagnostics)
-
-    return extracted, diagnostics
-
 def parse_bit_width(value: str) -> int | None:
     """Parse a documented bit width into a positive integer."""
 
-    match = re.fullmatch(
-        r"\s*(\d+)(?:\s+bits?)?\s*",
-        value,
-        re.IGNORECASE,
-    )
+    match = BIT_WIDTH_PATTERN.fullmatch(value)
 
     if match is None:
         return None
 
     bit_width = int(match.group(1))
-
-    if bit_width < 1:
-        return None
-
-    return bit_width
+    return bit_width if bit_width >= 1 else None
 
 
-def normalize_bit_widths(
-    definitions: dict[str, DefinitionBlock],
-    attributes: dict[str, dict[str, str]],
-) -> tuple[dict[str, int], list[Diagnostic]]:
-    """Normalize documented widths and default flag widths to one bit."""
+def normalize_bit_width(
+    domain: str,
+    block: DefinitionBlock,
+    attributes: dict[str, str],
+) -> tuple[int | None, list[Diagnostic]]:
+    """Normalize a documented width, defaulting flags to one bit."""
 
-    bit_widths: dict[str, int] = {}
-    diagnostics: list[Diagnostic] = []
+    documented = attributes.get("bit_width")
 
-    files_with_default_width = {
-        "01-flags.md",
-        "03-derived-flags.md",
-    }
+    if documented is None:
+        if domain in ONE_BIT_DEFAULT_DOMAINS:
+            return 1, []
 
-    for signal_name, block in definitions.items():
-        documented_width = attributes.get(
-            signal_name,
-            {},
-        ).get("bit_width")
-
-        source_file = Path(block.source_path).name
-
-        if documented_width is None:
-            if source_file in files_with_default_width:
-                bit_widths[signal_name] = 1
-                continue
-
-            diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="MISSING_BIT_WIDTH",
-                    message="Definition does not specify a bit width.",
-                    source_path=block.source_path,
-                    line=block.start_line,
-                    signal_name=signal_name,
-                )
+        return None, [
+            block_diagnostic(
+                block,
+                "MISSING_BIT_WIDTH",
+                "Definition does not specify a bit width.",
             )
-            continue
+        ]
 
-        bit_width = parse_bit_width(documented_width)
+    bit_width = parse_bit_width(documented)
 
-        if bit_width is None:
-            diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="INVALID_BIT_WIDTH",
-                    message=(
-                        "Bit width must be a positive integer, "
-                        "optionally followed by 'bit' or 'bits': "
-                        f"{documented_width}"
-                    ),
-                    source_path=block.source_path,
-                    line=block.start_line,
-                    signal_name=signal_name,
-                )
+    if bit_width is None:
+        return None, [
+            block_diagnostic(
+                block,
+                "INVALID_BIT_WIDTH",
+                "Bit width must be a positive integer, "
+                f"optionally followed by 'bit' or 'bits': {documented}",
             )
-            continue
+        ]
 
-        bit_widths[signal_name] = bit_width
-
-    return bit_widths, diagnostics
+    return bit_width, []
 
 
-def normalize_polarities(
-    definitions: dict[str, DefinitionBlock],
-    attributes: dict[str, dict[str, str]],
-) -> tuple[dict[str, dict[str, str]], list[Diagnostic]]:
-    """Normalize explicit, name-derived, and defaulted polarity."""
+def normalize_polarity(
+    block: DefinitionBlock,
+    attributes: dict[str, str],
+) -> tuple[Polarity | None, list[Diagnostic]]:
+    """Normalize explicit, name-derived, or defaulted polarity."""
 
-    polarities: dict[str, dict[str, str]] = {}
-    diagnostics: list[Diagnostic] = []
+    documented = attributes.get("polarity")
 
-    accepted_values = {
-        "active-high": "active-high",
-        "active high": "active-high",
-        "active-low": "active-low",
-        "active low": "active-low",
-    }
+    if documented is not None:
+        value = POLARITY_VALUES.get(documented.casefold())
 
-    for signal_name, block in definitions.items():
-        documented_polarity = attributes.get(
-            signal_name,
-            {},
-        ).get("polarity")
-
-        if documented_polarity is not None:
-            normalized = accepted_values.get(
-                documented_polarity.casefold()
-            )
-
-            if normalized is None:
-                diagnostics.append(
-                    Diagnostic(
-                        severity="ERROR",
-                        code="INVALID_POLARITY",
-                        message=(
-                            "Polarity must be active-high or "
-                            f"active-low: {documented_polarity}"
-                        ),
-                        source_path=block.source_path,
-                        line=block.start_line,
-                        signal_name=signal_name,
-                    )
+        if value is None:
+            return None, [
+                block_diagnostic(
+                    block,
+                    "INVALID_POLARITY",
+                    "Polarity must be active-high or "
+                    f"active-low: {documented}",
                 )
-                continue
+            ]
 
-            polarities[signal_name] = {
-                "value": normalized,
-                "source": "explicit",
-            }
-            continue
+        return Polarity(value, "explicit"), []
 
-        if signal_name.startswith("/"):
-            polarities[signal_name] = {
-                "value": "active-low",
-                "source": "name-derived",
-            }
-        else:
-            polarities[signal_name] = {
-                "value": "active-high",
-                "source": "defaulted",
-            }
+    if block.signal_name.startswith("/"):
+        return Polarity("active-low", "name-derived"), []
 
-    return polarities, diagnostics
+    return Polarity("active-high", "defaulted"), []
+
+
+# ---------------------------------------------------------------------------
+# Value encodings
+# ---------------------------------------------------------------------------
+
 
 def parse_value_line(
-    line: str,
-) -> tuple[str, tuple[str, ...]] | None:
-    """Parse an enumerated value or bounded value range."""
+    text: str,
+    line: int = 0,
+) -> EnumeratedValue | ValueRange | None:
+    """Parse ``value -> meaning`` or ``start-end -> meaning``.
 
-    text = normalize_markdown_text(line.strip())
+    ``->``, ``→``, and ``:`` are accepted separators.  Returns None when
+    the line is not a well-formed value declaration.
+    """
 
-    if text.startswith("- "):
-        text = text[2:].strip()
+    text = normalize_markdown_text(text)
 
-    separator_match = re.search(
-        r"\s*(?:->|→|:)\s*",
-        text,
-    )
+    if text.startswith(LIST_ITEM_PREFIX):
+        text = text[len(LIST_ITEM_PREFIX):].strip()
 
-    if separator_match is None:
+    separator = VALUE_SEPARATOR_PATTERN.search(text)
+
+    if separator is None:
         return None
 
-    value_text = text[:separator_match.start()].strip()
-    meaning = text[separator_match.end():].strip()
+    value_text = text[:separator.start()].strip()
+    meaning = text[separator.end():].strip()
 
     if not value_text or not meaning:
         return None
 
-    range_match = re.fullmatch(
-        r"([0-9A-Fa-f]+)\s*[-–]\s*([0-9A-Fa-f]+)",
-        value_text,
-    )
+    range_match = VALUE_RANGE_PATTERN.fullmatch(value_text)
 
     if range_match is not None:
-        return (
-            "range",
-            (
-                range_match.group(1),
-                range_match.group(2),
-                meaning,
-            ),
-        )
+        start, end = range_match.groups()
+        return ValueRange(start=start, end=end, meaning=meaning, line=line)
 
-    if re.fullmatch(r"[0-9A-Fa-f]+", value_text) is not None:
-        return (
-            "enumerated",
-            (
-                value_text,
-                meaning,
-            ),
-        )
-
-    return None
-
-def parse_value_line(
-    line: str,
-) -> tuple[str, tuple[str, ...]] | None:
-    """Parse an enumerated value or bounded value range."""
-
-    text = normalize_markdown_text(line.strip())
-
-    if text.startswith("- "):
-        text = text[2:].strip()
-
-    separator_match = re.search(
-        r"\s*(?:->|→|:)\s*",
-        text,
-    )
-
-    if separator_match is None:
-        return None
-
-    value_text = text[:separator_match.start()].strip()
-    meaning = text[separator_match.end():].strip()
-
-    if not value_text or not meaning:
-        return None
-
-    range_match = re.fullmatch(
-        r"([0-9A-Fa-f]+)\s*[-–]\s*([0-9A-Fa-f]+)",
-        value_text,
-    )
-
-    if range_match is not None:
-        return (
-            "range",
-            (
-                range_match.group(1),
-                range_match.group(2),
-                meaning,
-            ),
-        )
-
-    if re.fullmatch(r"[0-9A-Fa-f]+", value_text) is not None:
-        return (
-            "enumerated",
-            (
-                value_text,
-                meaning,
-            ),
-        )
+    if HEX_DIGITS_PATTERN.fullmatch(value_text) is not None:
+        return EnumeratedValue(value=value_text, meaning=meaning, line=line)
 
     return None
 
 
 def parse_definition_values(
     block: DefinitionBlock,
-) -> tuple[
-    list[EnumeratedValue],
-    list[ValueRange],
-    list[Diagnostic],
-]:
-    """Extract enumerated values and ranges from one definition."""
+) -> tuple[list[EnumeratedValue], list[ValueRange], list[Diagnostic]]:
+    """Extract enumerated values and ranges from the value encoding."""
 
-    enumerated_values: list[EnumeratedValue] = []
-    value_ranges: list[ValueRange] = []
+    values: list[EnumeratedValue] = []
+    ranges: list[ValueRange] = []
     diagnostics: list[Diagnostic] = []
+    first_line_by_value: dict[str, int] = {}
 
-    label_marker = re.escape("**")
-    label_pattern = re.compile(
-        label_marker + r"([^*]+?):?" + label_marker
-    )
+    sections = find_labeled_sections(block, VALUE_LABELS, ends_at_rule=False)
 
-    in_value_section = False
-    seen_values: dict[str, int] = {}
-
-    for offset, line in enumerate(block.lines, start=1):
-        source_line = block.start_line + offset
-        label_match = label_pattern.search(line)
-
-        if label_match is not None:
-            label = (
-                label_match.group(1)
-                .strip()
-                .rstrip(":")
-                .casefold()
-            )
-
-            if label == "value encoding":
-                in_value_section = True
-                continue
-
-            if in_value_section:
-                break
-
-        if not in_value_section:
-            continue
-
-        stripped = line.strip()
-
-        if not stripped or stripped == "---":
-            continue
-
-        if not stripped.startswith("- "):
-            continue
-
-        parsed = parse_value_line(stripped)
+    for source_line, item in iter_section_list_items(sections):
+        parsed = parse_value_line(item, source_line)
 
         if parsed is None:
             diagnostics.append(
-                Diagnostic(
-                    severity="WARNING",
-                    code="MALFORMED_VALUE_ENCODING",
-                    message=(
-                        "Value encoding could not be parsed: "
-                        f"{stripped}"
-                    ),
-                    source_path=block.source_path,
+                block_diagnostic(
+                    block,
+                    "MALFORMED_VALUE_ENCODING",
+                    f"Value encoding could not be parsed: {item}",
                     line=source_line,
-                    signal_name=block.signal_name,
+                    severity=WARNING,
                 )
             )
-            continue
-
-        value_kind, parts = parsed
-
-        if value_kind == "enumerated":
-            value, meaning = parts
-
-            if value in seen_values:
-                diagnostics.append(
-                    Diagnostic(
-                        severity="ERROR",
-                        code="DUPLICATE_VALUE_ENCODING",
-                        message=(
-                            f"Value '{value}' was already defined "
-                            f"at line {seen_values[value]}."
-                        ),
-                        source_path=block.source_path,
-                        line=source_line,
-                        signal_name=block.signal_name,
-                    )
-                )
-                continue
-
-            seen_values[value] = source_line
-            enumerated_values.append(
-                EnumeratedValue(
-                    value=value,
-                    meaning=meaning,
+        elif isinstance(parsed, ValueRange):
+            ranges.append(parsed)
+        elif parsed.value in first_line_by_value:
+            diagnostics.append(
+                block_diagnostic(
+                    block,
+                    "DUPLICATE_VALUE_ENCODING",
+                    f"Value '{parsed.value}' was already defined "
+                    f"at line {first_line_by_value[parsed.value]}.",
                     line=source_line,
                 )
             )
-            continue
+        else:
+            first_line_by_value[parsed.value] = source_line
+            values.append(parsed)
 
-        range_start, range_end, meaning = parts
-        value_ranges.append(
-            ValueRange(
-                start=range_start,
-                end=range_end,
-                meaning=meaning,
-                line=source_line,
-            )
-        )
+    return values, ranges, diagnostics
 
-    return enumerated_values, value_ranges, diagnostics
-
-
-def extract_all_definition_values(
-    definitions: dict[str, DefinitionBlock],
-) -> tuple[
-    dict[str, list[EnumeratedValue]],
-    dict[str, list[ValueRange]],
-    list[Diagnostic],
-]:
-    """Extract value declarations from all matched definitions."""
-
-    enumerated_by_signal: dict[str, list[EnumeratedValue]] = {}
-    ranges_by_signal: dict[str, list[ValueRange]] = {}
-    diagnostics: list[Diagnostic] = []
-
-    for signal_name, block in definitions.items():
-        enumerated_values, value_ranges, block_diagnostics = (
-            parse_definition_values(block)
-        )
-
-        enumerated_by_signal[signal_name] = enumerated_values
-        ranges_by_signal[signal_name] = value_ranges
-        diagnostics.extend(block_diagnostics)
-
-    return enumerated_by_signal, ranges_by_signal, diagnostics
 
 def parse_binary_value(value: str) -> int | None:
     """Parse a binary value without inferring another numeric base."""
 
-    if re.fullmatch(r"[01]+", value) is None:
+    if BINARY_PATTERN.fullmatch(value) is None:
         return None
 
     return int(value, 2)
 
 
-def validate_values_against_widths(
-    definitions: dict[str, DefinitionBlock],
-    bit_widths: dict[str, int],
-    enumerated_values: dict[str, list[EnumeratedValue]],
-    value_ranges: dict[str, list[ValueRange]],
-) -> list[Diagnostic]:
-    """Validate documented binary against bit widths."""
+# ---------------------------------------------------------------------------
+# Dependencies
+# ---------------------------------------------------------------------------
+
+
+def parse_definition_dependencies(
+    block: DefinitionBlock,
+) -> tuple[list[DependencyEntry], list[Diagnostic]]:
+    """Extract the explicitly documented input dependencies."""
+
+    dependencies: list[DependencyEntry] = []
+    diagnostics: list[Diagnostic] = []
+    first_line_by_name: dict[str, int] = {}
+
+    sections = find_labeled_sections(
+        block, DEPENDENCY_LABELS, ends_at_rule=False
+    )
+
+    for source_line, item in iter_section_list_items(sections):
+        name = normalize_markdown_text(list_item_text(item) or "")
+
+        if not name:
+            continue
+
+        if name in first_line_by_name:
+            diagnostics.append(
+                block_diagnostic(
+                    block,
+                    "DUPLICATE_DEPENDENCY",
+                    f"Dependency '{name}' was already defined at line "
+                    f"{first_line_by_name[name]}.",
+                    line=source_line,
+                )
+            )
+            continue
+
+        first_line_by_name[name] = source_line
+        dependencies.append(DependencyEntry(name=name, line=source_line))
+
+    return dependencies, diagnostics
+
+
+# ---------------------------------------------------------------------------
+# Logic sections
+# ---------------------------------------------------------------------------
+
+
+def parse_definition_logic_sections(
+    block: DefinitionBlock,
+) -> tuple[dict[str, TextSection], list[Diagnostic]]:
+    """Extract derivation, expression, and internal-composition text.
+
+    A logic section runs from its label to the next bold label or ``---``
+    line.  Code-fence markers are dropped, and labels or rules inside a
+    fence are treated as text.
+    """
+
+    sections: dict[str, TextSection] = {}
+    diagnostics: list[Diagnostic] = []
+
+    active_name: str | None = None
+    active_line = 0
+    active_lines: list[str] = []
+    in_code_fence = False
+
+    def close() -> None:
+        nonlocal active_name, active_lines
+
+        if active_name is None:
+            return
+
+        text = "\n".join(active_lines).strip()
+
+        if not text:
+            diagnostics.append(
+                block_diagnostic(
+                    block,
+                    "EMPTY_LOGIC_SECTION",
+                    f"Logic section '{active_name}' contains no text.",
+                    line=active_line,
+                )
+            )
+        elif active_name in sections:
+            diagnostics.append(
+                block_diagnostic(
+                    block,
+                    "DUPLICATE_LOGIC_SECTION",
+                    f"Logic section '{active_name}' is defined "
+                    "more than once.",
+                    line=active_line,
+                )
+            )
+        else:
+            sections[active_name] = TextSection(text=text, line=active_line)
+
+        active_name, active_lines = None, []
+
+    for source_line, line in block.lines:
+        stripped = line.strip()
+
+        if stripped.startswith(CODE_FENCE):
+            if active_name is not None:
+                in_code_fence = not in_code_fence
+            continue
+
+        if not in_code_fence:
+            label_match = LABEL_PATTERN.search(line)
+
+            if label_match is not None:
+                close()
+                section_name = LOGIC_SECTION_LABELS.get(
+                    normalize_label(label_match.group(1))
+                )
+
+                if section_name is not None:
+                    active_name = section_name
+                    active_line = source_line
+                    trailing = text_after_label(line, label_match)
+                    if trailing:
+                        active_lines.append(normalize_markdown_text(trailing))
+
+                continue
+
+            if stripped == HORIZONTAL_RULE:
+                close()
+                continue
+
+        if active_name is not None:
+            active_lines.append(normalize_markdown_text(line))
+
+    close()
+    return sections, diagnostics
+
+
+def logic_assigns_signal(text: str, signal_name: str) -> bool:
+    """Return whether some line of ``text`` assigns ``signal_name``."""
+
+    pattern = r"(?m)^\s*" + re.escape(signal_name) + r"\s*="
+    return re.search(pattern, text) is not None
+
+
+# ---------------------------------------------------------------------------
+# Constraints and consumers
+# ---------------------------------------------------------------------------
+
+
+def parse_definition_constraints(
+    block: DefinitionBlock,
+) -> tuple[list[ConstraintEntry], list[Diagnostic]]:
+    """Extract Constraint and Constraints content.
+
+    Each list item is one constraint.  Prose (including text on the label
+    line) forms a constraint of its own, and continuation lines are joined
+    to the preceding constraint.
+    """
+
+    sections = find_labeled_sections(
+        block, CONSTRAINT_LABELS, ends_at_rule=True
+    )
+    constraints = [
+        constraint
+        for section in sections
+        for constraint in group_constraint_lines(section)
+    ]
+    return constraints, []
+
+
+def group_constraint_lines(section: LabeledSection) -> list[ConstraintEntry]:
+    """Group one constraint section's lines into individual constraints."""
+
+    # Each group is (first source line, normalized text parts).
+    groups: list[tuple[int, list[str]]] = []
+
+    if section.trailing_text:
+        groups.append(
+            (section.line, [normalize_markdown_text(section.trailing_text)])
+        )
+
+    for source_line, line in section.body:
+        stripped = line.strip()
+
+        if not stripped:
+            continue
+
+        item = list_item_text(stripped)
+
+        if item is not None:
+            groups.append((source_line, [normalize_markdown_text(item)]))
+        elif groups:
+            groups[-1][1].append(normalize_markdown_text(stripped))
+        else:
+            groups.append((source_line, [normalize_markdown_text(stripped)]))
+
+    entries = []
+    for line, parts in groups:
+        text = " ".join(part for part in parts if part).strip()
+        if text:
+            entries.append(ConstraintEntry(text=text, line=line))
+    return entries
+
+
+def parse_consumer_line(
+    line: str,
+    source_line: int = 0,
+) -> ConsumerEntry | None:
+    """Parse one linked or plain-text consumer list item."""
+
+    item = list_item_text(line.strip())
+
+    if not item:
+        return None
+
+    link_match = MARKDOWN_LINK_PATTERN.fullmatch(item)
+
+    if link_match is not None:
+        return ConsumerEntry(
+            text=normalize_markdown_text(link_match.group(1)),
+            target=link_match.group(2).strip(),
+            line=source_line,
+        )
+
+    return ConsumerEntry(
+        text=normalize_markdown_text(item),
+        target=None,
+        line=source_line,
+    )
+
+
+def parse_definition_consumers(
+    block: DefinitionBlock,
+) -> tuple[list[ConsumerEntry], list[Diagnostic]]:
+    """Extract linked and plain-text consumers."""
+
+    sections = find_labeled_sections(block, CONSUMER_LABELS, ends_at_rule=True)
+    consumers = [
+        consumer
+        for source_line, item in iter_section_list_items(sections)
+        if (consumer := parse_consumer_line(item, source_line)) is not None
+    ]
+    return consumers, []
+
+
+def parse_global_constraints(
+    documents: Sequence[SourceDocument],
+    indexed_names: set[str],
+) -> tuple[list[GlobalConstraintEntry], list[Diagnostic]]:
+    """Extract nested ``EXACTLY_ONE(...)``/``AT_MOST_ONE(...)`` bullets."""
+
+    constraints: list[GlobalConstraintEntry] = []
+    diagnostics: list[Diagnostic] = []
+    seen: set[tuple[str, tuple[str, ...]]] = set()
+
+    for document in documents:
+        for line_number, line in enumerate(
+            document.text.splitlines(), start=1
+        ):
+            match = GLOBAL_CONSTRAINT_PATTERN.match(line)
+
+            if match is None:
+                continue
+
+            kind = GLOBAL_CONSTRAINT_KINDS[match.group(1)]
+            names = map(normalize_markdown_text, match.group(2).split(","))
+            inputs = tuple(name for name in names if name)
+            unknown = [name for name in inputs if name not in indexed_names]
+
+            if len(inputs) < 2:
+                problem = (
+                    "INVALID_GLOBAL_CONSTRAINT",
+                    "A global constraint must name at least two inputs.",
+                )
+            elif unknown:
+                problem = (
+                    "UNKNOWN_GLOBAL_CONSTRAINT_INPUT",
+                    "Global constraint references unknown input(s): "
+                    + ", ".join(unknown),
+                )
+            elif (kind, inputs) in seen:
+                problem = (
+                    "DUPLICATE_GLOBAL_CONSTRAINT",
+                    "Global constraint is defined more than once.",
+                )
+            else:
+                problem = None
+
+            if problem is not None:
+                diagnostics.append(
+                    Diagnostic(
+                        ERROR,
+                        *problem,
+                        source_path=document.relative_path,
+                        line=line_number,
+                    )
+                )
+                continue
+
+            seen.add((kind, inputs))
+            constraints.append(
+                GlobalConstraintEntry(
+                    kind=kind,
+                    inputs=inputs,
+                    source_path=document.relative_path,
+                    line=line_number,
+                )
+            )
+
+    return constraints, diagnostics
+
+
+# ---------------------------------------------------------------------------
+# Per-signal extraction
+# ---------------------------------------------------------------------------
+
+
+def extract_signal(
+    entry: IndexEntry,
+    block: DefinitionBlock,
+) -> tuple[SignalDefinition, list[Diagnostic]]:
+    """Extract every documented property of one definition block."""
 
     diagnostics: list[Diagnostic] = []
 
-    for signal_name, block in definitions.items():
-        bit_width = bit_widths.get(signal_name)
+    attributes, found = parse_scalar_attributes(block)
+    diagnostics += found
+    bit_width, found = normalize_bit_width(entry.domain, block, attributes)
+    diagnostics += found
+    polarity, found = normalize_polarity(block, attributes)
+    diagnostics += found
+    values, ranges, found = parse_definition_values(block)
+    diagnostics += found
+    dependencies, found = parse_definition_dependencies(block)
+    diagnostics += found
+    logic, found = parse_definition_logic_sections(block)
+    diagnostics += found
+    constraints, found = parse_definition_constraints(block)
+    diagnostics += found
+    consumers, found = parse_definition_consumers(block)
+    diagnostics += found
 
-        if bit_width is None:
-            continue
+    signal = SignalDefinition(
+        block=block,
+        attributes=attributes,
+        bit_width=bit_width,
+        polarity=polarity,
+        enumerated_values=tuple(values),
+        value_ranges=tuple(ranges),
+        dependencies=tuple(dependencies),
+        logic=logic,
+        constraints=tuple(constraints),
+        consumers=tuple(consumers),
+    )
+    return signal, diagnostics
 
-        maximum_value = (1 << bit_width) - 1
 
-        for entry in enumerated_values.get(signal_name, []):
-            numeric_value = parse_binary_value(entry.value)
+# ---------------------------------------------------------------------------
+# Validation
+# ---------------------------------------------------------------------------
 
-            if numeric_value is None:
-                diagnostics.append(
-                    Diagnostic(
-                        severity="ERROR",
-                        code="INVALID_BINARY_VALUE",
-                        message=(
-                            "Enumerated value is not valid binary: "
-                            f"{entry.value}"
-                        ),
-                        source_path=block.source_path,
-                        line=entry.line,
-                        signal_name=signal_name,
-                    )
+
+def validate_required_attributes(
+    entry: IndexEntry,
+    signal: SignalDefinition,
+) -> list[Diagnostic]:
+    """Validate the scalar attributes required by the input domain."""
+
+    required = REQUIRED_ATTRIBUTES_BY_DOMAIN.get(entry.domain)
+
+    if required is None:
+        return [
+            Diagnostic(
+                severity=ERROR,
+                code="UNKNOWN_INPUT_DOMAIN",
+                message=(
+                    "No required-attribute policy exists for "
+                    f"input domain '{entry.domain}'."
+                ),
+                source_path=entry.source_path,
+                line=entry.line,
+                signal_name=entry.name,
+            )
+        ]
+
+    return [
+        block_diagnostic(
+            signal.block,
+            "MISSING_REQUIRED_ATTRIBUTE",
+            f"Domain '{entry.domain}' requires scalar "
+            f"attribute '{name}'.",
+        )
+        for name in sorted(required)
+        if not signal.attributes.get(name, "").strip()
+    ]
+
+
+def validate_value_encoding(signal: SignalDefinition) -> list[Diagnostic]:
+    """Require exactly one value form: enumerated values or ranges."""
+
+    has_values = bool(signal.enumerated_values)
+    has_ranges = bool(signal.value_ranges)
+
+    if not has_values and not has_ranges:
+        return [
+            block_diagnostic(
+                signal.block,
+                "MISSING_VALUE_ENCODING",
+                "Definition must contain enumerated values "
+                "or a bounded value range.",
+            )
+        ]
+
+    if has_values and has_ranges:
+        return [
+            block_diagnostic(
+                signal.block,
+                "MIXED_VALUE_ENCODING",
+                "Definition contains both enumerated values "
+                "and a bounded value range.",
+            )
+        ]
+
+    return []
+
+
+def validate_values_against_width(
+    signal: SignalDefinition,
+) -> list[Diagnostic]:
+    """Validate that documented binary values fit the bit width."""
+
+    if signal.bit_width is None:
+        return []
+
+    block = signal.block
+    width = signal.bit_width
+    maximum = (1 << width) - 1
+    diagnostics: list[Diagnostic] = []
+
+    for entry in signal.enumerated_values:
+        number = parse_binary_value(entry.value)
+
+        if number is None:
+            diagnostics.append(
+                block_diagnostic(
+                    block,
+                    "INVALID_BINARY_VALUE",
+                    f"Enumerated value is not valid binary: {entry.value}",
+                    line=entry.line,
                 )
-                continue
-
-            if numeric_value > maximum_value:
-                diagnostics.append(
-                    Diagnostic(
-                        severity="ERROR",
-                        code="VALUE_EXCEEDS_BIT_WIDTH",
-                        message=(
-                            f"Binary value {entry.value} does not fit "
-                            f"in the documented {bit_width}-bit input."
-                        ),
-                        source_path=block.source_path,
-                        line=entry.line,
-                        signal_name=signal_name,
-                    )
+            )
+        elif number > maximum:
+            diagnostics.append(
+                block_diagnostic(
+                    block,
+                    "VALUE_EXCEEDS_BIT_WIDTH",
+                    f"Binary value {entry.value} does not fit "
+                    f"in the documented {width}-bit input.",
+                    line=entry.line,
                 )
+            )
 
-        for entry in value_ranges.get(signal_name, []):
-            range_start = parse_binary_value(entry.start)
-            range_end = parse_binary_value(entry.end)
+    for entry in signal.value_ranges:
+        start = parse_binary_value(entry.start)
+        end = parse_binary_value(entry.end)
+        text = f"{entry.start}-{entry.end}"
 
-            if range_start is None or range_end is None:
-                diagnostics.append(
-                    Diagnostic(
-                        severity="ERROR",
-                        code="INVALID_BINARY_RANGE",
-                        message=(
-                            "Value range must use binary endpoints: "
-                            f"{entry.start}-{entry.end}"
-                        ),
-                        source_path=block.source_path,
-                        line=entry.line,
-                        signal_name=signal_name,
-                    )
+        if start is None or end is None:
+            diagnostics.append(
+                block_diagnostic(
+                    block,
+                    "INVALID_BINARY_RANGE",
+                    f"Value range must use binary endpoints: {text}",
+                    line=entry.line,
                 )
-                continue
-
-            if range_start > range_end:
-                diagnostics.append(
-                    Diagnostic(
-                        severity="ERROR",
-                        code="REVERSED_VALUE_RANGE",
-                        message=(
-                            "Value range start exceeds its end: "
-                            f"{entry.start}-{entry.end}"
-                        ),
-                        source_path=block.source_path,
-                        line=entry.line,
-                        signal_name=signal_name,
-                    )
+            )
+        elif start > end:
+            diagnostics.append(
+                block_diagnostic(
+                    block,
+                    "REVERSED_VALUE_RANGE",
+                    f"Value range start exceeds its end: {text}",
+                    line=entry.line,
                 )
-                continue
-
-            if range_end > maximum_value:
-                diagnostics.append(
-                    Diagnostic(
-                        severity="ERROR",
-                        code="RANGE_EXCEEDS_BIT_WIDTH",
-                        message=(
-                            f"Binary range {entry.start}-{entry.end} "
-                            f"does not fit in the documented "
-                            f"{bit_width}-bit input."
-                        ),
-                        source_path=block.source_path,
-                        line=entry.line,
-                        signal_name=signal_name,
-                    )
+            )
+        elif end > maximum:
+            diagnostics.append(
+                block_diagnostic(
+                    block,
+                    "RANGE_EXCEEDS_BIT_WIDTH",
+                    f"Binary range {text} does not fit in the documented "
+                    f"{width}-bit input.",
+                    line=entry.line,
                 )
+            )
 
     return diagnostics
 
 
-def diagnostic_to_dict(
-    diagnostic: Diagnostic,
-) -> dict[str, object]:
+def validate_dependencies(
+    entry: IndexEntry,
+    signal: SignalDefinition,
+    indexed_names: set[str],
+) -> list[Diagnostic]:
+    """Require derived-flag dependencies and check they are indexed."""
+
+    diagnostics: list[Diagnostic] = []
+
+    if entry.domain == DERIVED_FLAGS and not signal.dependencies:
+        diagnostics.append(
+            block_diagnostic(
+                signal.block,
+                "MISSING_DEPENDENCIES",
+                "A derived flag must document at least one "
+                "input dependency.",
+            )
+        )
+
+    diagnostics.extend(
+        block_diagnostic(
+            signal.block,
+            "UNKNOWN_DEPENDENCY",
+            "Dependency does not match an indexed control "
+            f"input: {dependency.name}",
+            line=dependency.line,
+        )
+        for dependency in signal.dependencies
+        if dependency.name not in indexed_names
+    )
+    return diagnostics
+
+
+def validate_logic(
+    entry: IndexEntry,
+    signal: SignalDefinition,
+) -> list[Diagnostic]:
+    """Require the domain's logic section and check it assigns the signal."""
+
+    rule = LOGIC_RULES_BY_DOMAIN.get(entry.domain)
+
+    if rule is None:
+        return []
+
+    section = next(
+        (
+            signal.logic[name]
+            for name in rule.sections
+            if name in signal.logic
+        ),
+        None,
+    )
+
+    if section is None:
+        return [
+            block_diagnostic(
+                signal.block, rule.missing_code, rule.missing_message
+            )
+        ]
+
+    if not logic_assigns_signal(section.text, entry.name):
+        return [
+            block_diagnostic(
+                signal.block,
+                rule.mismatch_code,
+                rule.mismatch_message.format(name=entry.name),
+                line=section.line,
+            )
+        ]
+
+    return []
+
+
+def validate_naming(
+    entry: IndexEntry,
+    signal: SignalDefinition,
+) -> list[Diagnostic]:
+    """Check the mnemonic and active-low name agree with the definition."""
+
+    diagnostics: list[Diagnostic] = []
+    mnemonic = signal.attributes.get("mnemonic")
+
+    if (
+        entry.domain in MNEMONIC_DOMAINS
+        and mnemonic is not None
+        and mnemonic != entry.name
+    ):
+        diagnostics.append(
+            block_diagnostic(
+                signal.block,
+                "MNEMONIC_NAME_MISMATCH",
+                f"Documented mnemonic '{mnemonic}' does "
+                f"not match indexed name '{entry.name}'.",
+            )
+        )
+
+    if (
+        entry.name.startswith("/")
+        and signal.polarity is not None
+        and signal.polarity.value != "active-low"
+    ):
+        diagnostics.append(
+            block_diagnostic(
+                signal.block,
+                "ACTIVE_LOW_NAME_CONFLICT",
+                "A slash-prefixed signal must have active-low polarity.",
+            )
+        )
+
+    return diagnostics
+
+
+def validate_signal(
+    entry: IndexEntry,
+    signal: SignalDefinition,
+    indexed_names: set[str],
+) -> list[Diagnostic]:
+    """Run every structural check on one extracted signal."""
+
+    return [
+        *validate_required_attributes(entry, signal),
+        *validate_value_encoding(signal),
+        *validate_values_against_width(signal),
+        *validate_dependencies(entry, signal, indexed_names),
+        *validate_logic(entry, signal),
+        *validate_naming(entry, signal),
+    ]
+
+
+# ---------------------------------------------------------------------------
+# Extraction pipeline
+# ---------------------------------------------------------------------------
+
+
+def extract_control_inputs(
+    index_document: SourceDocument,
+    definition_documents: Sequence[SourceDocument],
+) -> ExtractionResult:
+    """Run the full extraction and validation over loaded documents."""
+
+    entries, diagnostics = parse_index(index_document)
+    indexed_names = {entry.name for entry in entries}
+
+    blocks = [
+        block
+        for document in definition_documents
+        for block in extract_definition_blocks(document, indexed_names)
+    ]
+    definitions, found = match_definition_blocks(entries, blocks)
+    diagnostics += found
+
+    global_constraints, found = parse_global_constraints(
+        (index_document, *definition_documents), indexed_names
+    )
+    diagnostics += found
+
+    signals: dict[str, SignalDefinition] = {}
+
+    for entry in entries:
+        block = definitions.get(entry.name)
+
+        if block is None:
+            continue
+
+        signal, found = extract_signal(entry, block)
+        diagnostics += found
+        diagnostics += validate_signal(entry, signal, indexed_names)
+        signals[entry.name] = signal
+
+    return ExtractionResult(
+        entries=tuple(entries),
+        signals=signals,
+        global_constraints=tuple(global_constraints),
+        diagnostics=tuple(sorted(diagnostics, key=diagnostic_sort_key)),
+    )
+
+
+# ---------------------------------------------------------------------------
+# JSON output
+# ---------------------------------------------------------------------------
+
+
+def source_reference(path: str, line: int) -> dict[str, object]:
+    """Return the JSON form of a source location."""
+
+    return {"path": path, "line": line}
+
+
+def diagnostic_to_dict(diagnostic: Diagnostic) -> dict[str, object]:
     """Convert one diagnostic to a JSON-compatible dictionary."""
 
     return {
@@ -1270,1560 +1831,288 @@ def diagnostic_to_dict(
     }
 
 
-def build_json_result(
-    entries: Sequence[IndexEntry],
-    definitions: dict[str, DefinitionBlock],
-    attributes: dict[str, dict[str, str]],
-    bit_widths: dict[str, int],
-    polarities: dict[str, dict[str, str]],
-    enumerated_values: dict[str, list[EnumeratedValue]],
-    value_ranges: dict[str, list[ValueRange]],
-    dependencies: dict[str, list[DependencyEntry]],
-    logic_sections: dict[str, dict[str, TextSection]], 
-    constraints: dict[str, list[ConstraintEntry]], 
-    global_constraints: Sequence[GlobalConstraintEntry],
-    consumers: dict[str, list[ConsumerEntry]],
-    diagnostics: Sequence[Diagnostic],
+def signal_to_dict(
+    entry: IndexEntry,
+    signal: SignalDefinition | None,
 ) -> dict[str, object]:
-    """Build the current generated control-input representation."""
+    """Convert one indexed signal to its JSON representation."""
 
-    signals: list[dict[str, object]] = []
+    index_source = source_reference(entry.source_path, entry.line)
 
-    for entry in entries:
-        block = definitions.get(entry.name)
-
-        if block is None:
-            signals.append(
-                {
-                    "name": entry.name,
-                    "domain": entry.domain,
-                    "category": entry.category,
-                    "definition": None,
-                    "index_source": {
-                        "path": entry.source_path,
-                        "line": entry.line,
-                    },
-                    "extraction_status": "definition-missing",
-                }
-            )
-            continue
-
-        signal_attributes = {
-            key: value
-            for key, value in attributes.get(
-                entry.name,
-                {},
-            ).items()
-            if key not in {
-                "bit_width",
-                "polarity",
-            }
+    if signal is None:
+        return {
+            "name": entry.name,
+            "domain": entry.domain,
+            "category": entry.category,
+            "definition": None,
+            "index_source": index_source,
+            "extraction_status": STATUS_DEFINITION_MISSING,
         }
 
-        signals.append(
-            {
-                "name": entry.name,
-                "domain": entry.domain,
-                "category": entry.category,
-                "attributes": signal_attributes,
-                "bit_width": bit_widths.get(entry.name),
-                "polarity": polarities.get(entry.name),
-                "dependencies": [
-                    {
-                        "name": dependency.name,
-                        "source": {
-                            "path": block.source_path,
-                            "line": dependency.line,
-                        },
-                    }
-                    for dependency in dependencies.get(entry.name, [])
-                ],
-                "enumerated_values": [
-                    {
-                        "value": value.value,
-                        "meaning": value.meaning,
-                        "source": {
-                            "path": block.source_path,
-                            "line": value.line,
-                        },
-                    }
-                    for value in enumerated_values.get(
-                        entry.name,
-                        [],
-                    )
-                ],
-                "value_ranges": [
-                    {
-                        "start": value_range.start,
-                        "end": value_range.end,
-                        "meaning": value_range.meaning,
-                        "source": {
-                            "path": block.source_path,
-                            "line": value_range.line,
-                        },
-                    }
-                    for value_range in value_ranges.get(
-                        entry.name,
-                        [],
-                    )
-                ],
-                "logic": {
-                    section_name: {
-                        "text": section.text,
-                        "source": {
-                            "path": block.source_path,
-                            "line": section.line,
-                        },
-                    }
-                    for section_name, section in logic_sections.get(
-                        entry.name,
-                        {},
-                    ).items()
-                },
-                "constraints": [
-                    {
-                        "text": constraint.text,
-                        "source": {
-                            "path": block.source_path,
-                            "line": constraint.line,
-                        },
-                    }
-                    for constraint in constraints.get(
-                        entry.name,
-                        [],
-                    )
-                ],
-                "consumers": [
-                    {
-                        "text": consumer.text,
-                        "target": consumer.target,
-                        "source": {
-                            "path": block.source_path,
-                            "line": consumer.line,
-                        },
-                    }
-                    for consumer in consumers.get(
-                        entry.name,
-                        [],
-                    )
-                ],
-                "definition_source": {
-                    "path": block.source_path,
-                    "line": block.start_line,
-                    "heading": block.heading,
-                },
-                "index_source": {
-                    "path": entry.source_path,
-                    "line": entry.line,
-                },
-                "extraction_status": "structure-validated",
-            }
-        )
+    path = signal.block.source_path
+
+    def source(line: int) -> dict[str, object]:
+        return source_reference(path, line)
+
+    polarity = signal.polarity
 
     return {
-        "format_version": 1,
-        "extraction_stage": "final-structure-validation",
-        "sources": [
-            path.as_posix()
-            for path in SOURCE_PATHS
+        "name": entry.name,
+        "domain": entry.domain,
+        "category": entry.category,
+        "attributes": {
+            key: value
+            for key, value in signal.attributes.items()
+            if key not in NORMALIZED_ATTRIBUTES
+        },
+        "bit_width": signal.bit_width,
+        "polarity": (
+            None
+            if polarity is None
+            else {"value": polarity.value, "source": polarity.source}
+        ),
+        "dependencies": [
+            {"name": item.name, "source": source(item.line)}
+            for item in signal.dependencies
         ],
-        "signals": signals,
-        "constraints": [{"kind": item.kind, "inputs": list(item.inputs), "source": {"path": item.source_path, "line": item.line}} for item in global_constraints],
+        "enumerated_values": [
+            {
+                "value": item.value,
+                "meaning": item.meaning,
+                "source": source(item.line),
+            }
+            for item in signal.enumerated_values
+        ],
+        "value_ranges": [
+            {
+                "start": item.start,
+                "end": item.end,
+                "meaning": item.meaning,
+                "source": source(item.line),
+            }
+            for item in signal.value_ranges
+        ],
+        "logic": {
+            name: {"text": section.text, "source": source(section.line)}
+            for name, section in signal.logic.items()
+        },
+        "constraints": [
+            {"text": item.text, "source": source(item.line)}
+            for item in signal.constraints
+        ],
+        "consumers": [
+            {
+                "text": item.text,
+                "target": item.target,
+                "source": source(item.line),
+            }
+            for item in signal.consumers
+        ],
+        "definition_source": {
+            **source(signal.block.start_line),
+            "heading": signal.block.heading,
+        },
+        "index_source": index_source,
+        "extraction_status": STATUS_VALIDATED,
+    }
+
+
+def build_json_result(result: ExtractionResult) -> dict[str, object]:
+    """Build the generated control-input representation."""
+
+    return {
+        "format_version": FORMAT_VERSION,
+        "extraction_stage": EXTRACTION_STAGE,
+        "sources": [path.as_posix() for path in SOURCE_PATHS],
+        "signals": [
+            signal_to_dict(entry, result.signals.get(entry.name))
+            for entry in result.entries
+        ],
+        "constraints": [
+            {
+                "kind": item.kind,
+                "inputs": list(item.inputs),
+                "source": source_reference(item.source_path, item.line),
+            }
+            for item in result.global_constraints
+        ],
         "diagnostics": [
             diagnostic_to_dict(diagnostic)
-            for diagnostic in diagnostics
+            for diagnostic in result.diagnostics
         ],
     }
 
 
-def write_json_output(
-    result: dict[str, object],
-    output_path: Path,
-) -> None:
-    """Write deterministic and human-readable JSON output."""
+def serialize_json(data: dict[str, object]) -> str:
+    """Serialize deterministic, human-readable JSON."""
 
-    output_path.parent.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
+    return json.dumps(data, indent=2, ensure_ascii=False, sort_keys=True) + "\n"
 
-    serialized = json.dumps(
-        result,
-        indent=2,
-        ensure_ascii=False,
-        sort_keys=True,
-    )
 
-    output_path.write_text(
-        serialized + "\n",
-        encoding="utf-8",
-    )
+# ---------------------------------------------------------------------------
+# Text report
+# ---------------------------------------------------------------------------
 
-REQUIRED_ATTRIBUTES_BY_DOMAIN = {
-    "Primitive Flags": {
-        "display_name",
-        "purpose",
-        "source_register",
-    },
-    "IR-Derived Signals": {
-        "display_name",
-        "input_type",
-        "mnemonic",
-        "purpose",
-    },
-    "Derived Flags": {
-        "display_name",
-        "mnemonic",
-        "purpose",
-    },
-    "External Inputs": {
-        "display_name",
-        "input_type",
-        "purpose",
-    },
-}
 
+def _count_with(signals: Iterable[SignalDefinition], attribute: str) -> int:
+    """Count signals whose ``attribute`` is non-empty."""
 
-def validate_required_attributes(
-    entries: Sequence[IndexEntry],
-    definitions: dict[str, DefinitionBlock],
-    attributes: dict[str, dict[str, str]],
-) -> list[Diagnostic]:
-    """Validate scalar attributes required by each input domain."""
+    return sum(bool(getattr(signal, attribute)) for signal in signals)
 
-    diagnostics: list[Diagnostic] = []
 
-    for entry in entries:
-        block = definitions.get(entry.name)
+def _total(signals: Iterable[SignalDefinition], attribute: str) -> int:
+    """Total the lengths of ``attribute`` across signals."""
 
-        if block is None:
-            continue
+    return sum(len(getattr(signal, attribute)) for signal in signals)
 
-        required_attributes = REQUIRED_ATTRIBUTES_BY_DOMAIN.get(
-            entry.domain,
-        )
 
-        if required_attributes is None:
-            diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="UNKNOWN_INPUT_DOMAIN",
-                    message=(
-                        "No required-attribute policy exists for "
-                        f"input domain '{entry.domain}'."
-                    ),
-                    source_path=entry.source_path,
-                    line=entry.line,
-                    signal_name=entry.name,
-                )
-            )
-            continue
+def _heading(title: str) -> list[str]:
+    return [title, "-" * len(title)]
 
-        signal_attributes = attributes.get(entry.name, {})
 
-        for attribute_name in sorted(required_attributes):
-            attribute_value = signal_attributes.get(attribute_name)
-
-            if attribute_value is not None and attribute_value.strip():
-                continue
-
-            diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="MISSING_REQUIRED_ATTRIBUTE",
-                    message=(
-                        f"Domain '{entry.domain}' requires scalar "
-                        f"attribute '{attribute_name}'."
-                    ),
-                    source_path=block.source_path,
-                    line=block.start_line,
-                    signal_name=entry.name,
-                )
-            )
-
-    return diagnostics
-
-def parse_definition_dependencies(
-    block: DefinitionBlock,
-) -> tuple[list[DependencyEntry], list[Diagnostic]]:
-    """Extract explicitly documented input dependencies."""
-
-    dependencies: list[DependencyEntry] = []
-    diagnostics: list[Diagnostic] = []
-    in_inputs_section = False
-    seen_dependencies: dict[str, int] = {}
-
-    bold_marker = chr(42) + chr(42)
-    label_pattern = re.compile(
-        re.escape(bold_marker)
-        + r"([^"
-        + re.escape(chr(42))
-        + r"]+?):?"
-        + re.escape(bold_marker)
-    )
-
-    for offset, line in enumerate(block.lines, start=1):
-        source_line = block.start_line + offset
-        label_match = label_pattern.search(line)
-
-        if label_match is not None:
-            label = (
-                label_match.group(1)
-                .strip()
-                .rstrip(":")
-                .casefold()
-            )
-
-            if label == "inputs":
-                in_inputs_section = True
-                continue
-
-            if in_inputs_section:
-                break
-
-        if not in_inputs_section:
-            continue
-
-        stripped = line.strip()
-
-        if not stripped or stripped == "---":
-            continue
-
-        if not stripped.startswith("- "):
-            continue
-
-        dependency_name = normalize_markdown_text(
-            stripped[2:].strip()
-        )
-
-        if not dependency_name:
-            continue
-
-        if dependency_name in seen_dependencies:
-            diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="DUPLICATE_DEPENDENCY",
-                    message=(
-                        f"Dependency '{dependency_name}' was already "
-                        f"defined at line "
-                        f"{seen_dependencies[dependency_name]}."
-                    ),
-                    source_path=block.source_path,
-                    line=source_line,
-                    signal_name=block.signal_name,
-                )
-            )
-            continue
-
-        seen_dependencies[dependency_name] = source_line
-        dependencies.append(
-            DependencyEntry(
-                name=dependency_name,
-                line=source_line,
-            )
-        )
-
-    return dependencies, diagnostics
-
-
-def extract_all_definition_dependencies(
-    definitions: dict[str, DefinitionBlock],
-) -> tuple[
-    dict[str, list[DependencyEntry]],
-    list[Diagnostic],
-]:
-    """Extract dependencies from all matched definitions."""
-
-    dependencies_by_signal: dict[str, list[DependencyEntry]] = {}
-    diagnostics: list[Diagnostic] = []
-
-    for signal_name, block in definitions.items():
-        dependencies, block_diagnostics = (
-            parse_definition_dependencies(block)
-        )
-
-        dependencies_by_signal[signal_name] = dependencies
-        diagnostics.extend(block_diagnostics)
-
-    return dependencies_by_signal, diagnostics
-
-
-def validate_derived_dependencies(
-    entries: Sequence[IndexEntry],
-    definitions: dict[str, DefinitionBlock],
-    dependencies: dict[str, list[DependencyEntry]],
-) -> list[Diagnostic]:
-    """Validate dependency lists required by derived flags."""
-
-    diagnostics: list[Diagnostic] = []
-    indexed_names = {entry.name for entry in entries}
-
-    for entry in entries:
-        block = definitions.get(entry.name)
-
-        if block is None:
-            continue
-
-        signal_dependencies = dependencies.get(entry.name, [])
-
-        if entry.domain == "Derived Flags" and not signal_dependencies:
-            diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="MISSING_DEPENDENCIES",
-                    message=(
-                        "A derived flag must document at least one "
-                        "input dependency."
-                    ),
-                    source_path=block.source_path,
-                    line=block.start_line,
-                    signal_name=entry.name,
-                )
-            )
-
-        for dependency in signal_dependencies:
-            if dependency.name in indexed_names:
-                continue
-
-            diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="UNKNOWN_DEPENDENCY",
-                    message=(
-                        "Dependency does not match an indexed control "
-                        f"input: {dependency.name}"
-                    ),
-                    source_path=block.source_path,
-                    line=dependency.line,
-                    signal_name=entry.name,
-                )
-            )
-
-    return diagnostics
-
-
-DERIVATION_SECTION_LABELS = {
-    "derivation": "derivation",
-    "expression": "expression",
-    "internal composition (local to this definition)": "internal_composition",
-}
-
-
-def parse_definition_logic_sections(
-    block: DefinitionBlock,
-) -> tuple[dict[str, TextSection], list[Diagnostic]]:
-    """Extract derivation, expression, and internal-composition text."""
-
-    sections: dict[str, TextSection] = {}
-    diagnostics: list[Diagnostic] = []
-
-    bold_marker = chr(42) + chr(42)
-    label_pattern = re.compile(
-        re.escape(bold_marker)
-        + r"([^"
-        + re.escape(chr(42))
-        + r"]+?):?"
-        + re.escape(bold_marker)
-    )
-
-    active_name: str | None = None
-    active_start_line: int | None = None
-    active_lines: list[str] = []
-    in_code_fence = False
-
-    def finish_active_section() -> None:
-        nonlocal active_name
-        nonlocal active_start_line
-        nonlocal active_lines
-
-        if active_name is None or active_start_line is None:
-            return
-
-        cleaned_lines = list(active_lines)
-
-        while cleaned_lines and not cleaned_lines[0].strip():
-            cleaned_lines.pop(0)
-
-        while cleaned_lines and not cleaned_lines[-1].strip():
-            cleaned_lines.pop()
-
-        text = "\n".join(cleaned_lines).strip()
-
-        if not text:
-            diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="EMPTY_LOGIC_SECTION",
-                    message=(
-                        f"Logic section '{active_name}' contains no text."
-                    ),
-                    source_path=block.source_path,
-                    line=active_start_line,
-                    signal_name=block.signal_name,
-                )
-            )
-        elif active_name in sections:
-            diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="DUPLICATE_LOGIC_SECTION",
-                    message=(
-                        f"Logic section '{active_name}' is defined "
-                        "more than once."
-                    ),
-                    source_path=block.source_path,
-                    line=active_start_line,
-                    signal_name=block.signal_name,
-                )
-            )
-        else:
-            sections[active_name] = TextSection(
-                text=text,
-                line=active_start_line,
-            )
-
-        active_name = None
-        active_start_line = None
-        active_lines = []
-
-    for offset, line in enumerate(block.lines, start=1):
-        source_line = block.start_line + offset
-        stripped = line.strip()
-
-        if stripped.startswith("```"):
-            if active_name is not None:
-                in_code_fence = not in_code_fence
-            continue
-
-        if not in_code_fence:
-            label_match = label_pattern.search(line)
-
-            if label_match is not None:
-                label = (
-                    label_match.group(1)
-                    .strip()
-                    .rstrip(":")
-                    .casefold()
-                )
-                section_name = DERIVATION_SECTION_LABELS.get(label)
-
-                if active_name is not None:
-                    finish_active_section()
-
-                if section_name is not None:
-                    active_name = section_name
-                    active_start_line = source_line
-                    trailing_text = line[label_match.end():].strip()
-                    trailing_text = trailing_text.lstrip(":").strip()
-
-                    if trailing_text:
-                        active_lines.append(
-                            normalize_markdown_text(trailing_text)
-                        )
-
-                continue
-
-            if active_name is not None and stripped == "---":
-                finish_active_section()
-                continue
-
-        if active_name is not None:
-            active_lines.append(normalize_markdown_text(line))
-
-    finish_active_section()
-    return sections, diagnostics
-
-
-def extract_all_logic_sections(
-    definitions: dict[str, DefinitionBlock],
-) -> tuple[
-    dict[str, dict[str, TextSection]],
-    list[Diagnostic],
-]:
-    """Extract logic sections from all matched definitions."""
-
-    sections_by_signal: dict[str, dict[str, TextSection]] = {}
-    diagnostics: list[Diagnostic] = []
-
-    for signal_name, block in definitions.items():
-        sections, block_diagnostics = parse_definition_logic_sections(
-            block
-        )
-        sections_by_signal[signal_name] = sections
-        diagnostics.extend(block_diagnostics)
-
-    return sections_by_signal, diagnostics
-
-
-def validate_required_logic_sections(
-    entries: Sequence[IndexEntry],
-    definitions: dict[str, DefinitionBlock],
-    logic_sections: dict[str, dict[str, TextSection]],
-) -> list[Diagnostic]:
-    """Validate required derivation text by input domain."""
-
-    diagnostics: list[Diagnostic] = []
-
-    for entry in entries:
-        block = definitions.get(entry.name)
-
-        if block is None:
-            continue
-
-        sections = logic_sections.get(entry.name, {})
-
-        if entry.domain == "IR-Derived Signals":
-            if "derivation" not in sections:
-                diagnostics.append(
-                    Diagnostic(
-                        severity="ERROR",
-                        code="MISSING_DERIVATION",
-                        message=(
-                            "An IR-derived signal must document a derivation."
-                        ),
-                        source_path=block.source_path,
-                        line=block.start_line,
-                        signal_name=entry.name,
-                    )
-                )
-
-        if entry.domain == "Derived Flags":
-            has_expression = "expression" in sections
-            has_internal_composition = "internal_composition" in sections
-
-            if not has_expression and not has_internal_composition:
-                diagnostics.append(
-                    Diagnostic(
-                        severity="ERROR",
-                        code="MISSING_DERIVED_LOGIC",
-                        message=(
-                            "A derived flag must document an expression or "
-                            "internal composition."
-                        ),
-                        source_path=block.source_path,
-                        line=block.start_line,
-                        signal_name=entry.name,
-                    )
-                )
-
-    return diagnostics
-
-
-def parse_definition_constraints(
-    block: DefinitionBlock,
-) -> tuple[list[ConstraintEntry], list[Diagnostic]]:
-    """Extract Constraint and Constraints content from one definition."""
-
-    constraints: list[ConstraintEntry] = []
-    diagnostics: list[Diagnostic] = []
-    in_constraints_section = False
-
-    pending_lines: list[str] = []
-    pending_start_line: int | None = None
-
-    bold_marker = chr(42) + chr(42)
-    label_pattern = re.compile(
-        re.escape(bold_marker)
-        + r"([^"
-        + re.escape(chr(42))
-        + r"]+?):?"
-        + re.escape(bold_marker)
-    )
-
-    def finish_pending_constraint() -> None:
-        nonlocal pending_lines
-        nonlocal pending_start_line
-
-        if pending_start_line is None:
-            return
-
-        text = " ".join(
-            line
-            for line in pending_lines
-            if line
-        ).strip()
-
-        if text:
-            constraints.append(
-                ConstraintEntry(
-                    text=text,
-                    line=pending_start_line,
-                )
-            )
-
-        pending_lines = []
-        pending_start_line = None
-
-    for offset, line in enumerate(block.lines, start=1):
-        source_line = block.start_line + offset
-        label_match = label_pattern.search(line)
-
-        if label_match is not None:
-            label = (
-                label_match.group(1)
-                .strip()
-                .rstrip(":")
-                .casefold()
-            )
-
-            if label in {"constraint", "constraints"}:
-                finish_pending_constraint()
-                in_constraints_section = True
-
-                trailing_text = line[label_match.end():].strip()
-                trailing_text = trailing_text.lstrip(":").strip()
-
-                if trailing_text:
-                    pending_start_line = source_line
-                    pending_lines = [
-                        normalize_markdown_text(trailing_text)
-                    ]
-
-                continue
-
-            if in_constraints_section:
-                finish_pending_constraint()
-                break
-
-        if not in_constraints_section:
-            continue
-
-        stripped = line.strip()
-
-        if not stripped:
-            continue
-
-        if stripped == "---":
-            finish_pending_constraint()
-            in_constraints_section = False
-            continue
-
-        if stripped.startswith("- "):
-            finish_pending_constraint()
-            pending_start_line = source_line
-            pending_lines = [
-                normalize_markdown_text(
-                    stripped[2:].strip()
-                )
-            ]
-            continue
-
-        normalized_line = normalize_markdown_text(stripped)
-
-        if pending_start_line is None:
-            pending_start_line = source_line
-
-        pending_lines.append(normalized_line)
-
-    finish_pending_constraint()
-
-    return constraints, diagnostics
-
-def extract_all_definition_constraints(
-    definitions: dict[str, DefinitionBlock],
-) -> tuple[
-    dict[str, list[ConstraintEntry]],
-    list[Diagnostic],
-]:
-    """Extract constraints from all matched definitions."""
-
-    constraints_by_signal: dict[
-        str,
-        list[ConstraintEntry],
-    ] = {}
-    diagnostics: list[Diagnostic] = []
-
-    for signal_name, block in definitions.items():
-        constraints, block_diagnostics = (
-            parse_definition_constraints(block)
-        )
-
-        constraints_by_signal[signal_name] = constraints
-        diagnostics.extend(block_diagnostics)
-
-    return constraints_by_signal, diagnostics
-
-
-
-def parse_consumer_line(
-    line: str,
-) -> tuple[str, str | None] | None:
-    """Parse one linked or plain-text consumer list item."""
-
-    stripped = line.strip()
-
-    if not stripped.startswith("- "):
-        return None
-
-    item_text = stripped[2:].strip()
-
-    if not item_text:
-        return None
-
-    link_match = re.fullmatch(
-        r"\[([^\]]+)\]\(([^)]+)\)",
-        item_text,
-    )
-
-    if link_match is not None:
-        return (
-            normalize_markdown_text(link_match.group(1)),
-            link_match.group(2).strip(),
-        )
-
-    return (
-        normalize_markdown_text(item_text),
-        None,
-    )
-
-
-def parse_global_constraints(
-    documents: Sequence[SourceDocument],
-    indexed_names: set[str],
-) -> tuple[list[GlobalConstraintEntry], list[Diagnostic]]:
-    """Extract nested machine-readable cross-input constraints."""
-    constraints: list[GlobalConstraintEntry] = []
-    diagnostics: list[Diagnostic] = []
-    pattern = re.compile(
-        r"^\s{2,}-\s+`?(EXACTLY_ONE|AT_MOST_ONE)\(([^)]+)\)`?\s*$"
-    )
-    seen: set[tuple[str, tuple[str, ...]]] = set()
-    for document in documents:
-        for line_number, line in enumerate(document.text.splitlines(), start=1):
-            match = pattern.match(line)
-            if match is None:
-                continue
-            kind = GLOBAL_CONSTRAINT_KINDS[match.group(1)]
-            inputs = tuple(normalize_markdown_text(item) for item in match.group(2).split(",") if normalize_markdown_text(item))
-            unknown = [name for name in inputs if name not in indexed_names]
-            if len(inputs) < 2:
-                diagnostics.append(Diagnostic("ERROR", "INVALID_GLOBAL_CONSTRAINT", "A global constraint must name at least two inputs.", document.relative_path, line_number))
-                continue
-            if unknown:
-                diagnostics.append(Diagnostic("ERROR", "UNKNOWN_GLOBAL_CONSTRAINT_INPUT", "Global constraint references unknown input(s): " + ", ".join(unknown), document.relative_path, line_number))
-                continue
-            key = (kind, inputs)
-            if key in seen:
-                diagnostics.append(Diagnostic("ERROR", "DUPLICATE_GLOBAL_CONSTRAINT", "Global constraint is defined more than once.", document.relative_path, line_number))
-                continue
-            seen.add(key)
-            constraints.append(GlobalConstraintEntry(kind, inputs, document.relative_path, line_number))
-    return constraints, diagnostics
-
-
-def parse_definition_consumers(
-    block: DefinitionBlock,
-) -> tuple[list[ConsumerEntry], list[Diagnostic]]:
-    """Extract linked and plain-text consumers from one definition."""
-
-    consumers: list[ConsumerEntry] = []
-    diagnostics: list[Diagnostic] = []
-    in_consumer_section = False
-
-    bold_marker = chr(42) + chr(42)
-    label_pattern = re.compile(
-        re.escape(bold_marker)
-        + r"([^"
-        + re.escape(chr(42))
-        + r"]+?):?"
-        + re.escape(bold_marker)
-    )
-
-    for offset, line in enumerate(block.lines, start=1):
-        source_line = block.start_line + offset
-        label_match = label_pattern.search(line)
-
-        if label_match is not None:
-            label = (
-                label_match.group(1)
-                .strip()
-                .rstrip(":")
-                .casefold()
-            )
-
-            if label in CONSUMER_SECTION_LABELS:
-                in_consumer_section = True
-                continue
-
-            if in_consumer_section:
-                break
-
-        if not in_consumer_section:
-            continue
-
-        stripped = line.strip()
-
-        if not stripped:
-            continue
-
-        if stripped == "---":
-            in_consumer_section = False
-            continue
-
-        parsed_consumer = parse_consumer_line(stripped)
-
-        if parsed_consumer is None:
-            continue
-
-        consumer_text, consumer_target = parsed_consumer
-
-        consumers.append(
-            ConsumerEntry(
-                text=consumer_text,
-                target=consumer_target,
-                line=source_line,
-            )
-        )
-
-    return consumers, diagnostics
-
-
-def extract_all_definition_consumers(
-    definitions: dict[str, DefinitionBlock],
-) -> tuple[
-    dict[str, list[ConsumerEntry]],
-    list[Diagnostic],
-]:
-    """Extract consumers from all matched definitions."""
-
-    consumers_by_signal: dict[
-        str,
-        list[ConsumerEntry],
-    ] = {}
-    diagnostics: list[Diagnostic] = []
-
-    for signal_name, block in definitions.items():
-        consumers, block_diagnostics = (
-            parse_definition_consumers(block)
-        )
-
-        consumers_by_signal[signal_name] = consumers
-        diagnostics.extend(block_diagnostics)
-
-    return consumers_by_signal, diagnostics
-
-def logic_assigns_signal(
-    text: str,
-    signal_name: str,
-) -> bool:
-    """Return whether logic assigns the specified signal."""
-
-    pattern = (
-        r"(?m)^\s*"
-        + re.escape(signal_name)
-        + r"\s*="
-    )
-
-    return re.search(pattern, text) is not None
-
-def validate_final_structure(
-    entries: Sequence[IndexEntry],
-    definitions: dict[str, DefinitionBlock],
-    attributes: dict[str, dict[str, str]],
-    enumerated_values: dict[str, list[EnumeratedValue]],
-    value_ranges: dict[str, list[ValueRange]],
-    polarities: dict[str, dict[str, str]],
-    logic_sections: dict[str, dict[str, TextSection]],
-) -> list[Diagnostic]:
-    """Validate the final extracted control-input structure."""
-
-    diagnostics: list[Diagnostic] = []
-
-    domains_requiring_mnemonic = {
-        "IR-Derived Signals",
-        "Derived Flags",
-    }
-
-    for entry in entries:
-        block = definitions.get(entry.name)
-
-        if block is None:
-            continue
-
-        signal_attributes = attributes.get(entry.name, {})
-        signal_values = enumerated_values.get(entry.name, [])
-        signal_ranges = value_ranges.get(entry.name, [])
-        signal_polarity = polarities.get(entry.name)
-        signal_logic = logic_sections.get(entry.name, {})
-
-        if not signal_values and not signal_ranges:
-            diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="MISSING_VALUE_ENCODING",
-                    message=(
-                        "Definition must contain enumerated values "
-                        "or a bounded value range."
-                    ),
-                    source_path=block.source_path,
-                    line=block.start_line,
-                    signal_name=entry.name,
-                )
-            )
-
-        if signal_values and signal_ranges:
-            diagnostics.append(
-                Diagnostic(
-                    severity="ERROR",
-                    code="MIXED_VALUE_ENCODING",
-                    message=(
-                        "Definition contains both enumerated values "
-                        "and a bounded value range."
-                    ),
-                    source_path=block.source_path,
-                    line=block.start_line,
-                    signal_name=entry.name,
-                )
-            )
-
-        if entry.domain in domains_requiring_mnemonic:
-            mnemonic = signal_attributes.get("mnemonic")
-
-            if mnemonic is not None and mnemonic != entry.name:
-                diagnostics.append(
-                    Diagnostic(
-                        severity="ERROR",
-                        code="MNEMONIC_NAME_MISMATCH",
-                        message=(
-                            f"Documented mnemonic '{mnemonic}' does "
-                            f"not match indexed name '{entry.name}'."
-                        ),
-                        source_path=block.source_path,
-                        line=block.start_line,
-                        signal_name=entry.name,
-                    )
-                )
-
-        if entry.name.startswith("/"):
-            if (
-                signal_polarity is not None
-                and signal_polarity.get("value") != "active-low"
-            ):
-                diagnostics.append(
-                    Diagnostic(
-                        severity="ERROR",
-                        code="ACTIVE_LOW_NAME_CONFLICT",
-                        message=(
-                            "A slash-prefixed signal must have "
-                            "active-low polarity."
-                        ),
-                        source_path=block.source_path,
-                        line=block.start_line,
-                        signal_name=entry.name,
-                    )
-                )
-
-        if entry.domain == "IR-Derived Signals":
-            derivation = signal_logic.get("derivation")
-
-            if derivation is not None:
-                if not logic_assigns_signal(
-                    derivation.text,
-                    entry.name,
-                ):
-                    diagnostics.append(
-                        Diagnostic(
-                            severity="ERROR",
-                            code="DERIVATION_RESULT_MISMATCH",
-                            message=(
-                                "Derivation does not assign the "
-                                f"indexed signal '{entry.name}'."
-                            ),
-                            source_path=block.source_path,
-                            line=derivation.line,
-                            signal_name=entry.name,
-                        )
-                    )
-
-        if entry.domain == "Derived Flags":
-            logic_section = signal_logic.get("expression")
-
-            if logic_section is None:
-                logic_section = signal_logic.get(
-                    "internal_composition"
-                )
-
-            if logic_section is not None:
-                if not logic_assigns_signal(
-                    logic_section.text,
-                    entry.name,
-                ):
-                    diagnostics.append(
-                        Diagnostic(
-                            severity="ERROR",
-                            code="DERIVED_RESULT_MISMATCH",
-                            message=(
-                                "Derived logic does not assign the "
-                                f"indexed signal '{entry.name}'."
-                            ),
-                            source_path=block.source_path,
-                            line=logic_section.line,
-                            signal_name=entry.name,
-                        )
-                    )
-
-    return diagnostics
-
-def build_extraction_report(
-    entries: Sequence[IndexEntry],
-    definitions: dict[str, DefinitionBlock],
-    attributes: dict[str, dict[str, str]],
-    bit_widths: dict[str, int],
-    polarities: dict[str, dict[str, str]],
-    enumerated_values: dict[str, list[EnumeratedValue]],
-    value_ranges: dict[str, list[ValueRange]],
-    dependencies: dict[str, list[DependencyEntry]],
-    logic_sections: dict[str, dict[str, TextSection]],
-    constraints: dict[str, list[ConstraintEntry]],
-    global_constraints: Sequence[GlobalConstraintEntry],
-    consumers: dict[str, list[ConsumerEntry]],
-    diagnostics: Sequence[Diagnostic],
-) -> str:
+def build_extraction_report(result: ExtractionResult) -> str:
     """Build the human-readable extraction report."""
 
+    signals = list(result.signals.values())
+    diagnostics = result.diagnostics
+
     domain_counts: dict[str, int] = {}
-
-    for entry in entries:
-        domain_counts[entry.domain] = (
-            domain_counts.get(entry.domain, 0) + 1
-        )
-
-    definitions_with_attributes = sum(
-        bool(values)
-        for values in attributes.values()
-    )
-
-    definitions_with_enumerated_values = sum(
-        bool(values)
-        for values in enumerated_values.values()
-    )
-
-    definitions_with_ranges = sum(
-        bool(values)
-        for values in value_ranges.values()
-    )
-
-    definitions_with_dependencies = sum(
-        bool(values)
-        for values in dependencies.values()
-    )
-
-    definitions_with_logic = sum(
-        bool(values)
-        for values in logic_sections.values()
-    )
-
-    definitions_with_constraints = sum(
-        bool(values)
-        for values in constraints.values()
-    )
-
-    definitions_with_consumers = sum(
-        bool(values)
-        for values in consumers.values()
-    )
-
-    enumerated_value_count = sum(
-        len(values)
-        for values in enumerated_values.values()
-    )
-
-    value_range_count = sum(
-        len(values)
-        for values in value_ranges.values()
-    )
-
-    dependency_count = sum(
-        len(values)
-        for values in dependencies.values()
-    )
-
-    logic_section_count = sum(
-        len(values)
-        for values in logic_sections.values()
-    )
-
-    constraint_count = sum(
-        len(values)
-        for values in constraints.values()
-    )
-
-    consumer_count = sum(
-        len(values)
-        for values in consumers.values()
-    )
-
-    linked_consumer_count = sum(
-        consumer.target is not None
-        for values in consumers.values()
-        for consumer in values
-    )
+    for entry in result.entries:
+        domain_counts[entry.domain] = domain_counts.get(entry.domain, 0) + 1
 
     severity_counts: dict[str, int] = {}
-
     for diagnostic in diagnostics:
         severity_counts[diagnostic.severity] = (
-            severity_counts.get(
-                diagnostic.severity,
-                0,
-            )
-            + 1
+            severity_counts.get(diagnostic.severity, 0) + 1
         )
 
-    lines = [
-        "Control-Input Extraction Report",
-        "===============================",
-        "",
-        "Summary",
-        "-------",
-        f"Indexed control inputs: {len(entries)}",
-        f"Matched definitions: {len(definitions)}",
+    linked_consumers = sum(
+        consumer.target is not None
+        for signal in signals
+        for consumer in signal.consumers
+    )
+
+    summary = [
+        ("Indexed control inputs", len(result.entries)),
+        ("Matched definitions", len(signals)),
         (
-            "Definitions with extracted attributes: "
-            f"{definitions_with_attributes}"
-        ),
-        f"Normalized bit widths: {len(bit_widths)}",
-        f"Normalized polarities: {len(polarities)}",
-        (
-            "Definitions with enumerated values: "
-            f"{definitions_with_enumerated_values}"
+            "Definitions with extracted attributes",
+            _count_with(signals, "attributes"),
         ),
         (
-            "Definitions with value ranges: "
-            f"{definitions_with_ranges}"
+            "Normalized bit widths",
+            sum(signal.bit_width is not None for signal in signals),
         ),
-        f"Enumerated values: {enumerated_value_count}",
-        f"Value ranges: {value_range_count}",
         (
-            "Definitions with explicit dependencies: "
-            f"{definitions_with_dependencies}"
+            "Normalized polarities",
+            sum(signal.polarity is not None for signal in signals),
         ),
-        f"Dependencies: {dependency_count}",
         (
-            "Definitions with logic sections: "
-            f"{definitions_with_logic}"
+            "Definitions with enumerated values",
+            _count_with(signals, "enumerated_values"),
         ),
-        f"Logic sections: {logic_section_count}",
+        ("Definitions with value ranges", _count_with(signals, "value_ranges")),
+        ("Enumerated values", _total(signals, "enumerated_values")),
+        ("Value ranges", _total(signals, "value_ranges")),
         (
-            "Definitions with constraints: "
-            f"{definitions_with_constraints}"
+            "Definitions with explicit dependencies",
+            _count_with(signals, "dependencies"),
         ),
-        f"Constraints: {constraint_count}",
-        f"Global constraints: {len(global_constraints)}",
-        (
-            "Definitions with consumers: "
-            f"{definitions_with_consumers}"
-        ),
-        f"Consumers: {consumer_count}",
-        f"Linked consumers: {linked_consumer_count}",
-        f"Diagnostics: {len(diagnostics)}",
-        "",
-        "Inputs by Domain",
-        "----------------",
+        ("Dependencies", _total(signals, "dependencies")),
+        ("Definitions with logic sections", _count_with(signals, "logic")),
+        ("Logic sections", _total(signals, "logic")),
+        ("Definitions with constraints", _count_with(signals, "constraints")),
+        ("Constraints", _total(signals, "constraints")),
+        ("Global constraints", len(result.global_constraints)),
+        ("Definitions with consumers", _count_with(signals, "consumers")),
+        ("Consumers", _total(signals, "consumers")),
+        ("Linked consumers", linked_consumers),
+        ("Diagnostics", len(diagnostics)),
     ]
 
-    for domain_name in sorted(domain_counts):
-        lines.append(
-            f"{domain_name}: {domain_counts[domain_name]}"
-        )
+    title = "Control-Input Extraction Report"
+    lines = [title, "=" * len(title), ""]
 
-    lines.extend(
-        [
-            "",
-            "Diagnostics by Severity",
-            "-----------------------",
-        ]
-    )
+    lines += _heading("Summary")
+    lines += [f"{label}: {count}" for label, count in summary]
 
-    if severity_counts:
-        for severity in sorted(severity_counts):
-            lines.append(
-                f"{severity}: {severity_counts[severity]}"
-            )
-    else:
-        lines.append("None")
+    lines += ["", *_heading("Inputs by Domain")]
+    lines += [
+        f"{domain}: {domain_counts[domain]}" for domain in sorted(domain_counts)
+    ]
 
-    lines.extend(
-        [
-            "",
-            "Diagnostic Details",
-            "------------------",
-        ]
-    )
+    lines += ["", *_heading("Diagnostics by Severity")]
+    lines += [
+        f"{severity}: {severity_counts[severity]}"
+        for severity in sorted(severity_counts)
+    ] or ["None"]
 
+    lines += ["", *_heading("Diagnostic Details")]
     if not diagnostics:
         lines.append("No diagnostics.")
-    else:
-        for diagnostic in diagnostics:
-            location = (
-                diagnostic.source_path
-                or "<unknown source>"
-            )
-
-            if diagnostic.line is not None:
-                location = (
-                    f"{location}:{diagnostic.line}"
-                )
-
-            signal_suffix = ""
-
-            if diagnostic.signal_name:
-                signal_suffix = (
-                    f" [{diagnostic.signal_name}]"
-                )
-
-            lines.extend(
-                [
-                    (
-                        f"{diagnostic.severity} "
-                        f"{diagnostic.code}"
-                        f"{signal_suffix}"
-                    ),
-                    f"  Source: {location}",
-                    f"  {diagnostic.message}",
-                    "",
-                ]
-            )
+    for diagnostic in diagnostics:
+        lines += [*format_diagnostic(diagnostic), ""]
 
     return "\n".join(lines).rstrip() + "\n"
 
 
-def write_text_report(
-    report: str,
-    output_path: Path,
-) -> None:
-    """Write the human-readable extraction report."""
+# ---------------------------------------------------------------------------
+# Command line
+# ---------------------------------------------------------------------------
 
-    output_path.parent.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
 
-    output_path.write_text(
-        report,
-        encoding="utf-8",
-    )
+def write_text(path: Path, text: str) -> None:
+    """Write UTF-8 text, creating parent directories as needed."""
 
-def main(
-    arguments: Sequence[str] | None = None,
-) -> int:
-    """Load sources and inspect index-to-definition coverage."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8")
 
-    parsed_arguments = parse_arguments(arguments)
-    paths = resolve_tool_paths(parsed_arguments)
+
+def print_summary(result: ExtractionResult, paths: ToolPaths) -> None:
+    """Print the run summary and any failure diagnostics."""
+
+    print("Control-input extraction")
+    print(f"Status: {'FAILED' if result.failed else 'SUCCEEDED'}")
+    print(f"Control inputs: {len(result.entries)}")
+    print(f"Definitions matched: {len(result.signals)}")
+    print(f"Diagnostics: {len(result.diagnostics)}")
+    print(f"JSON output: {paths.json_output}")
+    print(f"Report output: {paths.report_output}")
+
+    if not result.failed:
+        return
+
+    print()
+    print("Failure diagnostics")
+    print("-------------------")
+
+    for diagnostic in result.diagnostics:
+        if diagnostic.severity in FAILURE_SEVERITIES:
+            print("\n".join(format_diagnostic(diagnostic)))
+
+
+def main(arguments: Sequence[str] | None = None) -> int:
+    """Run the extractor; return 1 if any error-level diagnostic exists."""
+
+    paths = resolve_tool_paths(parse_arguments(arguments))
 
     try:
         validate_source_paths(paths.source_paths)
-        documents = load_source_documents(
-            paths.source_paths,
-            paths.repo_root,
+        index_document, *definition_documents = load_source_documents(
+            paths.source_paths, paths.repo_root
         )
     except (OSError, UnicodeError, ValueError) as error:
         print(f"ERROR: {error}")
         return 1
 
-    entries, index_diagnostics = parse_index(documents[0])
-    indexed_names = {entry.name for entry in entries}
+    result = extract_control_inputs(index_document, definition_documents)
 
-    definition_blocks: list[DefinitionBlock] = []
+    write_text(paths.json_output, serialize_json(build_json_result(result)))
+    write_text(paths.report_output, build_extraction_report(result))
+    print_summary(result, paths)
 
-    for document in documents[1:]:
-        document_blocks = extract_definition_blocks(
-            document,
-            indexed_names,
-        )
-        definition_blocks.extend(document_blocks)
-
-    definitions, definition_diagnostics = match_definition_blocks(
-        entries,
-        definition_blocks,
-    )
-
-    attributes, attribute_diagnostics = extract_all_scalar_attributes(
-        definitions
-    )
-
-    required_attribute_diagnostics = validate_required_attributes(
-        entries,
-        definitions,
-        attributes,
-    )
-
-    bit_widths, bit_width_diagnostics = normalize_bit_widths(
-        definitions,
-        attributes,
-    )
-
-    polarities, polarity_diagnostics = normalize_polarities(
-        definitions,
-        attributes,
-    )
-    
-    enumerated_values, value_ranges, value_diagnostics = (
-    extract_all_definition_values(definitions)
-    )
-    
-    value_width_diagnostics = validate_values_against_widths(
-        definitions,
-        bit_widths,
-        enumerated_values,
-        value_ranges,
-    )
-
-    dependencies, dependency_extraction_diagnostics = (
-        extract_all_definition_dependencies(definitions)
-    )
-
-    dependency_validation_diagnostics = validate_derived_dependencies(
-        entries,
-        definitions,
-        dependencies,
-    )
-
-    logic_sections, logic_extraction_diagnostics = (
-        extract_all_logic_sections(definitions)
-    )
-
-    logic_validation_diagnostics = validate_required_logic_sections(
-        entries,
-        definitions,
-        logic_sections,
-    )
-
-    definitions_with_logic = sum(
-        bool(sections)
-        for sections in logic_sections.values()
-    )
-
-    logic_section_count = sum(
-        len(sections)
-        for sections in logic_sections.values()
-    )
-
-    constraints, constraint_diagnostics = (
-        extract_all_definition_constraints(definitions)
-    )
-    global_constraints, global_constraint_diagnostics = (
-        parse_global_constraints(documents, indexed_names)
-    )
-    consumers, consumer_diagnostics = (
-        extract_all_definition_consumers(definitions)
-    )
-    
-    final_structure_diagnostics = validate_final_structure(
-        entries,
-        definitions,
-        attributes,
-        enumerated_values,
-        value_ranges,
-        polarities,
-        logic_sections,
-    )
-        
-    diagnostics = index_diagnostics + definition_diagnostics
-    diagnostics += attribute_diagnostics
-    diagnostics += bit_width_diagnostics
-    diagnostics += polarity_diagnostics
-    diagnostics += value_diagnostics
-    diagnostics += value_width_diagnostics
-    diagnostics += required_attribute_diagnostics
-    diagnostics += dependency_extraction_diagnostics
-    diagnostics += dependency_validation_diagnostics
-    diagnostics += logic_extraction_diagnostics
-    diagnostics += logic_validation_diagnostics
-    diagnostics += constraint_diagnostics
-    diagnostics += global_constraint_diagnostics
-    diagnostics += consumer_diagnostics
-    diagnostics += final_structure_diagnostics
-    diagnostics = sorted(
-        diagnostics,
-        key=lambda item: (
-            DIAGNOSTIC_SEVERITY_ORDER.get(item.severity, 99),
-            item.code,
-            item.source_path or "",
-            item.line if item.line is not None else -1,
-            item.signal_name or "",
-            item.message,
-        ),
-    )
-
-    result = build_json_result(
-        entries,
-        definitions,
-        attributes,
-        bit_widths,
-        polarities,
-        enumerated_values,
-        value_ranges,
-        dependencies,
-        logic_sections,
-        constraints,
-        global_constraints,
-        consumers,
-        diagnostics,
-    )
-
-    write_json_output(
-        result,
-        paths.json_output,
-    )
-
-    report_output = paths.report_output
-
-    report = build_extraction_report(
-        entries,
-        definitions,
-        attributes,
-        bit_widths,
-        polarities,
-        enumerated_values,
-        value_ranges,
-        dependencies,
-        logic_sections,
-        constraints,
-        global_constraints,
-        consumers,
-        diagnostics,
-    )
-
-    write_text_report(
-        report,
-        report_output,
-    )
-
-    failure_diagnostics = [
-        item
-        for item in diagnostics
-        if item.severity in FAILURE_SEVERITIES
-    ]
-    exit_code = 1 if failure_diagnostics else 0
-
-    print("Control-input extraction")
-    print(f"Status: {'FAILED' if exit_code else 'SUCCEEDED'}")
-    print(f"Control inputs: {len(entries)}")
-    print(f"Definitions matched: {len(definitions)}")
-    print(f"Diagnostics: {len(diagnostics)}")
-    print(f"JSON output: {paths.json_output}")
-    print(f"Report output: {report_output}")
-
-    if exit_code:
-        print()
-        print("Failure diagnostics")
-        print("-------------------")
-
-        for item in failure_diagnostics:
-            location = item.source_path or "<unknown source>"
-            if item.line is not None:
-                location = f"{location}:{item.line}"
-            signal = f" [{item.signal_name}]" if item.signal_name else ""
-            print(f"{item.severity} {item.code}{signal}")
-            print(f"  Source: {location}")
-            print(f"  {item.message}")
-
-    return exit_code
+    return 1 if result.failed else 0
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

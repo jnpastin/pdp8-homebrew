@@ -3,368 +3,349 @@
 from __future__ import annotations
 
 import argparse
+import io
+import json
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
-from contextlib import redirect_stderr
-import io
 
-SOURCE_DIRECTORY = (
-    Path(__file__).resolve().parents[1]
-    / "src"
-)
-
-sys.path.insert(
-    0,
-    str(SOURCE_DIRECTORY),
-)
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from extract_control_inputs import (  # noqa: E402
     DEFAULT_JSON_OUTPUT,
     DEFAULT_REPORT_OUTPUT,
+    DERIVED_FLAGS,
+    EXTERNAL_INPUTS,
+    IR_DERIVED_SIGNALS,
+    PRIMITIVE_FLAGS,
     SOURCE_PATHS,
+    ConstraintEntry,
+    ConsumerEntry,
+    DefinitionBlock,
+    DependencyEntry,
+    Diagnostic,
+    EnumeratedValue,
+    ExtractionResult,
+    IndexEntry,
+    Polarity,
+    SignalDefinition,
+    SourceDocument,
+    TextSection,
+    ValueRange,
+    build_extraction_report,
+    build_json_result,
+    extract_control_inputs,
+    extract_definition_blocks,
+    extract_signal,
+    find_labeled_sections,
+    find_signal_in_heading,
     load_source_documents,
+    logic_assigns_signal,
+    main,
+    match_definition_blocks,
+    normalize_bit_width,
+    normalize_markdown_text,
+    normalize_polarity,
     parse_arguments,
+    parse_binary_value,
+    parse_bit_width,
+    parse_consumer_line,
+    parse_definition_constraints,
+    parse_definition_consumers,
+    parse_definition_dependencies,
+    parse_definition_logic_sections,
+    parse_definition_values,
+    parse_global_constraints,
+    parse_index,
+    parse_scalar_attributes,
+    parse_value_line,
+    remove_section_number,
     repository_relative_path,
     resolve_from_repo_root,
     resolve_tool_paths,
-    validate_source_paths,
-    Diagnostic,
-    IndexEntry,
-    SourceDocument,
-    normalize_markdown_text,
-    parse_index,
-    remove_section_number,
-    DefinitionBlock,
-    extract_definition_blocks,
-    find_signal_in_heading,
-    match_definition_blocks,
-    extract_all_scalar_attributes,
-    parse_scalar_attributes,
-    normalize_bit_widths,
-    normalize_polarities,
-    parse_bit_width,
-    EnumeratedValue,
-    ValueRange,
-    parse_value_line,
-    EnumeratedValue,
-    ValueRange,
-    extract_all_definition_values,
-    parse_definition_values,
-    parse_value_line,
-    parse_binary_value,
-    validate_values_against_widths,
+    validate_dependencies,
+    validate_logic,
+    validate_naming,
     validate_required_attributes,
-    extract_all_definition_dependencies,
-    parse_definition_dependencies,
-    validate_derived_dependencies,
-    DependencyEntry,
-    extract_all_definition_dependencies,
-    parse_definition_dependencies,
-    validate_derived_dependencies,
-    TextSection,
-    extract_all_logic_sections,
-    parse_definition_logic_sections,
-    validate_required_logic_sections,
-    ConstraintEntry,
-    extract_all_definition_constraints,
-    parse_global_constraints,
-    parse_definition_constraints,
-    ConsumerEntry,
-    extract_all_definition_consumers,
-    parse_consumer_line,
-    parse_definition_consumers,
-    logic_assigns_signal,
-    validate_final_structure,
-    build_extraction_report,
-    write_text_report,
+    validate_source_paths,
+    validate_value_encoding,
+    validate_values_against_width,
+    write_text,
 )
+
+MICRO_OPS = "../../03-microarchitecture/02-micro-operations.md"
+
+
+# ---------------------------------------------------------------------------
+# Builders
+# ---------------------------------------------------------------------------
+
+
+def make_document(text: str, relative_path: str = "docs/doc.md") -> SourceDocument:
+    return SourceDocument(
+        path=Path(relative_path), relative_path=relative_path, text=text
+    )
+
+
+def make_entry(
+    name: str = "ACN",
+    domain: str = PRIMITIVE_FLAGS,
+    category: str | None = None,
+    line: int = 10,
+) -> IndexEntry:
+    return IndexEntry(
+        name=name,
+        domain=domain,
+        category=category,
+        source_path="docs/index.md",
+        line=line,
+    )
+
+
+def make_block(
+    *lines: str,
+    name: str = "ACN",
+    source_path: str = "docs/definitions.md",
+    start_line: int = 20,
+) -> DefinitionBlock:
+    """Build a block whose body lines follow its heading at ``start_line``."""
+
+    return DefinitionBlock(
+        signal_name=name,
+        heading=name,
+        source_path=source_path,
+        start_line=start_line,
+        lines=tuple(
+            (start_line + offset, line)
+            for offset, line in enumerate(lines, start=1)
+        ),
+    )
+
+
+def make_signal(name: str = "ACN", **fields) -> SignalDefinition:
+    return SignalDefinition(block=make_block(name=name), **fields)
+
+
+def codes(diagnostics) -> list[str]:
+    return [diagnostic.code for diagnostic in diagnostics]
+
+
+# ---------------------------------------------------------------------------
+# Command line, paths, and loading
+# ---------------------------------------------------------------------------
+
 
 class ArgumentParsingTests(unittest.TestCase):
     def test_repo_root_is_required(self) -> None:
-        with redirect_stderr(io.StringIO()):
-            with self.assertRaises(SystemExit):
-                parse_arguments([])
+        with redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
+            parse_arguments([])
 
     def test_default_output_paths_are_used(self) -> None:
-        arguments = parse_arguments(
-            [
-                "--repo-root",
-                ".",
-            ]
-        )
+        arguments = parse_arguments(["--repo-root", "."])
 
-        self.assertEqual(
-            arguments.json_output,
-            DEFAULT_JSON_OUTPUT,
-        )
-        self.assertEqual(
-            arguments.report_output,
-            DEFAULT_REPORT_OUTPUT,
-        )
+        self.assertEqual(arguments.json_output, DEFAULT_JSON_OUTPUT)
+        self.assertEqual(arguments.report_output, DEFAULT_REPORT_OUTPUT)
 
     def test_output_paths_may_be_overridden(self) -> None:
         arguments = parse_arguments(
             [
-                "--repo-root",
-                ".",
-                "--json-output",
-                "alternate/control-inputs.json",
-                "--report-output",
-                "alternate/report.txt",
+                "--repo-root", ".",
+                "--json-output", "alternate/control-inputs.json",
+                "--report-output", "alternate/report.txt",
             ]
         )
 
         self.assertEqual(
-            arguments.json_output,
-            Path("alternate/control-inputs.json"),
+            arguments.json_output, Path("alternate/control-inputs.json")
         )
-        self.assertEqual(
-            arguments.report_output,
-            Path("alternate/report.txt"),
-        )
+        self.assertEqual(arguments.report_output, Path("alternate/report.txt"))
 
 
 class PathResolutionTests(unittest.TestCase):
+    def setUp(self) -> None:
+        temporary_directory = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary_directory.cleanup)
+        self.repo_root = Path(temporary_directory.name).resolve()
+
     def test_relative_path_is_resolved_from_repo_root(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            repo_root = Path(temporary_directory).resolve()
-
-            resolved = resolve_from_repo_root(
-                Path("build/output.json"),
-                repo_root,
-            )
-
-            self.assertEqual(
-                resolved,
-                (repo_root / "build/output.json").resolve(),
-            )
+        self.assertEqual(
+            resolve_from_repo_root(Path("build/output.json"), self.repo_root),
+            (self.repo_root / "build/output.json").resolve(),
+        )
 
     def test_absolute_path_is_preserved(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            absolute_path = (
-                Path(temporary_directory)
-                / "output.json"
-            ).resolve()
+        absolute_path = (self.repo_root / "output.json").resolve()
 
-            resolved = resolve_from_repo_root(
-                absolute_path,
-                Path.cwd(),
-            )
-
-            self.assertEqual(
-                resolved,
-                absolute_path,
-            )
+        self.assertEqual(
+            resolve_from_repo_root(absolute_path, Path.cwd()), absolute_path
+        )
 
     def test_tool_paths_include_all_required_sources(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            repo_root = Path(temporary_directory).resolve()
-
-            arguments = argparse.Namespace(
-                repo_root=repo_root,
+        paths = resolve_tool_paths(
+            argparse.Namespace(
+                repo_root=self.repo_root,
                 json_output=DEFAULT_JSON_OUTPUT,
                 report_output=DEFAULT_REPORT_OUTPUT,
             )
+        )
 
-            paths = resolve_tool_paths(arguments)
+        self.assertEqual(paths.repo_root, self.repo_root)
+        self.assertEqual(
+            paths.source_paths,
+            tuple((self.repo_root / path).resolve() for path in SOURCE_PATHS),
+        )
+        self.assertEqual(
+            paths.json_output, (self.repo_root / DEFAULT_JSON_OUTPUT).resolve()
+        )
+        self.assertEqual(
+            paths.report_output,
+            (self.repo_root / DEFAULT_REPORT_OUTPUT).resolve(),
+        )
 
-            self.assertEqual(
-                paths.repo_root,
-                repo_root,
-            )
-            self.assertEqual(
-                paths.source_paths,
-                tuple(
-                    (repo_root / path).resolve()
-                    for path in SOURCE_PATHS
-                ),
-            )
-            self.assertEqual(
-                paths.json_output,
-                (repo_root / DEFAULT_JSON_OUTPUT).resolve(),
-            )
-            self.assertEqual(
-                paths.report_output,
-                (repo_root / DEFAULT_REPORT_OUTPUT).resolve(),
-            )
+    def test_repository_relative_path_uses_forward_slashes(self) -> None:
+        source_path = self.repo_root / "docs" / "04-control" / "input.md"
 
-    def test_repository_relative_path_uses_forward_slashes(
-        self,
-    ) -> None:
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            repo_root = Path(temporary_directory).resolve()
-            source_path = (
-                repo_root
-                / "docs"
-                / "04-control"
-                / "input.md"
-            )
-
-            self.assertEqual(
-                repository_relative_path(
-                    source_path,
-                    repo_root,
-                ),
-                "docs/04-control/input.md",
-            )
+        self.assertEqual(
+            repository_relative_path(source_path, self.repo_root),
+            "docs/04-control/input.md",
+        )
 
 
-class SourceValidationTests(unittest.TestCase):
+class SourceLoadingTests(unittest.TestCase):
+    def setUp(self) -> None:
+        temporary_directory = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary_directory.cleanup)
+        self.repo_root = Path(temporary_directory.name).resolve()
+
     def test_missing_source_files_are_reported(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            repo_root = Path(temporary_directory)
+        source_paths = (
+            self.repo_root / "first.md",
+            self.repo_root / "second.md",
+        )
 
-            source_paths = (
-                repo_root / "first.md",
-                repo_root / "second.md",
-            )
+        with self.assertRaises(FileNotFoundError) as context:
+            validate_source_paths(source_paths)
 
-            with self.assertRaises(FileNotFoundError) as context:
-                validate_source_paths(source_paths)
-
-            message = str(context.exception)
-
-            self.assertIn(
-                str(source_paths[0]),
-                message,
-            )
-            self.assertIn(
-                str(source_paths[1]),
-                message,
-            )
+        for path in source_paths:
+            self.assertIn(str(path), str(context.exception))
 
     def test_existing_source_files_pass_validation(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            repo_root = Path(temporary_directory)
+        first = self.repo_root / "first.md"
+        second = self.repo_root / "second.md"
+        first.write_text("first", encoding="utf-8")
+        second.write_text("second", encoding="utf-8")
 
-            first_path = repo_root / "first.md"
-            second_path = repo_root / "second.md"
+        validate_source_paths((first, second))
 
-            first_path.write_text(
-                "first",
-                encoding="utf-8",
-            )
-            second_path.write_text(
-                "second",
-                encoding="utf-8",
-            )
-
-            validate_source_paths(
-                (
-                    first_path,
-                    second_path,
-                )
-            )
-
-
-class DocumentLoadingTests(unittest.TestCase):
     def test_documents_are_loaded_in_supplied_order(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            repo_root = Path(temporary_directory).resolve()
+        first = self.repo_root / "docs" / "first.md"
+        second = self.repo_root / "docs" / "second.md"
+        first.parent.mkdir(parents=True)
+        first.write_text("first document", encoding="utf-8")
+        second.write_text("second document", encoding="utf-8")
 
-            first_path = repo_root / "docs" / "first.md"
-            second_path = repo_root / "docs" / "second.md"
+        documents = load_source_documents((second, first), self.repo_root)
 
-            first_path.parent.mkdir(parents=True)
-
-            first_path.write_text(
-                "first document",
-                encoding="utf-8",
-            )
-            second_path.write_text(
-                "second document",
-                encoding="utf-8",
-            )
-
-            documents = load_source_documents(
-                (
-                    second_path,
-                    first_path,
-                ),
-                repo_root,
-            )
-
-            self.assertEqual(
-                [
-                    document.relative_path
-                    for document in documents
-                ],
-                [
-                    "docs/second.md",
-                    "docs/first.md",
-                ],
-            )
-            self.assertEqual(
-                [
-                    document.text
-                    for document in documents
-                ],
-                [
-                    "second document",
-                    "first document",
-                ],
-            )
+        self.assertEqual(
+            [(document.relative_path, document.text) for document in documents],
+            [
+                ("docs/second.md", "second document"),
+                ("docs/first.md", "first document"),
+            ],
+        )
 
     def test_invalid_utf8_is_rejected(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            repo_root = Path(temporary_directory).resolve()
-            source_path = repo_root / "invalid.md"
+        source_path = self.repo_root / "invalid.md"
+        source_path.write_bytes(b"\xff\xfe\xfa")
 
-            source_path.write_bytes(
-                b"\xff\xfe\xfa"
-            )
+        with self.assertRaises(UnicodeDecodeError):
+            load_source_documents((source_path,), self.repo_root)
 
-            with self.assertRaises(UnicodeDecodeError):
-                load_source_documents(
-                    (source_path,),
-                    repo_root,
-                )
 
-class IndexExtractionTests(unittest.TestCase):
+# ---------------------------------------------------------------------------
+# Markdown helpers
+# ---------------------------------------------------------------------------
+
+
+class MarkdownHelperTests(unittest.TestCase):
     def test_section_number_is_removed(self) -> None:
         self.assertEqual(
-            remove_section_number("3. Primitive Flags"),
-            "Primitive Flags",
+            remove_section_number("3. Primitive Flags"), "Primitive Flags"
         )
         self.assertEqual(
-            remove_section_number("3.2. IR Class Flags"),
-            "IR Class Flags",
+            remove_section_number("3.2. IR Class Flags"), "IR Class Flags"
         )
         self.assertEqual(
-            remove_section_number("External Inputs"),
-            "External Inputs",
+            remove_section_number("External Inputs"), "External Inputs"
         )
 
     def test_markdown_identifiers_are_normalized(self) -> None:
         self.assertEqual(
-            normalize_markdown_text(r"`IR\_ADDR\[6:0\]`"),
-            "IR_ADDR[6:0]",
+            normalize_markdown_text(r"`IR\_ADDR\[6:0\]`"), "IR_ADDR[6:0]"
         )
 
+    def test_labeled_section_ends_at_unrelated_label(self) -> None:
+        block = make_block(
+            "**Inputs:** trailing",
+            "- A",
+            "**Purpose:** something",
+            "**Inputs:**",
+            "- B",
+        )
+
+        sections = find_labeled_sections(
+            block, {"inputs"}, ends_at_rule=False
+        )
+
+        self.assertEqual(len(sections), 1)
+        self.assertEqual(sections[0].line, 21)
+        self.assertEqual(sections[0].trailing_text, "trailing")
+        self.assertEqual(sections[0].body, ((22, "- A"),))
+
+    def test_labeled_section_may_end_at_rule_and_reopen(self) -> None:
+        block = make_block(
+            "**Consumed By:**",
+            "- A",
+            "---",
+            "- ignored",
+            "**Consumed By:**",
+            "- B",
+        )
+
+        sections = find_labeled_sections(
+            block, {"consumed by"}, ends_at_rule=True
+        )
+
+        self.assertEqual(
+            [section.body for section in sections],
+            [((22, "- A"),), ((26, "- B"),)],
+        )
+
+
+# ---------------------------------------------------------------------------
+# Index and definition blocks
+# ---------------------------------------------------------------------------
+
+
+class IndexParsingTests(unittest.TestCase):
     def test_domain_and_category_are_preserved(self) -> None:
-        document = SourceDocument(
-            path=Path("00-index.md"),
-            relative_path=(
-                "docs/04-control/"
-                "10-control-input-definitions/00-index.md"
-            ),
-            text=(
-                "## 3. Primitive Flags\n"
-                "\n"
-                "### 3.1 Processor State Flags\n"
-                "\n"
-                "- [AC\\_ZERO](./01-flags.md#ac_zero)\n"
-                "- [L](./01-flags.md#l)\n"
-                "\n"
-                "## 4. IR-Derived Signals\n"
-                "\n"
-                "### 4.1 Instruction Class\n"
-                "\n"
-                "- [IR\\_IS\\_MRI]"
-                "(./02-ir-derived-fields.md#ir_is_mri)\n"
-            ),
+        path = "docs/04-control/10-control-input-definitions/00-index.md"
+        document = make_document(
+            "## 3. Primitive Flags\n"
+            "\n"
+            "### 3.1 Processor State Flags\n"
+            "\n"
+            "- [AC\\_ZERO](./01-flags.md#ac_zero)\n"
+            "- [L](./01-flags.md#l)\n"
+            "\n"
+            "## 4. IR-Derived Signals\n"
+            "\n"
+            "### 4.1 Instruction Class\n"
+            "\n"
+            "- [IR\\_IS\\_MRI](./02-ir-derived-fields.md#ir_is_mri)\n",
+            relative_path=path,
         )
 
         entries, diagnostics = parse_index(document)
@@ -373,350 +354,205 @@ class IndexExtractionTests(unittest.TestCase):
             entries,
             [
                 IndexEntry(
-                    name="AC_ZERO",
-                    domain="Primitive Flags",
-                    category="Processor State Flags",
-                    source_path=(
-                        "docs/04-control/"
-                        "10-control-input-definitions/00-index.md"
-                    ),
-                    line=5,
+                    "AC_ZERO", PRIMITIVE_FLAGS, "Processor State Flags", path, 5
                 ),
                 IndexEntry(
-                    name="L",
-                    domain="Primitive Flags",
-                    category="Processor State Flags",
-                    source_path=(
-                        "docs/04-control/"
-                        "10-control-input-definitions/00-index.md"
-                    ),
-                    line=6,
+                    "L", PRIMITIVE_FLAGS, "Processor State Flags", path, 6
                 ),
                 IndexEntry(
-                    name="IR_IS_MRI",
-                    domain="IR-Derived Signals",
-                    category="Instruction Class",
-                    source_path=(
-                        "docs/04-control/"
-                        "10-control-input-definitions/00-index.md"
-                    ),
-                    line=12,
+                    "IR_IS_MRI", IR_DERIVED_SIGNALS, "Instruction Class", path, 12
                 ),
             ],
         )
         self.assertEqual(diagnostics, [])
 
-    def test_entry_without_recognized_domain_is_reported(
-        self,
-    ) -> None:
-        document = SourceDocument(
-            path=Path("00-index.md"),
-            relative_path="docs/index.md",
-            text=(
-                "## Other Signals\n"
-                "- [UNKNOWN" + "](./signals.md#unknown)\n"
-            ),
+    def test_shallower_heading_closes_domain(self) -> None:
+        document = make_document(
+            "## Primitive Flags\n"
+            "- [ACN](./01-flags.md#acn)\n"
+            "## Notes\n"
+            "- [STRAY](./01-flags.md#stray)\n"
+        )
+
+        entries, diagnostics = parse_index(document)
+
+        self.assertEqual([entry.name for entry in entries], ["ACN"])
+        self.assertEqual(codes(diagnostics), ["INDEX_ENTRY_WITHOUT_DOMAIN"])
+
+    def test_entry_without_recognized_domain_is_reported(self) -> None:
+        document = make_document(
+            "## Other Signals\n- [UNKNOWN](./signals.md#unknown)\n"
         )
 
         entries, diagnostics = parse_index(document)
 
         self.assertEqual(entries, [])
         self.assertEqual(
-            [
-                diagnostic.code
-                for diagnostic in diagnostics
-            ],
-            [
-                "INDEX_ENTRY_WITHOUT_DOMAIN",
-                "NO_INDEX_ENTRIES",
-            ],
+            codes(diagnostics),
+            ["INDEX_ENTRY_WITHOUT_DOMAIN", "NO_INDEX_ENTRIES"],
         )
 
     def test_duplicate_index_entry_is_reported(self) -> None:
-        document = SourceDocument(
-            path=Path("00-index.md"),
-            relative_path="docs/index.md",
-            text=(
-                "## Primitive Flags\n"
-                "- [AC\\_ZERO](./01-flags.md#l)\n"
-                "- [AC\\_ZERO](./01-flags.md#l)\n"
-            ),
+        document = make_document(
+            "## Primitive Flags\n"
+            "- [AC\\_ZERO](./01-flags.md#l)\n"
+            "- [AC\\_ZERO](./01-flags.md#l)\n"
         )
 
         entries, diagnostics = parse_index(document)
 
-        self.assertEqual(
-            [entry.name for entry in entries],
-            ["AC_ZERO"],
+        self.assertEqual([entry.name for entry in entries], ["AC_ZERO"])
+        self.assertEqual(codes(diagnostics), ["DUPLICATE_INDEX_ENTRY"])
+
+    def test_links_without_anchor_are_not_entries(self) -> None:
+        document = make_document(
+            "## Primitive Flags\n"
+            "- [Primitive Flags](./01-flags.md)\n"
+            "- [ACN](./01-flags.md#acn)\n"
         )
-        self.assertEqual(len(diagnostics), 1)
-        self.assertEqual(
-            diagnostics[0].code,
-            "DUPLICATE_INDEX_ENTRY",
-        )
+
+        entries, _ = parse_index(document)
+
+        self.assertEqual([entry.name for entry in entries], ["ACN"])
 
     def test_bus_name_with_brackets_is_extracted(self) -> None:
-        document = SourceDocument(
-            path=Path("00-index.md"),
-            relative_path="docs/index.md",
-            text=(
-                "## External Inputs\n"
-                "### Front-Panel Data\n"
-                "- [FP\\_IF\\[2:0\\]]"
-                "(./04-external-inputs.md#fp_if)\n"
-            ),
+        document = make_document(
+            "## External Inputs\n"
+            "### Front-Panel Data\n"
+            "- [FP\\_IF\\[2:0\\]](./04-external-inputs.md#fp_if)\n"
         )
 
         entries, diagnostics = parse_index(document)
 
-        self.assertEqual(
-            [entry.name for entry in entries],
-            ["FP_IF[2:0]"],
-        )
+        self.assertEqual([entry.name for entry in entries], ["FP_IF[2:0]"])
         self.assertEqual(diagnostics, [])
 
-    def test_exact_signal_heading_is_matched(self) -> None:
-        self.assertEqual(
-            find_signal_in_heading(
-                "4.1 ACN",
-                {"ACN", "ACZ"},
-            ),
-            "ACN",
-        )
 
+class DefinitionBlockTests(unittest.TestCase):
+    def test_exact_signal_heading_is_matched(self) -> None:
+        self.assertEqual(find_signal_in_heading("4.1 ACN", {"ACN", "ACZ"}), "ACN")
 
     def test_parenthesized_signal_heading_is_matched(self) -> None:
         self.assertEqual(
-            find_signal_in_heading(
-                "4.1 AC Negative (ACN)",
-                {"ACN", "ACZ"},
-            ),
+            find_signal_in_heading("4.1 AC Negative (ACN)", {"ACN", "ACZ"}),
             "ACN",
         )
 
-
     def test_category_heading_is_not_matched(self) -> None:
         self.assertIsNone(
-            find_signal_in_heading(
-                "IR Class Flags",
-                {"IR_IS_IOT", "IR_IS_MRI"},
-            )
+            find_signal_in_heading("IR Class Flags", {"IR_IS_IOT", "IR_IS_MRI"})
         )
-
 
     def test_level_three_definitions_are_extracted(self) -> None:
-        document = SourceDocument(
-            path=Path("01-flags.md"),
-            relative_path="docs/inputs/01-flags.md",
-            text=(
-                "# Primitive Flags\n"
-                "\n"
-                "## 4. Flag Definitions\n"
-                "\n"
-                "### 4.1 AC Negative (ACN)\n"
-                "\n"
-                "Definition of ACN.\n"
-                "\n"
-                "### 4.2 AC Zero (ACZ)\n"
-                "\n"
-                "Definition of ACZ.\n"
-                "\n"
-                "## 5. Constraints\n"
-                "\n"
-                "Not part of ACZ.\n"
-            ),
+        document = make_document(
+            "# Primitive Flags\n"
+            "\n"
+            "## 4. Flag Definitions\n"
+            "\n"
+            "### 4.1 AC Negative (ACN)\n"
+            "\n"
+            "Definition of ACN.\n"
+            "\n"
+            "### 4.2 AC Zero (ACZ)\n"
+            "\n"
+            "Definition of ACZ.\n"
+            "\n"
+            "## 5. Constraints\n"
+            "\n"
+            "Not part of ACZ.\n"
         )
 
-        blocks = extract_definition_blocks(
-            document,
-            {"ACN", "ACZ"},
-        )
+        blocks = extract_definition_blocks(document, {"ACN", "ACZ"})
 
-        self.assertEqual(
-            [block.signal_name for block in blocks],
-            ["ACN", "ACZ"],
-        )
-        self.assertEqual(
-            [block.start_line for block in blocks],
-            [5, 9],
-        )
-        self.assertIn(
-            "Definition of ACN.",
-            blocks[0].lines,
-        )
+        self.assertEqual([block.signal_name for block in blocks], ["ACN", "ACZ"])
+        self.assertEqual([block.start_line for block in blocks], [5, 9])
+        self.assertEqual(blocks[0].heading, "AC Negative (ACN)")
+        self.assertIn((7, "Definition of ACN."), blocks[0].lines)
         self.assertNotIn(
-            "Not part of ACZ.",
-            blocks[1].lines,
+            "Not part of ACZ.", [text for _, text in blocks[1].lines]
         )
 
+    def test_deeper_headings_keep_source_line_numbers(self) -> None:
+        document = make_document(
+            "### ACN\n"
+            "#### Details\n"
+            "**Name:** AC Negative\n"
+        )
+
+        (block,) = extract_definition_blocks(document, {"ACN"})
+
+        self.assertEqual(block.lines, ((3, "**Name:** AC Negative"),))
 
     def test_external_input_categories_do_not_require_special_handling(
         self,
     ) -> None:
-        document = SourceDocument(
-            path=Path("04-external-inputs.md"),
-            relative_path="docs/inputs/04-external-inputs.md",
-            text=(
-                "# External Inputs\n"
-                "\n"
-                "## 4. Front-Panel Command Inputs\n"
-                "\n"
-                "### 4.1 Start Command (FP_START)\n"
-                "\n"
-                "Definition of FP_START.\n"
-                "\n"
-                "## 5. Front-Panel Mode Inputs\n"
-                "\n"
-                "### 5.1 Single Step (FP_SINGLE_STEP)\n"
-                "\n"
-                "Definition of FP_SINGLE_STEP.\n"
-            ),
+        document = make_document(
+            "# External Inputs\n"
+            "\n"
+            "## 4. Front-Panel Command Inputs\n"
+            "\n"
+            "### 4.1 Start Command (FP_START)\n"
+            "\n"
+            "Definition of FP_START.\n"
+            "\n"
+            "## 5. Front-Panel Mode Inputs\n"
+            "\n"
+            "### 5.1 Single Step (FP_SINGLE_STEP)\n"
+            "\n"
+            "Definition of FP_SINGLE_STEP.\n"
         )
 
         blocks = extract_definition_blocks(
-            document,
-            {
-                "FP_START",
-                "FP_SINGLE_STEP",
-            },
+            document, {"FP_START", "FP_SINGLE_STEP"}
         )
 
         self.assertEqual(
             [block.signal_name for block in blocks],
-            [
-                "FP_START",
-                "FP_SINGLE_STEP",
-            ],
+            ["FP_START", "FP_SINGLE_STEP"],
         )
 
     def test_definition_blocks_are_matched_to_index(self) -> None:
-        entries = [
-            IndexEntry(
-                name="ACN",
-                domain="Primitive Flags",
-                category=None,
-                source_path="docs/index.md",
-                line=10,
-            ),
-            IndexEntry(
-                name="ACZ",
-                domain="Primitive Flags",
-                category=None,
-                source_path="docs/index.md",
-                line=11,
-            ),
-        ]
+        entries = [make_entry("ACN"), make_entry("ACZ", line=11)]
+        blocks = [make_block(name="ACN"), make_block(name="ACZ", start_line=30)]
 
-        blocks = [
-            DefinitionBlock(
-                signal_name="ACN",
-                heading="AC Negative (ACN)",
-                source_path="docs/flags.md",
-                start_line=20,
-                lines=(),
-            ),
-            DefinitionBlock(
-                signal_name="ACZ",
-                heading="AC Zero (ACZ)",
-                source_path="docs/flags.md",
-                start_line=30,
-                lines=(),
-            ),
-        ]
+        definitions, diagnostics = match_definition_blocks(entries, blocks)
 
-        definitions, diagnostics = match_definition_blocks(
-            entries,
-            blocks,
-        )
-
-        self.assertEqual(
-            set(definitions),
-            {
-                "ACN",
-                "ACZ",
-            },
-        )
+        self.assertEqual(set(definitions), {"ACN", "ACZ"})
         self.assertEqual(diagnostics, [])
 
-
     def test_missing_definition_is_reported(self) -> None:
-        entries = [
-            IndexEntry(
-                name="ACN",
-                domain="Primitive Flags",
-                category=None,
-                source_path="docs/index.md",
-                line=10,
-            ),
-        ]
-
-        definitions, diagnostics = match_definition_blocks(
-            entries,
-            [],
-        )
+        definitions, diagnostics = match_definition_blocks([make_entry()], [])
 
         self.assertEqual(definitions, {})
-        self.assertEqual(len(diagnostics), 1)
-        self.assertEqual(
-            diagnostics[0].code,
-            "MISSING_DEFINITION",
-        )
-
+        self.assertEqual(codes(diagnostics), ["MISSING_DEFINITION"])
 
     def test_duplicate_definition_is_reported(self) -> None:
-        entries = [
-            IndexEntry(
-                name="ACN",
-                domain="Primitive Flags",
-                category=None,
-                source_path="docs/index.md",
-                line=10,
-            ),
-        ]
-
         blocks = [
-            DefinitionBlock(
-                signal_name="ACN",
-                heading="ACN",
-                source_path="docs/first.md",
-                start_line=20,
-                lines=(),
-            ),
-            DefinitionBlock(
-                signal_name="ACN",
-                heading="AC Negative (ACN)",
-                source_path="docs/second.md",
-                start_line=30,
-                lines=(),
-            ),
+            make_block(source_path="docs/first.md", start_line=20),
+            make_block(source_path="docs/second.md", start_line=30),
         ]
 
-        definitions, diagnostics = match_definition_blocks(
-            entries,
-            blocks,
-        )
+        definitions, diagnostics = match_definition_blocks([make_entry()], blocks)
 
-        self.assertEqual(set(definitions), {"ACN"})
-        self.assertEqual(len(diagnostics), 1)
-        self.assertEqual(
-            diagnostics[0].code,
-            "DUPLICATE_DEFINITION",
-        )
-        
+        self.assertEqual(definitions["ACN"].source_path, "docs/first.md")
+        self.assertEqual(codes(diagnostics), ["DUPLICATE_DEFINITION"])
+        self.assertIn("docs/first.md:20", diagnostics[0].message)
 
+
+# ---------------------------------------------------------------------------
+# Scalar attributes, bit width, and polarity
+# ---------------------------------------------------------------------------
+
+
+class ScalarAttributeTests(unittest.TestCase):
     def test_scalar_attributes_are_extracted(self) -> None:
-        block = DefinitionBlock(
-            signal_name="IR_IS_MRI",
-            heading="IR_IS_MRI",
-            source_path="docs/ir-fields.md",
-            start_line=20,
-            lines=(
-                "**Mnemonic:** IR_IS_MRI",
-                "**Name:** Memory Reference Instruction Flag",
-                "**Type:** IR Class",
-                "**Bit Width:** 1",
-                "**Purpose:** Indicates an MRI instruction.",
-            ),
+        block = make_block(
+            "**Mnemonic:** IR_IS_MRI",
+            "**Name:** Memory Reference Instruction Flag",
+            "**Type:** IR Class",
+            "**Bit Width:** 1",
+            "**Purpose:** Indicates an MRI instruction.",
+            name="IR_IS_MRI",
         )
 
         attributes, diagnostics = parse_scalar_attributes(block)
@@ -734,17 +570,12 @@ class IndexExtractionTests(unittest.TestCase):
         self.assertEqual(diagnostics, [])
 
     def test_multiple_attributes_on_one_line_are_extracted(self) -> None:
-        block = DefinitionBlock(
-            signal_name="IR_ADDR",
-            heading="IR_ADDR",
-            source_path="docs/ir-fields.md",
-            start_line=20,
-            lines=(
-                "**Mnemonic:** IR_ADDR"
-                "**Name:** Memory Address Field"
-                "**Type:** Field Extraction"
-                "**Bit Width:** 7",
-            ),
+        block = make_block(
+            "**Mnemonic:** IR_ADDR"
+            "**Name:** Memory Address Field"
+            "**Type:** Field Extraction"
+            "**Bit Width:** 7",
+            name="IR_ADDR",
         )
 
         attributes, diagnostics = parse_scalar_attributes(block)
@@ -761,17 +592,7 @@ class IndexExtractionTests(unittest.TestCase):
         self.assertEqual(diagnostics, [])
 
     def test_source_register_is_extracted(self) -> None:
-        block = DefinitionBlock(
-            signal_name="ACN",
-            heading="ACN",
-            source_path="docs/flags.md",
-            start_line=20,
-            lines=(
-                "**Name:** AC Negative",
-                "**Source Register:** AC",
-                "**Purpose:** Indicates that AC is negative.",
-            ),
-        )
+        block = make_block("**Name:** AC Negative", "**Source Register:** AC")
 
         attributes, diagnostics = parse_scalar_attributes(block)
 
@@ -779,65 +600,18 @@ class IndexExtractionTests(unittest.TestCase):
         self.assertEqual(diagnostics, [])
 
     def test_duplicate_scalar_attribute_is_reported(self) -> None:
-        block = DefinitionBlock(
-            signal_name="ACN",
-            heading="ACN",
-            source_path="docs/flags.md",
-            start_line=20,
-            lines=(
-                "**Name:** AC Negative",
-                "**Name:** Accumulator Negative",
-            ),
+        block = make_block(
+            "**Name:** AC Negative", "**Name:** Accumulator Negative"
         )
 
         attributes, diagnostics = parse_scalar_attributes(block)
 
         self.assertEqual(attributes["display_name"], "AC Negative")
-        self.assertEqual(len(diagnostics), 1)
-        self.assertEqual(
-            diagnostics[0].code,
-            "DUPLICATE_ATTRIBUTE",
-        )
-
-    def test_attributes_are_extracted_from_all_definitions(self) -> None:
-        definitions = {
-            "ACN": DefinitionBlock(
-                signal_name="ACN",
-                heading="ACN",
-                source_path="docs/flags.md",
-                start_line=20,
-                lines=(
-                    "**Name:** AC Negative",
-                    "**Source Register:** AC",
-                ),
-            ),
-            "FP_START": DefinitionBlock(
-                signal_name="FP_START",
-                heading="FP_START",
-                source_path="docs/external.md",
-                start_line=40,
-                lines=(
-                    "**Name:** Front Panel Start Command",
-                    "**Type:** External Command Input",
-                ),
-            ),
-        }
-
-        attributes, diagnostics = extract_all_scalar_attributes(
-            definitions
-        )
-
-        self.assertEqual(
-            attributes["ACN"]["source_register"],
-            "AC",
-        )
-        self.assertEqual(
-            attributes["FP_START"]["input_type"],
-            "External Command Input",
-        )
-        self.assertEqual(diagnostics, [])
+        self.assertEqual(codes(diagnostics), ["DUPLICATE_ATTRIBUTE"])
+        self.assertEqual(diagnostics[0].line, 22)
 
 
+class BitWidthTests(unittest.TestCase):
     def test_bit_width_formats_are_normalized(self) -> None:
         self.assertEqual(parse_bit_width("1"), 1)
         self.assertEqual(parse_bit_width("1 bit"), 1)
@@ -845,295 +619,89 @@ class IndexExtractionTests(unittest.TestCase):
         self.assertIsNone(parse_bit_width("0"))
         self.assertIsNone(parse_bit_width("one"))
 
-
-    def test_bit_widths_are_normalized(self) -> None:
-        definitions = {
-            "IR_ADDR": DefinitionBlock(
-                signal_name="IR_ADDR",
-                heading="IR_ADDR",
-                source_path="docs/ir-fields.md",
-                start_line=20,
-                lines=(),
-            ),
-        }
-
-        bit_widths, diagnostics = normalize_bit_widths(
-            definitions,
-            {
-                "IR_ADDR": {
-                    "bit_width": "7",
-                },
-            },
-        )
-
-        self.assertEqual(bit_widths, {"IR_ADDR": 7})
-        self.assertEqual(diagnostics, [])
-
-
-    def test_primitive_flag_width_defaults_to_one(self) -> None:
-        definitions = {
-            "ACN": DefinitionBlock(
-                signal_name="ACN",
-                heading="ACN",
-                source_path=(
-                    "docs/04-control/10-control-input-definitions/"
-                    "01-flags.md"
-                ),
-                start_line=20,
-                lines=(),
-            ),
-        }
-
-        bit_widths, diagnostics = normalize_bit_widths(
-            definitions,
-            {
-                "ACN": {
-                    "display_name": "AC Negative",
-                },
-            },
-        )
-
-        self.assertEqual(bit_widths, {"ACN": 1})
-        self.assertEqual(diagnostics, [])
-
-
-    def test_derived_flag_width_defaults_to_one(self) -> None:
-        definitions = {
-            "SKIP_TAKEN": DefinitionBlock(
-                signal_name="SKIP_TAKEN",
-                heading="SKIP_TAKEN",
-                source_path=(
-                    "docs/04-control/10-control-input-definitions/"
-                    "03-derived-flags.md"
-                ),
-                start_line=20,
-                lines=(),
-            ),
-        }
-
-        bit_widths, diagnostics = normalize_bit_widths(
-            definitions,
-            {
-                "SKIP_TAKEN": {
-                    "purpose": "Indicates whether a skip is required.",
-                },
-            },
-        )
-
-        self.assertEqual(bit_widths, {"SKIP_TAKEN": 1})
-        self.assertEqual(diagnostics, [])
-
-
-    def test_missing_width_in_other_source_is_reported(self) -> None:
-        definitions = {
-            "IR_ADDR": DefinitionBlock(
-                signal_name="IR_ADDR",
-                heading="IR_ADDR",
-                source_path=(
-                    "docs/04-control/10-control-input-definitions/"
-                    "02-ir-derived-fields.md"
-                ),
-                start_line=20,
-                lines=(),
-            ),
-            "FP_IF": DefinitionBlock(
-                signal_name="FP_IF",
-                heading="FP_IF",
-                source_path=(
-                    "docs/04-control/10-control-input-definitions/"
-                    "04-external-inputs.md"
-                ),
-                start_line=40,
-                lines=(),
-            ),
-        }
-
-        bit_widths, diagnostics = normalize_bit_widths(
-            definitions,
-            {
-                "IR_ADDR": {},
-                "FP_IF": {},
-            },
-        )
-
-        self.assertEqual(bit_widths, {})
+    def test_documented_width_is_used(self) -> None:
         self.assertEqual(
-            [diagnostic.code for diagnostic in diagnostics],
-            [
-                "MISSING_BIT_WIDTH",
-                "MISSING_BIT_WIDTH",
-            ],
+            normalize_bit_width(
+                IR_DERIVED_SIGNALS, make_block(), {"bit_width": "7"}
+            ),
+            (7, []),
         )
 
+    def test_flag_widths_default_to_one(self) -> None:
+        for domain in (PRIMITIVE_FLAGS, DERIVED_FLAGS):
+            with self.subTest(domain=domain):
+                self.assertEqual(
+                    normalize_bit_width(domain, make_block(), {}), (1, [])
+                )
 
+    def test_missing_width_in_other_domains_is_reported(self) -> None:
+        for domain in (IR_DERIVED_SIGNALS, EXTERNAL_INPUTS):
+            with self.subTest(domain=domain):
+                width, diagnostics = normalize_bit_width(domain, make_block(), {})
+
+                self.assertIsNone(width)
+                self.assertEqual(codes(diagnostics), ["MISSING_BIT_WIDTH"])
+
+    def test_invalid_width_is_reported(self) -> None:
+        width, diagnostics = normalize_bit_width(
+            EXTERNAL_INPUTS, make_block(), {"bit_width": "seven"}
+        )
+
+        self.assertIsNone(width)
+        self.assertEqual(codes(diagnostics), ["INVALID_BIT_WIDTH"])
+
+
+class PolarityTests(unittest.TestCase):
     def test_explicit_polarity_is_preserved(self) -> None:
-        definitions = {
-            "FP_START": DefinitionBlock(
-                signal_name="FP_START",
-                heading="FP_START",
-                source_path="docs/external.md",
-                start_line=20,
-                lines=(),
-            ),
-        }
-
-        polarities, diagnostics = normalize_polarities(
-            definitions,
-            {
-                "FP_START": {
-                    "polarity": "Active-high",
-                },
-            },
-        )
-
         self.assertEqual(
-            polarities["FP_START"],
-            {
-                "value": "active-high",
-                "source": "explicit",
-            },
+            normalize_polarity(make_block(), {"polarity": "Active-high"}),
+            (Polarity("active-high", "explicit"), []),
         )
-        self.assertEqual(diagnostics, [])
-
 
     def test_active_low_name_derives_polarity(self) -> None:
-        definitions = {
-            "/INT_REQ": DefinitionBlock(
-                signal_name="/INT_REQ",
-                heading="Interrupt Request (/INT_REQ)",
-                source_path="docs/external.md",
-                start_line=20,
-                lines=(),
-            ),
-        }
-
-        polarities, diagnostics = normalize_polarities(
-            definitions,
-            {
-                "/INT_REQ": {},
-            },
-        )
-
         self.assertEqual(
-            polarities["/INT_REQ"],
-            {
-                "value": "active-low",
-                "source": "name-derived",
-            },
+            normalize_polarity(make_block(name="/INT_REQ"), {}),
+            (Polarity("active-low", "name-derived"), []),
         )
-        self.assertEqual(diagnostics, [])
-
 
     def test_unspecified_polarity_defaults_active_high(self) -> None:
-        definitions = {
-            "ACN": DefinitionBlock(
-                signal_name="ACN",
-                heading="ACN",
-                source_path="docs/flags.md",
-                start_line=20,
-                lines=(),
-            ),
-        }
-
-        polarities, diagnostics = normalize_polarities(
-            definitions,
-            {
-                "ACN": {},
-            },
-        )
-
         self.assertEqual(
-            polarities["ACN"],
-            {
-                "value": "active-high",
-                "source": "defaulted",
-            },
+            normalize_polarity(make_block(), {}),
+            (Polarity("active-high", "defaulted"), []),
         )
-        self.assertEqual(diagnostics, [])
 
+    def test_invalid_polarity_is_reported(self) -> None:
+        polarity, diagnostics = normalize_polarity(
+            make_block(), {"polarity": "sideways"}
+        )
+
+        self.assertIsNone(polarity)
+        self.assertEqual(codes(diagnostics), ["INVALID_POLARITY"])
+
+
+# ---------------------------------------------------------------------------
+# Value encodings
+# ---------------------------------------------------------------------------
+
+
+class ValueParsingTests(unittest.TestCase):
     def test_enumerated_value_line_is_parsed(self) -> None:
         self.assertEqual(
-            parse_value_line("- `0` -> inactive"),
-            (
-                "enumerated",
-                (
-                    "0",
-                    "inactive",
-                ),
-            ),
-        )
-
-        self.assertEqual(
-            parse_value_line("- 1: active"),
-            (
-                "enumerated",
-                (
-                    "1",
-                    "active",
-                ),
-            ),
-        )
-
-
-    def test_value_range_is_parsed(self) -> None:
-        self.assertEqual(
-            parse_value_line("- 000-111 -> field value"),
-            (
-                "range",
-                (
-                    "000",
-                    "111",
-                    "field value",
-                ),
-            ),
-        )
-
-        self.assertEqual(
-            parse_value_line("- 0000000–1111111 → address field"),
-            (
-                "range",
-                (
-                    "0000000",
-                    "1111111",
-                    "address field",
-                ),
-            ),
-        )
-
-
-    def test_symbolic_description_is_not_numeric_value(self) -> None:
-        self.assertIsNone(
-            parse_value_line("external bus value")
-        )
-
-
-    def test_malformed_value_line_is_rejected(self) -> None:
-        self.assertIsNone(parse_value_line(""))
-        self.assertIsNone(parse_value_line("- 0"))
-        self.assertIsNone(parse_value_line("- -> inactive"))
-
-
-    def test_enumerated_value_line_is_parsed(self) -> None:
-        self.assertEqual(
-            parse_value_line("- `0` -> inactive"),
-            ("enumerated", ("0", "inactive")),
+            parse_value_line("- `0` -> inactive", 5),
+            EnumeratedValue("0", "inactive", 5),
         )
         self.assertEqual(
-            parse_value_line("- 1: active"),
-            ("enumerated", ("1", "active")),
+            parse_value_line("- 1: active", 6), EnumeratedValue("1", "active", 6)
         )
 
     def test_value_range_is_parsed(self) -> None:
         self.assertEqual(
-            parse_value_line("- 000-111 -> field value"),
-            ("range", ("000", "111", "field value")),
+            parse_value_line("- 000-111 -> field value", 5),
+            ValueRange("000", "111", "field value", 5),
         )
         self.assertEqual(
-            parse_value_line("- 0000000–1111111 → address field"),
-            (
-                "range",
-                ("0000000", "1111111", "address field"),
-            ),
+            parse_value_line("- 0000000–1111111 → address field", 6),
+            ValueRange("0000000", "1111111", "address field", 6),
         )
 
     def test_symbolic_description_is_not_numeric_value(self) -> None:
@@ -1144,114 +712,6 @@ class IndexExtractionTests(unittest.TestCase):
         self.assertIsNone(parse_value_line("- 0"))
         self.assertIsNone(parse_value_line("- -> inactive"))
 
-    def test_definition_enumerated_values_are_extracted(self) -> None:
-        block = DefinitionBlock(
-            signal_name="ACN",
-            heading="ACN",
-            source_path="docs/flags.md",
-            start_line=20,
-            lines=(
-                "**Purpose:** Indicates whether AC is negative.",
-                "**Value Encoding:**",
-                "- `0` -> AC is nonnegative",
-                "- `1` -> AC is negative",
-                "**Consumed By:**",
-                "- skip logic",
-            ),
-        )
-
-        values, ranges, diagnostics = parse_definition_values(block)
-
-        self.assertEqual(
-            [(value.value, value.meaning) for value in values],
-            [
-                ("0", "AC is nonnegative"),
-                ("1", "AC is negative"),
-            ],
-        )
-        self.assertEqual(ranges, [])
-        self.assertEqual(diagnostics, [])
-
-    def test_definition_value_range_is_extracted(self) -> None:
-        block = DefinitionBlock(
-            signal_name="IR_ADDR",
-            heading="IR_ADDR",
-            source_path="docs/ir-fields.md",
-            start_line=20,
-            lines=(
-                "**Value Encoding:**",
-                "- 0000000-1111111 -> address field",
-                "**Consumed By:**",
-                "- address generation",
-            ),
-        )
-
-        values, ranges, diagnostics = parse_definition_values(block)
-
-        self.assertEqual(values, [])
-        self.assertEqual(len(ranges), 1)
-        self.assertEqual(ranges[0].start, "0000000")
-        self.assertEqual(ranges[0].end, "1111111")
-        self.assertEqual(ranges[0].meaning, "address field")
-        self.assertEqual(diagnostics, [])
-
-    def test_duplicate_enumerated_value_is_reported(self) -> None:
-        block = DefinitionBlock(
-            signal_name="ACN",
-            heading="ACN",
-            source_path="docs/flags.md",
-            start_line=20,
-            lines=(
-                "**Value Encoding:**",
-                "- 0 -> inactive",
-                "- 0 -> nonnegative",
-            ),
-        )
-
-        values, ranges, diagnostics = parse_definition_values(block)
-
-        self.assertEqual(len(values), 1)
-        self.assertEqual(ranges, [])
-        self.assertEqual(
-            [diagnostic.code for diagnostic in diagnostics],
-            ["DUPLICATE_VALUE_ENCODING"],
-        )
-
-    def test_values_are_extracted_from_all_definitions(self) -> None:
-        definitions = {
-            "ACN": DefinitionBlock(
-                signal_name="ACN",
-                heading="ACN",
-                source_path="docs/flags.md",
-                start_line=20,
-                lines=(
-                    "**Value Encoding:**",
-                    "- 0 -> inactive",
-                    "- 1 -> active",
-                ),
-            ),
-            "IR_ADDR": DefinitionBlock(
-                signal_name="IR_ADDR",
-                heading="IR_ADDR",
-                source_path="docs/ir-fields.md",
-                start_line=40,
-                lines=(
-                    "**Value Encoding:**",
-                    "- 0000000-1111111 -> address field",
-                ),
-            ),
-        }
-
-        values, ranges, diagnostics = extract_all_definition_values(
-            definitions
-        )
-
-        self.assertEqual(len(values["ACN"]), 2)
-        self.assertEqual(values["IR_ADDR"], [])
-        self.assertEqual(len(ranges["IR_ADDR"]), 1)
-        self.assertEqual(ranges["ACN"], [])
-        self.assertEqual(diagnostics, [])
-
     def test_binary_values_are_parsed(self) -> None:
         self.assertEqual(parse_binary_value("0"), 0)
         self.assertEqual(parse_binary_value("1"), 1)
@@ -1260,1638 +720,783 @@ class IndexExtractionTests(unittest.TestCase):
         self.assertIsNone(parse_binary_value("08"))
 
 
-    def test_values_that_fit_width_are_accepted(self) -> None:
-        definitions = {
-            "IR_ADDR": DefinitionBlock(
-                signal_name="IR_ADDR",
-                heading="IR_ADDR",
-                source_path="docs/ir-fields.md",
-                start_line=20,
-                lines=(),
-            ),
-        }
-
-        diagnostics = validate_values_against_widths(
-            definitions,
-            {"IR_ADDR": 7},
-            {"IR_ADDR": []},
-            {
-                "IR_ADDR": [
-                    ValueRange(
-                        start="0000000",
-                        end="1111111",
-                        meaning="address field",
-                        line=30,
-                    ),
-                ],
-            },
+class DefinitionValueTests(unittest.TestCase):
+    def test_enumerated_values_are_extracted(self) -> None:
+        block = make_block(
+            "**Purpose:** Indicates whether AC is negative.",
+            "**Value Encoding:**",
+            "- `0` -> AC is nonnegative",
+            "- `1` -> AC is negative",
+            "**Consumed By:**",
+            "- skip logic",
         )
 
+        values, ranges, diagnostics = parse_definition_values(block)
+
+        self.assertEqual(
+            values,
+            [
+                EnumeratedValue("0", "AC is nonnegative", 23),
+                EnumeratedValue("1", "AC is negative", 24),
+            ],
+        )
+        self.assertEqual(ranges, [])
         self.assertEqual(diagnostics, [])
 
+    def test_value_range_is_extracted(self) -> None:
+        block = make_block(
+            "**Value Encoding:**",
+            "- 0000000-1111111 -> address field",
+            "**Consumed By:**",
+            "- address generation",
+            name="IR_ADDR",
+        )
 
-    def test_value_exceeding_width_is_reported(self) -> None:
-        definitions = {
-            "ACN": DefinitionBlock(
-                signal_name="ACN",
-                heading="ACN",
-                source_path="docs/flags.md",
-                start_line=20,
-                lines=(),
-            ),
-        }
+        values, ranges, diagnostics = parse_definition_values(block)
 
-        diagnostics = validate_values_against_widths(
-            definitions,
-            {"ACN": 1},
-            {
-                "ACN": [
-                    EnumeratedValue(
-                        value="10",
-                        meaning="invalid",
-                        line=30,
-                    ),
-                ],
-            },
-            {"ACN": []},
+        self.assertEqual(values, [])
+        self.assertEqual(
+            ranges, [ValueRange("0000000", "1111111", "address field", 22)]
+        )
+        self.assertEqual(diagnostics, [])
+
+    def test_duplicate_enumerated_value_is_reported(self) -> None:
+        block = make_block(
+            "**Value Encoding:**", "- 0 -> inactive", "- 0 -> nonnegative"
+        )
+
+        values, ranges, diagnostics = parse_definition_values(block)
+
+        self.assertEqual(len(values), 1)
+        self.assertEqual(ranges, [])
+        self.assertEqual(codes(diagnostics), ["DUPLICATE_VALUE_ENCODING"])
+
+    def test_malformed_value_is_reported_as_warning(self) -> None:
+        block = make_block("**Value Encoding:**", "- garbage line")
+
+        _, _, diagnostics = parse_definition_values(block)
+
+        self.assertEqual(codes(diagnostics), ["MALFORMED_VALUE_ENCODING"])
+        self.assertEqual(diagnostics[0].severity, "WARNING")
+
+
+class ValueValidationTests(unittest.TestCase):
+    def test_value_encoding_is_required(self) -> None:
+        self.assertEqual(
+            codes(validate_value_encoding(make_signal())),
+            ["MISSING_VALUE_ENCODING"],
+        )
+
+    def test_mixed_value_encoding_is_reported(self) -> None:
+        signal = make_signal(
+            enumerated_values=(EnumeratedValue("0000000", "zero", 30),),
+            value_ranges=(ValueRange("0000000", "1111111", "address", 31),),
         )
 
         self.assertEqual(
-            [diagnostic.code for diagnostic in diagnostics],
+            codes(validate_value_encoding(signal)), ["MIXED_VALUE_ENCODING"]
+        )
+
+    def test_values_that_fit_width_are_accepted(self) -> None:
+        signal = make_signal(
+            bit_width=7,
+            value_ranges=(ValueRange("0000000", "1111111", "address", 30),),
+        )
+
+        self.assertEqual(validate_values_against_width(signal), [])
+
+    def test_value_exceeding_width_is_reported(self) -> None:
+        signal = make_signal(
+            bit_width=1,
+            enumerated_values=(EnumeratedValue("10", "invalid", 30),),
+        )
+
+        self.assertEqual(
+            codes(validate_values_against_width(signal)),
             ["VALUE_EXCEEDS_BIT_WIDTH"],
         )
 
-
-    def test_reversed_range_is_reported(self) -> None:
-        definitions = {
-            "IR_ADDR": DefinitionBlock(
-                signal_name="IR_ADDR",
-                heading="IR_ADDR",
-                source_path="docs/ir-fields.md",
-                start_line=20,
-                lines=(),
-            ),
-        }
-
-        diagnostics = validate_values_against_widths(
-            definitions,
-            {"IR_ADDR": 7},
-            {"IR_ADDR": []},
-            {
-                "IR_ADDR": [
-                    ValueRange(
-                        start="1111111",
-                        end="0000000",
-                        meaning="invalid range",
-                        line=30,
-                    ),
-                ],
-            },
+    def test_non_binary_values_are_reported(self) -> None:
+        signal = make_signal(
+            bit_width=3,
+            enumerated_values=(EnumeratedValue("7", "seven", 30),),
+            value_ranges=(ValueRange("0", "F", "hex", 31),),
         )
 
         self.assertEqual(
-            [diagnostic.code for diagnostic in diagnostics],
+            codes(validate_values_against_width(signal)),
+            ["INVALID_BINARY_VALUE", "INVALID_BINARY_RANGE"],
+        )
+
+    def test_reversed_range_is_reported(self) -> None:
+        signal = make_signal(
+            bit_width=7,
+            value_ranges=(ValueRange("1111111", "0000000", "reversed", 30),),
+        )
+
+        self.assertEqual(
+            codes(validate_values_against_width(signal)),
             ["REVERSED_VALUE_RANGE"],
         )
 
+    def test_range_exceeding_width_is_reported(self) -> None:
+        signal = make_signal(
+            bit_width=1,
+            value_ranges=(ValueRange("0", "11", "too wide", 30),),
+        )
+
+        self.assertEqual(
+            codes(validate_values_against_width(signal)),
+            ["RANGE_EXCEEDS_BIT_WIDTH"],
+        )
+
+    def test_unknown_width_skips_value_checks(self) -> None:
+        signal = make_signal(
+            enumerated_values=(EnumeratedValue("10", "unchecked", 30),),
+        )
+
+        self.assertEqual(validate_values_against_width(signal), [])
+
+
+# ---------------------------------------------------------------------------
+# Required attributes and dependencies
+# ---------------------------------------------------------------------------
+
+
+class RequiredAttributeTests(unittest.TestCase):
     def test_required_attributes_are_accepted_by_domain(self) -> None:
-        entries = [
-            IndexEntry(
-                name="ACN",
-                domain="Primitive Flags",
-                category=None,
-                source_path="docs/index.md",
-                line=10,
-            ),
-            IndexEntry(
-                name="IR_IS_MRI",
-                domain="IR-Derived Signals",
-                category="IR Class Flags",
-                source_path="docs/index.md",
-                line=20,
-            ),
-            IndexEntry(
-                name="SKIP_TAKEN",
-                domain="Derived Flags",
-                category=None,
-                source_path="docs/index.md",
-                line=30,
-            ),
-            IndexEntry(
-                name="FP_START",
-                domain="External Inputs",
-                category="Front Panel Commands",
-                source_path="docs/index.md",
-                line=40,
-            ),
-        ]
-
-        definitions = {
-            entry.name: DefinitionBlock(
-                signal_name=entry.name,
-                heading=entry.name,
-                source_path="docs/definitions.md",
-                start_line=entry.line,
-                lines=(),
-            )
-            for entry in entries
-        }
-
-        attributes = {
-            "ACN": {
+        cases = {
+            PRIMITIVE_FLAGS: {
                 "display_name": "AC Is Negative",
                 "purpose": "Indicates whether AC is negative.",
                 "source_register": "AC",
             },
-            "IR_IS_MRI": {
+            IR_DERIVED_SIGNALS: {
                 "display_name": "MRI Instruction Flag",
                 "input_type": "IR Class",
                 "mnemonic": "IR_IS_MRI",
                 "purpose": "Indicates an MRI instruction.",
             },
-            "SKIP_TAKEN": {
+            DERIVED_FLAGS: {
                 "display_name": "Skip Taken",
                 "mnemonic": "SKIP_TAKEN",
                 "purpose": "Indicates whether a skip is taken.",
             },
-            "FP_START": {
+            EXTERNAL_INPUTS: {
                 "display_name": "Front Panel Start",
                 "input_type": "External Command Input",
                 "purpose": "Indicates a start request.",
             },
         }
 
-        diagnostics = validate_required_attributes(
-            entries,
-            definitions,
-            attributes,
-        )
-
-        self.assertEqual(diagnostics, [])
+        for domain, attributes in cases.items():
+            with self.subTest(domain=domain):
+                self.assertEqual(
+                    validate_required_attributes(
+                        make_entry(domain=domain),
+                        make_signal(attributes=attributes),
+                    ),
+                    [],
+                )
 
     def test_missing_required_attribute_is_reported(self) -> None:
-        entry = IndexEntry(
-            name="SKIP_TAKEN",
-            domain="Derived Flags",
-            category=None,
-            source_path="docs/index.md",
-            line=10,
-        )
-
-        definitions = {
-            "SKIP_TAKEN": DefinitionBlock(
-                signal_name="SKIP_TAKEN",
-                heading="SKIP_TAKEN",
-                source_path="docs/derived-flags.md",
-                start_line=20,
-                lines=(),
-            ),
-        }
-
         diagnostics = validate_required_attributes(
-            [entry],
-            definitions,
-            {
-                "SKIP_TAKEN": {
+            make_entry("SKIP_TAKEN", DERIVED_FLAGS),
+            make_signal(
+                "SKIP_TAKEN",
+                attributes={
                     "mnemonic": "SKIP_TAKEN",
                     "purpose": "Indicates whether a skip is taken.",
                 },
-            },
+            ),
         )
 
-        self.assertEqual(len(diagnostics), 1)
-        self.assertEqual(
-            diagnostics[0].code,
-            "MISSING_REQUIRED_ATTRIBUTE",
-        )
+        self.assertEqual(codes(diagnostics), ["MISSING_REQUIRED_ATTRIBUTE"])
         self.assertIn("display_name", diagnostics[0].message)
 
     def test_blank_required_attribute_is_reported(self) -> None:
-        entry = IndexEntry(
-            name="FP_START",
-            domain="External Inputs",
-            category="Front Panel Commands",
-            source_path="docs/index.md",
-            line=10,
-        )
-
-        definitions = {
-            "FP_START": DefinitionBlock(
-                signal_name="FP_START",
-                heading="FP_START",
-                source_path="docs/external-inputs.md",
-                start_line=20,
-                lines=(),
-            ),
-        }
-
         diagnostics = validate_required_attributes(
-            [entry],
-            definitions,
-            {
-                "FP_START": {
+            make_entry("FP_START", EXTERNAL_INPUTS),
+            make_signal(
+                "FP_START",
+                attributes={
                     "display_name": "Front Panel Start",
                     "input_type": "   ",
                     "purpose": "Indicates a start request.",
                 },
-            },
+            ),
         )
 
         self.assertEqual(len(diagnostics), 1)
         self.assertIn("input_type", diagnostics[0].message)
 
     def test_unknown_domain_is_reported(self) -> None:
-        entry = IndexEntry(
-            name="UNKNOWN",
-            domain="Unknown Domain",
-            category=None,
-            source_path="docs/index.md",
-            line=10,
-        )
-
-        definitions = {
-            "UNKNOWN": DefinitionBlock(
-                signal_name="UNKNOWN",
-                heading="UNKNOWN",
-                source_path="docs/unknown.md",
-                start_line=20,
-                lines=(),
-            ),
-        }
-
         diagnostics = validate_required_attributes(
-            [entry],
-            definitions,
-            {"UNKNOWN": {}},
+            make_entry("UNKNOWN", "Unknown Domain"), make_signal("UNKNOWN")
         )
 
-        self.assertEqual(
-            [diagnostic.code for diagnostic in diagnostics],
-            ["UNKNOWN_INPUT_DOMAIN"],
-        )
+        self.assertEqual(codes(diagnostics), ["UNKNOWN_INPUT_DOMAIN"])
 
-    def test_derived_dependencies_are_extracted(self) -> None:
-        bold = chr(42) + chr(42)
 
-        block = DefinitionBlock(
-            signal_name="AUTO_INDEX_REQUIRED",
-            heading="AUTO_INDEX_REQUIRED",
-            source_path="docs/derived-flags.md",
-            start_line=20,
-            lines=(
-                bold + "Inputs:" + bold,
-                "- IR_INDIRECT",
-                "- EAI",
-                "",
-                "---",
-                "",
-                bold + "Purpose:" + bold,
-                "Determines whether auto-indexing is required.",
-            ),
+class DependencyTests(unittest.TestCase):
+    def test_dependencies_are_extracted(self) -> None:
+        block = make_block(
+            "**Inputs:**",
+            "- IR_INDIRECT",
+            "- EAI",
+            "",
+            "---",
+            "",
+            "**Purpose:**",
+            "Determines whether auto-indexing is required.",
+            name="AUTO_INDEX_REQUIRED",
         )
 
         dependencies, diagnostics = parse_definition_dependencies(block)
 
         self.assertEqual(
-            [dependency.name for dependency in dependencies],
-            ["IR_INDIRECT", "EAI"],
-        )
-        self.assertEqual(
-            [dependency.line for dependency in dependencies],
-            [22, 23],
+            dependencies,
+            [DependencyEntry("IR_INDIRECT", 22), DependencyEntry("EAI", 23)],
         )
         self.assertEqual(diagnostics, [])
 
     def test_duplicate_dependency_is_reported(self) -> None:
-        bold = chr(42) + chr(42)
-
-        block = DefinitionBlock(
-            signal_name="AUTO_INDEX_REQUIRED",
-            heading="AUTO_INDEX_REQUIRED",
-            source_path="docs/derived-flags.md",
-            start_line=20,
-            lines=(
-                bold + "Inputs:" + bold,
-                "- EAI",
-                "- EAI",
-            ),
-        )
+        block = make_block("**Inputs:**", "- EAI", "- EAI")
 
         dependencies, diagnostics = parse_definition_dependencies(block)
 
-        self.assertEqual(
-            [dependency.name for dependency in dependencies],
-            ["EAI"],
-        )
-        self.assertEqual(
-            [diagnostic.code for diagnostic in diagnostics],
-            ["DUPLICATE_DEPENDENCY"],
-        )
-
-    def test_dependencies_are_extracted_from_all_definitions(self) -> None:
-        bold = chr(42) + chr(42)
-
-        definitions = {
-            "AUTO_INDEX_REQUIRED": DefinitionBlock(
-                signal_name="AUTO_INDEX_REQUIRED",
-                heading="AUTO_INDEX_REQUIRED",
-                source_path="docs/derived-flags.md",
-                start_line=20,
-                lines=(
-                    bold + "Inputs:" + bold,
-                    "- IR_INDIRECT",
-                    "- EAI",
-                ),
-            ),
-            "ACN": DefinitionBlock(
-                signal_name="ACN",
-                heading="ACN",
-                source_path="docs/flags.md",
-                start_line=40,
-                lines=(),
-            ),
-        }
-
-        dependencies, diagnostics = extract_all_definition_dependencies(
-            definitions
-        )
-
-        self.assertEqual(
-            [
-                dependency.name
-                for dependency in dependencies["AUTO_INDEX_REQUIRED"]
-            ],
-            ["IR_INDIRECT", "EAI"],
-        )
-        self.assertEqual(dependencies["ACN"], [])
-        self.assertEqual(diagnostics, [])
+        self.assertEqual([item.name for item in dependencies], ["EAI"])
+        self.assertEqual(codes(diagnostics), ["DUPLICATE_DEPENDENCY"])
 
     def test_known_derived_dependencies_are_accepted(self) -> None:
-        entries = [
-            IndexEntry(
-                name="IR_INDIRECT",
-                domain="IR-Derived Signals",
-                category="Addressing Mode",
-                source_path="docs/index.md",
-                line=10,
+        signal = make_signal(
+            "AUTO_INDEX_REQUIRED",
+            dependencies=(
+                DependencyEntry("IR_INDIRECT", 22),
+                DependencyEntry("EAI", 23),
             ),
-            IndexEntry(
-                name="EAI",
-                domain="Primitive Flags",
-                category=None,
-                source_path="docs/index.md",
-                line=11,
-            ),
-            IndexEntry(
-                name="AUTO_INDEX_REQUIRED",
-                domain="Derived Flags",
-                category=None,
-                source_path="docs/index.md",
-                line=12,
-            ),
-        ]
+        )
 
-        definitions = {
-            "AUTO_INDEX_REQUIRED": DefinitionBlock(
-                signal_name="AUTO_INDEX_REQUIRED",
-                heading="AUTO_INDEX_REQUIRED",
-                source_path="docs/derived-flags.md",
-                start_line=20,
-                lines=(),
-            ),
-        }
-
-        dependencies = {
-            "AUTO_INDEX_REQUIRED": [
-                DependencyEntry(name="IR_INDIRECT", line=22),
-                DependencyEntry(name="EAI", line=23),
-            ],
-        }
-
-        diagnostics = validate_derived_dependencies(
-            entries,
-            definitions,
-            dependencies,
+        diagnostics = validate_dependencies(
+            make_entry("AUTO_INDEX_REQUIRED", DERIVED_FLAGS),
+            signal,
+            {"IR_INDIRECT", "EAI", "AUTO_INDEX_REQUIRED"},
         )
 
         self.assertEqual(diagnostics, [])
 
     def test_missing_derived_dependencies_are_reported(self) -> None:
-        entry = IndexEntry(
-            name="AUTO_INDEX_REQUIRED",
-            domain="Derived Flags",
-            category=None,
-            source_path="docs/index.md",
-            line=10,
+        diagnostics = validate_dependencies(
+            make_entry("AUTO_INDEX_REQUIRED", DERIVED_FLAGS),
+            make_signal("AUTO_INDEX_REQUIRED"),
+            {"AUTO_INDEX_REQUIRED"},
         )
 
-        definitions = {
-            "AUTO_INDEX_REQUIRED": DefinitionBlock(
-                signal_name="AUTO_INDEX_REQUIRED",
-                heading="AUTO_INDEX_REQUIRED",
-                source_path="docs/derived-flags.md",
-                start_line=20,
-                lines=(),
+        self.assertEqual(codes(diagnostics), ["MISSING_DEPENDENCIES"])
+
+    def test_unknown_dependency_is_reported(self) -> None:
+        diagnostics = validate_dependencies(
+            make_entry("AUTO_INDEX_REQUIRED", DERIVED_FLAGS),
+            make_signal(
+                "AUTO_INDEX_REQUIRED",
+                dependencies=(DependencyEntry("UNKNOWN_FLAG", 22),),
             ),
-        }
-
-        diagnostics = validate_derived_dependencies(
-            [entry],
-            definitions,
-            {"AUTO_INDEX_REQUIRED": []},
+            {"AUTO_INDEX_REQUIRED"},
         )
 
-        self.assertEqual(
-            [diagnostic.code for diagnostic in diagnostics],
-            ["MISSING_DEPENDENCIES"],
-        )
+        self.assertEqual(codes(diagnostics), ["UNKNOWN_DEPENDENCY"])
+        self.assertEqual(diagnostics[0].line, 22)
 
-    def test_unknown_derived_dependency_is_reported(self) -> None:
-        entry = IndexEntry(
-            name="AUTO_INDEX_REQUIRED",
-            domain="Derived Flags",
-            category=None,
-            source_path="docs/index.md",
-            line=10,
-        )
 
-        definitions = {
-            "AUTO_INDEX_REQUIRED": DefinitionBlock(
-                signal_name="AUTO_INDEX_REQUIRED",
-                heading="AUTO_INDEX_REQUIRED",
-                source_path="docs/derived-flags.md",
-                start_line=20,
-                lines=(),
-            ),
-        }
+# ---------------------------------------------------------------------------
+# Logic sections
+# ---------------------------------------------------------------------------
 
-        dependencies = {
-            "AUTO_INDEX_REQUIRED": [
-                DependencyEntry(name="UNKNOWN_FLAG", line=22),
-            ],
-        }
 
-        diagnostics = validate_derived_dependencies(
-            [entry],
-            definitions,
-            dependencies,
-        )
-
-        self.assertEqual(
-            [diagnostic.code for diagnostic in diagnostics],
-            ["UNKNOWN_DEPENDENCY"],
-        )
-
+class LogicSectionTests(unittest.TestCase):
     def test_inline_derivation_is_extracted(self) -> None:
-        bold = chr(42) + chr(42)
-
-        block = DefinitionBlock(
-            signal_name="IR_INDIRECT",
-            heading="IR_INDIRECT",
-            source_path="docs/ir-derived-fields.md",
-            start_line=20,
-            lines=(
-                bold + "Derivation:" + bold + " IR_INDIRECT = IR_IS_MRI AND IR[8]",
-                bold + "Value Encoding:" + bold,
-                "- 0 -> direct",
-                "- 1 -> indirect",
-            ),
+        block = make_block(
+            "**Derivation:** IR_INDIRECT = IR_IS_MRI AND IR[8]",
+            "**Value Encoding:**",
+            "- 0 -> direct",
+            "- 1 -> indirect",
+            name="IR_INDIRECT",
         )
 
         sections, diagnostics = parse_definition_logic_sections(block)
 
         self.assertEqual(
-            sections["derivation"].text,
-            "IR_INDIRECT = IR_IS_MRI AND IR[8]",
+            sections,
+            {"derivation": TextSection("IR_INDIRECT = IR_IS_MRI AND IR[8]", 21)},
         )
-        self.assertEqual(sections["derivation"].line, 21)
         self.assertEqual(diagnostics, [])
 
     def test_multiline_expression_in_code_fence_is_extracted(self) -> None:
-        bold = chr(42) + chr(42)
-
-        block = DefinitionBlock(
-            signal_name="AUTO_INDEX_REQUIRED",
-            heading="AUTO_INDEX_REQUIRED",
-            source_path="docs/derived-flags.md",
-            start_line=20,
-            lines=(
-                bold + "Expression:" + bold,
-                "",
-                "```",
-                "AUTO_INDEX_REQUIRED =",
-                "    IR_INDIRECT",
-                "AND EAI",
-                "```",
-                "",
-                "---",
-                "",
-                bold + "Value Encoding:" + bold,
-            ),
+        block = make_block(
+            "**Expression:**",
+            "",
+            "```",
+            "AUTO_INDEX_REQUIRED =",
+            "    IR_INDIRECT",
+            "AND EAI",
+            "```",
+            "",
+            "---",
+            "",
+            "**Value Encoding:**",
+            name="AUTO_INDEX_REQUIRED",
         )
 
         sections, diagnostics = parse_definition_logic_sections(block)
 
         self.assertEqual(
             sections["expression"].text,
-            "\n".join(
-                [
-                    "AUTO_INDEX_REQUIRED =",
-                    "IR_INDIRECT",
-                    "AND EAI",
-                ]
-            ),
+            "AUTO_INDEX_REQUIRED =\nIR_INDIRECT\nAND EAI",
+        )
+        self.assertEqual(diagnostics, [])
+
+    def test_labels_inside_code_fence_are_text(self) -> None:
+        block = make_block(
+            "**Expression:**",
+            "```",
+            "X = **Bold:** Y",
+            "---",
+            "```",
+            name="X",
         )
 
-    def test_internal_composition_is_extracted(self) -> None:
-        bold = chr(42) + chr(42)
+        sections, _ = parse_definition_logic_sections(block)
 
-        block = DefinitionBlock(
-            signal_name="SKIP_TAKEN",
-            heading="SKIP_TAKEN",
-            source_path="docs/derived-flags.md",
-            start_line=20,
-            lines=(
-                bold
-                + "Internal Composition (local to this definition):"
-                + bold,
-                "",
-                "SMA_OR = IR_OPR_SMA AND ACN",
-                "OR_ANY_TRUE = SMA_OR OR SZA_OR OR SNL_OR",
-                "",
-                "---",
-                "",
-                bold + "Value Encoding:" + bold,
-            ),
+        self.assertEqual(sections["expression"].text, "X = **Bold:** Y\n---")
+
+    def test_internal_composition_is_extracted(self) -> None:
+        block = make_block(
+            "**Internal Composition (local to this definition):**",
+            "",
+            "SMA_OR = IR_OPR_SMA AND ACN",
+            "OR_ANY_TRUE = SMA_OR OR SZA_OR OR SNL_OR",
+            "",
+            "---",
+            "",
+            "**Value Encoding:**",
+            name="SKIP_TAKEN",
         )
 
         sections, diagnostics = parse_definition_logic_sections(block)
 
         self.assertEqual(
             sections["internal_composition"].text,
-            (
-                "SMA_OR = IR_OPR_SMA AND ACN\n"
-                "OR_ANY_TRUE = SMA_OR OR SZA_OR OR SNL_OR"
-            ),
+            "SMA_OR = IR_OPR_SMA AND ACN\n"
+            "OR_ANY_TRUE = SMA_OR OR SZA_OR OR SNL_OR",
         )
         self.assertEqual(diagnostics, [])
 
     def test_empty_logic_section_is_reported(self) -> None:
-        bold = chr(42) + chr(42)
-
-        block = DefinitionBlock(
-            signal_name="IR_INDIRECT",
-            heading="IR_INDIRECT",
-            source_path="docs/ir-derived-fields.md",
-            start_line=20,
-            lines=(
-                bold + "Derivation:" + bold,
-                "",
-                "---",
-                "",
-                bold + "Value Encoding:" + bold,
-            ),
+        block = make_block(
+            "**Derivation:**", "", "---", "", "**Value Encoding:**"
         )
 
         sections, diagnostics = parse_definition_logic_sections(block)
 
         self.assertEqual(sections, {})
-        self.assertEqual(
-            [diagnostic.code for diagnostic in diagnostics],
-            ["EMPTY_LOGIC_SECTION"],
+        self.assertEqual(codes(diagnostics), ["EMPTY_LOGIC_SECTION"])
+
+    def test_duplicate_logic_section_is_reported(self) -> None:
+        block = make_block("**Derivation:** A = 1", "**Derivation:** A = 2")
+
+        sections, diagnostics = parse_definition_logic_sections(block)
+
+        self.assertEqual(sections["derivation"].text, "A = 1")
+        self.assertEqual(codes(diagnostics), ["DUPLICATE_LOGIC_SECTION"])
+
+    def test_logic_assignment_is_detected(self) -> None:
+        self.assertTrue(
+            logic_assigns_signal("SKIP_TAKEN = LOCAL_VALUE", "SKIP_TAKEN")
+        )
+        self.assertTrue(
+            logic_assigns_signal(
+                "IR_OPR_GROUP1 = IR_IS_OPR AND (IR[8] == 0)", "IR_OPR_GROUP1"
+            )
+        )
+        self.assertFalse(
+            logic_assigns_signal(
+                "IR_OPR_GROUP2 = IR_IS_OPR AND IR[8]", "IR_OPR_GROUP1"
+            )
         )
 
+
+class LogicValidationTests(unittest.TestCase):
     def test_ir_derived_signal_requires_derivation(self) -> None:
-        entry = IndexEntry(
-            name="IR_INDIRECT",
-            domain="IR-Derived Signals",
-            category="Addressing Mode",
-            source_path="docs/index.md",
-            line=10,
-        )
-
-        definitions = {
-            "IR_INDIRECT": DefinitionBlock(
-                signal_name="IR_INDIRECT",
-                heading="IR_INDIRECT",
-                source_path="docs/ir-derived-fields.md",
-                start_line=20,
-                lines=(),
-            ),
-        }
-
-        diagnostics = validate_required_logic_sections(
-            [entry],
-            definitions,
-            {"IR_INDIRECT": {}},
-        )
-
         self.assertEqual(
-            [diagnostic.code for diagnostic in diagnostics],
+            codes(
+                validate_logic(
+                    make_entry("IR_INDIRECT", IR_DERIVED_SIGNALS),
+                    make_signal("IR_INDIRECT"),
+                )
+            ),
             ["MISSING_DERIVATION"],
         )
 
+    def test_ir_derivation_result_mismatch_is_reported(self) -> None:
+        diagnostics = validate_logic(
+            make_entry("IR_ADDR", IR_DERIVED_SIGNALS),
+            make_signal(
+                "IR_ADDR",
+                logic={"derivation": TextSection("IR_ADDRESS = IR[6:0]", 25)},
+            ),
+        )
+
+        self.assertEqual(codes(diagnostics), ["DERIVATION_RESULT_MISMATCH"])
+        self.assertEqual(diagnostics[0].line, 25)
+
     def test_derived_flag_accepts_expression(self) -> None:
-        entry = IndexEntry(
-            name="AUTO_INDEX_REQUIRED",
-            domain="Derived Flags",
-            category=None,
-            source_path="docs/index.md",
-            line=10,
-        )
-
-        definitions = {
-            "AUTO_INDEX_REQUIRED": DefinitionBlock(
-                signal_name="AUTO_INDEX_REQUIRED",
-                heading="AUTO_INDEX_REQUIRED",
-                source_path="docs/derived-flags.md",
-                start_line=20,
-                lines=(),
-            ),
-        }
-
-        logic_sections = {
-            "AUTO_INDEX_REQUIRED": {
+        signal = make_signal(
+            "AUTO_INDEX_REQUIRED",
+            logic={
                 "expression": TextSection(
-                    text="AUTO_INDEX_REQUIRED = IR_INDIRECT AND EAI",
-                    line=30,
-                ),
+                    "AUTO_INDEX_REQUIRED = IR_INDIRECT AND EAI", 30
+                )
             },
-        }
-
-        diagnostics = validate_required_logic_sections(
-            [entry],
-            definitions,
-            logic_sections,
-        )
-
-        self.assertEqual(diagnostics, [])
-
-    def test_derived_flag_accepts_internal_composition(self) -> None:
-        entry = IndexEntry(
-            name="SKIP_TAKEN",
-            domain="Derived Flags",
-            category=None,
-            source_path="docs/index.md",
-            line=10,
-        )
-
-        definitions = {
-            "SKIP_TAKEN": DefinitionBlock(
-                signal_name="SKIP_TAKEN",
-                heading="SKIP_TAKEN",
-                source_path="docs/derived-flags.md",
-                start_line=20,
-                lines=(),
-            ),
-        }
-
-        logic_sections = {
-            "SKIP_TAKEN": {
-                "internal_composition": TextSection(
-                    text="SKIP_TAKEN = OR_ANY_TRUE",
-                    line=30,
-                ),
-            },
-        }
-
-        diagnostics = validate_required_logic_sections(
-            [entry],
-            definitions,
-            logic_sections,
-        )
-
-        self.assertEqual(diagnostics, [])
-
-    def test_derived_flag_without_logic_is_reported(self) -> None:
-        entry = IndexEntry(
-            name="SKIP_TAKEN",
-            domain="Derived Flags",
-            category=None,
-            source_path="docs/index.md",
-            line=10,
-        )
-
-        definitions = {
-            "SKIP_TAKEN": DefinitionBlock(
-                signal_name="SKIP_TAKEN",
-                heading="SKIP_TAKEN",
-                source_path="docs/derived-flags.md",
-                start_line=20,
-                lines=(),
-            ),
-        }
-
-        diagnostics = validate_required_logic_sections(
-            [entry],
-            definitions,
-            {"SKIP_TAKEN": {}},
         )
 
         self.assertEqual(
-            [diagnostic.code for diagnostic in diagnostics],
+            validate_logic(
+                make_entry("AUTO_INDEX_REQUIRED", DERIVED_FLAGS), signal
+            ),
+            [],
+        )
+
+    def test_derived_flag_accepts_internal_composition(self) -> None:
+        signal = make_signal(
+            "SKIP_TAKEN",
+            logic={
+                "internal_composition": TextSection(
+                    "LOCAL_SKIP = ACN OR ACZ\nSKIP_TAKEN = LOCAL_SKIP", 25
+                )
+            },
+        )
+
+        self.assertEqual(
+            validate_logic(make_entry("SKIP_TAKEN", DERIVED_FLAGS), signal), []
+        )
+
+    def test_derived_flag_without_logic_is_reported(self) -> None:
+        self.assertEqual(
+            codes(
+                validate_logic(
+                    make_entry("SKIP_TAKEN", DERIVED_FLAGS),
+                    make_signal("SKIP_TAKEN"),
+                )
+            ),
             ["MISSING_DERIVED_LOGIC"],
         )
 
-    def test_logic_sections_are_extracted_from_all_definitions(self) -> None:
-        bold = chr(42) + chr(42)
-
-        definitions = {
-            "IR_INDIRECT": DefinitionBlock(
-                signal_name="IR_INDIRECT",
-                heading="IR_INDIRECT",
-                source_path="docs/ir-derived-fields.md",
-                start_line=20,
-                lines=(
-                    bold
-                    + "Derivation:"
-                    + bold
-                    + " IR_INDIRECT = IR_IS_MRI AND IR[8]",
-                ),
-            ),
-            "ACN": DefinitionBlock(
-                signal_name="ACN",
-                heading="ACN",
-                source_path="docs/flags.md",
-                start_line=40,
-                lines=(),
-            ),
-        }
-
-        sections, diagnostics = extract_all_logic_sections(definitions)
+    def test_derived_flag_result_mismatch_is_reported(self) -> None:
+        signal = make_signal(
+            "SKIP_TAKEN",
+            logic={"expression": TextSection("SKIP_TAKE = ACN", 25)},
+        )
 
         self.assertEqual(
-            sections["IR_INDIRECT"]["derivation"].text,
-            "IR_INDIRECT = IR_IS_MRI AND IR[8]",
+            codes(validate_logic(make_entry("SKIP_TAKEN", DERIVED_FLAGS), signal)),
+            ["DERIVED_RESULT_MISMATCH"],
         )
-        self.assertEqual(sections["ACN"], {})
+
+    def test_other_domains_have_no_logic_rule(self) -> None:
+        self.assertEqual(validate_logic(make_entry(), make_signal()), [])
+
+
+class NamingValidationTests(unittest.TestCase):
+    def test_mnemonic_mismatch_is_reported(self) -> None:
+        diagnostics = validate_naming(
+            make_entry("IR_ADDR", IR_DERIVED_SIGNALS),
+            make_signal("IR_ADDR", attributes={"mnemonic": "IR_ADDRESS"}),
+        )
+
+        self.assertEqual(codes(diagnostics), ["MNEMONIC_NAME_MISMATCH"])
+
+    def test_mnemonic_is_not_checked_for_external_inputs(self) -> None:
+        diagnostics = validate_naming(
+            make_entry("FP_START", EXTERNAL_INPUTS),
+            make_signal("FP_START", attributes={"mnemonic": "OTHER"}),
+        )
+
         self.assertEqual(diagnostics, [])
+
+    def test_active_low_name_conflict_is_reported(self) -> None:
+        diagnostics = validate_naming(
+            make_entry("/INT_REQ", EXTERNAL_INPUTS),
+            make_signal(
+                "/INT_REQ", polarity=Polarity("active-high", "explicit")
+            ),
+        )
+
+        self.assertEqual(codes(diagnostics), ["ACTIVE_LOW_NAME_CONFLICT"])
+
+
+# ---------------------------------------------------------------------------
+# Constraints and consumers
+# ---------------------------------------------------------------------------
+
+
+class ConstraintTests(unittest.TestCase):
+    def test_plural_constraints_are_extracted(self) -> None:
+        block = make_block(
+            "**Constraints:**",
+            "- meaningful only when RUN = 0",
+            "- must be treated as a momentary command input",
+            "**Consumed By:**",
+            "- run-state sequencing",
+        )
+
+        constraints, diagnostics = parse_definition_constraints(block)
+
+        self.assertEqual(
+            constraints,
+            [
+                ConstraintEntry("meaningful only when RUN = 0", 22),
+                ConstraintEntry(
+                    "must be treated as a momentary command input", 23
+                ),
+            ],
+        )
+        self.assertEqual(diagnostics, [])
+
+    def test_singular_inline_constraint_is_extracted(self) -> None:
+        block = make_block(
+            "**Constraint:** IR_DF and IR_IF share the same bit positions.",
+            "**Consumed By:**",
+        )
+
+        constraints, _ = parse_definition_constraints(block)
+
+        self.assertEqual(
+            constraints,
+            [
+                ConstraintEntry(
+                    "IR_DF and IR_IF share the same bit positions.", 21
+                )
+            ],
+        )
+
+    def test_multiline_prose_constraint_is_extracted(self) -> None:
+        block = make_block(
+            "**Constraint:**",
+            "IR_DF and IR_IF share the same bit positions",
+            "but are interpreted in different instruction contexts.",
+            "**Consumed By:**",
+            "- field-transfer logic",
+        )
+
+        constraints, _ = parse_definition_constraints(block)
+
+        self.assertEqual(
+            constraints,
+            [
+                ConstraintEntry(
+                    "IR_DF and IR_IF share the same bit positions "
+                    "but are interpreted in different instruction contexts.",
+                    22,
+                )
+            ],
+        )
+
+    def test_rule_ends_constraint_section(self) -> None:
+        block = make_block(
+            "**Constraints:**", "- first", "---", "- not a constraint"
+        )
+
+        constraints, _ = parse_definition_constraints(block)
+
+        self.assertEqual([item.text for item in constraints], ["first"])
+
+    def test_definition_without_constraints_returns_empty_list(self) -> None:
+        block = make_block("**Purpose:** Indicates whether AC is negative.")
+
+        self.assertEqual(parse_definition_constraints(block), ([], []))
+
+
+class GlobalConstraintTests(unittest.TestCase):
+    NAMES = {"IR_IS_MRI", "IR_IS_IOT", "IR_IS_OPR"}
 
     def test_global_constraints_are_extracted(self) -> None:
-        document = SourceDocument(Path("x"), "docs/x.md", "- Classes:\n  - `EXACTLY_ONE(IR_IS_MRI, IR_IS_IOT, IR_IS_OPR)`\n")
-        values, diagnostics = parse_global_constraints([document], {"IR_IS_MRI", "IR_IS_IOT", "IR_IS_OPR"})
-        self.assertEqual([(x.kind, x.inputs) for x in values], [("exactly_one", ("IR_IS_MRI", "IR_IS_IOT", "IR_IS_OPR"))])
-        self.assertEqual(diagnostics, [])
-
-    def test_plural_constraints_are_extracted(self) -> None:
-        bold = chr(42) + chr(42)
-
-        block = DefinitionBlock(
-            signal_name="FP_START",
-            heading="FP_START",
-            source_path="docs/external-inputs.md",
-            start_line=20,
-            lines=(
-                bold + "Constraints:" + bold,
-                "- meaningful only when RUN = 0",
-                "- must be treated as a momentary command input",
-                bold + "Consumed By:" + bold,
-                "- run-state sequencing",
-            ),
+        document = make_document(
+            "- Classes:\n  - `EXACTLY_ONE(IR_IS_MRI, IR_IS_IOT, IR_IS_OPR)`\n"
         )
 
-        constraints, diagnostics = parse_definition_constraints(
-            block
+        constraints, diagnostics = parse_global_constraints(
+            [document], self.NAMES
         )
 
         self.assertEqual(
-            [constraint.text for constraint in constraints],
-            [
-                "meaningful only when RUN = 0",
-                "must be treated as a momentary command input",
-            ],
-        )
-        self.assertEqual(
-            [constraint.line for constraint in constraints],
-            [22, 23],
+            [(item.kind, item.inputs, item.line) for item in constraints],
+            [("exactly_one", ("IR_IS_MRI", "IR_IS_IOT", "IR_IS_OPR"), 2)],
         )
         self.assertEqual(diagnostics, [])
 
-
-    def test_singular_inline_constraint_is_extracted(
-        self,
-    ) -> None:
-        bold = chr(42) + chr(42)
-
-        block = DefinitionBlock(
-            signal_name="IR_DF",
-            heading="IR_DF",
-            source_path="docs/ir-derived-fields.md",
-            start_line=20,
-            lines=(
-                bold
-                + "Constraint:"
-                + bold
-                + " IR_DF and IR_IF share the same bit positions.",
-                bold + "Consumed By:" + bold,
-            ),
-        )
-
-        constraints, diagnostics = parse_definition_constraints(
-            block
-        )
+    def test_top_level_bullets_are_ignored(self) -> None:
+        document = make_document("- `AT_MOST_ONE(IR_IS_MRI, IR_IS_IOT)`\n")
 
         self.assertEqual(
-            [constraint.text for constraint in constraints],
-            [
-                "IR_DF and IR_IF share the same bit positions.",
-            ],
-        )
-        self.assertEqual(constraints[0].line, 21)
-        self.assertEqual(diagnostics, [])
-
-
-    def test_definition_without_constraints_returns_empty_list(
-        self,
-    ) -> None:
-        bold = chr(42) + chr(42)
-
-        block = DefinitionBlock(
-            signal_name="ACN",
-            heading="ACN",
-            source_path="docs/flags.md",
-            start_line=20,
-            lines=(
-                bold
-                + "Purpose:"
-                + bold
-                + " Indicates whether AC is negative.",
-            ),
+            parse_global_constraints([document], self.NAMES), ([], [])
         )
 
-        constraints, diagnostics = parse_definition_constraints(
-            block
+    def test_invalid_global_constraints_are_reported(self) -> None:
+        document = make_document(
+            "- Classes:\n"
+            "  - `AT_MOST_ONE(IR_IS_MRI)`\n"
+            "  - `AT_MOST_ONE(IR_IS_MRI, NOPE)`\n"
+            "  - `AT_MOST_ONE(IR_IS_MRI, IR_IS_IOT)`\n"
+            "  - `AT_MOST_ONE(IR_IS_MRI, IR_IS_IOT)`\n"
         )
 
-        self.assertEqual(constraints, [])
-        self.assertEqual(diagnostics, [])
-
-
-    def test_constraints_are_extracted_from_all_definitions(
-        self,
-    ) -> None:
-        bold = chr(42) + chr(42)
-
-        definitions = {
-            "FP_START": DefinitionBlock(
-                signal_name="FP_START",
-                heading="FP_START",
-                source_path="docs/external-inputs.md",
-                start_line=20,
-                lines=(
-                    bold + "Constraints:" + bold,
-                    "- meaningful only when RUN = 0",
-                ),
-            ),
-            "ACN": DefinitionBlock(
-                signal_name="ACN",
-                heading="ACN",
-                source_path="docs/flags.md",
-                start_line=40,
-                lines=(),
-            ),
-        }
-
-        constraints, diagnostics = (
-            extract_all_definition_constraints(
-                definitions
-            )
+        constraints, diagnostics = parse_global_constraints(
+            [document], self.NAMES
         )
 
+        self.assertEqual(len(constraints), 1)
         self.assertEqual(
+            codes(diagnostics),
             [
-                constraint.text
-                for constraint in constraints["FP_START"]
-            ],
-            [
-                "meaningful only when RUN = 0",
-            ],
-        )
-        self.assertEqual(constraints["ACN"], [])
-        self.assertEqual(diagnostics, [])
-        
-    def test_multiline_prose_constraint_is_extracted(
-        self,
-    ) -> None:
-        bold = chr(42) + chr(42)
-
-        block = DefinitionBlock(
-            signal_name="IR_DF",
-            heading="IR_DF",
-            source_path="docs/ir-derived-fields.md",
-            start_line=20,
-            lines=(
-                bold + "Constraint:" + bold,
-                "IR_DF and IR_IF share the same bit positions",
-                "but are interpreted in different instruction contexts.",
-                bold + "Consumed By:" + bold,
-                "- field-transfer logic",
-            ),
-        )
-
-        constraints, diagnostics = parse_definition_constraints(
-            block
-        )
-
-        self.assertEqual(
-            [constraint.text for constraint in constraints],
-            [
-                (
-                    "IR_DF and IR_IF share the same bit positions "
-                    "but are interpreted in different instruction "
-                    "contexts."
-                ),
+                "INVALID_GLOBAL_CONSTRAINT",
+                "UNKNOWN_GLOBAL_CONSTRAINT_INPUT",
+                "DUPLICATE_GLOBAL_CONSTRAINT",
             ],
         )
-        self.assertEqual(constraints[0].line, 22)
-        self.assertEqual(diagnostics, [])
-    
+
+
+class ConsumerTests(unittest.TestCase):
     def test_linked_consumer_line_is_parsed(self) -> None:
         self.assertEqual(
-            parse_consumer_line(
-                "- [PC_INC]"
-                "(../../03-microarchitecture/"
-                "02-micro-operations.md#pc_inc)"
-            ),
-            (
-                "PC_INC",
-                (
-                    "../../03-microarchitecture/"
-                    "02-micro-operations.md#pc_inc"
-                ),
-            ),
+            parse_consumer_line(f"- [PC_INC]({MICRO_OPS}#pc_inc)", 7),
+            ConsumerEntry("PC_INC", f"{MICRO_OPS}#pc_inc", 7),
         )
-
 
     def test_plain_text_consumer_line_is_parsed(self) -> None:
         self.assertEqual(
-            parse_consumer_line(
-                "- run-state sequencing"
-            ),
-            (
-                "run-state sequencing",
-                None,
-            ),
+            parse_consumer_line("- run-state sequencing", 7),
+            ConsumerEntry("run-state sequencing", None, 7),
         )
-
 
     def test_non_list_consumer_line_is_rejected(self) -> None:
-        self.assertIsNone(
-            parse_consumer_line(
-                "run-state sequencing"
-            )
-        )
-
+        self.assertIsNone(parse_consumer_line("run-state sequencing"))
 
     def test_consumed_by_entries_are_extracted(self) -> None:
-        bold = chr(42) + chr(42)
-
-        block = DefinitionBlock(
-            signal_name="FP_START",
-            heading="FP_START",
-            source_path="docs/external-inputs.md",
-            start_line=20,
-            lines=(
-                bold + "Consumed By:" + bold,
-                "- Control decision:",
-                "- run-state sequencing",
-                "- console execution control",
-                bold + "Constraints:" + bold,
-                "- meaningful only when RUN = 0",
-            ),
+        block = make_block(
+            "**Consumed By:**",
+            "- Control decision:",
+            "- run-state sequencing",
+            "- console execution control",
+            "**Constraints:**",
+            "- meaningful only when RUN = 0",
         )
 
-        consumers, diagnostics = parse_definition_consumers(
-            block
-        )
+        consumers, diagnostics = parse_definition_consumers(block)
 
         self.assertEqual(
+            consumers,
             [
-                (consumer.text, consumer.target)
-                for consumer in consumers
-            ],
-            [
-                ("Control decision:", None),
-                ("run-state sequencing", None),
-                ("console execution control", None),
-            ],
-        )
-        self.assertEqual(
-            [consumer.line for consumer in consumers],
-            [22, 23, 24],
-        )
-        self.assertEqual(diagnostics, [])
-
-
-    def test_used_by_micro_operations_are_extracted(
-        self,
-    ) -> None:
-        bold = chr(42) + chr(42)
-
-        block = DefinitionBlock(
-            signal_name="AUTO_INDEX_REQUIRED",
-            heading="AUTO_INDEX_REQUIRED",
-            source_path="docs/derived-flags.md",
-            start_line=20,
-            lines=(
-                bold + "Used By μops:" + bold,
-                (
-                    "- [MB_INC]"
-                    "(../../03-microarchitecture/"
-                    "02-micro-operations.md#mb_inc)"
-                ),
-                (
-                    "- [MEM_WRITE_FROM_MB]"
-                    "(../../03-microarchitecture/"
-                    "02-micro-operations.md#mem_write_from_mb)"
-                ),
-                "",
-                "---",
-            ),
-        )
-
-        consumers, diagnostics = parse_definition_consumers(
-            block
-        )
-
-        self.assertEqual(
-            [
-                (consumer.text, consumer.target)
-                for consumer in consumers
-            ],
-            [
-                (
-                    "MB_INC",
-                    (
-                        "../../03-microarchitecture/"
-                        "02-micro-operations.md#mb_inc"
-                    ),
-                ),
-                (
-                    "MEM_WRITE_FROM_MB",
-                    (
-                        "../../03-microarchitecture/"
-                        "02-micro-operations.md#mem_write_from_mb"
-                    ),
-                ),
+                ConsumerEntry("Control decision:", None, 22),
+                ConsumerEntry("run-state sequencing", None, 23),
+                ConsumerEntry("console execution control", None, 24),
             ],
         )
         self.assertEqual(diagnostics, [])
 
-
-    def test_none_consumer_is_preserved_as_plain_text(
-        self,
-    ) -> None:
-        bold = chr(42) + chr(42)
-
-        block = DefinitionBlock(
-            signal_name="INTERRUPT_REQUEST_VALID",
-            heading="INTERRUPT_REQUEST_VALID",
-            source_path="docs/derived-flags.md",
-            start_line=20,
-            lines=(
-                bold + "Used By μops:" + bold,
-                "- (none - used for MS transition control)",
-            ),
+    def test_used_by_micro_operations_are_extracted(self) -> None:
+        block = make_block(
+            "**Used By μops:**",
+            f"- [MB_INC]({MICRO_OPS}#mb_inc)",
+            f"- [MEM_WRITE_FROM_MB]({MICRO_OPS}#mem_write_from_mb)",
+            "",
+            "---",
         )
 
-        consumers, diagnostics = parse_definition_consumers(
-            block
-        )
+        consumers, _ = parse_definition_consumers(block)
 
         self.assertEqual(
+            [(item.text, item.target) for item in consumers],
             [
-                (consumer.text, consumer.target)
-                for consumer in consumers
-            ],
-            [
-                (
-                    "(none - used for MS transition control)",
-                    None,
-                ),
+                ("MB_INC", f"{MICRO_OPS}#mb_inc"),
+                ("MEM_WRITE_FROM_MB", f"{MICRO_OPS}#mem_write_from_mb"),
             ],
         )
-        self.assertEqual(diagnostics, [])
 
-
-    def test_consumers_are_extracted_from_all_definitions(
-        self,
-    ) -> None:
-        bold = chr(42) + chr(42)
-
-        definitions = {
-            "ACN": DefinitionBlock(
-                signal_name="ACN",
-                heading="ACN",
-                source_path="docs/flags.md",
-                start_line=20,
-                lines=(
-                    bold + "Consumed By:" + bold,
-                    "- skip logic",
-                ),
-            ),
-            "FP_START": DefinitionBlock(
-                signal_name="FP_START",
-                heading="FP_START",
-                source_path="docs/external-inputs.md",
-                start_line=40,
-                lines=(),
-            ),
-        }
-
-        consumers, diagnostics = (
-            extract_all_definition_consumers(
-                definitions
-            )
+    def test_none_consumer_is_preserved_as_plain_text(self) -> None:
+        block = make_block(
+            "**Used By μops:**", "- (none - used for MS transition control)"
         )
+
+        consumers, _ = parse_definition_consumers(block)
 
         self.assertEqual(
-            [
-                consumer.text
-                for consumer in consumers["ACN"]
-            ],
-            ["skip logic"],
-        )
-        self.assertEqual(consumers["FP_START"], [])
-        self.assertEqual(diagnostics, [])
-      
-    def test_logic_assignment_is_detected(self) -> None:
-        self.assertTrue(
-            logic_assigns_signal(
-                "SKIP_TAKEN = LOCAL_VALUE",
-                "SKIP_TAKEN",
-            )
+            [(item.text, item.target) for item in consumers],
+            [("(none - used for MS transition control)", None)],
         )
 
 
-    def test_logic_assignment_accepts_identifiers_with_digits(
-        self,
-    ) -> None:
-        self.assertTrue(
-            logic_assigns_signal(
-                (
-                    "IR_OPR_GROUP1 = "
-                    "IR_IS_OPR AND (IR[8] == 0)"
-                ),
-                "IR_OPR_GROUP1",
-            )
+# ---------------------------------------------------------------------------
+# Signal extraction and outputs
+# ---------------------------------------------------------------------------
+
+
+class SignalExtractionTests(unittest.TestCase):
+    def test_all_properties_are_extracted(self) -> None:
+        block = make_block(
+            "**Name:** Front Panel Start",
+            "**Type:** External Command Input",
+            "**Bit Width:** 1",
+            "**Purpose:** Indicates a start request.",
+            "**Value Encoding:**",
+            "- 0 -> idle",
+            "- 1 -> start",
+            "**Constraints:**",
+            "- meaningful only when RUN = 0",
+            "**Consumed By:**",
+            "- run-state sequencing",
+            name="FP_START",
         )
 
-
-    def test_logic_assignment_rejects_different_result(
-        self,
-    ) -> None:
-        self.assertFalse(
-            logic_assigns_signal(
-                "IR_OPR_GROUP2 = IR_IS_OPR AND IR[8]",
-                "IR_OPR_GROUP1",
-            )
-        )
-
-
-    def test_missing_value_encoding_is_reported(self) -> None:
-        entry = IndexEntry(
-            name="ACN",
-            domain="Primitive Flags",
-            category=None,
-            source_path="docs/index.md",
-            line=10,
-        )
-
-        definitions = {
-            "ACN": DefinitionBlock(
-                signal_name="ACN",
-                heading="ACN",
-                source_path="docs/flags.md",
-                start_line=20,
-                lines=(),
-            ),
-        }
-
-        diagnostics = validate_final_structure(
-            [entry],
-            definitions,
-            {"ACN": {}},
-            {"ACN": []},
-            {"ACN": []},
-            {
-                "ACN": {
-                    "value": "active-high",
-                    "source": "defaulted",
-                },
-            },
-            {"ACN": {}},
-        )
-
-        self.assertEqual(
-            [diagnostic.code for diagnostic in diagnostics],
-            ["MISSING_VALUE_ENCODING"],
-        )
-
-
-    def test_mixed_value_encoding_is_reported(self) -> None:
-        entry = IndexEntry(
-            name="IR_ADDR",
-            domain="IR-Derived Signals",
-            category="Field Extraction Signals",
-            source_path="docs/index.md",
-            line=10,
-        )
-
-        definitions = {
-            "IR_ADDR": DefinitionBlock(
-                signal_name="IR_ADDR",
-                heading="IR_ADDR",
-                source_path="docs/ir-derived-fields.md",
-                start_line=20,
-                lines=(),
-            ),
-        }
-
-        diagnostics = validate_final_structure(
-            [entry],
-            definitions,
-            {
-                "IR_ADDR": {
-                    "mnemonic": "IR_ADDR",
-                },
-            },
-            {
-                "IR_ADDR": [
-                    EnumeratedValue(
-                        value="0000000",
-                        meaning="zero",
-                        line=30,
-                    ),
-                ],
-            },
-            {
-                "IR_ADDR": [
-                    ValueRange(
-                        start="0000000",
-                        end="1111111",
-                        meaning="address field",
-                        line=31,
-                    ),
-                ],
-            },
-            {
-                "IR_ADDR": {
-                    "value": "active-high",
-                    "source": "defaulted",
-                },
-            },
-            {
-                "IR_ADDR": {
-                    "derivation": TextSection(
-                        text="IR_ADDR = IR[6:0]",
-                        line=25,
-                    ),
-                },
-            },
-        )
-
-        self.assertEqual(
-            [diagnostic.code for diagnostic in diagnostics],
-            ["MIXED_VALUE_ENCODING"],
-        )
-
-
-    def test_mnemonic_mismatch_is_reported(self) -> None:
-        entry = IndexEntry(
-            name="IR_ADDR",
-            domain="IR-Derived Signals",
-            category="Field Extraction Signals",
-            source_path="docs/index.md",
-            line=10,
-        )
-
-        definitions = {
-            "IR_ADDR": DefinitionBlock(
-                signal_name="IR_ADDR",
-                heading="IR_ADDR",
-                source_path="docs/ir-derived-fields.md",
-                start_line=20,
-                lines=(),
-            ),
-        }
-
-        diagnostics = validate_final_structure(
-            [entry],
-            definitions,
-            {
-                "IR_ADDR": {
-                    "mnemonic": "IR_ADDRESS",
-                },
-            },
-            {"IR_ADDR": []},
-            {
-                "IR_ADDR": [
-                    ValueRange(
-                        start="0000000",
-                        end="1111111",
-                        meaning="address field",
-                        line=30,
-                    ),
-                ],
-            },
-            {
-                "IR_ADDR": {
-                    "value": "active-high",
-                    "source": "defaulted",
-                },
-            },
-            {
-                "IR_ADDR": {
-                    "derivation": TextSection(
-                        text="IR_ADDR = IR[6:0]",
-                        line=25,
-                    ),
-                },
-            },
-        )
-
-        self.assertEqual(
-            [diagnostic.code for diagnostic in diagnostics],
-            ["MNEMONIC_NAME_MISMATCH"],
-        )
-
-
-    def test_active_low_name_conflict_is_reported(self) -> None:
-        entry = IndexEntry(
-            name="/INT_REQ",
-            domain="External Inputs",
-            category="External Requests",
-            source_path="docs/index.md",
-            line=10,
-        )
-
-        definitions = {
-            "/INT_REQ": DefinitionBlock(
-                signal_name="/INT_REQ",
-                heading="/INT_REQ",
-                source_path="docs/external-inputs.md",
-                start_line=20,
-                lines=(),
-            ),
-        }
-
-        diagnostics = validate_final_structure(
-            [entry],
-            definitions,
-            {"/INT_REQ": {}},
-            {
-                "/INT_REQ": [
-                    EnumeratedValue(
-                        value="0",
-                        meaning="request asserted",
-                        line=30,
-                    ),
-                ],
-            },
-            {"/INT_REQ": []},
-            {
-                "/INT_REQ": {
-                    "value": "active-high",
-                    "source": "explicit",
-                },
-            },
-            {"/INT_REQ": {}},
-        )
-
-        self.assertEqual(
-            [diagnostic.code for diagnostic in diagnostics],
-            ["ACTIVE_LOW_NAME_CONFLICT"],
-        )
-
-
-    def test_ir_derivation_result_mismatch_is_reported(
-        self,
-    ) -> None:
-        entry = IndexEntry(
-            name="IR_ADDR",
-            domain="IR-Derived Signals",
-            category="Field Extraction Signals",
-            source_path="docs/index.md",
-            line=10,
-        )
-
-        definitions = {
-            "IR_ADDR": DefinitionBlock(
-                signal_name="IR_ADDR",
-                heading="IR_ADDR",
-                source_path="docs/ir-derived-fields.md",
-                start_line=20,
-                lines=(),
-            ),
-        }
-
-        diagnostics = validate_final_structure(
-            [entry],
-            definitions,
-            {
-                "IR_ADDR": {
-                    "mnemonic": "IR_ADDR",
-                },
-            },
-            {"IR_ADDR": []},
-            {
-                "IR_ADDR": [
-                    ValueRange(
-                        start="0000000",
-                        end="1111111",
-                        meaning="address field",
-                        line=30,
-                    ),
-                ],
-            },
-            {
-                "IR_ADDR": {
-                    "value": "active-high",
-                    "source": "defaulted",
-                },
-            },
-            {
-                "IR_ADDR": {
-                    "derivation": TextSection(
-                        text="IR_ADDRESS = IR[6:0]",
-                        line=25,
-                    ),
-                },
-            },
-        )
-
-        self.assertEqual(
-            [diagnostic.code for diagnostic in diagnostics],
-            ["DERIVATION_RESULT_MISMATCH"],
-        )
-
-
-    def test_internal_composition_final_result_is_accepted(
-        self,
-    ) -> None:
-        entry = IndexEntry(
-            name="SKIP_TAKEN",
-            domain="Derived Flags",
-            category=None,
-            source_path="docs/index.md",
-            line=10,
-        )
-
-        definitions = {
-            "SKIP_TAKEN": DefinitionBlock(
-                signal_name="SKIP_TAKEN",
-                heading="SKIP_TAKEN",
-                source_path="docs/derived-flags.md",
-                start_line=20,
-                lines=(),
-            ),
-        }
-
-        diagnostics = validate_final_structure(
-            [entry],
-            definitions,
-            {
-                "SKIP_TAKEN": {
-                    "mnemonic": "SKIP_TAKEN",
-                },
-            },
-            {
-                "SKIP_TAKEN": [
-                    EnumeratedValue(
-                        value="0",
-                        meaning="no skip",
-                        line=30,
-                    ),
-                    EnumeratedValue(
-                        value="1",
-                        meaning="skip",
-                        line=31,
-                    ),
-                ],
-            },
-            {"SKIP_TAKEN": []},
-            {
-                "SKIP_TAKEN": {
-                    "value": "active-high",
-                    "source": "defaulted",
-                },
-            },
-            {
-                "SKIP_TAKEN": {
-                    "internal_composition": TextSection(
-                        text="\n".join(
-                            [
-                                "LOCAL_SKIP = ACN OR ACZ",
-                                "SKIP_TAKEN = LOCAL_SKIP",
-                            ]
-                        ),
-                        line=25,
-                    ),
-                },
-            },
+        signal, diagnostics = extract_signal(
+            make_entry("FP_START", EXTERNAL_INPUTS), block
         )
 
         self.assertEqual(diagnostics, [])
+        self.assertEqual(signal.bit_width, 1)
+        self.assertEqual(signal.polarity, Polarity("active-high", "defaulted"))
+        self.assertEqual(signal.attributes["input_type"], "External Command Input")
+        self.assertEqual(len(signal.enumerated_values), 2)
+        self.assertEqual(len(signal.constraints), 1)
+        self.assertEqual(len(signal.consumers), 1)
 
-    def test_extraction_report_contains_summary(
-        self,
-    ) -> None:
-        entry = IndexEntry(
-            name="ACN",
-            domain="Primitive Flags",
-            category=None,
-            source_path="docs/index.md",
-            line=10,
-        )
 
-        definitions = {
-            "ACN": DefinitionBlock(
-                signal_name="ACN",
-                heading="ACN",
-                source_path="docs/flags.md",
-                start_line=20,
-                lines=(),
+class ReportTests(unittest.TestCase):
+    def test_extraction_report_contains_summary(self) -> None:
+        signal = make_signal(
+            attributes={"display_name": "AC Negative"},
+            bit_width=1,
+            polarity=Polarity("active-high", "defaulted"),
+            enumerated_values=(
+                EnumeratedValue("0", "not negative", 30),
+                EnumeratedValue("1", "negative", 31),
             ),
-        }
-
-        report = build_extraction_report(
-            entries=[entry],
-            definitions=definitions,
-            attributes={
-                "ACN": {
-                    "display_name": "AC Negative",
-                    "purpose": "Indicates whether AC is negative.",
-                    "source_register": "AC",
-                },
-            },
-            bit_widths={
-                "ACN": 1,
-            },
-            polarities={
-                "ACN": {
-                    "value": "active-high",
-                    "source": "defaulted",
-                },
-            },
-            enumerated_values={
-                "ACN": [
-                    EnumeratedValue(
-                        value="0",
-                        meaning="not negative",
-                        line=30,
-                    ),
-                    EnumeratedValue(
-                        value="1",
-                        meaning="negative",
-                        line=31,
-                    ),
-                ],
-            },
-            value_ranges={
-                "ACN": [],
-            },
-            dependencies={
-                "ACN": [],
-            },
-            logic_sections={
-                "ACN": {},
-            },
-            constraints={
-                "ACN": [],
-            },
-            global_constraints=[],
-            consumers={
-                "ACN": [],
-            },
-            diagnostics=[],
+        )
+        result = ExtractionResult(
+            entries=(make_entry(),),
+            signals={"ACN": signal},
+            global_constraints=(),
+            diagnostics=(),
         )
 
-        self.assertIn(
-            "Indexed control inputs: 1",
-            report,
-        )
-        self.assertIn(
-            "Matched definitions: 1",
-            report,
-        )
-        self.assertIn(
-            "Primitive Flags: 1",
-            report,
-        )
-        self.assertIn(
-            "Enumerated values: 2",
-            report,
-        )
-        self.assertIn(
-            "No diagnostics.",
-            report,
-        )
+        report = build_extraction_report(result)
 
+        self.assertIn("Indexed control inputs: 1", report)
+        self.assertIn("Matched definitions: 1", report)
+        self.assertIn("Primitive Flags: 1", report)
+        self.assertIn("Enumerated values: 2", report)
+        self.assertIn("No diagnostics.", report)
 
-    def test_extraction_report_contains_diagnostics(
-        self,
-    ) -> None:
+    def test_extraction_report_contains_diagnostics(self) -> None:
         diagnostic = Diagnostic(
             severity="ERROR",
             code="TEST_ERROR",
@@ -2900,62 +1505,256 @@ class IndexExtractionTests(unittest.TestCase):
             line=42,
             signal_name="TEST_SIGNAL",
         )
+        result = ExtractionResult((), {}, (), (diagnostic,))
 
-        report = build_extraction_report(
-            entries=[],
-            definitions={},
-            attributes={},
-            bit_widths={},
-            polarities={},
-            enumerated_values={},
-            value_ranges={},
-            dependencies={},
-            logic_sections={},
-            constraints={},
-            global_constraints=[],
-            consumers={},
-            diagnostics=[diagnostic],
-        )
+        report = build_extraction_report(result)
 
-        self.assertIn(
-            "ERROR: 1",
-            report,
-        )
-        self.assertIn(
-            "ERROR TEST_ERROR [TEST_SIGNAL]",
-            report,
-        )
-        self.assertIn(
-            "Source: docs/test.md:42",
-            report,
-        )
-        self.assertIn(
-            "Test diagnostic message.",
-            report,
-        )
+        self.assertIn("ERROR: 1", report)
+        self.assertIn("ERROR TEST_ERROR [TEST_SIGNAL]", report)
+        self.assertIn("Source: docs/test.md:42", report)
+        self.assertIn("Test diagnostic message.", report)
 
+    def test_missing_definition_has_reduced_json_shape(self) -> None:
+        result = ExtractionResult((make_entry(),), {}, (), ())
 
-    def test_text_report_is_written(
-        self,
-    ) -> None:
+        (signal,) = build_json_result(result)["signals"]
+
+        self.assertIsNone(signal["definition"])
+        self.assertEqual(signal["extraction_status"], "definition-missing")
+
+    def test_text_is_written_with_parent_directories(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
-            output_path = (
-                Path(temporary_directory)
-                / "nested"
-                / "extraction-report.txt"
-            )
+            output_path = Path(temporary_directory) / "nested" / "report.txt"
 
-            write_text_report(
-                "Test report\n",
-                output_path,
-            )
+            write_text(output_path, "Test report\n")
 
             self.assertEqual(
-                output_path.read_text(
-                    encoding="utf-8"
-                ),
-                "Test report\n",
+                output_path.read_text(encoding="utf-8"), "Test report\n"
             )
-  
+
+
+# ---------------------------------------------------------------------------
+# End to end
+# ---------------------------------------------------------------------------
+
+FIXTURE_DOCUMENTS = {
+    "00-index.md": """\
+# Control Input Signal Index
+
+## 3. Primitive Flags
+
+- [ACN](./01-flags.md#acn)
+
+## 4. IR-Derived Signals
+
+### 4.1 Instruction Class
+
+- [IR\\_IS\\_MRI](./02-ir-derived-fields.md#ir_is_mri)
+- [IR\\_IS\\_OPR](./02-ir-derived-fields.md#ir_is_opr)
+
+## 5. Derived Flags
+
+- [MRI\\_OR\\_OPR](./03-derived-flags.md#mri_or_opr)
+
+## 6. External Inputs
+
+- [FP\\_START](./04-external-inputs.md#fp_start)
+""",
+    "01-flags.md": """\
+# Primitive Flags
+
+### ACN
+
+**Name:** AC Negative
+**Source Register:** AC
+**Purpose:** Indicates whether AC is negative.
+
+**Value Encoding:**
+- `0` → non-negative
+- `1` → negative
+""",
+    "02-ir-derived-fields.md": """\
+# IR-Derived Fields
+
+- Classes:
+  - `AT_MOST_ONE(IR_IS_MRI, IR_IS_OPR)`
+
+### IR_IS_MRI
+
+**Mnemonic:** IR_IS_MRI
+**Name:** MRI Flag
+**Type:** IR Class
+**Bit Width:** 1
+**Purpose:** Indicates an MRI.
+
+**Derivation:**
+```text
+IR_IS_MRI = IR[11:9] < 6
+```
+
+**Value Encoding:**
+- 0 → not MRI
+- 1 → MRI
+
+### IR_IS_OPR
+
+**Mnemonic:** IR_IS_OPR
+**Name:** OPR Flag
+**Type:** IR Class
+**Bit Width:** 1
+**Purpose:** Indicates an OPR.
+
+**Derivation:** IR_IS_OPR = IR[11:9] == 7
+
+**Value Encoding:**
+- 0 → not OPR
+- 1 → OPR
+""",
+    "03-derived-flags.md": """\
+# Derived Flags
+
+### MRI_OR_OPR
+
+**Mnemonic:** MRI_OR_OPR
+**Name:** MRI or OPR
+**Purpose:** Combines two classes.
+
+**Inputs:**
+- IR_IS_MRI
+- IR_IS_OPR
+
+---
+
+**Expression:**
+```
+MRI_OR_OPR = IR_IS_MRI OR IR_IS_OPR
+```
+
+**Value Encoding:**
+- 0 → neither
+- 1 → either
+""",
+    "04-external-inputs.md": """\
+# External Inputs
+
+### Start Command (FP_START)
+
+**Name:** Front Panel Start
+**Type:** External Command Input
+**Bit Width:** 1
+**Purpose:** Requests a start.
+
+**Value Encoding:**
+- 0 → idle
+- 1 → start
+
+**Constraints:**
+- meaningful only when RUN = 0
+
+**Consumed By:**
+- [RUN_SET](../../03-microarchitecture/02-micro-operations.md#run_set)
+""",
+}
+
+
+class EndToEndTests(unittest.TestCase):
+    def setUp(self) -> None:
+        temporary_directory = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary_directory.cleanup)
+        self.repo_root = Path(temporary_directory.name)
+
+        for source_path in SOURCE_PATHS:
+            path = self.repo_root / source_path
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(FIXTURE_DOCUMENTS[path.name], encoding="utf-8")
+
+    def run_main(self) -> tuple[int, dict, str, str]:
+        stdout = io.StringIO()
+        with redirect_stdout(stdout):
+            exit_code = main(["--repo-root", str(self.repo_root)])
+
+        json_path = self.repo_root / DEFAULT_JSON_OUTPUT
+        report_path = self.repo_root / DEFAULT_REPORT_OUTPUT
+        return (
+            exit_code,
+            json.loads(json_path.read_text(encoding="utf-8")),
+            report_path.read_text(encoding="utf-8"),
+            stdout.getvalue(),
+        )
+
+    def test_valid_documents_extract_cleanly(self) -> None:
+        exit_code, result, report, stdout = self.run_main()
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(result["diagnostics"], [])
+        self.assertEqual(
+            [(signal["name"], signal["domain"]) for signal in result["signals"]],
+            [
+                ("ACN", PRIMITIVE_FLAGS),
+                ("IR_IS_MRI", IR_DERIVED_SIGNALS),
+                ("IR_IS_OPR", IR_DERIVED_SIGNALS),
+                ("MRI_OR_OPR", DERIVED_FLAGS),
+                ("FP_START", EXTERNAL_INPUTS),
+            ],
+        )
+        self.assertEqual(
+            [item["kind"] for item in result["constraints"]], ["at_most_one"]
+        )
+
+        fp_start = result["signals"][-1]
+        self.assertEqual(fp_start["category"], None)
+        self.assertEqual(fp_start["bit_width"], 1)
+        self.assertEqual(fp_start["consumers"][0]["text"], "RUN_SET")
+        self.assertEqual(
+            fp_start["definition_source"]["heading"], "Start Command (FP_START)"
+        )
+
+        self.assertIn("Indexed control inputs: 5", report)
+        self.assertIn("Status: SUCCEEDED", stdout)
+
+    def test_extraction_is_deterministic(self) -> None:
+        documents = load_source_documents(
+            [self.repo_root / path for path in SOURCE_PATHS], self.repo_root
+        )
+
+        first = build_json_result(
+            extract_control_inputs(documents[0], documents[1:])
+        )
+        second = build_json_result(
+            extract_control_inputs(documents[0], documents[1:])
+        )
+
+        self.assertEqual(first, second)
+
+    def test_missing_definition_fails_extraction(self) -> None:
+        flags = self.repo_root / SOURCE_PATHS[1]
+        flags.write_text("# Primitive Flags\n", encoding="utf-8")
+
+        exit_code, result, _, stdout = self.run_main()
+
+        self.assertEqual(exit_code, 1)
+        self.assertEqual(codes_of(result), ["MISSING_DEFINITION"])
+        self.assertEqual(
+            result["signals"][0]["extraction_status"], "definition-missing"
+        )
+        self.assertIn("Status: FAILED", stdout)
+        self.assertIn("ERROR MISSING_DEFINITION [ACN]", stdout)
+
+    def test_missing_source_file_fails_before_extraction(self) -> None:
+        (self.repo_root / SOURCE_PATHS[4]).unlink()
+
+        stdout = io.StringIO()
+        with redirect_stdout(stdout):
+            exit_code = main(["--repo-root", str(self.repo_root)])
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn("ERROR: Required control-input source files", stdout.getvalue())
+        self.assertFalse((self.repo_root / DEFAULT_JSON_OUTPUT).exists())
+
+
+def codes_of(result: dict) -> list[str]:
+    return [diagnostic["code"] for diagnostic in result["diagnostics"]]
+
+
 if __name__ == "__main__":
     unittest.main()
