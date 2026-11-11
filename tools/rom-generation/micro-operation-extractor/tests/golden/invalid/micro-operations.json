@@ -1,0 +1,93 @@
+{
+  "format_version": 1,
+  "extraction_stage": "definition-validation",
+  "source": {
+    "path": "docs/03-microarchitecture/02-micro-operations.md"
+  },
+  "micro_operations": [
+    {
+      "name": "A",
+      "category": "",
+      "description": "Increment PC.",
+      "targets": [],
+      "expression": [
+        "PC ← PC + 1"
+      ],
+      "sources": [
+        "PC"
+      ],
+      "preconditions": [],
+      "constraints": [],
+      "source": {
+        "path": "docs/03-microarchitecture/02-micro-operations.md",
+        "heading": "A",
+        "line": 9
+      },
+      "extraction_status": "definition-error"
+    },
+    {
+      "name": "A",
+      "category": "Control Flow",
+      "description": "Increment PC.",
+      "targets": [
+        "PC"
+      ],
+      "expression": [
+        "again"
+      ],
+      "sources": [
+        "PC"
+      ],
+      "preconditions": [],
+      "constraints": [],
+      "source": {
+        "path": "docs/03-microarchitecture/02-micro-operations.md",
+        "heading": "A",
+        "line": 18
+      },
+      "extraction_status": "definition-error"
+    }
+  ],
+  "diagnostics": [
+    {
+      "severity": "WARNING",
+      "code": "UNEXPECTED_LIST_TEXT",
+      "message": "Skipped 'prose' in constraints; only list items are extracted.",
+      "source_path": "docs/03-microarchitecture/02-micro-operations.md",
+      "line": 27,
+      "micro_operation": "A"
+    },
+    {
+      "severity": "ERROR",
+      "code": "DUPLICATE_ATTRIBUTE",
+      "message": "Attribute 'expression' occurs more than once.",
+      "source_path": "docs/03-microarchitecture/02-micro-operations.md",
+      "line": 25,
+      "micro_operation": "A"
+    },
+    {
+      "severity": "ERROR",
+      "code": "DUPLICATE_MICRO_OPERATION",
+      "message": "Micro-operation 'A' is defined more than once.",
+      "source_path": "docs/03-microarchitecture/02-micro-operations.md",
+      "line": 18,
+      "micro_operation": "A"
+    },
+    {
+      "severity": "ERROR",
+      "code": "EMPTY_REQUIRED_ATTRIBUTE",
+      "message": "Definition target is empty.",
+      "source_path": "docs/03-microarchitecture/02-micro-operations.md",
+      "line": 9,
+      "micro_operation": "A"
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_REQUIRED_ATTRIBUTE",
+      "message": "Definition does not specify category.",
+      "source_path": "docs/03-microarchitecture/02-micro-operations.md",
+      "line": 9,
+      "micro_operation": "A"
+    }
+  ]
+}

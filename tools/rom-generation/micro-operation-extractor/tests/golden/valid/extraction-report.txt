@@ -1,0 +1,13 @@
+Micro-Operation Extraction Report
+=================================
+
+Micro-operations processed: 4
+JSON written: yes
+Information diagnostics: 0
+Warnings: 0
+Errors: 0
+Fatal errors: 0
+
+Diagnostics
+-----------
+No diagnostics.

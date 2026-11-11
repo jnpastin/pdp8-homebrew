@@ -1,0 +1,17 @@
+Micro-Operation Extraction Report
+=================================
+
+Micro-operations processed: 2
+JSON written: yes
+Information diagnostics: 0
+Warnings: 1
+Errors: 4
+Fatal errors: 0
+
+Diagnostics
+-----------
+WARNING UNEXPECTED_LIST_TEXT [A] docs/03-microarchitecture/02-micro-operations.md:27: Skipped 'prose' in constraints; only list items are extracted.
+ERROR DUPLICATE_ATTRIBUTE [A] docs/03-microarchitecture/02-micro-operations.md:25: Attribute 'expression' occurs more than once.
+ERROR DUPLICATE_MICRO_OPERATION [A] docs/03-microarchitecture/02-micro-operations.md:18: Micro-operation 'A' is defined more than once.
+ERROR EMPTY_REQUIRED_ATTRIBUTE [A] docs/03-microarchitecture/02-micro-operations.md:9: Definition target is empty.
+ERROR MISSING_REQUIRED_ATTRIBUTE [A] docs/03-microarchitecture/02-micro-operations.md:9: Definition does not specify category.

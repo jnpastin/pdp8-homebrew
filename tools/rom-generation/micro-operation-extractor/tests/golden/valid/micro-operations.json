@@ -1,0 +1,119 @@
+{
+  "format_version": 1,
+  "extraction_stage": "definition-validation",
+  "source": {
+    "path": "docs/03-microarchitecture/02-micro-operations.md"
+  },
+  "micro_operations": [
+    {
+      "name": "AC_MQ_SWAP",
+      "category": "Register Transfer",
+      "description": "Exchanges AC and MQ.",
+      "targets": [
+        "AC",
+        "MQ"
+      ],
+      "expression": [
+        "AC ← MQ",
+        "MQ ← AC"
+      ],
+      "sources": [
+        "AC",
+        "MQ"
+      ],
+      "preconditions": [],
+      "constraints": [],
+      "source": {
+        "path": "docs/03-microarchitecture/02-micro-operations.md",
+        "heading": "AC_MQ_SWAP",
+        "line": 9
+      },
+      "extraction_status": "definition-validated"
+    },
+    {
+      "name": "DB_READ_TO_AC",
+      "category": "I/O / External",
+      "description": "ORs the data bus into AC.",
+      "targets": [
+        "AC"
+      ],
+      "expression": [
+        "AC ← AC OR DB_input"
+      ],
+      "sources": [
+        "AC",
+        "DB_input"
+      ],
+      "preconditions": [
+        {
+          "text": "A device is driving DB",
+          "source": {
+            "path": "docs/03-microarchitecture/02-micro-operations.md",
+            "line": 34
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "text": "AC must not be written by another μop",
+          "source": {
+            "path": "docs/03-microarchitecture/02-micro-operations.md",
+            "line": 37
+          }
+        }
+      ],
+      "source": {
+        "path": "docs/03-microarchitecture/02-micro-operations.md",
+        "heading": "DB_READ_TO_AC",
+        "line": 25
+      },
+      "extraction_status": "definition-validated"
+    },
+    {
+      "name": "IOT_TRANSFER_CAPTURE",
+      "category": "State Manipulation",
+      "description": "Captures the transfer direction.",
+      "targets": [
+        "IOT_TRANSFER"
+      ],
+      "expression": [
+        "if IO_READ_REQ = 1:",
+        "IOT_TRANSFER <- READ",
+        "else:",
+        "IOT_TRANSFER <- NONE"
+      ],
+      "sources": [
+        "IO_READ_REQ"
+      ],
+      "preconditions": [],
+      "constraints": [],
+      "source": {
+        "path": "docs/03-microarchitecture/02-micro-operations.md",
+        "heading": "IOT_TRANSFER_CAPTURE",
+        "line": 41
+      },
+      "extraction_status": "definition-validated"
+    },
+    {
+      "name": "PC_CLEAR",
+      "category": "Control Flow",
+      "description": "Clears PC.",
+      "targets": [
+        "PC"
+      ],
+      "expression": [
+        "PC ← 0"
+      ],
+      "sources": [],
+      "preconditions": [],
+      "constraints": [],
+      "source": {
+        "path": "docs/03-microarchitecture/02-micro-operations.md",
+        "heading": "PC_CLEAR",
+        "line": 60
+      },
+      "extraction_status": "definition-validated"
+    }
+  ],
+  "diagnostics": []
+}
