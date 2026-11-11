@@ -38,6 +38,7 @@ from extract_control_inputs import (  # noqa: E402
     ValueRange,
     build_extraction_report,
     build_json_result,
+    extract_control_inputs,
     extract_definition_blocks,
     extract_signal,
     find_labeled_sections,
@@ -60,6 +61,7 @@ from extract_control_inputs import (  # noqa: E402
     parse_definition_values,
     parse_global_constraints,
     parse_index,
+    parse_opr_diagrams,
     parse_scalar_attributes,
     parse_value_line,
     remove_section_number,
@@ -69,6 +71,7 @@ from extract_control_inputs import (  # noqa: E402
     validate_dependencies,
     validate_logic,
     validate_naming,
+    validate_opr_bits,
     validate_required_attributes,
     validate_source_paths,
     validate_value_encoding,
@@ -1532,6 +1535,191 @@ class ReportTests(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
+# OPR bit positions
+# ---------------------------------------------------------------------------
+
+
+def opr_diagram(*labels: str) -> str:
+    """An OPR diagram whose mnemonic row holds ``labels`` for bits 7 to 0."""
+
+    cells = "".join(f" {label:^3} │" for label in labels)
+    return (
+        "┌────┬────┬─────┬────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐\n"
+        "│ 11 │ 10 │  9  │ 8  │  7  │  6  │  5  │  4  │  3  │  2  │  1  │  0  │\n"
+        "├────┼────┼─────┼────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┤\n"
+        "│  1 │  1 │  1  │ 0  │     │     │     │     │     │     │     │     │\n"
+        "├────┴────┴─────┼────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┤\n"
+        f"│      OPR      │    │{cells}\n"
+        "└───────────────┴────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘\n"
+    )
+
+
+GROUP1_DIAGRAM = opr_diagram("CLA", "CLL", "CMA", "CML", "RAR", "RAL", "BSW", "IAC")
+GROUP2_DIAGRAM = opr_diagram("CLA", "SPA", "SNA", "SZL", "", "OSR", "HLT", "")
+GROUP3_DIAGRAM = opr_diagram("CLA", "MQA", "", "MQL", "", "", "", "")
+
+
+def diagram_document(group: int, *diagrams: str) -> SourceDocument:
+    fenced = "".join(f"```\n{diagram}```\n\nText.\n\n" for diagram in diagrams)
+    return make_document(
+        f"# Group {group}\n\n{fenced}", f"docs/02-isa/0{group}-group.md"
+    )
+
+
+def opr_signal(name: str, derivation: str) -> SignalDefinition:
+    return make_signal(name, logic={"derivation": TextSection(derivation, 30)})
+
+
+class OprBitTests(unittest.TestCase):
+    def test_diagram_positions_come_from_the_bit_row(self) -> None:
+        positions, diagnostics = parse_opr_diagrams(
+            diagram_document(2, GROUP2_DIAGRAM, GROUP3_DIAGRAM), 2
+        )
+
+        self.assertEqual(diagnostics, [])
+        self.assertEqual(
+            [(item.mnemonic, item.bit, item.group, item.line) for item in positions],
+            [
+                ("CLA", 7, 2, 9),
+                ("SPA", 6, 2, 9),
+                ("SNA", 5, 2, 9),
+                ("SZL", 4, 2, 9),
+                ("OSR", 2, 2, 9),
+                ("HLT", 1, 2, 9),
+                ("CLA", 7, 2, 21),
+                ("MQA", 6, 2, 21),
+                ("MQL", 4, 2, 21),
+            ],
+        )
+        self.assertEqual(positions[0].source_path, "docs/02-isa/02-group.md")
+
+    def test_document_without_a_diagram_is_an_error(self) -> None:
+        positions, diagnostics = parse_opr_diagrams(diagram_document(1), 1)
+
+        self.assertEqual(positions, [])
+        self.assertEqual(codes(diagnostics), ["MISSING_OPR_DIAGRAM"])
+
+    def test_malformed_diagrams_are_errors(self) -> None:
+        unclosed = "┌──┐\n│ 1 │\n"
+        no_numbers = GROUP1_DIAGRAM.replace("│ 11 │", "│ XX │")
+        outside = GROUP1_DIAGRAM.replace("IAC │\n", "IAC │ ZZZ\n")
+
+        for diagram in (unclosed, no_numbers, outside):
+            with self.subTest(diagram=diagram.splitlines()[1][:12]):
+                _, diagnostics = parse_opr_diagrams(
+                    make_document(f"```\n{diagram}```\n"), 1
+                )
+                self.assertEqual(codes(diagnostics), ["MALFORMED_OPR_DIAGRAM"])
+
+    def check(self, *signals: SignalDefinition) -> list[Diagnostic]:
+        positions = [
+            position
+            for group, diagram in enumerate(
+                (GROUP1_DIAGRAM, GROUP2_DIAGRAM, GROUP3_DIAGRAM), 1
+            )
+            for position in parse_opr_diagrams(
+                diagram_document(group, diagram), group
+            )[0]
+        ]
+        entries = [
+            make_entry(signal.block.signal_name, IR_DERIVED_SIGNALS)
+            for signal in signals
+        ]
+        return validate_opr_bits(
+            entries,
+            {signal.block.signal_name: signal for signal in signals},
+            positions,
+        )
+
+    def test_matching_derivations_pass(self) -> None:
+        self.assertEqual(
+            self.check(
+                opr_signal("IR_OPR_RAR", "IR_OPR_RAR = IR_OPR_GROUP1 AND IR[3]"),
+                opr_signal("IR_OPR_CLA", "IR_OPR_CLA = IR_IS_OPR AND IR[7]"),
+                opr_signal("IR_OPR_GROUP1", "IR_OPR_GROUP1 = anything"),
+                opr_signal("IR_OPR_SKIP_MODE", "IR_OPR_SKIP_MODE = x"),
+            ),
+            [],
+        )
+
+    def test_wrong_bit_is_reported_per_diagram(self) -> None:
+        diagnostics = self.check(
+            opr_signal("IR_OPR_IAC", "IR_OPR_IAC = IR_OPR_GROUP1 AND IR[3]"),
+            opr_signal("IR_OPR_CLA", "IR_OPR_CLA = IR_IS_OPR AND IR[6]"),
+        )
+
+        self.assertEqual(
+            [(item.code, item.signal_name, item.line) for item in diagnostics],
+            [
+                ("OPR_BIT_MISMATCH", "IR_OPR_IAC", 30),
+                ("OPR_BIT_MISMATCH", "IR_OPR_CLA", 30),
+                ("OPR_BIT_MISMATCH", "IR_OPR_CLA", 30),
+                ("OPR_BIT_MISMATCH", "IR_OPR_CLA", 30),
+            ],
+        )
+        self.assertEqual(
+            diagnostics[0].message,
+            "Derivation uses IR[3], but the Group 1 ISA diagram "
+            "(docs/02-isa/01-group.md:9) places IAC at bit 0.",
+        )
+
+    def test_mnemonic_outside_the_named_group_is_reported(self) -> None:
+        diagnostics = self.check(
+            opr_signal("IR_OPR_OSR", "IR_OPR_OSR = IR_OPR_GROUP1 AND IR[2]")
+        )
+
+        self.assertEqual(codes(diagnostics), ["OPR_BIT_MISMATCH"])
+        self.assertEqual(
+            diagnostics[0].message, "OSR is not in the Group 1 ISA diagram."
+        )
+
+    def test_other_derivation_forms_are_reported(self) -> None:
+        for derivation in (
+            "IR_OPR_CLA = IR[7]",
+            "IR_OPR_CLA = IR_OPR_GROUP1 AND IR[7] AND RUN",
+            "IR_OPR_CLL = IR_OPR_GROUP1 AND IR[7]",
+        ):
+            with self.subTest(derivation=derivation):
+                self.assertEqual(
+                    codes(self.check(opr_signal("IR_OPR_CLA", derivation))),
+                    ["UNCHECKED_OPR_DERIVATION"],
+                )
+
+    def test_only_documented_ir_derived_inputs_are_checked(self) -> None:
+        signal = opr_signal("IR_OPR_CLA", "IR_OPR_CLA = IR_IS_OPR AND IR[1]")
+        positions, _ = parse_opr_diagrams(diagram_document(1, GROUP1_DIAGRAM), 1)
+
+        for entries, signals in (
+            ([make_entry("IR_OPR_CLA", DERIVED_FLAGS)], {"IR_OPR_CLA": signal}),
+            ([make_entry("IR_OPR_CLA", IR_DERIVED_SIGNALS)], {}),
+            (
+                [make_entry("IR_OPR_CLA", IR_DERIVED_SIGNALS)],
+                {"IR_OPR_CLA": make_signal("IR_OPR_CLA")},
+            ),
+        ):
+            self.assertEqual(validate_opr_bits(entries, signals, positions), [])
+
+    def test_extraction_checks_bits_only_with_diagrams(self) -> None:
+        index = make_document(FIXTURE_DOCUMENTS["00-index.md"])
+        definitions = [
+            make_document(FIXTURE_DOCUMENTS[path.name], path.as_posix())
+            for path in SOURCE_PATHS[1:5]
+        ]
+        diagrams = {
+            group: make_document("# None\n", f"docs/02-isa/0{group}.md")
+            for group in (1, 2, 3)
+        }
+
+        self.assertEqual(
+            extract_control_inputs(index, definitions).diagnostics, ()
+        )
+        self.assertEqual(
+            codes(extract_control_inputs(index, definitions, diagrams).diagnostics),
+            ["MISSING_OPR_DIAGRAM"] * 3,
+        )
+
+
+# ---------------------------------------------------------------------------
 # End to end
 # ---------------------------------------------------------------------------
 
@@ -1652,6 +1840,9 @@ MRI_OR_OPR = IR_IS_MRI OR IR_IS_OPR
 **Consumed By:**
 - [RUN_SET](../../03-microarchitecture/02-micro-operations.md#run_set)
 """,
+    "01-group-1.md": "# Group 1\n\n```\n" + GROUP1_DIAGRAM + "```\n",
+    "02-group-2.md": "# Group 2\n\n```\n" + GROUP2_DIAGRAM + "```\n",
+    "03-group-3.md": "# Group 3\n\n```\n" + GROUP3_DIAGRAM + "```\n",
 }
 
 

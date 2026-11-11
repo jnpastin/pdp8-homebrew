@@ -12,7 +12,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from extract_execution_definitions import (  # noqa: E402
+from extract_execution_definitions import (
     CONSOLE_SOURCE,
     DECODED_IOT_CONTEXTS,
     DEFAULT_JSON_OUTPUT,
@@ -81,8 +81,7 @@ def timing_headings(number: str, bodies: dict[int, str] | None = None) -> str:
 
     bodies = bodies or {}
     return "".join(
-        f"### {number}.{n} TS{n}\n\n{bodies.get(n, '')}\n"
-        for n in range(1, 5)
+        f"### {number}.{n} TS{n}\n\n{bodies.get(n, '')}\n" for n in range(1, 5)
     )
 
 
@@ -122,8 +121,7 @@ FETCH_DEFER = (
             + "\nDescription:\n- Places the address in MA.\n",
             2: micro_operations("MEM_READ_TO_MB"),
             3: micro_operations("MB_TO_IR"),
-            4: micro_operations("PC_INC")
-            + "\nControl Decisions:\n\n"
+            4: micro_operations("PC_INC") + "\nControl Decisions:\n\n"
             "    if IR[INDIRECT] == 1:\n        MS_next ← DEFER\n",
         },
     )
@@ -249,17 +247,37 @@ OPR_GROUP3 = (
     "### 4.4 TS3\n\n- (no μops)\n\n### 4.5 TS4\n\n- (no μops)\n"
 )
 
-KNOWN_MICRO_OPERATIONS = (
-    "AC_AND_MB AC_CLEAR AC_INC AC_MQ_SWAP AC_RAR CIFP_CLEAR DIF_TO_IF "
-    "EA_ADDR_TO_MA FP_SR_TO_PC IE_CLEAR IF_DF_TO_IB II_CLEAR L_CLEAR "
-    "MA_CLEAR MB_INC MB_TO_IR MEM_READ_TO_MB MEM_WRITE_FROM_MB PC_INC "
-    "PC_SET_1 PC_TO_MA PC_TO_MB"
-).split()
+KNOWN_MICRO_OPERATIONS = [
+    "AC_AND_MB",
+    "AC_CLEAR",
+    "AC_INC",
+    "AC_MQ_SWAP",
+    "AC_RAR",
+    "CIFP_CLEAR",
+    "DIF_TO_IF",
+    "EA_ADDR_TO_MA",
+    "FP_SR_TO_PC",
+    "IE_CLEAR",
+    "IF_DF_TO_IB",
+    "II_CLEAR",
+    "L_CLEAR",
+    "MA_CLEAR",
+    "MB_INC",
+    "MB_TO_IR",
+    "MEM_READ_TO_MB",
+    "MEM_WRITE_FROM_MB",
+    "PC_INC",
+    "PC_SET_1",
+    "PC_TO_MA",
+    "PC_TO_MB",
+]
 
 MICRO_OPERATION_CATALOG = (
     "# Micro-Operations\n\n## 4. Categories\n\n### 4.1 Address Formation\n\n"
     "```text\n### NOT_A_HEADING\n```\n\n"
-    + "".join(f"### {name}\n\nDefinition.\n\n" for name in KNOWN_MICRO_OPERATIONS)
+    + "".join(
+        f"### {name}\n\nDefinition.\n\n" for name in KNOWN_MICRO_OPERATIONS
+    )
 )
 
 VALID_DOCUMENTS = {
@@ -555,7 +573,9 @@ class InstructionTests(unittest.TestCase):
     def test_changed_decoded_iot_heading_is_reported(self) -> None:
         title = next(iter(DECODED_IOT_CONTEXTS))
         _, diagnostics = parse(
-            parse_instructions, IOT.replace(title, title + " AND IR[1] = 0"), "iot"
+            parse_instructions,
+            IOT.replace(title, title + " AND IR[1] = 0"),
+            "iot",
         )
 
         self.assertEqual(
@@ -588,7 +608,9 @@ class InstructionTests(unittest.TestCase):
                 "MISSING_TIMING_STATE",
             ],
         )
-        self.assertEqual(diagnostics[0].message, "Section 3.1 has TS1 2 times.")
+        self.assertEqual(
+            diagnostics[0].message, "Section 3.1 has TS1 2 times."
+        )
 
     def test_conditional_is_bounded_by_the_next_marker(self) -> None:
         cases, _ = parse(
@@ -596,7 +618,9 @@ class InstructionTests(unittest.TestCase):
             instruction(
                 "3.1",
                 "IR[11:9] = 000",
-                timing_markers(ts3=bullets() + "\n" + conditional("A = 1 -> X")),
+                timing_markers(
+                    ts3=bullets() + "\n" + conditional("A = 1 -> X")
+                ),
             ),
             "mri",
         )
@@ -653,7 +677,10 @@ class PhaseBindingTests(unittest.TestCase):
         cases, diagnostics = parse(parse_phase_binding, IOT)
 
         self.assertEqual(diagnostics, [])
-        clear = {"predicate": "IO_CLEAR_AC_REQ = 1", "micro_operation": "AC_CLEAR"}
+        clear = {
+            "predicate": "IO_CLEAR_AC_REQ = 1",
+            "micro_operation": "AC_CLEAR",
+        }
         skip = {"predicate": "IO_SKIP_REQ = 1", "micro_operation": "PC_INC"}
         self.assertEqual(
             cases,
@@ -697,7 +724,10 @@ class InterruptTests(unittest.TestCase):
 
         self.assertEqual(diagnostics, [])
         self.assertEqual(
-            [(c["id"], c["timing_state"], c["micro_operations"]) for c in cases],
+            [
+                (c["id"], c["timing_state"], c["micro_operations"])
+                for c in cases
+            ],
             [
                 ("interrupt:4.1", 1, ["PC_TO_MB"]),
                 ("interrupt:4.2", 2, ["MA_CLEAR", "IF_DF_TO_IB"]),
@@ -797,7 +827,12 @@ class OprTests(unittest.TestCase):
             [
                 (
                     "opr2:ts1",
-                    [{"predicate": "SKIP_TAKEN = 1", "micro_operation": "PC_INC"}],
+                    [
+                        {
+                            "predicate": "SKIP_TAKEN = 1",
+                            "micro_operation": "PC_INC",
+                        }
+                    ],
                 ),
                 (
                     "opr2:ts2",
@@ -846,7 +881,9 @@ class OprTests(unittest.TestCase):
         cases, diagnostics = parse(parse_opr, "# Group 3\n", 3)
 
         self.assertEqual(cases, [])
-        self.assertEqual(codes(diagnostics), ["MISSING_CONTEXT", "MISSING_SECTION"])
+        self.assertEqual(
+            codes(diagnostics), ["MISSING_CONTEXT", "MISSING_SECTION"]
+        )
 
     def test_missing_timing_state_is_an_error(self) -> None:
         _, diagnostics = parse(
@@ -871,7 +908,12 @@ class ValidationTests(unittest.TestCase):
             diagnostics,
             [
                 Diagnostic(
-                    "ERROR", "DUPLICATE_CASE_ID", "Duplicate case id: x", PATH, 3, "x"
+                    "ERROR",
+                    "DUPLICATE_CASE_ID",
+                    "Duplicate case id: x",
+                    PATH,
+                    3,
+                    "x",
                 )
             ],
         )
@@ -920,10 +962,22 @@ class ValidationTests(unittest.TestCase):
                 prefixes.append(prefix)
         self.assertEqual(
             prefixes,
-            ["fetch-defer", "mri", "iot", "interrupt", "console", "opr1", "opr2", "opr3"],
+            [
+                "fetch-defer",
+                "mri",
+                "iot",
+                "interrupt",
+                "console",
+                "opr1",
+                "opr2",
+                "opr3",
+            ],
         )
         iot = [case["id"] for case in cases if case["id"].startswith("iot:")]
-        self.assertEqual(iot[:5], [*(f"iot:external:ts{n}" for n in range(1, 5)), "iot:9.3:ts1"])
+        self.assertEqual(
+            iot[:5],
+            [*(f"iot:external:ts{n}" for n in range(1, 5)), "iot:9.3:ts1"],
+        )
 
 
 # ---------------------------------------------------------------------------

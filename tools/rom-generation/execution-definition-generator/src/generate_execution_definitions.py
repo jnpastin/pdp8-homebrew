@@ -14,7 +14,7 @@ DEFAULT_CANDIDATE = Path("build/simulation_outputs/rom-generation/execution-defi
 DEFAULT_REPORT = Path("build/simulation_outputs/rom-generation/execution-definition-generator/generation-report.txt")
 FAILURE_SEVERITIES = {"ERROR", "FATAL"}
 SEVERITY_ORDER = {"INFO": 0, "WARNING": 1, "ERROR": 2, "FATAL": 3}
-REQUIRED_TOP_LEVEL = {"format_version", "control_design_version", "artifact", "extraction_stage", "opr_bit_positions", "cases", "diagnostics"}
+REQUIRED_TOP_LEVEL = {"format_version", "control_design_version", "artifact", "extraction_stage", "cases", "diagnostics"}
 REQUIRED_CASE_FIELDS = {"id", "source", "execution_model", "context", "timing_state", "micro_operations", "conditional_micro_operations"}
 
 @dataclass(frozen=True)
@@ -91,7 +91,6 @@ def build_candidate(extracted: dict[str, Any], maintained: dict[str, Any] | None
         "control_design_version": extracted["control_design_version"],
         "artifact": "execution-definitions",
         "generation_stage": "candidate-generation",
-        "opr_bit_positions": extracted["opr_bit_positions"],
         "cases": [extracted_cases[item["id"]] for item in extracted["cases"]],
         "diagnostics": [],
     }

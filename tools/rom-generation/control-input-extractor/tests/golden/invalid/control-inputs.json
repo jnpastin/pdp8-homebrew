@@ -6,7 +6,10 @@
     "docs/04-control/10-control-input-definitions/01-flags.md",
     "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
     "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-    "docs/04-control/10-control-input-definitions/04-external-inputs.md"
+    "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+    "docs/02-isa/01-group-1.md",
+    "docs/02-isa/02-group-2.md",
+    "docs/02-isa/03-group-3.md"
   ],
   "signals": [
     {

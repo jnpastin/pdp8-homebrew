@@ -22,6 +22,7 @@ import argparse
 import json
 import re
 from dataclasses import dataclass, field
+from itertools import pairwise
 from pathlib import Path
 from typing import Iterable, Iterator, Sequence
 
@@ -37,7 +38,19 @@ DEFINITION_SOURCE_PATHS = (
     SOURCE_DIRECTORY / "03-derived-flags.md",
     SOURCE_DIRECTORY / "04-external-inputs.md",
 )
-SOURCE_PATHS = (INDEX_SOURCE_PATH, *DEFINITION_SOURCE_PATHS)
+# The OPR encoding diagrams, by group, used to check the bit positions in
+# the OPR-bit derivations.
+ISA_DIRECTORY = Path("docs/02-isa")
+OPR_DIAGRAM_SOURCE_PATHS = {
+    1: ISA_DIRECTORY / "01-group-1.md",
+    2: ISA_DIRECTORY / "02-group-2.md",
+    3: ISA_DIRECTORY / "03-group-3.md",
+}
+SOURCE_PATHS = (
+    INDEX_SOURCE_PATH,
+    *DEFINITION_SOURCE_PATHS,
+    *OPR_DIAGRAM_SOURCE_PATHS.values(),
+)
 
 OUTPUT_DIRECTORY = Path(
     "build/simulation_outputs/rom-generation/control-input-extractor"
@@ -206,6 +219,23 @@ LIST_ITEM_PREFIX = "- "
 HORIZONTAL_RULE = "---"
 CODE_FENCE = "```"
 
+# OPR encoding diagrams are box drawings: a top border, a row of bit
+# numbers, a row of required values, a row of mnemonics, and a bottom
+# border. A mnemonic's bit is the bit-number cell above it.
+DIAGRAM_TOP_BORDER = "┌"
+DIAGRAM_BOTTOM_BORDER = "└"
+DIAGRAM_CELL_SEPARATOR = "│"
+DIAGRAM_MNEMONIC_PATTERN = re.compile(r"\b[A-Z]{3}\b")
+DIAGRAM_FIELD_LABELS = frozenset({"OPR"})
+
+# An OPR-bit input is named for its diagram mnemonic, and its derivation
+# selects one IR bit within an OPR group (or any OPR instruction).
+OPR_BIT_PREFIX = "IR_OPR_"
+OPR_BIT_DERIVATION_PATTERN = re.compile(
+    r"(IR_OPR_[A-Z]+)\s*=\s*(?:IR_IS_OPR|IR_OPR_GROUP([123]))"
+    r"\s+AND\s+IR\[(\d+)\]"
+)
+
 
 # ---------------------------------------------------------------------------
 # Data model
@@ -335,6 +365,17 @@ class GlobalConstraintEntry:
 
     kind: str
     inputs: tuple[str, ...]
+    source_path: str
+    line: int
+
+
+@dataclass(frozen=True)
+class OprBitPosition:
+    """One mnemonic's bit in an OPR encoding diagram."""
+
+    mnemonic: str
+    bit: int
+    group: int
     source_path: str
     line: int
 
@@ -1752,6 +1793,181 @@ def validate_signal(
 
 
 # ---------------------------------------------------------------------------
+# OPR bit positions
+# ---------------------------------------------------------------------------
+
+
+def diagram_cells(row: str) -> list[tuple[int, int, str]]:
+    """Return each cell of a diagram row as ``(start, end, text)``, where
+    ``start`` and ``end`` are the positions of its separators."""
+
+    separators = [
+        position
+        for position, character in enumerate(row)
+        if character == DIAGRAM_CELL_SEPARATOR
+    ]
+    return [
+        (start, end, row[start + 1 : end].strip())
+        for start, end in pairwise(separators)
+    ]
+
+
+def parse_opr_diagrams(
+    document: SourceDocument, group: int
+) -> tuple[list[OprBitPosition], list[Diagnostic]]:
+    """Return the mnemonic bit positions in every OPR diagram of a document.
+
+    The bit-number row is the line after a top border; the mnemonic row is
+    the line before the matching bottom border.
+    """
+
+    lines = document.text.splitlines()
+    positions: list[OprBitPosition] = []
+    diagnostics: list[Diagnostic] = []
+    found = False
+
+    def malformed(line: int, message: str) -> None:
+        diagnostics.append(
+            Diagnostic(
+                ERROR,
+                "MALFORMED_OPR_DIAGRAM",
+                message,
+                document.relative_path,
+                line,
+            )
+        )
+
+    for top, line in enumerate(lines):
+        if not line.startswith(DIAGRAM_TOP_BORDER):
+            continue
+        bottom = next(
+            (
+                index
+                for index in range(top + 1, len(lines))
+                if lines[index].startswith(DIAGRAM_BOTTOM_BORDER)
+            ),
+            None,
+        )
+        if bottom is None:
+            malformed(top + 1, "Diagram has no bottom border.")
+            continue
+
+        cells = diagram_cells(lines[top + 1])
+        if not cells or not all(text.isdigit() for _, _, text in cells):
+            malformed(top + 2, "Diagram's first row must be bit numbers.")
+            continue
+        found = True
+
+        for match in DIAGRAM_MNEMONIC_PATTERN.finditer(lines[bottom - 1]):
+            if match.group() in DIAGRAM_FIELD_LABELS:
+                continue
+            bit = next(
+                (
+                    int(text)
+                    for start, end, text in cells
+                    if start < match.start() < end
+                ),
+                None,
+            )
+            if bit is None:
+                malformed(
+                    bottom,
+                    f"Mnemonic {match.group()} is not under a bit number.",
+                )
+                continue
+            positions.append(
+                OprBitPosition(
+                    match.group(), bit, group, document.relative_path, bottom
+                )
+            )
+
+    if not found and not diagnostics:
+        diagnostics.append(
+            Diagnostic(
+                ERROR,
+                "MISSING_OPR_DIAGRAM",
+                f"No Group {group} OPR encoding diagram found.",
+                document.relative_path,
+            )
+        )
+
+    return positions, diagnostics
+
+
+def validate_opr_bits(
+    entries: Sequence[IndexEntry],
+    signals: dict[str, SignalDefinition],
+    positions: Sequence[OprBitPosition],
+) -> list[Diagnostic]:
+    """Check each OPR-bit derivation against the ISA diagrams.
+
+    An IR-derived input named ``IR_OPR_<MNEMONIC>``, for a mnemonic in a
+    diagram, must be derived as ``IR_OPR_GROUPn AND IR[b]`` (or
+    ``IR_IS_OPR AND IR[b]``), and ``b`` must be the mnemonic's bit in
+    every diagram of that group (or of every group).
+    """
+
+    diagnostics: list[Diagnostic] = []
+
+    for entry in entries:
+        signal = signals.get(entry.name)
+        mnemonic = entry.name.removeprefix(OPR_BIT_PREFIX)
+        documented = [item for item in positions if item.mnemonic == mnemonic]
+        if (
+            entry.domain != IR_DERIVED_SIGNALS
+            or not entry.name.startswith(OPR_BIT_PREFIX)
+            or not documented
+            or signal is None
+            or "derivation" not in signal.logic
+        ):
+            continue
+
+        section = signal.logic["derivation"]
+        match = OPR_BIT_DERIVATION_PATTERN.fullmatch(section.text)
+        if match is None or match.group(1) != entry.name:
+            diagnostics.append(
+                block_diagnostic(
+                    signal.block,
+                    "UNCHECKED_OPR_DERIVATION",
+                    f"Derivation must be '{entry.name} = IR_OPR_GROUPn AND "
+                    "IR[b]' or 'IR_IS_OPR AND IR[b]' to be checked against "
+                    "the ISA diagrams.",
+                    line=section.line,
+                )
+            )
+            continue
+
+        group = int(match.group(2)) if match.group(2) else None
+        bit = int(match.group(3))
+        relevant = [
+            item for item in documented if group is None or item.group == group
+        ]
+        if not relevant:
+            diagnostics.append(
+                block_diagnostic(
+                    signal.block,
+                    "OPR_BIT_MISMATCH",
+                    f"{mnemonic} is not in the Group {group} ISA diagram.",
+                    line=section.line,
+                )
+            )
+        for item in relevant:
+            if item.bit != bit:
+                diagnostics.append(
+                    block_diagnostic(
+                        signal.block,
+                        "OPR_BIT_MISMATCH",
+                        f"Derivation uses IR[{bit}], but the Group "
+                        f"{item.group} ISA diagram ({item.source_path}:"
+                        f"{item.line}) places {mnemonic} at bit {item.bit}.",
+                        line=section.line,
+                    )
+                )
+
+    return diagnostics
+
+
+# ---------------------------------------------------------------------------
 # Extraction pipeline
 # ---------------------------------------------------------------------------
 
@@ -1759,8 +1975,13 @@ def validate_signal(
 def extract_control_inputs(
     index_document: SourceDocument,
     definition_documents: Sequence[SourceDocument],
+    diagram_documents: dict[int, SourceDocument] | None = None,
 ) -> ExtractionResult:
-    """Run the full extraction and validation over loaded documents."""
+    """Run the full extraction and validation over loaded documents.
+
+    ``diagram_documents`` maps each OPR group to its ISA document; without
+    them, OPR-bit derivations are not checked.
+    """
 
     entries, diagnostics = parse_index(index_document)
     indexed_names = {entry.name for entry in entries}
@@ -1790,6 +2011,14 @@ def extract_control_inputs(
         diagnostics += found
         diagnostics += validate_signal(entry, signal, indexed_names)
         signals[entry.name] = signal
+
+    if diagram_documents:
+        positions: list[OprBitPosition] = []
+        for group, document in diagram_documents.items():
+            found_positions, found = parse_opr_diagrams(document, group)
+            positions += found_positions
+            diagnostics += found
+        diagnostics += validate_opr_bits(entries, signals, positions)
 
     return ExtractionResult(
         entries=tuple(entries),
@@ -2113,14 +2342,23 @@ def main(arguments: Sequence[str] | None = None) -> int:
             (paths.json_output, paths.report_output), paths.source_paths
         )
         validate_source_paths(paths.source_paths)
-        index_document, *definition_documents = load_source_documents(
-            paths.source_paths, paths.repo_root
-        )
+        documents = load_source_documents(paths.source_paths, paths.repo_root)
     except (OSError, UnicodeError, ValueError) as error:
         print(f"ERROR: {error}")
         return 1
 
-    result = extract_control_inputs(index_document, definition_documents)
+    index_document = documents[0]
+    definition_documents = documents[1 : 1 + len(DEFINITION_SOURCE_PATHS)]
+    diagram_documents = dict(
+        zip(
+            OPR_DIAGRAM_SOURCE_PATHS,
+            documents[1 + len(DEFINITION_SOURCE_PATHS) :],
+            strict=True,
+        )
+    )
+    result = extract_control_inputs(
+        index_document, definition_documents, diagram_documents
+    )
 
     write_text(paths.json_output, serialize_json(build_json_result(result)))
     write_text(paths.report_output, build_extraction_report(result))

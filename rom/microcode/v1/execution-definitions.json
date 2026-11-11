@@ -3,23 +3,6 @@
   "control_design_version": "v1",
   "artifact": "execution-definitions",
   "generation_stage": "candidate-generation",
-  "opr_bit_positions": {
-    "CLA": 7,
-    "CLL": 6,
-    "CMA": 5,
-    "CML": 4,
-    "RAR": 3,
-    "RAL": 2,
-    "BSW": 1,
-    "IAC": 0,
-    "SPA": 6,
-    "SNA": 5,
-    "SZL": 4,
-    "OSR": 2,
-    "HLT": 1,
-    "MQA": 6,
-    "MQL": 4
-  },
   "cases": [
     {
       "id": "fetch-defer:3.1",

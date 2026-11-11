@@ -31,7 +31,12 @@ docs/04-control/10-control-input-definitions/01-flags.md
 docs/04-control/10-control-input-definitions/02-ir-derived-fields.md
 docs/04-control/10-control-input-definitions/03-derived-flags.md
 docs/04-control/10-control-input-definitions/04-external-inputs.md
+docs/02-isa/01-group-1.md
+docs/02-isa/02-group-2.md
+docs/02-isa/03-group-3.md
 ```
+
+The three ISA documents are read only for their OPR encoding diagrams, to check the OPR-bit derivations (section 8.1).
 
 Unrestricted Markdown discovery is intentionally not used.
 
@@ -270,6 +275,29 @@ The extractor does not:
 - infer dependencies that are not explicitly documented
 - compare expression identifiers against the documented dependency list
 
+### 8.1 OPR Bit Positions
+
+The ISA documents define each OPR bit's position in an encoding diagram: a box drawing whose first row holds bit numbers and whose last row holds mnemonics. A mnemonic's bit is the bit-number cell directly above it. Group 2's document has two diagrams, one per sub-group.
+
+```text
+┌────┬────┬─────┬────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
+│ 11 │ 10 │  9  │ 8  │  7  │  6  │  5  │  4  │  3  │  2  │  1  │  0  │
+├────┼────┼─────┼────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┤
+│  1 │  1 │  1  │ 0  │     │     │     │     │     │     │     │     │
+├────┴────┴─────┼────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┤
+│      OPR      │    │ CLA │ CLL │ CMA │ CML │ RAR │ RAL │ BSW │ IAC │
+└───────────────┴────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
+```
+
+An IR-derived input named `IR_OPR_<MNEMONIC>`, for a mnemonic in some diagram, must have a derivation of one of these forms:
+
+```text
+IR_OPR_RAR = IR_OPR_GROUP1 AND IR[3]
+IR_OPR_CLA = IR_IS_OPR AND IR[7]
+```
+
+The bit must equal the mnemonic's bit in every diagram of the named group, or, for `IR_IS_OPR`, in every diagram where the mnemonic appears. Inputs such as `IR_OPR_GROUP1` and `IR_OPR_SKIP_MODE`, which name no diagram mnemonic, are not checked.
+
 ## 9. Global Constraints
 
 Global constraints record relationships between several control inputs:
@@ -312,6 +340,8 @@ The implementation validates:
 - required logic sections are present
 - logic sections are not empty or duplicated
 - derivations and derived logic assign the indexed signal
+- each ISA document has a well-formed OPR encoding diagram
+- OPR-bit derivations select the bit their ISA diagrams give (section 8.1)
 - global constraints are well formed, refer to indexed inputs, and are not duplicated
 - source traceability is retained
 
@@ -332,6 +362,15 @@ Diagnostics identify:
 - source file
 - source line, when available
 - explanatory message
+
+The OPR-bit checks report these errors:
+
+| Code | Meaning |
+|---|---|
+| `MISSING_OPR_DIAGRAM` | an ISA document has no OPR encoding diagram |
+| `MALFORMED_OPR_DIAGRAM` | a diagram has no bottom border, its first row is not bit numbers, or a mnemonic is not under a bit number |
+| `UNCHECKED_OPR_DERIVATION` | an OPR-bit derivation is not in a form section 8.1 can check |
+| `OPR_BIT_MISMATCH` | the derivation's bit differs from a diagram's, or the mnemonic is not in the named group's diagrams; reported once per disagreeing diagram |
 
 Most findings are `ERROR`. These findings are `WARNING` and do not fail the run:
 
@@ -393,7 +432,7 @@ Top-level fields:
 |---|---|
 | `format_version` | `1` |
 | `extraction_stage` | `"final-structure-validation"` |
-| `sources` | the five repository-relative source paths, in processing order |
+| `sources` | the eight repository-relative source paths, in processing order |
 | `signals` | one object per indexed input, in index order |
 | `constraints` | global constraints, in source order |
 | `diagnostics` | all diagnostics, in the order described below |
@@ -482,11 +521,11 @@ Run the tests from the repository root:
 python -m unittest discover -s tools/rom-generation/control-input-extractor/tests -p "test_*.py"
 ```
 
-The tests use inline document content and temporary directories. Unit tests are grouped by pipeline stage; end-to-end tests write a small five-document repository to a temporary directory and run `main()` against it.
+The tests use inline document content and temporary directories. Unit tests are grouped by pipeline stage; end-to-end tests write a small eight-document repository to a temporary directory and run `main()` against it.
 
 Two end-to-end tests compare the complete JSON and report with expected files under `tests/golden/`:
 
-- `valid/`: the five-document repository, which extracts without diagnostics
+- `valid/`: the eight-document repository, which extracts without diagnostics
 - `invalid/`: the same repository with defects that produce warnings and errors in several files, which fixes diagnostic order
 
 The golden JSON is also the reference the control-input schema generator's tests use for this tool's output format, so a format change fails both tools' tests until both are updated.
@@ -530,11 +569,12 @@ The implementation is a single module, `src/extract_control_inputs.py`, organize
 4. **Global constraints:** read `EXACTLY_ONE` and `AT_MOST_ONE` bullets from all five documents.
 5. **Per-signal extraction:** read each block's scalar attributes, bit width, polarity, values, dependencies, logic sections, constraints, and consumers into one `SignalDefinition`.
 6. **Per-signal validation:** check required attributes, value form, value widths, dependencies, logic, and naming against the domain rules.
-7. **Output:** sort diagnostics, then write the JSON and the report.
+7. **OPR bit positions:** read the ISA diagrams and check the OPR-bit derivations against them.
+8. **Output:** sort diagnostics, then write the JSON and the report.
 
 Domain-specific rules are kept in tables near the top of the module: required attributes, one-bit width defaults, mnemonic checks, and logic requirements. Recognized Markdown labels are kept in the same place.
 
-`extract_control_inputs()` performs steps 2–6 on loaded documents without file access. `main()` handles loading, writing, and console output.
+`extract_control_inputs()` performs steps 2–7 on loaded documents without file access; without diagram documents, it skips step 7. `main()` handles loading, writing, and console output.
 
 ## 18. Completion Boundary
 

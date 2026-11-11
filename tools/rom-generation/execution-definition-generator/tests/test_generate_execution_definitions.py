@@ -8,7 +8,7 @@ import generate_execution_definitions as g
 def case(case_id="x",uop="AC_CLEAR"):
  return {"id":case_id,"source":{"path":"doc","line":1},"execution_model":"major-state","context":["MS = EXECUTE"],"timing_state":1,"micro_operations":[uop],"conditional_micro_operations":[]}
 def artifact(cases):
- return {"format_version":1,"control_design_version":"v1","artifact":"execution-definitions","extraction_stage":"documentation-extraction","opr_bit_positions":{"CLA":7},"cases":cases,"diagnostics":[]}
+ return {"format_version":1,"control_design_version":"v1","artifact":"execution-definitions","extraction_stage":"documentation-extraction","cases":cases,"diagnostics":[]}
 
 class StructureTests(unittest.TestCase):
  def test_paths(self):
@@ -52,8 +52,6 @@ class LifecycleTests(unittest.TestCase):
   extracted=artifact([case("changed","AC_CLEAR"),case("new","L_CLEAR")]);maintained=artifact([case("changed","L_CLEAR"),case("stale","MQ_CLEAR")]);_,d=g.build_candidate(extracted,maintained);self.assertEqual({x.code for x in d},{"NEW_CASE","CHANGED_CASE","STALE_CASE"})
  def test_candidate_preserves_all_case_fields(self):
   item=case();item["context"].append("FLAG = 1");item["conditional_micro_operations"]=[{"predicate":"FLAG = 1","micro_operation":"PC_INC"}];a=artifact([item]);c,_=g.build_candidate(a,None);self.assertEqual(c["cases"][0],item)
- def test_candidate_preserves_opr_bits(self):
-  a=artifact([case()]);a["opr_bit_positions"]={"CLA":7,"RAR":3};c,_=g.build_candidate(a,None);self.assertEqual(c["opr_bit_positions"],a["opr_bit_positions"])
  def test_candidate_preserves_order(self):
   a=artifact([case("z"),case("a")]);c,_=g.build_candidate(a,None);self.assertEqual([x["id"] for x in c["cases"]],["z","a"])
  def test_round_trip_maintained_candidate(self):
