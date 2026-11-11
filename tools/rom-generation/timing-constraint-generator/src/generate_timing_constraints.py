@@ -1,30 +1,652 @@
-"""Generate and validate a reviewable timing-constraint candidate."""
+"""Generate a candidate timing-constraint artifact for review.
+
+The generator takes the timing-constraint extractor's constraints,
+validates their structure, compares them with the maintained artifact, and
+writes a candidate plus a report. It never modifies the maintained
+artifact.
+
+Pipeline:
+
+1. Read the extracted constraints and the maintained artifact if present.
+2. Validate their structure. Any error stops here.
+3. Report constraints that are new, changed, or no longer extracted.
+4. Write the candidate (only when no errors were found) and the report.
+
+See the tool README for the validation rules.
+"""
+
 from __future__ import annotations
-import argparse,json,sys
+
+import argparse
+import json
+from collections.abc import Sequence
+from dataclasses import dataclass
 from pathlib import Path
-EXTRACTED=Path("build/simulation_outputs/rom-generation/timing-constraint-extractor/timing-constraints.json")
-MAINTAINED=Path("rom/microcode/v1/timing-constraints.json")
-CANDIDATE=Path("build/simulation_outputs/rom-generation/timing-constraint-generator/timing-constraints.candidate.json")
-REPORT=Path("build/simulation_outputs/rom-generation/timing-constraint-generator/generation-report.txt")
+from typing import Any
 
-def build(extracted,maintained=None):
- diagnostics=[];seen=set()
- for item in extracted.get("constraints",[]):
-  for key in ("id","context","requirement","source"):
-   if key not in item:diagnostics.append({"severity":"ERROR","code":"MISSING_FIELD","message":f"Constraint missing {key}.","constraint":item.get("id")})
-  if item.get("id") in seen:diagnostics.append({"severity":"ERROR","code":"DUPLICATE_ID","message":"Duplicate constraint id.","constraint":item.get("id")})
-  seen.add(item.get("id"))
- if extracted.get("diagnostics"):diagnostics.extend(extracted["diagnostics"])
- candidate={**extracted,"generation_stage":"candidate-generation","diagnostics":[]} if not diagnostics else None
- if candidate is not None and maintained is not None:
-  old={x["id"]:x for x in maintained.get("constraints",[])};new={x["id"]:x for x in candidate["constraints"]}
-  for key in sorted(new.keys()-old.keys()):diagnostics.append({"severity":"WARNING","code":"NEW_CONSTRAINT","message":"Constraint is new.","constraint":key})
-  for key in sorted(old.keys()-new.keys()):diagnostics.append({"severity":"WARNING","code":"STALE_CONSTRAINT","message":"Maintained constraint is absent from extraction.","constraint":key})
- return candidate,diagnostics
+# ---------------------------------------------------------------------------
+# Paths
+# ---------------------------------------------------------------------------
 
-def main(argv=None):
- p=argparse.ArgumentParser();p.add_argument("--repo-root",type=Path,required=True);a=p.parse_args(argv);root=a.repo_root.resolve();ex=json.loads((root/EXTRACTED).read_text());mp=root/MAINTAINED;maint=json.loads(mp.read_text()) if mp.exists() else None;c,d=build(ex,maint);out=root/CANDIDATE;rep=root/REPORT;out.parent.mkdir(parents=True,exist_ok=True);written=c is not None and not any(x["severity"]=="ERROR" for x in d)
- if written:out.write_text(json.dumps(c,indent=2,ensure_ascii=False)+"\n",encoding="utf-8",newline="\n")
- rep.write_text(("Timing-Constraint Generation Report\n===================================\n\n"+f"Constraints processed: {len(ex.get('constraints',[]))}\nCandidate written: {'yes' if written else 'no'}\nDiagnostics: {len(d)}\n\n"+"\n".join(f"{x['severity']} {x['code']} [{x.get('constraint','')}]: {x['message']}" for x in d)).rstrip("\n")+"\n",encoding="utf-8",newline="\n")
- errors=[x for x in d if x["severity"]=="ERROR"];print("Timing-constraint generation");print(f"Status: {'FAILED' if errors else 'SUCCEEDED'}");print(f"Constraints: {len(ex.get('constraints',[]))}");print(f"Candidate written: {'yes' if written else 'no'}");print(f"Diagnostics: {len(d)}");print(f"Candidate output: {out}");print(f"Report output: {rep}");return 1 if errors else 0
-if __name__=="__main__":sys.exit(main())
+DEFAULT_EXTRACTED = Path(
+    "build/simulation_outputs/rom-generation/timing-constraint-extractor/"
+    "timing-constraints.json"
+)
+DEFAULT_MAINTAINED = Path("rom/microcode/v1/timing-constraints.json")
+
+OUTPUT_DIRECTORY = Path(
+    "build/simulation_outputs/rom-generation/timing-constraint-generator"
+)
+DEFAULT_CANDIDATE = OUTPUT_DIRECTORY / "timing-constraints.candidate.json"
+DEFAULT_REPORT = OUTPUT_DIRECTORY / "generation-report.txt"
+
+# ---------------------------------------------------------------------------
+# Expected inputs
+# ---------------------------------------------------------------------------
+
+ARTIFACT = "timing-constraints"
+FORMAT_VERSION = 1
+EXTRACTION_STAGE = "documentation-extraction"
+GENERATION_STAGE = "candidate-generation"
+REQUIRED_TOP_LEVEL = (
+    "format_version",
+    "control_design_version",
+    "artifact",
+    "extraction_stage",
+    "sources",
+    "constraints",
+    "diagnostics",
+)
+
+# Constraint fields that must be non-empty strings.
+TEXT_FIELDS = ("context", "requirement")
+
+# ---------------------------------------------------------------------------
+# Diagnostics
+# ---------------------------------------------------------------------------
+
+INFO = "INFO"
+WARNING = "WARNING"
+ERROR = "ERROR"
+FATAL = "FATAL"
+
+SEVERITIES = (INFO, WARNING, ERROR, FATAL)
+SEVERITY_ORDER = {severity: rank for rank, severity in enumerate(SEVERITIES)}
+FAILURE_SEVERITIES = frozenset({ERROR, FATAL})
+
+
+@dataclass(frozen=True)
+class Diagnostic:
+    """One validation or generation finding."""
+
+    severity: str
+    code: str
+    message: str
+    constraint_id: str | None = None
+    field_name: str | None = None
+
+
+class GenerationFailure(Exception):
+    """An input could not be read; generation cannot proceed."""
+
+
+def make_error(
+    code: str,
+    message: str,
+    constraint_id: str | None = None,
+    field_name: str | None = None,
+) -> Diagnostic:
+    """Build an ERROR diagnostic."""
+
+    return Diagnostic(ERROR, code, message, constraint_id, field_name)
+
+
+def has_failures(diagnostics: Sequence[Diagnostic]) -> bool:
+    """Return whether any diagnostic prevents a candidate from being
+    written."""
+
+    return any(item.severity in FAILURE_SEVERITIES for item in diagnostics)
+
+
+def diagnostic_sort_key(diagnostic: Diagnostic) -> tuple:
+    """Order diagnostics deterministically, least severe first."""
+
+    return (
+        SEVERITY_ORDER.get(diagnostic.severity, 99),
+        diagnostic.code,
+        diagnostic.constraint_id or "",
+        diagnostic.field_name or "",
+        diagnostic.message,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Reading inputs
+# ---------------------------------------------------------------------------
+
+
+def resolve_from_repo(root: Path, path: Path) -> Path:
+    """Resolve a relative path from the repository root."""
+
+    return path.resolve() if path.is_absolute() else (root / path).resolve()
+
+
+def read_json(path: Path, optional: bool = False) -> dict[str, Any] | None:
+    """Read a JSON object from ``path``.
+
+    An optional file that is missing or blank yields None. Every other
+    problem raises ``GenerationFailure``.
+    """
+
+    if optional and not path.exists():
+        return None
+
+    try:
+        text = path.read_text(encoding="utf-8")
+    except FileNotFoundError as error:
+        raise GenerationFailure(
+            f"Required input does not exist: {path}"
+        ) from error
+    except UnicodeDecodeError as error:
+        raise GenerationFailure(f"Input is not valid UTF-8: {path}") from error
+    except OSError as error:
+        raise GenerationFailure(
+            f"Unable to read input {path}: {error}"
+        ) from error
+
+    if optional and not text.strip():
+        return None
+
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError as error:
+        raise GenerationFailure(
+            f"Input is not valid JSON: {path}: line {error.lineno}, "
+            f"column {error.colno}: {error.msg}"
+        ) from error
+
+    if not isinstance(data, dict):
+        raise GenerationFailure(f"Input root must be a JSON object: {path}")
+
+    return data
+
+
+# ---------------------------------------------------------------------------
+# Structural validation
+# ---------------------------------------------------------------------------
+
+
+def index_constraints(
+    data: dict[str, Any], label: str, code: str
+) -> tuple[list[Diagnostic], dict[str, dict[str, Any]]]:
+    """Index an artifact's constraints by id.
+
+    ``label`` names the artifact in messages; ``code`` is the code of every
+    problem found. The index is only meaningful without diagnostics.
+    """
+
+    constraints = data.get("constraints")
+    if not isinstance(constraints, list):
+        return [
+            make_error(code, f"{label} must contain a constraints array.")
+        ], {}
+
+    diagnostics = []
+    index: dict[str, dict[str, Any]] = {}
+
+    for position, item in enumerate(constraints):
+        if not isinstance(item, dict):
+            diagnostics.append(
+                make_error(
+                    code, f"{label} constraint {position} must be an object."
+                )
+            )
+            continue
+        identifier = item.get("id")
+        if not isinstance(identifier, str) or not identifier:
+            diagnostics.append(
+                make_error(
+                    code,
+                    f"{label} constraint {position} has no nonempty string "
+                    "id.",
+                )
+            )
+            continue
+        if identifier in index:
+            diagnostics.append(
+                make_error(
+                    code,
+                    f"{label} contains duplicate constraint id {identifier}.",
+                    identifier,
+                )
+            )
+        index[identifier] = item
+
+    return diagnostics, index
+
+
+def constraint_field_problems(
+    constraint: dict[str, Any],
+) -> list[tuple[str, str]]:
+    """Return ``(field, requirement)`` for each malformed field."""
+
+    problems = [
+        (field, "must be a nonempty string")
+        for field in TEXT_FIELDS
+        if not isinstance(constraint.get(field), str)
+        or not constraint[field].strip()
+    ]
+    source = constraint.get("source")
+    if not (
+        isinstance(source, dict)
+        and isinstance(source.get("path"), str)
+        and type(source.get("line")) is int
+    ):
+        problems.append(("source", "must be {path, line}"))
+    return problems
+
+
+def validate_extracted(
+    data: dict[str, Any],
+) -> tuple[list[Diagnostic], dict[str, dict[str, Any]]]:
+    """Validate the extractor output and index its constraints by id."""
+
+    diagnostics: list[Diagnostic] = []
+
+    missing = [key for key in REQUIRED_TOP_LEVEL if key not in data]
+    if missing:
+        diagnostics.append(
+            make_error(
+                "MISSING_TOP_LEVEL_FIELDS",
+                "Extracted artifact is missing: " + ", ".join(sorted(missing)),
+            )
+        )
+    if data.get("artifact") != ARTIFACT:
+        diagnostics.append(
+            make_error(
+                "UNEXPECTED_ARTIFACT_TYPE", f"Expected artifact {ARTIFACT!r}."
+            )
+        )
+    if "format_version" in data and data["format_version"] != FORMAT_VERSION:
+        diagnostics.append(
+            make_error(
+                "UNSUPPORTED_FORMAT_VERSION",
+                f"Expected format_version {FORMAT_VERSION}.",
+            )
+        )
+    if (
+        "extraction_stage" in data
+        and data["extraction_stage"] != EXTRACTION_STAGE
+    ):
+        diagnostics.append(
+            make_error(
+                "UNSUPPORTED_EXTRACTION_STAGE",
+                f"Expected extraction_stage {EXTRACTION_STAGE!r}.",
+            )
+        )
+    if "sources" in data and not (
+        isinstance(data["sources"], list)
+        and all(isinstance(item, str) for item in data["sources"])
+    ):
+        diagnostics.append(
+            make_error(
+                "INVALID_SOURCES",
+                "Extracted sources must be an array of strings.",
+            )
+        )
+
+    extractor_diagnostics = data.get("diagnostics")
+    if not isinstance(extractor_diagnostics, list):
+        diagnostics.append(
+            make_error(
+                "INVALID_EXTRACTOR_DIAGNOSTICS",
+                "Extracted artifact diagnostics must be an array.",
+            )
+        )
+    elif any(
+        isinstance(item, dict) and item.get("severity") in FAILURE_SEVERITIES
+        for item in extractor_diagnostics
+    ):
+        diagnostics.append(
+            make_error(
+                "EXTRACTOR_FAILURE_DIAGNOSTICS",
+                "Extracted artifact contains ERROR or FATAL diagnostics.",
+            )
+        )
+
+    index_diagnostics, constraints = index_constraints(
+        data, "Extracted artifact", "INVALID_EXTRACTED_CONSTRAINTS"
+    )
+    diagnostics += index_diagnostics
+
+    for identifier, constraint in constraints.items():
+        for field, rule in constraint_field_problems(constraint):
+            diagnostics.append(
+                make_error(
+                    "INVALID_CONSTRAINT_FIELD",
+                    f"Constraint {field} {rule}.",
+                    identifier,
+                    field,
+                )
+            )
+
+    return diagnostics, constraints
+
+
+def validate_maintained(
+    data: dict[str, Any] | None,
+    extracted: dict[str, Any],
+) -> tuple[list[Diagnostic], dict[str, dict[str, Any]]]:
+    """Validate the maintained artifact and index its constraints by id.
+
+    A missing artifact (None) is valid and has no constraints.
+    """
+
+    if data is None:
+        return [], {}
+
+    diagnostics: list[Diagnostic] = []
+
+    if data.get("control_design_version") != extracted.get(
+        "control_design_version"
+    ):
+        diagnostics.append(
+            make_error(
+                "CONTROL_DESIGN_VERSION_MISMATCH",
+                "Maintained and extracted artifacts have different "
+                "control_design_version values.",
+            )
+        )
+
+    index_diagnostics, constraints = index_constraints(
+        data, "Maintained artifact", "INVALID_MAINTAINED_CONSTRAINTS"
+    )
+    return diagnostics + index_diagnostics, constraints
+
+
+# ---------------------------------------------------------------------------
+# Review against the maintained artifact
+# ---------------------------------------------------------------------------
+
+
+def review_changes(
+    extracted: dict[str, dict[str, Any]],
+    maintained: dict[str, dict[str, Any]],
+) -> list[Diagnostic]:
+    """Warn about new, changed, and stale constraints."""
+
+    diagnostics = []
+
+    for identifier, constraint in extracted.items():
+        previous = maintained.get(identifier)
+        if previous is None:
+            diagnostics.append(
+                Diagnostic(
+                    WARNING,
+                    "NEW_CONSTRAINT",
+                    "Constraint is not present in the maintained artifact.",
+                    identifier,
+                )
+            )
+        elif previous != constraint:
+            diagnostics.append(
+                Diagnostic(
+                    WARNING,
+                    "CHANGED_CONSTRAINT",
+                    "Extracted constraint differs from the maintained "
+                    "artifact.",
+                    identifier,
+                )
+            )
+
+    diagnostics.extend(
+        Diagnostic(
+            WARNING,
+            "STALE_CONSTRAINT",
+            "Maintained constraint is absent from the extracted artifact.",
+            identifier,
+        )
+        for identifier in maintained
+        if identifier not in extracted
+    )
+
+    return diagnostics
+
+
+# ---------------------------------------------------------------------------
+# Candidate
+# ---------------------------------------------------------------------------
+
+
+def build_candidate(
+    extracted: dict[str, Any],
+    maintained: dict[str, Any] | None,
+) -> tuple[dict[str, Any] | None, list[Diagnostic]]:
+    """Validate the inputs and build the candidate artifact.
+
+    Returns ``(None, diagnostics)`` when any error is found; otherwise the
+    candidate and its warnings.
+    """
+
+    diagnostics, constraints = validate_extracted(extracted)
+    maintained_diagnostics, maintained_constraints = validate_maintained(
+        maintained, extracted
+    )
+    diagnostics += maintained_diagnostics
+
+    if has_failures(diagnostics):
+        return None, diagnostics
+
+    diagnostics += review_changes(constraints, maintained_constraints)
+
+    candidate = {
+        "format_version": extracted["format_version"],
+        "control_design_version": extracted["control_design_version"],
+        "artifact": ARTIFACT,
+        "generation_stage": GENERATION_STAGE,
+        "sources": extracted["sources"],
+        "constraints": list(constraints.values()),
+        "diagnostics": [],
+    }
+    return candidate, diagnostics
+
+
+# ---------------------------------------------------------------------------
+# Output
+# ---------------------------------------------------------------------------
+
+
+def serialize_json(data: dict[str, Any]) -> str:
+    """Serialize JSON preserving key order, with a trailing newline."""
+
+    return json.dumps(data, indent=2, ensure_ascii=False) + "\n"
+
+
+def write_text(path: Path, text: str) -> None:
+    """Write UTF-8 text with LF line endings, creating parent directories."""
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8", newline="\n")
+
+
+def remove_previous_outputs(
+    outputs: Sequence[Path],
+    inputs: Sequence[Path],
+) -> None:
+    """Delete earlier output files, so no output outlives the run.
+
+    Raises ``ValueError``, deleting nothing, if an output path is also an
+    input or is a directory.
+    """
+
+    for path in outputs:
+        if path in inputs:
+            raise ValueError(f"Output path is also an input: {path}")
+        if path.is_dir():
+            raise ValueError(f"Output path is a directory: {path}")
+
+    for path in outputs:
+        path.unlink(missing_ok=True)
+
+
+def format_heading(diagnostic: Diagnostic) -> str:
+    """Return ``SEVERITY CODE`` followed by any bracketed id and field."""
+
+    text = f"{diagnostic.severity} {diagnostic.code}"
+    if diagnostic.constraint_id:
+        text += f" [{diagnostic.constraint_id}]"
+    if diagnostic.field_name:
+        text += f" [{diagnostic.field_name}]"
+    return text
+
+
+def build_report(
+    diagnostics: Sequence[Diagnostic],
+    constraint_count: int,
+    candidate_written: bool,
+) -> str:
+    """Build the human-readable generation report."""
+
+    counts = {
+        severity: sum(item.severity == severity for item in diagnostics)
+        for severity in SEVERITIES
+    }
+    title = "Timing-Constraint Candidate Generation Report"
+    lines = [
+        title,
+        "=" * len(title),
+        "",
+        f"Constraints processed: {constraint_count}",
+        f"Candidate written: {'yes' if candidate_written else 'no'}",
+        f"Information diagnostics: {counts[INFO]}",
+        f"Warnings: {counts[WARNING]}",
+        f"Errors: {counts[ERROR]}",
+        f"Fatal errors: {counts[FATAL]}",
+        "",
+        "Diagnostics",
+        "-----------",
+    ]
+    lines += [
+        f"{format_heading(item)}: {item.message}" for item in diagnostics
+    ] or ["No diagnostics."]
+    return "\n".join(lines) + "\n"
+
+
+# ---------------------------------------------------------------------------
+# Command line
+# ---------------------------------------------------------------------------
+
+
+def parse_arguments(
+    arguments: Sequence[str] | None = None,
+) -> argparse.Namespace:
+    """Parse command-line arguments."""
+
+    parser = argparse.ArgumentParser(
+        description="Generate a reviewable timing-constraint candidate."
+    )
+    parser.add_argument(
+        "--repo-root",
+        required=True,
+        type=Path,
+        help="Path to the repository root.",
+    )
+    parser.add_argument(
+        "--extracted",
+        type=Path,
+        default=DEFAULT_EXTRACTED,
+        help="Timing-constraint extractor JSON.",
+    )
+    parser.add_argument(
+        "--maintained",
+        type=Path,
+        default=DEFAULT_MAINTAINED,
+        help="Maintained timing-constraint artifact; may be absent.",
+    )
+    parser.add_argument(
+        "--candidate-output",
+        type=Path,
+        default=DEFAULT_CANDIDATE,
+        help="Candidate artifact output path.",
+    )
+    parser.add_argument(
+        "--report-output",
+        type=Path,
+        default=DEFAULT_REPORT,
+        help="Generation report output path.",
+    )
+    return parser.parse_args(arguments)
+
+
+def main(arguments: Sequence[str] | None = None) -> int:
+    """Run the generator; return 1 if any error-level diagnostic exists.
+
+    Relative paths are resolved from the repository root.
+    """
+
+    options = parse_arguments(arguments)
+    root = options.repo_root.resolve()
+    extracted_path = resolve_from_repo(root, options.extracted)
+    maintained_path = resolve_from_repo(root, options.maintained)
+    candidate_path = resolve_from_repo(root, options.candidate_output)
+    report_path = resolve_from_repo(root, options.report_output)
+
+    try:
+        remove_previous_outputs(
+            (candidate_path, report_path), (extracted_path, maintained_path)
+        )
+    except (OSError, ValueError) as error:
+        print(f"ERROR: {error}")
+        return 1
+
+    diagnostics: list[Diagnostic] = []
+    constraint_count = 0
+    candidate_written = False
+
+    try:
+        extracted = read_json(extracted_path)
+        maintained = read_json(maintained_path, optional=True)
+        constraints = extracted.get("constraints")
+        constraint_count = (
+            len(constraints) if isinstance(constraints, list) else 0
+        )
+        candidate, diagnostics = build_candidate(extracted, maintained)
+
+        if candidate is not None:
+            write_text(candidate_path, serialize_json(candidate))
+            candidate_written = True
+    except GenerationFailure as error:
+        diagnostics = [Diagnostic(FATAL, "GENERATION_FAILURE", str(error))]
+
+    diagnostics = sorted(diagnostics, key=diagnostic_sort_key)
+    write_text(
+        report_path,
+        build_report(diagnostics, constraint_count, candidate_written),
+    )
+
+    failures = [
+        item for item in diagnostics if item.severity in FAILURE_SEVERITIES
+    ]
+    exit_code = 1 if failures else 0
+
+    print("Timing-constraint candidate generation")
+    print(f"Status: {'FAILED' if exit_code else 'SUCCEEDED'}")
+    print(f"Constraints: {constraint_count}")
+    print(f"Candidate written: {'yes' if candidate_written else 'no'}")
+    print(f"Diagnostics: {len(diagnostics)}")
+    print(f"Candidate output: {candidate_path}")
+    print(f"Report output: {report_path}")
+
+    if failures:
+        print()
+        print("Failure diagnostics")
+        print("-------------------")
+        for item in failures:
+            print(format_heading(item))
+            print(f"  {item.message}")
+
+    return exit_code
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

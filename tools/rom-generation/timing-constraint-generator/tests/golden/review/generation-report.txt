@@ -1,0 +1,15 @@
+Timing-Constraint Candidate Generation Report
+=============================================
+
+Constraints processed: 3
+Candidate written: yes
+Information diagnostics: 0
+Warnings: 3
+Errors: 0
+Fatal errors: 0
+
+Diagnostics
+-----------
+WARNING CHANGED_CONSTRAINT [changed]: Extracted constraint differs from the maintained artifact.
+WARNING NEW_CONSTRAINT [new]: Constraint is not present in the maintained artifact.
+WARNING STALE_CONSTRAINT [stale]: Maintained constraint is absent from the extracted artifact.

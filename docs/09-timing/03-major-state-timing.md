@@ -88,6 +88,13 @@ All state changes occur exclusively at TP.
 
 ### 5.2 EXECUTE: External IOT
 
+Applicable context:
+
+```text
+MS = EXECUTE
+IOT_ACTIVE = 1
+```
+
 #### 5.2.1 TS1
 
 - `IOT_ACTIVE` is asserted.

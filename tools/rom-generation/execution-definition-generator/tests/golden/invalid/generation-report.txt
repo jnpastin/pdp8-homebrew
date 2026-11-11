@@ -1,0 +1,15 @@
+Execution-Definition Candidate Generation Report
+================================================
+
+Cases processed: 2
+Candidate written: no
+Information diagnostics: 0
+Warnings: 0
+Errors: 3
+Fatal errors: 0
+
+Diagnostics
+-----------
+ERROR EXTRACTOR_FAILURE_DIAGNOSTICS: Extracted artifact contains ERROR or FATAL diagnostics.
+ERROR INVALID_CASE_FIELD [mri:3.1:ts1] [timing_state]: Case timing_state must be 1 to 4.
+ERROR INVALID_CASE_FIELD [x] [context]: Case context must be an array of strings.

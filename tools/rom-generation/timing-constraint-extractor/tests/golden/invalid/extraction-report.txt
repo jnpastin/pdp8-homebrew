@@ -1,0 +1,16 @@
+Timing-Constraint Extraction Report
+===================================
+
+Constraints extracted: 0
+Information diagnostics: 0
+Warnings: 0
+Errors: 5
+Fatal errors: 0
+
+Diagnostics
+-----------
+ERROR MALFORMED_CONSTRAINT [timing:5.2.5.1] docs/09-timing/03-major-state-timing.md:13: Constraint must be 'REQUIREMENT IF CONDITION'.
+ERROR MISSING_CODE_BLOCK docs/09-timing/03-major-state-timing.md:7: 'Applicable context:' must be followed by a non-empty text code block.
+ERROR MISSING_SCOPE [timing:5.2.5.2] docs/09-timing/03-major-state-timing.md:14: No enclosing section has an 'Applicable context:' block.
+ERROR MISSING_TIMING_CONTEXT docs/09-timing/03-major-state-timing.md:3: Constraint is not directly under a TS1 to TS4 heading.
+ERROR MISSING_TIMING_CONTEXT docs/09-timing/03-major-state-timing.md:18: Constraint is not directly under a TS1 to TS4 heading.

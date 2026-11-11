@@ -8,21 +8,21 @@
   ],
   "constraints": [
     {
-      "id": "timing:125",
-      "context": "TS = 3 AND (IOT_READ_PENDING = 1 OR IOT_WRITE_PENDING = 1)",
+      "id": "timing:5.2.5.1",
+      "context": "MS = EXECUTE AND IOT_ACTIVE = 1 AND TS = 3 AND (IOT_READ_PENDING = 1 OR IOT_WRITE_PENDING = 1)",
       "requirement": "IO_CLEAR_AC_REQ != 1",
       "source": {
         "path": "docs/09-timing/03-major-state-timing.md",
-        "line": 125
+        "line": 132
       }
     },
     {
-      "id": "timing:146",
-      "context": "TS = 4 AND (IOT_READ_PENDING = 1 OR IO_SKIP_REQ = 1)",
+      "id": "timing:5.2.7.1",
+      "context": "MS = EXECUTE AND IOT_ACTIVE = 1 AND TS = 4 AND (IOT_READ_PENDING = 1 OR IO_SKIP_REQ = 1)",
       "requirement": "IO_CLEAR_AC_REQ != 1",
       "source": {
         "path": "docs/09-timing/03-major-state-timing.md",
-        "line": 146
+        "line": 153
       }
     }
   ],

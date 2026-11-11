@@ -1,0 +1,15 @@
+Execution-Definition Candidate Generation Report
+================================================
+
+Cases processed: 3
+Candidate written: yes
+Information diagnostics: 0
+Warnings: 3
+Errors: 0
+Fatal errors: 0
+
+Diagnostics
+-----------
+WARNING CHANGED_CASE [changed]: Extracted case differs from the maintained artifact.
+WARNING NEW_CASE [new]: Case is not present in the maintained artifact.
+WARNING STALE_CASE [stale]: Maintained case is absent from the extracted artifact.

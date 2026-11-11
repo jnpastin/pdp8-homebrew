@@ -1,0 +1,15 @@
+Timing-Constraint Candidate Generation Report
+=============================================
+
+Constraints processed: 2
+Candidate written: no
+Information diagnostics: 0
+Warnings: 0
+Errors: 3
+Fatal errors: 0
+
+Diagnostics
+-----------
+ERROR INVALID_CONSTRAINT_FIELD [timing:5.2.5.1] [requirement]: Constraint requirement must be a nonempty string.
+ERROR INVALID_CONSTRAINT_FIELD [x] [source]: Constraint source must be {path, line}.
+ERROR UNSUPPORTED_EXTRACTION_STAGE: Expected extraction_stage 'documentation-extraction'.
