@@ -187,7 +187,11 @@ OPR_CONDITIONAL_PATTERN = re.compile(r"^if\s+(\S.*?):\s*([A-Z][A-Z0-9_]*)?$")
 CONSOLE_TITLE_PATTERN = re.compile(r"^(.+) Operation$")
 MRI_OPCODE_TERM = re.compile(r"IR\[11:9\] = ([01]{3})")
 IOT_OPERATION_TERM = re.compile(r"IR\[2:0\] = ([01]{3})")
+# Device addresses are written in octal in the documentation; IR_IOA is the
+# 6-bit binary IR[8:3].
 IOA_PREFIX = "IOA = "
+IOA_TERM = re.compile(r"IOA = ([0-7]{2})")
+IOA_WIDTH = 6
 RAW_IR_REFERENCES = ("IR[", "bit(")
 MICRO_OPERATION_NAME = re.compile(r"^[A-Z][A-Z0-9_]*$")
 
@@ -564,8 +568,9 @@ def normalize_context_term(term: str) -> str:
             return "IR_IS_IOT = 1"
     if match := IOT_OPERATION_TERM.fullmatch(value):
         return f"IR_IOT_OP = {match.group(1)}"
-    if value.startswith(IOA_PREFIX):
-        return "IR_IOA = " + value.removeprefix(IOA_PREFIX)
+    if match := IOA_TERM.fullmatch(value):
+        address = int(match.group(1), 8)
+        return f"IR_IOA = {address:0{IOA_WIDTH}b}"
     return value
 
 
@@ -602,7 +607,9 @@ def parse_instructions(
         titles.add(heading.title)
         context = instruction_context(prefix, heading.title)
         for term in context:
-            if any(reference in term for reference in RAW_IR_REFERENCES):
+            if term.startswith(IOA_PREFIX) or any(
+                reference in term for reference in RAW_IR_REFERENCES
+            ):
                 findings.error(
                     "UNTRANSLATED_CONTEXT_TERM",
                     f"Heading term {term!r} has no control-input form.",

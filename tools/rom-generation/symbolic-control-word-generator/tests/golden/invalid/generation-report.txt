@@ -1,0 +1,17 @@
+Symbolic Control-Word Generation Report
+=======================================
+
+Cases generated: 0
+Candidate written: no
+Information diagnostics: 0
+Warnings: 0
+Errors: 5
+Fatal errors: 0
+
+Diagnostics
+-----------
+ERROR INVALID_EXPRESSION [c] [conditional_micro_operations]: 'U is selected' is allowed only in direct-control contexts.
+ERROR MALFORMED_ASSIGNMENT [d] [direct_assignments]: Malformed assignment 'F ='.
+ERROR UNKNOWN_MICRO_OPERATION [c] [micro_operations]: NOPE has no micro-operation mapping.
+ERROR UNKNOWN_NAME [c] [context]: BAD is not a control input, encoded control-word field, MS or TS.
+ERROR UNKNOWN_NAME [t] [requirement]: Q is not a control input, encoded control-word field, MS or TS.

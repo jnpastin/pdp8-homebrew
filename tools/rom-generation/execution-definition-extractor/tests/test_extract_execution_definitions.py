@@ -511,7 +511,7 @@ class InstructionTests(unittest.TestCase):
             [
                 "MS = EXECUTE",
                 "IR_IS_IOT = 1",
-                "IR_IOA = 00",
+                "IR_IOA = 000000",
                 "IR_IOT_OP = 000",
             ],
         )
@@ -546,13 +546,15 @@ class InstructionTests(unittest.TestCase):
         self.assertEqual(
             normalize_context_term("IR[2:0] = 101"), "IR_IOT_OP = 101"
         )
-        self.assertEqual(normalize_context_term("IOA = 00"), "IR_IOA = 00")
+        self.assertEqual(normalize_context_term("IOA = 00"), "IR_IOA = 000000")
+        self.assertEqual(normalize_context_term("IOA = 27"), "IR_IOA = 010111")
+        self.assertEqual(normalize_context_term("IOA = 8"), "IOA = 8")
         self.assertEqual(normalize_context_term("RUN = 1"), "RUN = 1")
 
     def test_untranslated_heading_term_is_an_error(self) -> None:
         _, diagnostics = parse(
             parse_instructions,
-            instruction("3.1", "IR[11:9] = 111 AND IR[8] = 1"),
+            instruction("3.1", "IR[11:9] = 111 AND IR[8] = 1 AND IOA = 2n"),
             "mri",
         )
 
@@ -566,6 +568,10 @@ class InstructionTests(unittest.TestCase):
                 (
                     "UNTRANSLATED_CONTEXT_TERM",
                     "Heading term 'IR[8] = 1' has no control-input form.",
+                ),
+                (
+                    "UNTRANSLATED_CONTEXT_TERM",
+                    "Heading term 'IOA = 2n' has no control-input form.",
                 ),
             ],
         )

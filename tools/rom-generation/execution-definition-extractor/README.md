@@ -54,7 +54,9 @@ Heading terms are rewritten as control inputs:
 | `IR[11:9] = 000` to `101` | `IR_MRI_OPCODE = <opcode>` |
 | `IR[11:9] = 110` | `IR_IS_IOT = 1` |
 | `IR[2:0] = <bits>` | `IR_IOT_OP = <bits>` |
-| `IOA = <value>` | `IR_IOA = <value>` |
+| `IOA = <nn>` | `IR_IOA = <6-bit binary>` |
+
+Device addresses are written in octal, so `IOA = <nn>` takes a two-digit octal address and converts it to the 6-bit binary form of `IR_IOA`, which is `IR[8:3]`; for example, `IOA = 27` becomes `IR_IOA = 010111`. Any other `IOA = ` term is an `UNTRANSLATED_CONTEXT_TERM` error unless its heading is in the table below.
 
 The memory-extension IOT headings select on IR bits that have decoded control inputs instead. The extractor holds a table of these headings, keyed by the full heading title, giving each one's context; for example, the CDF heading `IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2] = 0 AND IR[0] = 1` becomes `IR_IS_IOT = 1` and `IR_WRITES_DF = 1`.
 
@@ -147,7 +149,7 @@ Cases are in document order, with documents in this order: FETCH/DEFER, MRI, IOT
 | `DUPLICATE_TIMING_STATE` | one of TS1 to TS4 appears more than once | section heading |
 | `MISSING_CODE_BLOCK` | a `Conditional μops:` label has no code block after it | label |
 | `MALFORMED_CONDITIONAL` | a conditional line is not `PREDICATE -> MICRO_OPERATION` | line |
-| `UNTRANSLATED_CONTEXT_TERM` | an instruction heading term still names IR bits after rewriting | heading |
+| `UNTRANSLATED_CONTEXT_TERM` | an instruction heading term still names IR bits after rewriting, or an `IOA = ` term is not a two-digit octal address | heading |
 | `MISSING_PHASE_BINDING` | a required phase-binding bullet is absent; no phase-binding cases are produced | section heading |
 | `MISSING_CONTEXT` | a console operation lacks its `Applicable context:` block, or an OPR document its `Applies when:` block | heading or document |
 | `UNEXPECTED_EXECUTION_MODEL` | a console operation's execution model is missing or different | heading |

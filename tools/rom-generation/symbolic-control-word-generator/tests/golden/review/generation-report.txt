@@ -1,0 +1,15 @@
+Symbolic Control-Word Generation Report
+=======================================
+
+Cases generated: 3
+Candidate written: yes
+Information diagnostics: 0
+Warnings: 3
+Errors: 0
+Fatal errors: 0
+
+Diagnostics
+-----------
+WARNING CHANGED_CASE [changed]: Generated case differs from the maintained artifact in: field_assignments, selected_micro_operations.
+WARNING NEW_CASE [new]: Case is not present in the maintained artifact.
+WARNING STALE_CASE [stale]: Maintained case is no longer generated.
