@@ -50,22 +50,22 @@ All μop selection is derived directly from IR bits.
 ### 4.1 IR[11:9] = 111 (Group 1)
 
 TS1:
-- if IR[bit(CLA)] = 1: AC_CLEAR  
-- if IR[bit(CLL)] = 1: L_CLEAR  
+- if IR_OPR_CLA = 1: AC_CLEAR  
+- if IR_OPR_CLL = 1: L_CLEAR  
 
 TS2:
-- if IR[bit(CMA)] = 1: AC_COMP  
-- if IR[bit(CML)] = 1: L_COMP  
+- if IR_OPR_CMA = 1: AC_COMP  
+- if IR_OPR_CML = 1: L_COMP  
 
 TS3:
-- if IR[bit(IAC)] = 1: AC_INC  
+- if IR_OPR_IAC = 1: AC_INC  
 
 TS4:
-- if IR[bit(RAR)] = 1 AND IR[bit(RAL)] = 0 AND IR[bit(BSW)] = 0: AC_RAR  
-- if IR[bit(RAL)] = 1 AND IR[bit(RAR)] = 0 AND IR[bit(BSW)] = 0: AC_RAL  
-- if IR[bit(RAR)] = 1 AND IR[bit(RAL)] = 0 AND IR[bit(BSW)] = 1: AC_RTR  
-- if IR[bit(RAL)] = 1 AND IR[bit(RAR)] = 0 AND IR[bit(BSW)] = 1: AC_RTL  
-- if IR[bit(RAR)] = 0 AND IR[bit(RAL)] = 0 AND IR[bit(BSW)] = 1: AC_BSW  
+- if IR_OPR_RAR = 1 AND IR_OPR_RAL = 0 AND IR_OPR_BSW = 0: AC_RAR  
+- if IR_OPR_RAL = 1 AND IR_OPR_RAR = 0 AND IR_OPR_BSW = 0: AC_RAL  
+- if IR_OPR_RAR = 1 AND IR_OPR_RAL = 0 AND IR_OPR_BSW = 1: AC_RTR  
+- if IR_OPR_RAL = 1 AND IR_OPR_RAR = 0 AND IR_OPR_BSW = 1: AC_RTL  
+- if IR_OPR_RAR = 0 AND IR_OPR_RAL = 0 AND IR_OPR_BSW = 1: AC_BSW  
 
 ---
 
@@ -77,7 +77,7 @@ TS4:
 
 Constraints:
 
-- IR[bit(RAR)] and IR[bit(RAL)] must not both be 1  
+- IR_OPR_RAR and IR_OPR_RAL must not both be 1  
 - TS4 must resolve to at most one μop  
 - no two μops may write the same register in the same TS  
 

@@ -827,7 +827,7 @@ IR_OPR_HLT = IR_OPR_GROUP2 AND IR[1]
 
 **Derivation:**
 ```text
-IR_OPR_IAC = IR_OPR_GROUP1 AND IR[3]
+IR_OPR_IAC = IR_OPR_GROUP1 AND IR[0]
 ```
 
 **Value Encoding:**
@@ -954,7 +954,7 @@ IR_OPR_RAL = IR_OPR_GROUP1 AND IR[2]
 
 **Derivation:**
 ```text
-IR_OPR_RAR = IR_OPR_GROUP1 AND IR[0]
+IR_OPR_RAR = IR_OPR_GROUP1 AND IR[3]
 ```
 
 **Value Encoding:**

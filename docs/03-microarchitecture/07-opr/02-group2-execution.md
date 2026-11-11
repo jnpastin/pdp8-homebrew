@@ -75,15 +75,15 @@ The Group 2 ISA defines the instruction-bit meanings and subgroup encodings.
 
 ### 4.4 TS2 — AC Modification
 
-- if IR[bit(CLA)] = 1: AC_CLEAR
+- if IR_OPR_CLA = 1: AC_CLEAR
 
 ---
 
 ### 4.5 TS3 — Register and Control Operations
 
-- if IR[bit(OSR)] = 1: AC_OR_FP_SR
+- if IR_OPR_OSR = 1: AC_OR_FP_SR
 
-- if IR[bit(HLT)] = 1:
+- if IR_OPR_HLT = 1:
   - HLT is a meta-instruction
   - No datapath μop is performed
   - Behavior is implemented via control signals

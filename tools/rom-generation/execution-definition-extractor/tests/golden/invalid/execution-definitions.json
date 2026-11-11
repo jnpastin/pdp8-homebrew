@@ -1,0 +1,501 @@
+{
+  "format_version": 1,
+  "control_design_version": "v1",
+  "artifact": "execution-definitions",
+  "extraction_stage": "documentation-extraction",
+  "cases": [
+    {
+      "id": "fetch-defer:3.1",
+      "source": {
+        "path": "docs/03-microarchitecture/04-fetch-defer.md",
+        "line": 3
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = FETCH"
+      ],
+      "timing_state": 1,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "fetch-defer:3.2",
+      "source": {
+        "path": "docs/03-microarchitecture/04-fetch-defer.md",
+        "line": 11
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = FETCH"
+      ],
+      "timing_state": 2,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "fetch-defer:3.3",
+      "source": {
+        "path": "docs/03-microarchitecture/04-fetch-defer.md",
+        "line": 14
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = FETCH"
+      ],
+      "timing_state": 3,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "fetch-defer:3.4",
+      "source": {
+        "path": "docs/03-microarchitecture/04-fetch-defer.md",
+        "line": 17
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = FETCH"
+      ],
+      "timing_state": 3,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.1:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 3
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR[11:9] = 111"
+      ],
+      "timing_state": 1,
+      "micro_operations": [
+        "NOPE"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.1:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 3
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR[11:9] = 111"
+      ],
+      "timing_state": 2,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.1:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 3
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR[11:9] = 111"
+      ],
+      "timing_state": 3,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.1:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 3
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR[11:9] = 111"
+      ],
+      "timing_state": 4,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.1:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 20
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 000"
+      ],
+      "timing_state": 1,
+      "micro_operations": [
+        "bad uop"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "console:6",
+      "source": {
+        "path": "docs/03-microarchitecture/09-console-execution.md",
+        "line": 1
+      },
+      "execution_model": "console-transaction",
+      "context": [],
+      "timing_state": null,
+      "micro_operations": [
+        "PC_INC"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "opr1:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/07-opr/01-group1-execution.md",
+        "line": 16
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_OPR = 1",
+        "IR_OPR_GROUP1 = 1"
+      ],
+      "timing_state": 1,
+      "micro_operations": [],
+      "conditional_micro_operations": [
+        {
+          "predicate": "IR_OPR_CLA = 1",
+          "micro_operation": "AC_CLEAR"
+        },
+        {
+          "predicate": "IR[6] = 1",
+          "micro_operation": "L_CLEAR"
+        }
+      ]
+    },
+    {
+      "id": "opr1:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/07-opr/01-group1-execution.md",
+        "line": 23
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_OPR = 1",
+        "IR_OPR_GROUP1 = 1"
+      ],
+      "timing_state": 3,
+      "micro_operations": [],
+      "conditional_micro_operations": [
+        {
+          "predicate": "IR_OPR_IAC = 1",
+          "micro_operation": "AC_INC"
+        }
+      ]
+    },
+    {
+      "id": "opr1:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/07-opr/01-group1-execution.md",
+        "line": 26
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_OPR = 1",
+        "IR_OPR_GROUP1 = 1"
+      ],
+      "timing_state": 4,
+      "micro_operations": [],
+      "conditional_micro_operations": [
+        {
+          "predicate": "IR_OPR_RAR = 1 AND IR_OPR_BSW = 0",
+          "micro_operation": "AC_RAR"
+        }
+      ]
+    },
+    {
+      "id": "opr2:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/07-opr/02-group2-execution.md",
+        "line": 20
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE"
+      ],
+      "timing_state": 1,
+      "micro_operations": [],
+      "conditional_micro_operations": [
+        {
+          "predicate": "SKIP_TAKEN = 1",
+          "micro_operation": "PC_INC"
+        }
+      ]
+    },
+    {
+      "id": "opr2:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/07-opr/02-group2-execution.md",
+        "line": 30
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE"
+      ],
+      "timing_state": 2,
+      "micro_operations": [],
+      "conditional_micro_operations": [
+        {
+          "predicate": "IR_OPR_CLA = 1",
+          "micro_operation": "AC_CLEAR"
+        }
+      ]
+    }
+  ],
+  "diagnostics": [
+    {
+      "severity": "ERROR",
+      "code": "DUPLICATE_CASE_ID",
+      "message": "Duplicate case id: mri:3.1:ts1",
+      "source_path": "docs/03-microarchitecture/05-mri-execution.md",
+      "line": 20,
+      "case_id": "mri:3.1:ts1"
+    },
+    {
+      "severity": "ERROR",
+      "code": "DUPLICATE_TIMING_STATE",
+      "message": "FETCH Execution has TS3 2 times.",
+      "source_path": "docs/03-microarchitecture/04-fetch-defer.md",
+      "line": 1,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MALFORMED_CONDITIONAL",
+      "message": "Expected 'predicate -> MICRO_OPERATION': 'CIFP = 0'",
+      "source_path": "docs/03-microarchitecture/04-fetch-defer.md",
+      "line": 8,
+      "case_id": "fetch-defer:3.1"
+    },
+    {
+      "severity": "ERROR",
+      "code": "MALFORMED_MICRO_OPERATION",
+      "message": "Malformed micro-operation: 'bad uop'",
+      "source_path": "docs/03-microarchitecture/05-mri-execution.md",
+      "line": 20,
+      "case_id": "mri:3.1:ts1"
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_CONTEXT",
+      "message": "'Applies when:' with a text code block is required.",
+      "source_path": "docs/03-microarchitecture/07-opr/02-group2-execution.md",
+      "line": null,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_CONTEXT",
+      "message": "'Applies when:' with a text code block is required.",
+      "source_path": "docs/03-microarchitecture/07-opr/03-group3-execution.md",
+      "line": null,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_CONTEXT",
+      "message": "'Applicable context:' with a text code block is required.",
+      "source_path": "docs/03-microarchitecture/09-console-execution.md",
+      "line": 1,
+      "case_id": "console:6"
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_PHASE_BINDING",
+      "message": "Expected binding not found: '- IO_CLEAR_AC_REQ selects AC_CLEAR during the TS in which the request is asserted.'",
+      "source_path": "docs/03-microarchitecture/06-iot-execution.md",
+      "line": 1,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_SECTION",
+      "message": "No 'DEFER Execution' section found.",
+      "source_path": "docs/03-microarchitecture/04-fetch-defer.md",
+      "line": null,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_SECTION",
+      "message": "No instruction heading 'IR[11:9] = 110 AND IOA = 2n AND IR[2] = 0 AND IR[1] = 1' found for its decoded context.",
+      "source_path": "docs/03-microarchitecture/06-iot-execution.md",
+      "line": null,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_SECTION",
+      "message": "No instruction heading 'IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 001' found for its decoded context.",
+      "source_path": "docs/03-microarchitecture/06-iot-execution.md",
+      "line": null,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_SECTION",
+      "message": "No instruction heading 'IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 010' found for its decoded context.",
+      "source_path": "docs/03-microarchitecture/06-iot-execution.md",
+      "line": null,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_SECTION",
+      "message": "No instruction heading 'IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 011' found for its decoded context.",
+      "source_path": "docs/03-microarchitecture/06-iot-execution.md",
+      "line": null,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_SECTION",
+      "message": "No instruction heading 'IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 100' found for its decoded context.",
+      "source_path": "docs/03-microarchitecture/06-iot-execution.md",
+      "line": null,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_SECTION",
+      "message": "No instruction heading 'IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2] = 0 AND IR[0] = 1' found for its decoded context.",
+      "source_path": "docs/03-microarchitecture/06-iot-execution.md",
+      "line": null,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_SECTION",
+      "message": "No 'Instruction Definition' section found.",
+      "source_path": "docs/03-microarchitecture/07-opr/03-group3-execution.md",
+      "line": null,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_TIMING_STATE",
+      "message": "FETCH Execution has no TS4.",
+      "source_path": "docs/03-microarchitecture/04-fetch-defer.md",
+      "line": 1,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_TIMING_STATE",
+      "message": "Section 3.1 has no TS2.",
+      "source_path": "docs/03-microarchitecture/05-mri-execution.md",
+      "line": 20,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_TIMING_STATE",
+      "message": "Section 3.1 has no TS3.",
+      "source_path": "docs/03-microarchitecture/05-mri-execution.md",
+      "line": 20,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_TIMING_STATE",
+      "message": "Section 3.1 has no TS4.",
+      "source_path": "docs/03-microarchitecture/05-mri-execution.md",
+      "line": 20,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_TIMING_STATE",
+      "message": "INTERRUPT has no TS1.",
+      "source_path": "docs/03-microarchitecture/08-interrupt-execution.md",
+      "line": null,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_TIMING_STATE",
+      "message": "INTERRUPT has no TS2.",
+      "source_path": "docs/03-microarchitecture/08-interrupt-execution.md",
+      "line": null,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_TIMING_STATE",
+      "message": "INTERRUPT has no TS3.",
+      "source_path": "docs/03-microarchitecture/08-interrupt-execution.md",
+      "line": null,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_TIMING_STATE",
+      "message": "INTERRUPT has no TS4.",
+      "source_path": "docs/03-microarchitecture/08-interrupt-execution.md",
+      "line": null,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "RAW_IR_BIT",
+      "message": "OPR predicates must name IR-derived control inputs, not IR bits: 'IR[6] = 1'",
+      "source_path": "docs/03-microarchitecture/07-opr/01-group1-execution.md",
+      "line": 18,
+      "case_id": "opr1:ts1"
+    },
+    {
+      "severity": "ERROR",
+      "code": "UNEXPECTED_EXECUTION_MODEL",
+      "message": "'Execution model:' must be a code block reading 'single TS-equivalent console transaction'.",
+      "source_path": "docs/03-microarchitecture/09-console-execution.md",
+      "line": 1,
+      "case_id": "console:6"
+    },
+    {
+      "severity": "ERROR",
+      "code": "UNKNOWN_MICRO_OPERATION",
+      "message": "Unknown micro-operation: NOPE",
+      "source_path": "docs/03-microarchitecture/05-mri-execution.md",
+      "line": 3,
+      "case_id": "mri:3.1:ts1"
+    },
+    {
+      "severity": "ERROR",
+      "code": "UNRECOGNIZED_OPR_LINE",
+      "message": "Expected 'if PREDICATE: MICRO_OPERATION' or a placeholder: 'PC_INC'",
+      "source_path": "docs/03-microarchitecture/07-opr/02-group2-execution.md",
+      "line": 41,
+      "case_id": "opr2:ts4"
+    },
+    {
+      "severity": "ERROR",
+      "code": "UNTRANSLATED_CONTEXT_TERM",
+      "message": "Heading term 'IR[11:9] = 111' has no control-input form.",
+      "source_path": "docs/03-microarchitecture/05-mri-execution.md",
+      "line": 3,
+      "case_id": null
+    }
+  ]
+}

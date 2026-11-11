@@ -1,0 +1,40 @@
+Execution-Definition Extraction Report
+======================================
+
+Cases extracted: 15
+Information diagnostics: 0
+Warnings: 0
+Errors: 29
+Fatal errors: 0
+
+Diagnostics
+-----------
+ERROR DUPLICATE_CASE_ID [mri:3.1:ts1] docs/03-microarchitecture/05-mri-execution.md:20: Duplicate case id: mri:3.1:ts1
+ERROR DUPLICATE_TIMING_STATE docs/03-microarchitecture/04-fetch-defer.md:1: FETCH Execution has TS3 2 times.
+ERROR MALFORMED_CONDITIONAL [fetch-defer:3.1] docs/03-microarchitecture/04-fetch-defer.md:8: Expected 'predicate -> MICRO_OPERATION': 'CIFP = 0'
+ERROR MALFORMED_MICRO_OPERATION [mri:3.1:ts1] docs/03-microarchitecture/05-mri-execution.md:20: Malformed micro-operation: 'bad uop'
+ERROR MISSING_CONTEXT docs/03-microarchitecture/07-opr/02-group2-execution.md: 'Applies when:' with a text code block is required.
+ERROR MISSING_CONTEXT docs/03-microarchitecture/07-opr/03-group3-execution.md: 'Applies when:' with a text code block is required.
+ERROR MISSING_CONTEXT [console:6] docs/03-microarchitecture/09-console-execution.md:1: 'Applicable context:' with a text code block is required.
+ERROR MISSING_PHASE_BINDING docs/03-microarchitecture/06-iot-execution.md:1: Expected binding not found: '- IO_CLEAR_AC_REQ selects AC_CLEAR during the TS in which the request is asserted.'
+ERROR MISSING_SECTION docs/03-microarchitecture/04-fetch-defer.md: No 'DEFER Execution' section found.
+ERROR MISSING_SECTION docs/03-microarchitecture/06-iot-execution.md: No instruction heading 'IR[11:9] = 110 AND IOA = 2n AND IR[2] = 0 AND IR[1] = 1' found for its decoded context.
+ERROR MISSING_SECTION docs/03-microarchitecture/06-iot-execution.md: No instruction heading 'IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 001' found for its decoded context.
+ERROR MISSING_SECTION docs/03-microarchitecture/06-iot-execution.md: No instruction heading 'IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 010' found for its decoded context.
+ERROR MISSING_SECTION docs/03-microarchitecture/06-iot-execution.md: No instruction heading 'IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 011' found for its decoded context.
+ERROR MISSING_SECTION docs/03-microarchitecture/06-iot-execution.md: No instruction heading 'IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 100' found for its decoded context.
+ERROR MISSING_SECTION docs/03-microarchitecture/06-iot-execution.md: No instruction heading 'IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2] = 0 AND IR[0] = 1' found for its decoded context.
+ERROR MISSING_SECTION docs/03-microarchitecture/07-opr/03-group3-execution.md: No 'Instruction Definition' section found.
+ERROR MISSING_TIMING_STATE docs/03-microarchitecture/04-fetch-defer.md:1: FETCH Execution has no TS4.
+ERROR MISSING_TIMING_STATE docs/03-microarchitecture/05-mri-execution.md:20: Section 3.1 has no TS2.
+ERROR MISSING_TIMING_STATE docs/03-microarchitecture/05-mri-execution.md:20: Section 3.1 has no TS3.
+ERROR MISSING_TIMING_STATE docs/03-microarchitecture/05-mri-execution.md:20: Section 3.1 has no TS4.
+ERROR MISSING_TIMING_STATE docs/03-microarchitecture/08-interrupt-execution.md: INTERRUPT has no TS1.
+ERROR MISSING_TIMING_STATE docs/03-microarchitecture/08-interrupt-execution.md: INTERRUPT has no TS2.
+ERROR MISSING_TIMING_STATE docs/03-microarchitecture/08-interrupt-execution.md: INTERRUPT has no TS3.
+ERROR MISSING_TIMING_STATE docs/03-microarchitecture/08-interrupt-execution.md: INTERRUPT has no TS4.
+ERROR RAW_IR_BIT [opr1:ts1] docs/03-microarchitecture/07-opr/01-group1-execution.md:18: OPR predicates must name IR-derived control inputs, not IR bits: 'IR[6] = 1'
+ERROR UNEXPECTED_EXECUTION_MODEL [console:6] docs/03-microarchitecture/09-console-execution.md:1: 'Execution model:' must be a code block reading 'single TS-equivalent console transaction'.
+ERROR UNKNOWN_MICRO_OPERATION [mri:3.1:ts1] docs/03-microarchitecture/05-mri-execution.md:3: Unknown micro-operation: NOPE
+ERROR UNRECOGNIZED_OPR_LINE [opr2:ts4] docs/03-microarchitecture/07-opr/02-group2-execution.md:41: Expected 'if PREDICATE: MICRO_OPERATION' or a placeholder: 'PC_INC'
+ERROR UNTRANSLATED_CONTEXT_TERM docs/03-microarchitecture/05-mri-execution.md:3: Heading term 'IR[11:9] = 111' has no control-input form.

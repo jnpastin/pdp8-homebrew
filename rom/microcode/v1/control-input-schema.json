@@ -2633,7 +2633,7 @@
           "line": 828,
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md"
         },
-        "text": "IR_OPR_IAC = IR_OPR_GROUP1 AND IR[3]"
+        "text": "IR_OPR_IAC = IR_OPR_GROUP1 AND IR[0]"
       },
       "constraints": [],
       "consumers": [
@@ -2977,7 +2977,7 @@
           "line": 955,
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md"
         },
-        "text": "IR_OPR_RAR = IR_OPR_GROUP1 AND IR[0]"
+        "text": "IR_OPR_RAR = IR_OPR_GROUP1 AND IR[3]"
       },
       "constraints": [],
       "consumers": [

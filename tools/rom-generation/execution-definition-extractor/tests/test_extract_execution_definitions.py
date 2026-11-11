@@ -1,157 +1,1081 @@
-from __future__ import annotations
-import sys, unittest
-from pathlib import Path
-SRC=Path(__file__).resolve().parents[1]/"src";sys.path.insert(0,str(SRC))
-import extract_execution_definitions as e
+"""Tests for the execution-definition extractor."""
 
-class ParserTests(unittest.TestCase):
- def test_condition_parser(self):
-  lines=["Conditional μops:","","```text","FLAG = 1 -> PC_INC","```"]
-  self.assertEqual(e.conditional_after(lines,0),[{"predicate":"FLAG = 1","micro_operation":"PC_INC"}])
- def test_group2_overlapping_bit_uses_group2_name(self):
-  self.assertEqual(
-   e.normalize_opr_predicate("IR[2] = 1", {"RAL":2,"OSR":2}, 2),
-   "IR_OPR_OSR = 1",
-  )
- def test_group3_overlapping_bits_remain_raw_without_named_inputs(self):
-  self.assertEqual(
-   e.normalize_opr_predicate("IR[6] = 1 AND IR[4] = 1", {"CLL":6,"MQA":6,"CML":4,"MQL":4}, 3),
-   "IR[6] = 1 AND IR[4] = 1",
-  )
- def test_iot_op_field_normalization(self):
-  self.assertEqual(e.normalize_context_term("IR[2:0] = 101"),"IR_IOT_OP = 101")
- def test_mri_context_includes_instruction_class(self):
-  self.assertEqual(
-   e.normalize_execute_context("mri", "3.1", "IR[11:9] = 000"),
-   ["IR_IS_MRI = 1", "IR_MRI_OPCODE = 000"],
-  )
- def test_memory_extension_decoded_contexts(self):
-  expected={
-   "10.1":["IR_IS_IOT = 1","IR_WRITES_DF = 1"],
-   "10.2":["IR_IS_IOT = 1","IR_WRITES_IF = 1"],
-   "10.3":["IR_IS_IOT = 1","IR_READS_DF = 1"],
-   "10.4":["IR_IS_IOT = 1","IR_READS_IF = 1"],
-   "10.5":["IR_IS_IOT = 1","IR_READS_IB = 1"],
-   "10.6":["IR_IS_IOT = 1","IR_RESTORES_IB = 1"],
-  }
-  for number,context in expected.items():self.assertEqual(e.normalize_execute_context("iot",number,"unused"),context)
- def test_console_case(self):
-  text="""## 6. Load Address Operation\nApplicable context:\n```text\nRUN = 0\nFP_LOAD = 1\n```\nExecution model:\n```text\nsingle TS-equivalent console transaction\n```\nμops:\n- AC_CLEAR\n"""
-  x=e.parse_console(text,"x")[0];self.assertEqual(x["execution_model"],"console-transaction");self.assertEqual(x["context"],["RUN = 0","FP_LOAD = 1"])
- def test_opr_context_includes_instruction_class(self):
-  text="""### 4. Instruction Definition
-#### 4.1 X
-TS1:
-- if IR[bit(CLA)] = 1: AC_CLEAR
-"""
-  x=e.parse_opr_execution(text,"x",1,{"CLA":7})[0]
-  self.assertEqual(x["context"],["MS = EXECUTE","IR_IS_OPR = 1","IR_OPR_GROUP1 = 1"])
- def test_opr_bit_resolution(self):
-  text="""### 4. Instruction Definition\n#### 4.1 X\nTS1:\n- if IR[bit(CLA)] = 1: AC_CLEAR\n"""
-  x=e.parse_opr_execution(text,"x",1,{"CLA":7})[0];self.assertEqual(x["id"],"opr1:ts1");self.assertEqual(x["conditional_micro_operations"][0]["predicate"],"IR_OPR_CLA = 1")
+from __future__ import annotations
+
+import io
+import os
+import sys
+import tempfile
+import unittest
+from contextlib import redirect_stdout
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+from extract_execution_definitions import (  # noqa: E402
+    CONSOLE_SOURCE,
+    DECODED_IOT_CONTEXTS,
+    DEFAULT_JSON_OUTPUT,
+    DEFAULT_REPORT_OUTPUT,
+    FETCH_DEFER_SOURCE,
+    INTERRUPT_SOURCE,
+    IOT_SOURCE,
+    MICRO_OPERATION_SOURCE,
+    MRI_SOURCE,
+    OPR_SOURCES,
+    SOURCE_PATHS,
+    Diagnostic,
+    Document,
+    ExtractionFailure,
+    Findings,
+    build_report,
+    clean,
+    extract_execution_definitions,
+    main,
+    make_case,
+    micro_operation_catalog,
+    normalize_context_term,
+    parse_arguments,
+    parse_console,
+    parse_fetch_defer,
+    parse_headings,
+    parse_instructions,
+    parse_interrupt,
+    parse_opr,
+    parse_phase_binding,
+    read_source,
+    resolve_from_repo,
+    validate_cases,
+)
+
+PATH = "docs/example.md"
+
+
+# ---------------------------------------------------------------------------
+# Builders
+# ---------------------------------------------------------------------------
+
+
+def code(*lines: str) -> str:
+    return "```text\n" + "\n".join(lines) + "\n```\n"
+
+
+def bullets(*items: str) -> str:
+    return "".join(f"- {item}\n" for item in items) or "- (no μops)\n"
+
+
+def timing_markers(**states: str) -> str:
+    """``TSn:`` markers for TS1 to TS4; ``ts2="..."`` overrides a body."""
+
+    return "".join(
+        f"TS{n}:\n{states.get(f'ts{n}', bullets())}\n" for n in range(1, 5)
+    )
+
+
+def instruction(number: str, title: str, body: str | None = None) -> str:
+    return f"### {number} {title}\n\n{body or timing_markers()}\n---\n\n"
+
+
+def timing_headings(number: str, bodies: dict[int, str] | None = None) -> str:
+    """``### n.k TSk`` headings, numbered from ``number``.1."""
+
+    bodies = bodies or {}
+    return "".join(
+        f"### {number}.{n} TS{n}\n\n{bodies.get(n, '')}\n"
+        for n in range(1, 5)
+    )
+
+
+def micro_operations(*items: str) -> str:
+    return "μops:\n" + bullets(*items)
+
+
+def conditional(*lines: str) -> str:
+    return "Conditional μops:\n\n" + code(*lines)
+
+
+def parse(parser, text: str, *arguments):
+    """Run one parser on ``text``; return its cases and diagnostics."""
+
+    findings = Findings(PATH)
+    cases = parser(Document(PATH, text), *arguments, findings)
+    return cases, findings.diagnostics
+
+
+def codes(diagnostics) -> list[str]:
+    return [diagnostic.code for diagnostic in diagnostics]
+
+
+# ---------------------------------------------------------------------------
+# Valid documents
+# ---------------------------------------------------------------------------
+
+FETCH_DEFER = (
+    "# FETCH and DEFER\n\n"
+    "## 3. FETCH Execution\n\n"
+    + timing_headings(
+        "3",
+        {
+            1: micro_operations("PC_TO_MA")
+            + "\n"
+            + conditional("CIFP = 0 -> II_CLEAR")
+            + "\nDescription:\n- Places the address in MA.\n",
+            2: micro_operations("MEM_READ_TO_MB"),
+            3: micro_operations("MB_TO_IR"),
+            4: micro_operations("PC_INC")
+            + "\nControl Decisions:\n\n"
+            "    if IR[INDIRECT] == 1:\n        MS_next ← DEFER\n",
+        },
+    )
+    + "## 4. DEFER Execution\n\n"
+    "### 4.1 Purpose\n\nResolves indirect addressing.\n\n"
+    + timing_headings(
+        "4.1",
+        {
+            1: micro_operations("EA_ADDR_TO_MA"),
+            3: conditional("AUTO_INDEX_REQUIRED = 1 -> MB_INC"),
+        },
+    )
+)
+
+MRI = (
+    "# MRI Execution\n\n"
+    "## 3. Instruction Definitions\n\n"
+    + instruction(
+        "3.1",
+        "IR[11:9] = 000",
+        "**Mnemonic (non-normative):** AND\n\n"
+        + timing_markers(
+            ts1=bullets("EA_ADDR_TO_MA  "), ts3=bullets("`AC_AND_MB`")
+        ),
+    )
+    + instruction(
+        "3.6",
+        "IR\\[11:9\\] = 101",
+        timing_markers(
+            ts4=conditional("IF_CHANGE_PENDING = 1 -> DIF_TO_IF"),
+        ),
+    )
+    + "## 4. Summary\n\n- IR[11:9] selects behavior.\n"
+)
+
+DECODED_IOT_SECTIONS = "".join(
+    instruction(f"10.{index}", title)
+    for index, title in enumerate(DECODED_IOT_CONTEXTS, 1)
+)
+
+IOT = (
+    "# IOT Execution\n\n"
+    "## 7. External IOT Phase Binding\n\n"
+    "- `IO_CLEAR_AC_REQ` selects `AC_CLEAR` during the TS in which the "
+    "request is asserted.\n"
+    "- `IO_SKIP_REQ` selects `PC_INC` during TS4.\n\n"
+    "## 9. Instruction Definitions (CPU Control - Device 0)\n\n"
+    + instruction(
+        "9.3",
+        "IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 000",
+        "  TS1:\n- (no μops)\n\n"
+        "TS2:\n- IE_CLEAR\n\n"
+        + conditional("IE = 1 -> PC_INC")
+        + "\n  TS3:\n- (no unconditional μops)\n\nTS4:\n- (no μops)\n\n"
+        "Description:\n- Skips if interrupts are on.\n",
+    )
+    + "## 10. Instruction Definitions (Memory Extension Control)\n\n"
+    + DECODED_IOT_SECTIONS
+    + "## 11. Notes\n\n- None.\n"
+)
+
+INTERRUPT = (
+    "# INTERRUPT Execution\n\n"
+    "## 4. Execution Sequence\n\n"
+    "### 4.1 TS1 — PC Capture\n  \n- PC_TO_MB  \n\nDescription:\n- Saves.\n\n"
+    "### 4.2 TS2 — Address Formation\n\n- MA_CLEAR\n- IF_DF_TO_IB\n\n"
+    "### 4.3 TS3\n\n- MEM_WRITE_FROM_MB\n\n"
+    "### 4.4 TS4\n\n- PC_SET_1\n- IE_CLEAR\n\n"
+    "## 7. Notes\n\n### 7.1 Device Interaction\n\n- None.\n"
+)
+
+CONSOLE = (
+    "# Console Execution\n\n"
+    "## 3. Console Operation Execution Model\n\nμops are not listed here.\n\n"
+    "## 6. Load Address Operation\n\n"
+    "Applicable context:\n\n" + code("RUN = 0", "FP_LOAD_ADDRESS = 1") + "\n"
+    "Execution model:\n\n"
+    + code("single TS-equivalent console transaction")
+    + "\nμops:\n\n- CIFP_CLEAR\n- FP_SR_TO_PC\n\n\n"
+    "Result:\n\n" + code("PC ← FP_SR") + "\n"
+    "## 9. Clear Operation\n\nResult:\n- AC is cleared.\n\n"
+)
+
+OPR_GROUP1 = (
+    "# Group 1 Execution\n\n"
+    "## 2. Scope\n\nApplies when:\n\n"
+    + code("IR_IS_OPR = 1", "IR_OPR_GROUP1 = 1")
+    + "\n## 4. Instruction Definition\n\n"
+    "### 4.1 IR[11:9] = 111 (Group 1)\n\n"
+    "TS1:\n- if IR_OPR_CLA = 1: AC_CLEAR  \n- if IR_OPR_CLL = 1: L_CLEAR\n\n"
+    "TS2:\n- (no μops)\n\n"
+    "TS3:\n- if IR_OPR_IAC = 1: AC_INC\n\n"
+    "TS4:\n- if IR_OPR_RAR = 1 AND IR_OPR_BSW = 0: AC_RAR\n\n"
+    "## 5. Composition Rules\n\n"
+    "- IR_OPR_RAR and IR_OPR_RAL must not both be 1\n"
+)
+
+OPR_GROUP2 = (
+    "# Group 2 Execution\n\n"
+    "## 2. Scope\n\nApplies when:\n\n"
+    + code("IR_IS_OPR = 1", "IR_OPR_GROUP2 = 1")
+    + "\n## 4. Instruction Definition\n\n"
+    "### 4.1 IR[11:9] = 111 (Group 2)\n\n"
+    "### 4.2 Sub-group selection\n\n- AND sub-group: IR[3] = 1\n\n"
+    "### 4.3 TS1 — Skip Evaluation\n\n"
+    + conditional("SKIP_TAKEN = 1 -> PC_INC")
+    + "\nThe skip composition is defined elsewhere.\n\n"
+    "### 4.4 TS2 — AC Modification\n\n- if IR_OPR_CLA = 1: AC_CLEAR\n\n"
+    "### 4.5 TS3 — Control Operations\n\n"
+    "- if IR_OPR_HLT = 1:\n  - HLT is a meta-instruction\n\n"
+    "### 4.6 TS4\n\n- (no μops)\n\n"
+    "## 5. Composition Rules\n\n### 5.1 Ordering\n- TS1 first\n"
+)
+
+OPR_GROUP3 = (
+    "# Group 3 Execution\n\n"
+    "## 2. Scope\n\nApplies when:\n\n"
+    + code("IR_IS_OPR = 1", "IR_OPR_GROUP3 = 1")
+    + "\n## 4. Instruction Definition\n\n"
+    "### 4.2 TS1\n\n- if IR_OPR_CLA = 1: AC_CLEAR\n\n"
+    "### 4.3 TS2\n\n"
+    "- if IR_OPR_MQA = 1 AND IR_OPR_MQL = 1: AC_MQ_SWAP\n\n"
+    "### 4.4 TS3\n\n- (no μops)\n\n### 4.5 TS4\n\n- (no μops)\n"
+)
+
+KNOWN_MICRO_OPERATIONS = (
+    "AC_AND_MB AC_CLEAR AC_INC AC_MQ_SWAP AC_RAR CIFP_CLEAR DIF_TO_IF "
+    "EA_ADDR_TO_MA FP_SR_TO_PC IE_CLEAR IF_DF_TO_IB II_CLEAR L_CLEAR "
+    "MA_CLEAR MB_INC MB_TO_IR MEM_READ_TO_MB MEM_WRITE_FROM_MB PC_INC "
+    "PC_SET_1 PC_TO_MA PC_TO_MB"
+).split()
+
+MICRO_OPERATION_CATALOG = (
+    "# Micro-Operations\n\n## 4. Categories\n\n### 4.1 Address Formation\n\n"
+    "```text\n### NOT_A_HEADING\n```\n\n"
+    + "".join(f"### {name}\n\nDefinition.\n\n" for name in KNOWN_MICRO_OPERATIONS)
+)
+
+VALID_DOCUMENTS = {
+    FETCH_DEFER_SOURCE: FETCH_DEFER,
+    MRI_SOURCE: MRI,
+    IOT_SOURCE: IOT,
+    INTERRUPT_SOURCE: INTERRUPT,
+    CONSOLE_SOURCE: CONSOLE,
+    OPR_SOURCES[1]: OPR_GROUP1,
+    OPR_SOURCES[2]: OPR_GROUP2,
+    OPR_SOURCES[3]: OPR_GROUP3,
+    MICRO_OPERATION_SOURCE: MICRO_OPERATION_CATALOG,
+}
+
+# Every document breaks at least one expectation of its parser.
+INVALID_DOCUMENTS = {
+    FETCH_DEFER_SOURCE: "## 3. FETCH Execution\n\n"
+    + timing_headings("3", {1: conditional("CIFP = 0")}).replace(
+        "### 3.4 TS4", "### 3.4 TS3"
+    ),
+    MRI_SOURCE: "## 3. Instructions\n\n"
+    + instruction("3.1", "IR[11:9] = 111", timing_markers(ts1="- NOPE\n"))
+    + instruction("3.1", "IR[11:9] = 000", "TS1:\n- `bad uop`\n"),
+    IOT_SOURCE: "## 7. External IOT Phase Binding\n\n"
+    "- IO_SKIP_REQ selects PC_INC during TS4.\n",
+    INTERRUPT_SOURCE: "# Nothing here\n",
+    CONSOLE_SOURCE: "## 6. Load Address Operation\n\n"
+    "Execution model:\n\n" + code("multi-cycle") + "\nμops:\n- PC_INC\n",
+    OPR_SOURCES[1]: OPR_GROUP1.replace(
+        "IR_OPR_CLL = 1: L_CLEAR", "IR[6] = 1: L_CLEAR"
+    ),
+    OPR_SOURCES[2]: OPR_GROUP2.replace("Applies when:", "Scope:").replace(
+        "- (no μops)", "- PC_INC"
+    ),
+    OPR_SOURCES[3]: "# Group 3\n",
+    MICRO_OPERATION_SOURCE: MICRO_OPERATION_CATALOG,
+}
+
+
+# ---------------------------------------------------------------------------
+# Arguments, paths, and reading
+# ---------------------------------------------------------------------------
+
+
+class ArgumentAndPathTests(unittest.TestCase):
+    def test_default_outputs_are_used(self) -> None:
+        options = parse_arguments(["--repo-root", "."])
+
+        self.assertEqual(options.json_output, DEFAULT_JSON_OUTPUT)
+        self.assertEqual(options.report_output, DEFAULT_REPORT_OUTPUT)
+
+    def test_relative_path_is_resolved_from_repo_root(self) -> None:
+        root = Path("repository").resolve()
+
+        self.assertEqual(
+            resolve_from_repo(root, Path("out/x.json")),
+            root / "out" / "x.json",
+        )
+
+    def test_absolute_path_is_preserved(self) -> None:
+        path = Path("elsewhere/x.json").resolve()
+
+        self.assertEqual(resolve_from_repo(Path("repo"), path), path)
+
+
+class ReadSourceTests(unittest.TestCase):
+    def setUp(self) -> None:
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.directory = Path(directory.name)
+
+    def test_missing_source_fails(self) -> None:
+        with self.assertRaisesRegex(ExtractionFailure, "does not exist"):
+            read_source(self.directory / "missing.md")
+
+    def test_invalid_utf8_fails(self) -> None:
+        path = self.directory / "bad.md"
+        path.write_bytes(b"\xff\xfe")
+
+        with self.assertRaisesRegex(ExtractionFailure, "not valid UTF-8"):
+            read_source(path)
+
+    def test_unreadable_source_fails(self) -> None:
+        with self.assertRaisesRegex(ExtractionFailure, "Unable to read"):
+            read_source(self.directory)
+
+
+# ---------------------------------------------------------------------------
+# Markdown reading
+# ---------------------------------------------------------------------------
+
+
+class MarkdownTests(unittest.TestCase):
+    def test_clean_removes_escapes_and_backticks(self) -> None:
+        self.assertEqual(clean(" `IB\\_TO\\_DF` "), "IB_TO_DF")
+        self.assertEqual(clean("IR\\[11:9\\]"), "IR[11:9]")
+
+    def test_headings_are_numbered_cleaned_and_fence_aware(self) -> None:
+        headings = parse_headings(
+            [
+                "# Title",
+                "## 3. FETCH Execution",
+                "```text",
+                "### 9.9 Not a heading",
+                "```",
+                "### 3.1 IR\\[11:9\\] = 000",
+                "#### Unnumbered",
+            ]
+        )
+
+        self.assertEqual(
+            [(h.level, h.number, h.title, h.line) for h in headings],
+            [
+                (2, "3", "FETCH Execution", 2),
+                (3, "3.1", "IR[11:9] = 000", 6),
+                (4, None, "Unnumbered", 7),
+            ],
+        )
+
+    def test_catalog_reads_name_headings_only(self) -> None:
+        catalog = micro_operation_catalog(
+            Document(PATH, MICRO_OPERATION_CATALOG)
+        )
+
+        self.assertEqual(catalog, set(KNOWN_MICRO_OPERATIONS))
+
+
+# ---------------------------------------------------------------------------
+# FETCH and DEFER
+# ---------------------------------------------------------------------------
+
+
+class FetchDeferTests(unittest.TestCase):
+    def test_cases(self) -> None:
+        cases, diagnostics = parse(parse_fetch_defer, FETCH_DEFER)
+
+        self.assertEqual(diagnostics, [])
+        self.assertEqual(
+            [(c["id"], c["context"], c["timing_state"]) for c in cases],
+            [
+                ("fetch-defer:3.1", ["MS = FETCH"], 1),
+                ("fetch-defer:3.2", ["MS = FETCH"], 2),
+                ("fetch-defer:3.3", ["MS = FETCH"], 3),
+                ("fetch-defer:3.4", ["MS = FETCH"], 4),
+                ("fetch-defer:4.1.1", ["MS = DEFER"], 1),
+                ("fetch-defer:4.1.2", ["MS = DEFER"], 2),
+                ("fetch-defer:4.1.3", ["MS = DEFER"], 3),
+                ("fetch-defer:4.1.4", ["MS = DEFER"], 4),
+            ],
+        )
+        self.assertEqual(
+            cases[0],
+            make_case(
+                "fetch-defer:3.1",
+                PATH,
+                5,
+                ["MS = FETCH"],
+                1,
+                ["PC_TO_MA"],
+                [{"predicate": "CIFP = 0", "micro_operation": "II_CLEAR"}],
+            ),
+        )
+        self.assertEqual(cases[3]["micro_operations"], ["PC_INC"])
+        self.assertEqual(cases[6]["micro_operations"], [])
+
+    def test_missing_state_section_is_an_error(self) -> None:
+        _, diagnostics = parse(
+            parse_fetch_defer, FETCH_DEFER.replace("DEFER Execution", "Other")
+        )
+
+        self.assertEqual(codes(diagnostics), ["MISSING_SECTION"])
+        self.assertIn("'DEFER Execution'", diagnostics[0].message)
+
+    def test_missing_and_repeated_timing_states_are_errors(self) -> None:
+        _, diagnostics = parse(
+            parse_fetch_defer, FETCH_DEFER.replace("3.4 TS4", "3.4 TS3")
+        )
+
+        self.assertEqual(
+            [(d.code, d.message) for d in diagnostics],
+            [
+                ("DUPLICATE_TIMING_STATE", "FETCH Execution has TS3 2 times."),
+                ("MISSING_TIMING_STATE", "FETCH Execution has no TS4."),
+            ],
+        )
+
+
+# ---------------------------------------------------------------------------
+# MRI and IOT instructions
+# ---------------------------------------------------------------------------
+
+
+class InstructionTests(unittest.TestCase):
+    def test_mri_cases(self) -> None:
+        cases, diagnostics = parse(parse_instructions, MRI, "mri")
+
+        self.assertEqual(diagnostics, [])
+        self.assertEqual(len(cases), 8)
+        self.assertEqual(
+            cases[0],
+            make_case(
+                "mri:3.1:ts1",
+                PATH,
+                5,
+                ["MS = EXECUTE", "IR_IS_MRI = 1", "IR_MRI_OPCODE = 000"],
+                1,
+                ["EA_ADDR_TO_MA"],
+            ),
+        )
+        self.assertEqual(cases[2]["micro_operations"], ["AC_AND_MB"])
+        self.assertEqual(
+            cases[7]["conditional_micro_operations"],
+            [
+                {
+                    "predicate": "IF_CHANGE_PENDING = 1",
+                    "micro_operation": "DIF_TO_IF",
+                }
+            ],
+        )
+        self.assertEqual(cases[7]["micro_operations"], [])
+
+    def test_iot_cases(self) -> None:
+        cases, diagnostics = parse(parse_instructions, IOT, "iot")
+
+        self.assertEqual(diagnostics, [])
+        self.assertEqual(len(cases), 28)
+        skon = cases[1]
+        self.assertEqual(skon["id"], "iot:9.3:ts2")
+        self.assertEqual(
+            skon["context"],
+            [
+                "MS = EXECUTE",
+                "IR_IS_IOT = 1",
+                "IR_IOA = 00",
+                "IR_IOT_OP = 000",
+            ],
+        )
+        self.assertEqual(skon["micro_operations"], ["IE_CLEAR"])
+        self.assertEqual(
+            skon["conditional_micro_operations"],
+            [{"predicate": "IE = 1", "micro_operation": "PC_INC"}],
+        )
+        self.assertEqual(cases[2]["micro_operations"], [])
+
+    def test_decoded_iot_contexts_replace_raw_bits(self) -> None:
+        cases, _ = parse(parse_instructions, IOT, "iot")
+
+        contexts = {
+            case["id"].rsplit(":", 1)[0]: case["context"] for case in cases
+        }
+        for index, context in enumerate(DECODED_IOT_CONTEXTS.values(), 1):
+            self.assertEqual(
+                contexts[f"iot:10.{index}"], ["MS = EXECUTE", *context]
+            )
+
+    def test_context_terms(self) -> None:
+        self.assertEqual(
+            normalize_context_term("IR[11:9] = 011"), "IR_MRI_OPCODE = 011"
+        )
+        self.assertEqual(
+            normalize_context_term("IR[11:9] = 110"), "IR_IS_IOT = 1"
+        )
+        self.assertEqual(
+            normalize_context_term("IR[11:9] = 111"), "IR[11:9] = 111"
+        )
+        self.assertEqual(
+            normalize_context_term("IR[2:0] = 101"), "IR_IOT_OP = 101"
+        )
+        self.assertEqual(normalize_context_term("IOA = 00"), "IR_IOA = 00")
+        self.assertEqual(normalize_context_term("RUN = 1"), "RUN = 1")
+
+    def test_untranslated_heading_term_is_an_error(self) -> None:
+        _, diagnostics = parse(
+            parse_instructions,
+            instruction("3.1", "IR[11:9] = 111 AND IR[8] = 1"),
+            "mri",
+        )
+
+        self.assertEqual(
+            [(d.code, d.message) for d in diagnostics],
+            [
+                (
+                    "UNTRANSLATED_CONTEXT_TERM",
+                    "Heading term 'IR[11:9] = 111' has no control-input form.",
+                ),
+                (
+                    "UNTRANSLATED_CONTEXT_TERM",
+                    "Heading term 'IR[8] = 1' has no control-input form.",
+                ),
+            ],
+        )
+
+    def test_changed_decoded_iot_heading_is_reported(self) -> None:
+        title = next(iter(DECODED_IOT_CONTEXTS))
+        _, diagnostics = parse(
+            parse_instructions, IOT.replace(title, title + " AND IR[1] = 0"), "iot"
+        )
+
+        self.assertEqual(
+            codes(diagnostics),
+            [
+                "UNTRANSLATED_CONTEXT_TERM",
+                "UNTRANSLATED_CONTEXT_TERM",
+                "UNTRANSLATED_CONTEXT_TERM",
+                "UNTRANSLATED_CONTEXT_TERM",
+                "MISSING_SECTION",
+            ],
+        )
+
+    def test_missing_and_repeated_markers_are_errors(self) -> None:
+        cases, diagnostics = parse(
+            parse_instructions,
+            instruction(
+                "3.1", "IR[11:9] = 000", "TS1:\n- PC_INC\n\nTS1:\n- PC_INC\n"
+            ),
+            "mri",
+        )
+
+        self.assertEqual(len(cases), 2)
+        self.assertEqual(
+            codes(diagnostics),
+            [
+                "DUPLICATE_TIMING_STATE",
+                "MISSING_TIMING_STATE",
+                "MISSING_TIMING_STATE",
+                "MISSING_TIMING_STATE",
+            ],
+        )
+        self.assertEqual(diagnostics[0].message, "Section 3.1 has TS1 2 times.")
+
+    def test_conditional_is_bounded_by_the_next_marker(self) -> None:
+        cases, _ = parse(
+            parse_instructions,
+            instruction(
+                "3.1",
+                "IR[11:9] = 000",
+                timing_markers(ts3=bullets() + "\n" + conditional("A = 1 -> X")),
+            ),
+            "mri",
+        )
+
+        self.assertEqual(
+            [len(case["conditional_micro_operations"]) for case in cases],
+            [0, 0, 1, 0],
+        )
+
+    def test_conditional_needs_a_code_block(self) -> None:
+        cases, diagnostics = parse(
+            parse_instructions,
+            instruction(
+                "3.1",
+                "IR[11:9] = 000",
+                timing_markers(ts1="Conditional μops:\n\n- A = 1 -> X\n"),
+            ),
+            "mri",
+        )
+
+        self.assertEqual(codes(diagnostics), ["MISSING_CODE_BLOCK"])
+        self.assertEqual(diagnostics[0].case_id, "mri:3.1:ts1")
+        self.assertEqual(diagnostics[0].line, 4)
+        self.assertEqual(cases[0]["conditional_micro_operations"], [])
+
+    def test_malformed_conditional_is_an_error(self) -> None:
+        _, diagnostics = parse(
+            parse_instructions,
+            instruction(
+                "3.1",
+                "IR[11:9] = 000",
+                timing_markers(ts1=conditional("A = 1 -> X", "A = 1 => Y")),
+            ),
+            "mri",
+        )
+
+        self.assertEqual(codes(diagnostics), ["MALFORMED_CONDITIONAL"])
+        self.assertEqual(diagnostics[0].line, 8)
+        self.assertIn("'A = 1 => Y'", diagnostics[0].message)
+
+    def test_unnumbered_and_non_ir_headings_are_ignored(self) -> None:
+        cases, _ = parse(
+            parse_instructions,
+            instruction("3.1", "Overview")
+            + "### IR[11:9] = 000\n\nTS1:\n- PC_INC\n",
+            "mri",
+        )
+
+        self.assertEqual(cases, [])
+
+
+class PhaseBindingTests(unittest.TestCase):
+    def test_cases(self) -> None:
+        cases, diagnostics = parse(parse_phase_binding, IOT)
+
+        self.assertEqual(diagnostics, [])
+        clear = {"predicate": "IO_CLEAR_AC_REQ = 1", "micro_operation": "AC_CLEAR"}
+        skip = {"predicate": "IO_SKIP_REQ = 1", "micro_operation": "PC_INC"}
+        self.assertEqual(
+            cases,
+            [
+                make_case(
+                    f"iot:external:ts{n}",
+                    PATH,
+                    3,
+                    ["MS = EXECUTE", "IOT_ACTIVE = 1"],
+                    n,
+                    conditional=[clear, skip] if n == 4 else [clear],
+                )
+                for n in range(1, 5)
+            ],
+        )
+
+    def test_missing_section_is_an_error(self) -> None:
+        cases, diagnostics = parse(parse_phase_binding, MRI)
+
+        self.assertEqual(cases, [])
+        self.assertEqual(codes(diagnostics), ["MISSING_SECTION"])
+
+    def test_changed_sentence_drops_cases_loudly(self) -> None:
+        cases, diagnostics = parse(
+            parse_phase_binding, IOT.replace("during TS4", "during TS3")
+        )
+
+        self.assertEqual(cases, [])
+        self.assertEqual(codes(diagnostics), ["MISSING_PHASE_BINDING"])
+        self.assertIn("IO_SKIP_REQ", diagnostics[0].message)
+
+
+# ---------------------------------------------------------------------------
+# INTERRUPT and console
+# ---------------------------------------------------------------------------
+
+
+class InterruptTests(unittest.TestCase):
+    def test_cases(self) -> None:
+        cases, diagnostics = parse(parse_interrupt, INTERRUPT)
+
+        self.assertEqual(diagnostics, [])
+        self.assertEqual(
+            [(c["id"], c["timing_state"], c["micro_operations"]) for c in cases],
+            [
+                ("interrupt:4.1", 1, ["PC_TO_MB"]),
+                ("interrupt:4.2", 2, ["MA_CLEAR", "IF_DF_TO_IB"]),
+                ("interrupt:4.3", 3, ["MEM_WRITE_FROM_MB"]),
+                ("interrupt:4.4", 4, ["PC_SET_1", "IE_CLEAR"]),
+            ],
+        )
+        self.assertTrue(all(c["context"] == ["MS = INTERRUPT"] for c in cases))
+
+    def test_missing_timing_state_is_an_error(self) -> None:
+        _, diagnostics = parse(
+            parse_interrupt, INTERRUPT.replace("### 4.3 TS3", "### 4.3 Save")
+        )
+
+        self.assertEqual(codes(diagnostics), ["MISSING_TIMING_STATE"])
+        self.assertEqual(diagnostics[0].message, "INTERRUPT has no TS3.")
+
+
+class ConsoleTests(unittest.TestCase):
+    def test_cases(self) -> None:
+        cases, diagnostics = parse(parse_console, CONSOLE)
+
+        self.assertEqual(diagnostics, [])
+        self.assertEqual(
+            cases,
+            [
+                make_case(
+                    "console:6",
+                    PATH,
+                    7,
+                    ["RUN = 0", "FP_LOAD_ADDRESS = 1"],
+                    None,
+                    ["CIFP_CLEAR", "FP_SR_TO_PC"],
+                    execution_model="console-transaction",
+                )
+            ],
+        )
+
+    def test_operation_needs_context_and_execution_model(self) -> None:
+        _, diagnostics = parse(
+            parse_console,
+            "## 6. Load Address Operation\n\n"
+            "Applicable context:\n\nRUN = 0\n\nμops:\n- PC_INC\n",
+        )
+
+        self.assertEqual(
+            codes(diagnostics),
+            ["MISSING_CONTEXT", "UNEXPECTED_EXECUTION_MODEL"],
+        )
+
+    def test_other_execution_model_is_an_error(self) -> None:
+        _, diagnostics = parse(
+            parse_console,
+            CONSOLE.replace("single TS-equivalent", "multi-TS"),
+        )
+
+        self.assertEqual(codes(diagnostics), ["UNEXPECTED_EXECUTION_MODEL"])
+        self.assertEqual(diagnostics[0].case_id, "console:6")
+
+
+# ---------------------------------------------------------------------------
+# OPR
+# ---------------------------------------------------------------------------
+
+
+class OprTests(unittest.TestCase):
+    def test_group1_cases(self) -> None:
+        cases, diagnostics = parse(parse_opr, OPR_GROUP1, 1)
+
+        self.assertEqual(diagnostics, [])
+        self.assertEqual(
+            [(c["id"], c["source"]["line"]) for c in cases],
+            [("opr1:ts1", 16), ("opr1:ts3", 23), ("opr1:ts4", 26)],
+        )
+        self.assertEqual(
+            cases[0]["context"],
+            ["MS = EXECUTE", "IR_IS_OPR = 1", "IR_OPR_GROUP1 = 1"],
+        )
+        self.assertEqual(
+            cases[0]["conditional_micro_operations"],
+            [
+                {"predicate": "IR_OPR_CLA = 1", "micro_operation": "AC_CLEAR"},
+                {"predicate": "IR_OPR_CLL = 1", "micro_operation": "L_CLEAR"},
+            ],
+        )
+        self.assertEqual(
+            cases[2]["conditional_micro_operations"][0]["predicate"],
+            "IR_OPR_RAR = 1 AND IR_OPR_BSW = 0",
+        )
+
+    def test_group2_reads_headings_blocks_and_control_bullets(self) -> None:
+        cases, diagnostics = parse(parse_opr, OPR_GROUP2, 2)
+
+        self.assertEqual(diagnostics, [])
+        self.assertEqual(
+            [(c["id"], c["conditional_micro_operations"]) for c in cases],
+            [
+                (
+                    "opr2:ts1",
+                    [{"predicate": "SKIP_TAKEN = 1", "micro_operation": "PC_INC"}],
+                ),
+                (
+                    "opr2:ts2",
+                    [
+                        {
+                            "predicate": "IR_OPR_CLA = 1",
+                            "micro_operation": "AC_CLEAR",
+                        }
+                    ],
+                ),
+            ],
+        )
+
+    def test_non_timing_heading_ends_a_timing_state(self) -> None:
+        cases, diagnostics = parse(
+            parse_opr,
+            OPR_GROUP3.replace(
+                "### 4.4 TS3", "### 4.35 Notes\n\n- anything\n\n### 4.4 TS3"
+            ),
+            3,
+        )
+
+        self.assertEqual(diagnostics, [])
+        self.assertEqual(len(cases), 2)
+
+    def test_raw_ir_bits_are_errors(self) -> None:
+        cases, diagnostics = parse(
+            parse_opr,
+            OPR_GROUP3.replace("IR_OPR_CLA = 1", "IR[bit(CLA)] = 1"),
+            3,
+        )
+
+        self.assertEqual(codes(diagnostics), ["RAW_IR_BIT"])
+        self.assertEqual(diagnostics[0].case_id, "opr3:ts1")
+        self.assertEqual(len(cases), 2)
+
+    def test_unrecognized_bullet_is_an_error(self) -> None:
+        _, diagnostics = parse(
+            parse_opr, OPR_GROUP3.replace("- (no μops)", "- AC_CLEAR", 1), 3
+        )
+
+        self.assertEqual(codes(diagnostics), ["UNRECOGNIZED_OPR_LINE"])
+        self.assertEqual(diagnostics[0].case_id, "opr3:ts3")
+
+    def test_missing_scope_and_sections_are_errors(self) -> None:
+        cases, diagnostics = parse(parse_opr, "# Group 3\n", 3)
+
+        self.assertEqual(cases, [])
+        self.assertEqual(codes(diagnostics), ["MISSING_CONTEXT", "MISSING_SECTION"])
+
+    def test_missing_timing_state_is_an_error(self) -> None:
+        _, diagnostics = parse(
+            parse_opr, OPR_GROUP3.replace("### 4.5 TS4", "### 4.5 Notes"), 3
+        )
+
+        self.assertEqual(codes(diagnostics), ["MISSING_TIMING_STATE"])
+
+
+# ---------------------------------------------------------------------------
+# Validation and extraction
+# ---------------------------------------------------------------------------
+
 
 class ValidationTests(unittest.TestCase):
- def test_clean_removes_markdown_backticks(self):self.assertEqual(e.clean("`IB_TO_DF`"),"IB_TO_DF")
- def test_bullets_ignore_horizontal_rule_noise(self):self.assertEqual(e.bullets_after(["TS4:","- AC_CLEAR","- --"],0),["AC_CLEAR"])
- def test_malformed_uop_is_error(self):
-  item=e.case("x","doc",1,["MS = EXECUTE"],1,["`BAD`"]);d=e.validate_cases([item],set());self.assertEqual(d[0].code,"MALFORMED_MICRO_OPERATION")
- def test_unknown_uop_is_error(self):
-  item=e.case("x","doc",1,["MS = EXECUTE"],1,["NOPE"]);d=e.validate_cases([item],{"AC_CLEAR"});self.assertEqual(d[0].code,"UNKNOWN_MICRO_OPERATION")
- def test_duplicate_case_id_is_error(self):
-  item=e.case("x","doc",1,["MS = EXECUTE"],1);d=e.validate_cases([item,item],set());self.assertIn("DUPLICATE_CASE_ID",[x.code for x in d])
- def test_unresolved_opr_bit_is_error(self):
-  item=e.case("x","doc",1,["MS = EXECUTE"],1,[],[{"predicate":"IR[bit(CLA)] = 1","micro_operation":"AC_CLEAR"}]);d=e.validate_cases([item],{"AC_CLEAR"});self.assertIn("UNRESOLVED_OPR_BIT",[x.code for x in d])
+    def test_duplicate_case_id_is_reported_on_the_repeat(self) -> None:
+        case = make_case("x", PATH, 3, [], 1)
 
-class RepositoryTests(unittest.TestCase):
- @classmethod
- def setUpClass(cls): cls.root=Path(__file__).resolve().parents[4];cls.data=e.extract(cls.root)
- def test_no_diagnostics(self):self.assertEqual(self.data["diagnostics"],[])
- def test_opr_bits_are_found(self):
-  for name in ("CLA","RAR","RAL","BSW","IAC","MQA","MQL","OSR","HLT"):self.assertIn(name,self.data["opr_bit_positions"])
- def test_opr_bit_positions(self):
-  expected={"CLA":7,"CLL":6,"CMA":5,"CML":4,"RAR":3,"RAL":2,"BSW":1,"IAC":0,"SPA":6,"SNA":5,"SZL":4,"OSR":2,"HLT":1,"MQA":6,"MQL":4}
-  for name,bit in expected.items():self.assertEqual(self.data["opr_bit_positions"][name],bit)
- def test_mri_context_uses_control_input_names(self):
-  x=next(c for c in self.data["cases"] if c["id"]=="mri:3.3:ts4")
-  self.assertEqual(x["context"],["MS = EXECUTE","IR_IS_MRI = 1","IR_MRI_OPCODE = 010"])
-  self.assertNotIn("IR[11:9] = 010",x["context"])
- def test_iot_context_uses_control_input_names(self):
-  x=next(c for c in self.data["cases"] if c["id"]=="iot:9.1:ts2");self.assertIn("IR_IS_IOT = 1",x["context"]);self.assertIn("IR_IOA = 00",x["context"])
- def test_device_zero_iot_uses_iot_op_input(self):
-  x=next(c for c in self.data["cases"] if c["id"]=="iot:9.6:ts2")
-  self.assertIn("IR_IOT_OP = 101",x["context"]);self.assertFalse(any("IR[2:0]" in term for term in x["context"]))
- def test_memory_extension_iot_uses_decoded_predicates(self):
-  expected={"10.1":"IR_WRITES_DF = 1","10.2":"IR_WRITES_IF = 1","10.3":"IR_READS_DF = 1","10.4":"IR_READS_IF = 1","10.5":"IR_READS_IB = 1","10.6":"IR_RESTORES_IB = 1"}
-  for section,predicate in expected.items():
-   xs=[c for c in self.data["cases"] if c["id"].startswith(f"iot:{section}:")];self.assertTrue(xs);self.assertTrue(all(c["context"]==["IR_IS_IOT = 1",predicate] for c in xs))
- def test_iot_context_has_no_raw_selection_bits(self):
-  for c in [x for x in self.data["cases"] if x["id"].startswith("iot:")]:
-   joined=" ".join(c["context"]);self.assertNotIn("IR[2:0]",joined);self.assertNotIn("IR[8:6]",joined);self.assertNotIn("IR[5:3]",joined);self.assertNotIn("IR[2]",joined);self.assertNotIn("IR[1]",joined);self.assertNotIn("IR[0]",joined)
- def test_opr_context_uses_instruction_class_and_group_inputs(self):
-  for group in (1,2,3):
-   xs=[c for c in self.data["cases"] if c["id"].startswith(f"opr{group}:")]
-   self.assertTrue(xs)
-   self.assertTrue(all(x["context"] == ["MS = EXECUTE", "IR_IS_OPR = 1", f"IR_OPR_GROUP{group} = 1"] for x in xs))
- def test_group1_predicates_use_control_inputs(self):
-  x=next(c for c in self.data["cases"] if c["id"]=="opr1:ts1");self.assertEqual([item["predicate"] for item in x["conditional_micro_operations"]],["IR_OPR_CLA = 1","IR_OPR_CLL = 1"])
- def test_group2_osr_uses_osr_input(self):
-  x=next(c for c in self.data["cases"] if c["id"]=="opr2:ts3")
-  self.assertEqual(x["conditional_micro_operations"],[{"predicate":"IR_OPR_OSR = 1","micro_operation":"AC_OR_FP_SR"}])
- def test_group3_mqa_mql_bits_remain_raw(self):
-  x=next(c for c in self.data["cases"] if c["id"]=="opr3:ts2")
-  predicates=[item["predicate"] for item in x["conditional_micro_operations"]]
-  self.assertEqual(predicates,["IR[6] = 1","IR[4] = 1","IR[6] = 1 AND IR[4] = 1"])
- def test_fetch_cifp_condition(self):
-  x=next(c for c in self.data["cases"] if c["id"]=="fetch-defer:3.1");self.assertEqual(x["conditional_micro_operations"],[{"predicate":"CIFP = 0","micro_operation":"II_CLEAR"}])
- def test_defer_autoindex(self):
-  x=next(c for c in self.data["cases"] if c["id"]=="fetch-defer:4.4");self.assertEqual(x["conditional_micro_operations"][0]["predicate"],"AUTO_INDEX_REQUIRED = 1")
- def test_isz_skip(self):
-  x=next(c for c in self.data["cases"] if c["id"]=="mri:3.3:ts4");self.assertEqual(x["conditional_micro_operations"][0]["predicate"],"ISZ_SKIP_REQUIRED = 1")
- def test_interrupt_context(self):
-  xs=[c for c in self.data["cases"] if c["id"].startswith("interrupt:")];self.assertEqual(len(xs),4);self.assertTrue(all(c["context"]==["MS = INTERRUPT"] for c in xs))
- def test_console_operations(self):
-  xs=[c for c in self.data["cases"] if c["execution_model"]=="console-transaction"];self.assertEqual({x["id"] for x in xs},{"console:6","console:7","console:8","console:10"})
- def test_group2_skip(self):
-  x=next(c for c in self.data["cases"] if c["id"]=="opr2:ts1");self.assertEqual(x["conditional_micro_operations"][0]["predicate"],"SKIP_TAKEN = 1")
- def test_case_count(self):self.assertEqual(len(self.data["cases"]),109)
- def test_all_uops_are_normalized(self):
-  import re
-  for c in self.data["cases"]:
-   for u in c["micro_operations"]+[x["micro_operation"] for x in c["conditional_micro_operations"]]:self.assertRegex(u,r"^[A-Z][A-Z0-9_]*$")
- def test_dca_ts4_has_only_ac_clear(self):
-  x=next(c for c in self.data["cases"] if c["id"]=="mri:3.4:ts4");self.assertEqual(x["micro_operations"],["AC_CLEAR"])
- def test_rmf_uops_are_normalized(self):
-  x=next(c for c in self.data["cases"] if c["id"]=="iot:10.6:ts2");self.assertEqual(x["micro_operations"],["IB_TO_DF","IB_TO_DIF","II_SET","CIFP_SET"])
- def test_all_six_mri_opcodes_have_four_ts_cases(self):
-  for section in range(1,7):self.assertEqual(len([c for c in self.data["cases"] if c["id"].startswith(f"mri:3.{section}:")]),4)
- def test_iot_noop_sgt_is_preserved(self):
-  xs=[c for c in self.data["cases"] if c["id"].startswith("iot:9.7:")];self.assertEqual(len(xs),4);self.assertTrue(all(not x["micro_operations"] and not x["conditional_micro_operations"] for x in xs))
- def test_group1_nop_is_representable(self):
-  xs=[c for c in self.data["cases"] if c["id"].startswith("opr1:")];self.assertEqual({x["timing_state"] for x in xs},{1,2,3,4});self.assertTrue(all(not x["micro_operations"] for x in xs))
- def test_group1_rotate_combinations(self):
-  x=next(c for c in self.data["cases"] if c["id"]=="opr1:ts4");ops={i["micro_operation"] for i in x["conditional_micro_operations"]};self.assertEqual(ops,{"AC_RAR","AC_RAL","AC_RTR","AC_RTL","AC_BSW"})
- def test_group3_swap_is_preserved(self):
-  x=next(c for c in self.data["cases"] if c["id"]=="opr3:ts2");self.assertIn({"predicate":"IR[6] = 1 AND IR[4] = 1","micro_operation":"AC_MQ_SWAP"},x["conditional_micro_operations"])
- def test_console_cases_are_tsless(self):
-  xs=[c for c in self.data["cases"] if c["execution_model"]=="console-transaction"];self.assertTrue(all(c["timing_state"] is None for c in xs))
+        diagnostics = validate_cases([case, case], set())
 
- def test_external_iot_phase_binding(self):
-  text="""## 7. External IOT Phase Binding
-- `IO_CLEAR_AC_REQ` selects `AC_CLEAR` during the TS in which the request is asserted.
-- `IO_SKIP_REQ` selects `PC_INC` during TS4.
-## 8. Response Constraints
-"""
-  xs=e.parse_external_iot_phase_binding(text,"doc")
-  self.assertEqual(len(xs),4)
-  self.assertTrue(all(x["context"]==["MS = EXECUTE","IOT_ACTIVE = 1"] for x in xs))
-  self.assertEqual(xs[0]["conditional_micro_operations"],[{"predicate":"IO_CLEAR_AC_REQ = 1","micro_operation":"AC_CLEAR"}])
-  self.assertEqual(xs[3]["conditional_micro_operations"],[{"predicate":"IO_CLEAR_AC_REQ = 1","micro_operation":"AC_CLEAR"},{"predicate":"IO_SKIP_REQ = 1","micro_operation":"PC_INC"}])
+        self.assertEqual(
+            diagnostics,
+            [
+                Diagnostic(
+                    "ERROR", "DUPLICATE_CASE_ID", "Duplicate case id: x", PATH, 3, "x"
+                )
+            ],
+        )
 
- def test_external_iot_response_cases(self):
-  xs=[c for c in self.data["cases"] if c["id"].startswith("iot:external:")]
-  self.assertEqual(len(xs),4)
-  self.assertTrue(all(c["context"]==["MS = EXECUTE","IOT_ACTIVE = 1"] for c in xs))
-  ts4=next(c for c in xs if c["timing_state"]==4)
-  self.assertIn({"predicate":"IO_SKIP_REQ = 1","micro_operation":"PC_INC"},ts4["conditional_micro_operations"])
+    def test_micro_operations_must_be_known_names(self) -> None:
+        case = make_case(
+            "x",
+            PATH,
+            3,
+            [],
+            1,
+            ["bad uop", "NOPE"],
+            [{"predicate": "A = 1", "micro_operation": "MISSING"}],
+        )
 
-if __name__=="__main__":unittest.main()
+        diagnostics = validate_cases([case], {"PC_INC"})
+
+        self.assertEqual(
+            codes(diagnostics),
+            [
+                "MALFORMED_MICRO_OPERATION",
+                "UNKNOWN_MICRO_OPERATION",
+                "UNKNOWN_MICRO_OPERATION",
+            ],
+        )
+
+    def test_parser_without_cases_or_findings_is_an_error(self) -> None:
+        documents = dict(VALID_DOCUMENTS)
+        documents[CONSOLE_SOURCE] = "# Console\n"
+
+        _, diagnostics = extract_execution_definitions(documents)
+
+        self.assertEqual(
+            [(d.code, d.source_path) for d in diagnostics],
+            [("NO_CASES_FOUND", CONSOLE_SOURCE.as_posix())],
+        )
+
+    def test_valid_documents_extract_in_order(self) -> None:
+        cases, diagnostics = extract_execution_definitions(VALID_DOCUMENTS)
+
+        self.assertEqual(diagnostics, [])
+        prefixes = []
+        for case in cases:
+            prefix = case["id"].split(":")[0]
+            if prefix not in prefixes:
+                prefixes.append(prefix)
+        self.assertEqual(
+            prefixes,
+            ["fetch-defer", "mri", "iot", "interrupt", "console", "opr1", "opr2", "opr3"],
+        )
+        iot = [case["id"] for case in cases if case["id"].startswith("iot:")]
+        self.assertEqual(iot[:5], [*(f"iot:external:ts{n}" for n in range(1, 5)), "iot:9.3:ts1"])
+
+
+# ---------------------------------------------------------------------------
+# Output
+# ---------------------------------------------------------------------------
+
+
+class OutputTests(unittest.TestCase):
+    def test_report(self) -> None:
+        diagnostics = [
+            Diagnostic("ERROR", "A", "First.", PATH, 3, "x:1"),
+            Diagnostic("FATAL", "B", "Second.", "<input>"),
+        ]
+
+        self.assertEqual(
+            build_report(diagnostics, 2),
+            "Execution-Definition Extraction Report\n"
+            "======================================\n\n"
+            "Cases extracted: 2\n"
+            "Information diagnostics: 0\n"
+            "Warnings: 0\n"
+            "Errors: 1\n"
+            "Fatal errors: 1\n\n"
+            "Diagnostics\n"
+            "-----------\n"
+            f"ERROR A [x:1] {PATH}:3: First.\n"
+            "FATAL B <input>: Second.\n",
+        )
+
+    def test_empty_report_says_no_diagnostics(self) -> None:
+        self.assertTrue(build_report([], 0).endswith("No diagnostics.\n"))
+
+
+# ---------------------------------------------------------------------------
+# End to end
+# ---------------------------------------------------------------------------
+
+GOLDEN_DIRECTORY = Path(__file__).resolve().parent / "golden"
+UPDATE_GOLDEN = os.environ.get("UPDATE_GOLDEN") == "1"
+
+
+class EndToEndTests(unittest.TestCase):
+    def setUp(self) -> None:
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.root = Path(directory.name)
+        self.json_output = self.root / DEFAULT_JSON_OUTPUT
+        self.report_output = self.root / DEFAULT_REPORT_OUTPUT
+
+    def write_sources(self, documents) -> None:
+        for path, text in documents.items():
+            source = self.root / path
+            source.parent.mkdir(parents=True, exist_ok=True)
+            source.write_text(text, encoding="utf-8")
+
+    def run_main(self, *extra: str) -> tuple[int, str]:
+        stdout = io.StringIO()
+        with redirect_stdout(stdout):
+            exit_code = main(["--repo-root", str(self.root), *extra])
+        return exit_code, stdout.getvalue()
+
+    def assert_outputs_match_golden(self, name: str) -> None:
+        """Compare the JSON and report against ``golden/<name>/``.
+
+        Run with ``UPDATE_GOLDEN=1`` to rewrite the expected files after an
+        intended output change, then review the diff.
+        """
+
+        outputs = {
+            "execution-definitions.json": self.json_output,
+            "extraction-report.txt": self.report_output,
+        }
+        for file_name, output in outputs.items():
+            with self.subTest(file=file_name):
+                actual = output.read_bytes().decode("utf-8")
+                golden_path = GOLDEN_DIRECTORY / name / file_name
+                if UPDATE_GOLDEN:
+                    golden_path.parent.mkdir(parents=True, exist_ok=True)
+                    golden_path.write_text(
+                        actual, encoding="utf-8", newline="\n"
+                    )
+                self.assertEqual(
+                    actual, golden_path.read_text(encoding="utf-8")
+                )
+
+    def test_valid_outputs_match_golden(self) -> None:
+        self.write_sources(VALID_DOCUMENTS)
+
+        exit_code, stdout = self.run_main()
+
+        self.assertEqual(exit_code, 0)
+        self.assertIn("Cases: 60", stdout)
+        self.assert_outputs_match_golden("valid")
+
+    def test_invalid_outputs_match_golden(self) -> None:
+        self.write_sources(INVALID_DOCUMENTS)
+
+        exit_code, stdout = self.run_main()
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn(
+            "ERROR DUPLICATE_CASE_ID [mri:3.1:ts1]\n"
+            f"  Source: {MRI_SOURCE.as_posix()}:",
+            stdout,
+        )
+        self.assert_outputs_match_golden("invalid")
+
+    def test_missing_source_is_fatal_and_removes_earlier_json(self) -> None:
+        documents = dict(VALID_DOCUMENTS)
+        del documents[MICRO_OPERATION_SOURCE]
+        self.write_sources(documents)
+        self.json_output.parent.mkdir(parents=True)
+        self.json_output.write_text("stale\n", encoding="utf-8")
+
+        exit_code, stdout = self.run_main()
+
+        self.assertEqual(exit_code, 1)
+        self.assertFalse(self.json_output.exists())
+        report = self.report_output.read_text(encoding="utf-8")
+        self.assertIn("Cases extracted: 0", report)
+        self.assertIn(
+            "FATAL EXTRACTION_FAILURE <input>: Required source does not exist",
+            report,
+        )
+        self.assertIn("Cases: 0", stdout)
+
+    def test_output_that_is_an_input_is_refused(self) -> None:
+        self.write_sources(VALID_DOCUMENTS)
+
+        exit_code, stdout = self.run_main("--report-output", str(MRI_SOURCE))
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn("ERROR: Output path is also an input", stdout)
+        self.assertEqual(
+            (self.root / MRI_SOURCE).read_text(encoding="utf-8"), MRI
+        )
+
+    def test_output_that_is_a_directory_is_refused(self) -> None:
+        self.write_sources(VALID_DOCUMENTS)
+        self.report_output.parent.mkdir(parents=True)
+        self.report_output.write_text("earlier\n", encoding="utf-8")
+        (self.root / "dir").mkdir()
+
+        exit_code, stdout = self.run_main("--json-output", "dir")
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn("ERROR: Output path is a directory", stdout)
+        self.assertTrue(self.report_output.exists())
+
+    def test_every_source_is_read(self) -> None:
+        self.assertEqual(set(VALID_DOCUMENTS), set(SOURCE_PATHS))
+
+
+if __name__ == "__main__":
+    unittest.main()

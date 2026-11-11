@@ -1,0 +1,12 @@
+Execution-Definition Extraction Report
+======================================
+
+Cases extracted: 60
+Information diagnostics: 0
+Warnings: 0
+Errors: 0
+Fatal errors: 0
+
+Diagnostics
+-----------
+No diagnostics.
