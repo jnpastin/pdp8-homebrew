@@ -1,0 +1,16 @@
+Direct-Control Extraction Report
+================================
+
+Definitions extracted: 5
+Information diagnostics: 0
+Warnings: 0
+Errors: 5
+Fatal errors: 0
+
+Diagnostics
+-----------
+ERROR DUPLICATE_DEFINITION_ID [01:3.2.3] docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md:27: Duplicate definition id: 01:3.2.3
+ERROR EMPTY_DEFINITION [01:3.2.1] docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md:5: Definition contains no extractable control or ownership result.
+ERROR EMPTY_DEFINITION [01:3.2.2] docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md:11: Definition contains no extractable control or ownership result.
+ERROR UNSTRUCTURED_FIELD [01:3.2.1] docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md:5: The 'direct_assignments' section must contain a text code block.
+ERROR UNSTRUCTURED_FIELD [01:3.2.2] docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md:11: The 'state_commits' section must contain a text code block.

@@ -1,0 +1,215 @@
+{
+  "format_version": 1,
+  "control_design_version": "v1",
+  "artifact": "direct-control-definitions",
+  "extraction_stage": "documentation-extraction",
+  "sources": [
+    "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+    "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md"
+  ],
+  "definitions": [
+    {
+      "id": "01:3.2.1",
+      "title": "3.2.1 FETCH to EXECUTE",
+      "group": "3.2 Major-State Transitions",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 13
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = FETCH\nTS = 4"
+      ],
+      "direct_assignments": [
+        "MS_NEXT = EXECUTE"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [
+        "MS <- EXECUTE at TP4"
+      ],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "One transition per TS4."
+      ],
+      "sources": [
+        {
+          "label": "State Model",
+          "target": "../../03-microarchitecture/00-state-model.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.2.2",
+      "title": "3.2.2 Continued Running",
+      "group": "3.2 Major-State Transitions",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 45
+      },
+      "applicable_context": [
+        "RUN = 1\nAND\nno halt condition applies"
+      ],
+      "direct_assignments": [
+        "RUN_NEXT = 1"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.3.1",
+      "title": "3.3.1 MRI Read",
+      "group": "3.3 Memory Reads",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 67
+      },
+      "applicable_context": [
+        "MS = EXECUTE\nIR_MRI_OPCODE = 000",
+        "MS = EXECUTE\nIR_MRI_OPCODE = 001"
+      ],
+      "direct_assignments": [
+        "AB_SRC = MA"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.3.2.1",
+      "title": "3.3.2.1 Direct Read",
+      "group": "3.3.2 Direct Access",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 95
+      },
+      "applicable_context": [
+        "TS = 2"
+      ],
+      "direct_assignments": [
+        "MFB_SRC = IF"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:5.1",
+      "title": "5.1 Data Field from Instruction",
+      "group": "5 Value Bindings",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 113
+      },
+      "applicable_context": [],
+      "direct_assignments": [],
+      "control_supplied_values": [
+        "DF_VAL = IR_DF"
+      ],
+      "micro_operation_assignments": [
+        "DF_LOAD = 1\nDF_SRC  = Control"
+      ],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [
+        "DF_VAL: 3"
+      ],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "02:4.2",
+      "title": "4.2 Memory Read",
+      "group": "4 Memory Interface",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
+        "line": 5
+      },
+      "applicable_context": [
+        "MEM_READ_TO_MB is selected"
+      ],
+      "direct_assignments": [],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [
+        "/RD = 0\n/WR = 1"
+      ],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [
+        "CPU MDB driver = HIGH_Z"
+      ],
+      "external_ownership": [],
+      "memory_behavior": [
+        "memory drives MDB"
+      ],
+      "derived_values": []
+    },
+    {
+      "id": "02:5.2",
+      "title": "5.2 DMA Ownership",
+      "group": "5 DMA Ownership",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
+        "line": 34
+      },
+      "applicable_context": [],
+      "direct_assignments": [
+        "/DMA_GRANT = 0"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [
+        "IOA = IR[8:3]"
+      ],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [
+        "DMA controller drives AB"
+      ],
+      "memory_behavior": [],
+      "derived_values": [
+        "IOA = IR_IOA"
+      ]
+    }
+  ],
+  "diagnostics": []
+}

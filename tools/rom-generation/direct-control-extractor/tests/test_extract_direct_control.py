@@ -1,457 +1,772 @@
 """Tests for the direct-control extractor."""
+
 from __future__ import annotations
 
+import io
 import json
+import os
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 
-SOURCE_DIRECTORY = Path(__file__).resolve().parents[1] / "src"
-sys.path.insert(0, str(SOURCE_DIRECTORY))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-import extract_direct_control as extractor  # noqa: E402
+from extract_direct_control import (  # noqa: E402
+    CODE_FIELDS,
+    DEFAULT_JSON_OUTPUT,
+    DEFAULT_REPORT_OUTPUT,
+    SOURCE_PATHS,
+    Diagnostic,
+    ExtractionFailure,
+    build_report,
+    collect_sections,
+    extract_direct_control,
+    extract_document,
+    main,
+    parse_arguments,
+    parse_headings,
+    read_source,
+    resolve_from_repo,
+)
+
+PATH = "docs/01-example.md"
 
 
-SIMPLE_CASE = """## 3. Sequencing
+# ---------------------------------------------------------------------------
+# Builders
+# ---------------------------------------------------------------------------
 
-### 3.2 Cases
 
-#### 3.2.1 Example
+def code(text: str) -> str:
+    return f"```text\n{text}\n```"
 
-Applicable context:
 
-```text
-MS = FETCH
-TS = 4
-```
+def case(
+    number: str = "3.2.1",
+    title: str = "Example",
+    *sections: tuple[str, str],
+    level: int = 4,
+) -> str:
+    """Return one definition built from ``(label, body)`` sections.
 
-Assignment:
+    Without sections, the definition has a single assignment.
+    """
 
-```text
-MS_NEXT = EXECUTE
-```
+    if not sections:
+        sections = (("Assignment", code("MS_NEXT = EXECUTE")),)
+    body = "".join(f"{label}:\n\n{text}\n\n" for label, text in sections)
+    return f"{'#' * level} {number} {title}\n\n{body}"
 
-Commit:
 
-```text
-MS <- EXECUTE at TP4
-```
+def document(*cases: str) -> str:
+    return "## 3. Sequencing\n\n### 3.2 Cases\n\n" + "".join(cases)
 
-Constraints:
 
-- One constraint.
+def extract(*cases: str):
+    return extract_document(document(*cases), PATH)
 
-Sources:
 
-- [Control](../control.md)
-"""
+def only(*cases: str) -> dict:
+    definitions, diagnostics = extract(*cases)
+    assert diagnostics == [], diagnostics
+    assert len(definitions) == 1, definitions
+    return definitions[0]
+
+
+def codes(diagnostics) -> list[str]:
+    return [diagnostic.code for diagnostic in diagnostics]
+
+
+# ---------------------------------------------------------------------------
+# Arguments, paths, and reading
+# ---------------------------------------------------------------------------
+
+
+class ArgumentAndPathTests(unittest.TestCase):
+    def test_default_outputs_are_used(self) -> None:
+        options = parse_arguments(["--repo-root", "."])
+
+        self.assertEqual(options.json_output, DEFAULT_JSON_OUTPUT)
+        self.assertEqual(options.report_output, DEFAULT_REPORT_OUTPUT)
+
+    def test_relative_path_is_resolved_from_repo_root(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            self.assertEqual(
+                resolve_from_repo(Path(directory), Path("x")),
+                (Path(directory) / "x").resolve(),
+            )
+
+    def test_absolute_path_is_preserved(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = (Path(directory) / "x").resolve()
+            self.assertEqual(resolve_from_repo(Path.cwd(), path), path)
+
+
+class ReadSourceTests(unittest.TestCase):
+    def setUp(self) -> None:
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.root = Path(directory.name)
+
+    def test_missing_source_fails(self) -> None:
+        with self.assertRaisesRegex(ExtractionFailure, "does not exist"):
+            read_source(self.root / "missing.md")
+
+    def test_invalid_utf8_fails(self) -> None:
+        path = self.root / "x.md"
+        path.write_bytes(b"\xff")
+
+        with self.assertRaisesRegex(ExtractionFailure, "not valid UTF-8"):
+            read_source(path)
+
+    def test_unreadable_source_fails(self) -> None:
+        with self.assertRaisesRegex(ExtractionFailure, "Unable to read"):
+            read_source(self.root)
+
+
+# ---------------------------------------------------------------------------
+# Headings and definition selection
+# ---------------------------------------------------------------------------
 
 
 class HeadingTests(unittest.TestCase):
-    def test_parses_numbered_headings(self) -> None:
-        headings = extractor.parse_headings(SIMPLE_CASE.splitlines())
+    def test_numbered_and_unnumbered_headings(self) -> None:
+        headings = parse_headings(
+            ["# Title", "## 3. Sequencing", "### Appendix", "#### 3.2.1 Case"]
+        )
+
         self.assertEqual(
-            [(item.level, item.number, item.title) for item in headings],
+            [(h.level, h.number, h.title, h.line) for h in headings],
             [
-                (2, "3", "Sequencing"),
-                (3, "3.2", "Cases"),
-                (4, "3.2.1", "Example"),
+                (2, "3", "Sequencing", 2),
+                (3, None, "Appendix", 3),
+                (4, "3.2.1", "Case", 4),
             ],
         )
+        self.assertEqual(headings[2].full_title, "3.2.1 Case")
+        self.assertEqual(headings[1].full_title, "Appendix")
 
-    def test_ignores_unnumbered_heading(self) -> None:
-        headings = extractor.parse_headings(["## Appendix", "### 1.1 Case"])
-        self.assertEqual(len(headings), 2)
-        self.assertIsNone(headings[0].number)
-        self.assertEqual(headings[1].number, "1.1")
+    def test_headings_in_code_blocks_are_ignored(self) -> None:
+        headings = parse_headings(["```text", "## 9. Not", "```", "## 1. Yes"])
 
-    def test_child_definition_has_numbered_parent(self) -> None:
-        definitions, diagnostics = extractor.extract_document(
-            SIMPLE_CASE, "docs/01-example.md"
+        self.assertEqual([h.title for h in headings], ["Yes"])
+
+    def test_only_leaf_numbered_headings_are_definitions(self) -> None:
+        definitions, _ = extract(
+            case("3.2.1"),
+            case("3.2.2", "Parent", ("Assignment", code("X = 1"))),
+            case("3.2.2.1", "Child", level=4),
         )
-        self.assertEqual(diagnostics, [])
-        self.assertEqual(definitions[0]["group"], "3.2 Cases")
 
-    def test_parent_with_child_is_not_extracted(self) -> None:
-        definitions, _ = extractor.extract_document(
-            SIMPLE_CASE, "docs/01-example.md"
-        )
-        self.assertEqual([item["id"] for item in definitions], ["01:3.2.1"])
-
-    def test_level_two_boundary_prevents_source_leakage(self) -> None:
-        text = SIMPLE_CASE + "\n## 4. Related Documents\n- [Other](../other.md)\n"
-        definitions, _ = extractor.extract_document(text, "docs/01-example.md")
         self.assertEqual(
-            definitions[0]["sources"],
-            [{"label": "Control", "target": "../control.md"}],
+            [item["id"] for item in definitions],
+            ["01:3.2.1", "01:3.2.2", "01:3.2.2.1"],
         )
+
+    def test_parent_with_nested_heading_is_skipped(self) -> None:
+        definitions, _ = extract(
+            case("3.3", "Parent", ("Assignment", code("X = 1")), level=3),
+            case("3.3.1", "Child"),
+        )
+
+        self.assertEqual([item["id"] for item in definitions], ["01:3.3.1"])
+
+    def test_level_five_and_six_headings_are_recognized(self) -> None:
+        definitions, _ = extract(
+            case("3.2.1", "Parent", ("Assignment", code("X = 1"))),
+            case("3.2.1.1", "Child", ("Assignment", code("Y = 1")), level=5),
+            case("3.2.1.1.1", "Leaf", ("Assignment", code("Z = 1")), level=6),
+        )
+
+        self.assertEqual(
+            [(item["id"], item["group"]) for item in definitions],
+            [("01:3.2.1.1.1", "3.2.1.1 Child")],
+        )
+        self.assertEqual(definitions[0]["direct_assignments"], ["Z = 1"])
+
+    def test_group_is_the_enclosing_heading(self) -> None:
+        self.assertEqual(only(case())["group"], "3.2 Cases")
+
+    def test_top_level_definition_has_no_group(self) -> None:
+        definitions, _ = extract_document(case("7", "Top", level=2), PATH)
+
+        self.assertIsNone(definitions[0]["group"])
+
+    def test_definition_requires_a_content_section(self) -> None:
+        definitions, diagnostics = extract(
+            case("3.2.1", "Example", ("Constraints", "- only a constraint")),
+            "## 4. Purpose\n\nText only.\n",
+        )
+
+        self.assertEqual((definitions, diagnostics), ([], []))
+
+    def test_definition_ends_at_next_same_level_heading(self) -> None:
+        text = document(
+            case(
+                "3.2.1",
+                "Example",
+                ("Assignment", code("X = 1")),
+                ("Sources", "- [A](a.md)"),
+            )
+        )
+
+        definitions, _ = extract_document(
+            text + "## 4. Related\n\n- [B](b.md)\n", PATH
+        )
+
+        self.assertEqual(
+            definitions[0]["sources"], [{"label": "A", "target": "a.md"}]
+        )
+
+
+# ---------------------------------------------------------------------------
+# Sections
+# ---------------------------------------------------------------------------
 
 
 class SectionTests(unittest.TestCase):
-    def test_extracts_direct_assignment_and_commit(self) -> None:
-        definitions, diagnostics = extractor.extract_document(
-            SIMPLE_CASE, "docs/01-example.md"
-        )
-        self.assertEqual(diagnostics, [])
-        item = definitions[0]
-        self.assertEqual(item["direct_assignments"], ["MS_NEXT = EXECUTE"])
-        self.assertEqual(item["state_commits"], ["MS <- EXECUTE at TP4"])
-
-    def test_extracts_micro_operation_assignments_separately(self) -> None:
-        text = """### 4.2 Read
-
-Applicable context:
-
-```text
-MEM_READ_TO_MB is selected
-```
-
-Micro-operation assignments:
-
-```text
-/RD = 0
-/WR = 1
-```
-
-CPU output-drive states:
-
-```text
-CPU MDB driver = HIGH_Z
-```
-"""
-        definitions, diagnostics = extractor.extract_document(
-            text, "docs/02-example.md"
-        )
-        self.assertEqual(diagnostics, [])
-        item = definitions[0]
-        self.assertEqual(item["direct_assignments"], [])
-        self.assertEqual(
-            item["micro_operation_assignments"], ["/RD = 0\n/WR = 1"]
-        )
-        self.assertEqual(item["drive_states"], ["CPU MDB driver = HIGH_Z"])
-
-    def test_extracts_control_supplied_value(self) -> None:
-        text = """### 5.1 Value
-
-Micro-operation assignments:
-
-```text
-DF_LOAD = 1
-DF_SRC = Control
-```
-
-Control-supplied value:
-
-```text
-DF_VAL = IR_DF
-```
-"""
-        definitions, diagnostics = extractor.extract_document(
-            text, "docs/01-example.md"
-        )
-        self.assertEqual(diagnostics, [])
-        self.assertEqual(
-            definitions[0]["control_supplied_values"], ["DF_VAL = IR_DF"]
-        )
-
-    def test_extracts_fixed_control_supplied_value(self) -> None:
-        text = """### 5.3 Clear
-
-Control-supplied value:
-
-```text
-DIF_VAL = 0
-```
-"""
-        definitions, diagnostics = extractor.extract_document(
-            text, "docs/01-example.md"
-        )
-        self.assertEqual(diagnostics, [])
-        self.assertEqual(
-            definitions[0]["control_supplied_values"], ["DIF_VAL = 0"]
-        )
-
-    def test_extracts_drive_state_and_external_ownership(self) -> None:
-        text = """### 5.4 DMA Read
-
-CPU output-drive states:
-
-```text
-CPU MDB driver = HIGH_Z
-```
-
-External ownership:
-
-```text
-memory drives MDB
-```
-"""
-        definitions, diagnostics = extractor.extract_document(
-            text, "docs/02-example.md"
-        )
-        self.assertEqual(diagnostics, [])
-        item = definitions[0]
-        self.assertEqual(item["drive_states"], ["CPU MDB driver = HIGH_Z"])
-        self.assertEqual(item["external_ownership"], ["memory drives MDB"])
-
-    def test_extracts_constraints_and_sources(self) -> None:
-        definitions, _ = extractor.extract_document(
-            SIMPLE_CASE, "docs/01-example.md"
-        )
-        item = definitions[0]
-        self.assertEqual(item["constraints"], ["One constraint."])
-        self.assertEqual(
-            item["sources"],
-            [{"label": "Control", "target": "../control.md"}],
-        )
-
-    def test_preserves_prose_context_when_no_code_block_exists(self) -> None:
-        text = """### 3.3.2 Running
-
-Applicable context:
-
-RUN = 1
-AND
-none of the halt conditions applies
-
-Assignment:
-
-```text
-RUN_NEXT = 1
-```
-"""
-        definitions, diagnostics = extractor.extract_document(
-            text, "docs/01-example.md"
-        )
-        self.assertEqual(diagnostics, [])
-        self.assertEqual(
-            definitions[0]["applicable_context"],
-            ["RUN = 1\nAND\nnone of the halt conditions applies"],
-        )
-
-    def test_preserves_multiline_boolean_context_code_block(self) -> None:
-        text = """### 3.3.2 Continued Running
-
-Applicable context:
-
-```text
-RUN = 1
-NOT (
-    HLT_REQ = 1
-    AND MS = EXECUTE
-    AND TS = 4
-)
-NOT (
-    FP_SINGLE_STEP = 1
-    AND TS = 4
-)
-```
-
-Assignment:
-
-```text
-RUN_NEXT = 1
-```
-"""
-        definitions, diagnostics = extractor.extract_document(
-            text, "docs/01-example.md"
-        )
-        self.assertEqual(diagnostics, [])
-        self.assertEqual(
-            definitions[0]["applicable_context"],
+    def test_labels_start_and_prose_ends_sections(self) -> None:
+        sections = collect_sections(
             [
-                "RUN = 1\n"
-                "NOT (\n"
-                "    HLT_REQ = 1\n"
-                "    AND MS = EXECUTE\n"
-                "    AND TS = 4\n"
-                ")\n"
-                "NOT (\n"
-                "    FP_SINGLE_STEP = 1\n"
-                "    AND TS = 4\n"
-                ")"
+                "ignored",
+                "Assignment:",
+                "```text",
+                "Label inside code:",
+                "```",
+                "Examples include:",
+                "dropped",
+                "Commit:",
+                "kept",
+                "Commit:",
+                "again",
+            ]
+        )
+
+        self.assertEqual(
+            sections,
+            {
+                "direct_assignments": ["```text\nLabel inside code:\n```"],
+                "state_commits": ["kept", "again"],
+            },
+        )
+
+    def test_every_label_fills_its_field(self) -> None:
+        definition = only(
+            case(
+                "3.2.1",
+                "Example",
+                ("Applicable context", code("MS = FETCH")),
+                ("Assignments", code("A = 1")),
+                ("Logical control results", code("B = 1")),
+                ("Micro-operation assignments", code("C = 1")),
+                ("Control-supplied value", code("D_VAL = 0")),
+                ("Value relationship", code("E = F")),
+                ("Widths", code("E: 3")),
+                ("Commits", code("G <- 1")),
+                ("Constraint", "- one\n  - nested"),
+                ("Source", "- [Doc]( ../doc.md ) and [Two](two.md#x)"),
+                ("CPU behavior", code("holds")),
+                ("CPU output-drive state", code("CPU DB driver = HIGH_Z")),
+                ("External ownership", code("memory drives MDB")),
+                ("Memory behavior", code("reads")),
+                ("Related derived values", code("IOA = IR_IOA")),
+            )
+        )
+
+        self.assertEqual(
+            {key: value for key, value in definition.items() if value},
+            {
+                "id": "01:3.2.1",
+                "title": "3.2.1 Example",
+                "group": "3.2 Cases",
+                "source": {"path": PATH, "line": 5},
+                "applicable_context": ["MS = FETCH"],
+                "direct_assignments": ["A = 1"],
+                "micro_operation_assignments": ["B = 1", "C = 1"],
+                "control_supplied_values": ["D_VAL = 0"],
+                "value_relationships": ["E = F"],
+                "widths": ["E: 3"],
+                "state_commits": ["G <- 1"],
+                "constraints": ["one", "nested"],
+                "sources": [
+                    {"label": "Doc", "target": "../doc.md"},
+                    {"label": "Two", "target": "two.md#x"},
+                ],
+                "drive_states": ["holds", "CPU DB driver = HIGH_Z"],
+                "external_ownership": ["memory drives MDB"],
+                "memory_behavior": ["reads"],
+                "derived_values": ["IOA = IR_IOA"],
+            },
+        )
+
+    def test_definition_key_order(self) -> None:
+        self.assertEqual(
+            list(only(case())),
+            [
+                "id",
+                "title",
+                "group",
+                "source",
+                "applicable_context",
+                "direct_assignments",
+                "control_supplied_values",
+                "micro_operation_assignments",
+                "state_commits",
+                "value_relationships",
+                "widths",
+                "constraints",
+                "sources",
+                "drive_states",
+                "external_ownership",
+                "memory_behavior",
+                "derived_values",
             ],
         )
 
-    def test_unstructured_assignment_is_error(self) -> None:
-        text = """### 3.2.1 Case
-
-Assignment:
-
-MS_NEXT = FETCH
-"""
-        _, diagnostics = extractor.extract_document(text, "docs/01-example.md")
-        self.assertEqual(diagnostics[0].code, "UNSTRUCTURED_FIELD")
-        self.assertEqual(diagnostics[0].severity, "ERROR")
-
-    def test_descriptive_section_is_not_definition(self) -> None:
-        definitions, diagnostics = extractor.extract_document(
-            "## 1. Purpose\n\nText only.\n", "docs/01-example.md"
-        )
-        self.assertEqual(definitions, [])
-        self.assertEqual(diagnostics, [])
-
-    def test_source_link_target_is_trimmed(self) -> None:
-        text = """### 6.1 Bus
-
-CPU output-drive state:
-
-```text
-CPU DB driver = HIGH_Z
-```
-
-Sources:
-
-- [Matrix]( ../matrix.md)
-"""
-        definitions, _ = extractor.extract_document(text, "docs/02-example.md")
-        self.assertEqual(definitions[0]["sources"][0]["target"], "../matrix.md")
-
-
-class BuildTests(unittest.TestCase):
-    def test_default_output_is_extracted_artifact(self) -> None:
-        self.assertEqual(
-            extractor.DEFAULT_JSON_OUTPUT.name,
-            "direct-control-definitions.json",
-        )
-
-    def test_missing_source_fails(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            with self.assertRaises(extractor.ExtractionFailure):
-                extractor.build_result(root, (root / "missing.md",))
-
-    def test_duplicate_ids_are_errors(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            first = root / "docs" / "01-first.md"
-            second = root / "other" / "01-second.md"
-            first.parent.mkdir(parents=True)
-            second.parent.mkdir(parents=True)
-            first.write_text(SIMPLE_CASE, encoding="utf-8")
-            second.write_text(SIMPLE_CASE, encoding="utf-8")
-            _, diagnostics = extractor.build_result(root, (first, second))
-            self.assertIn("DUPLICATE_DEFINITION_ID", [item.code for item in diagnostics])
-
-    def test_result_is_json_serializable(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            source = root / "docs" / "01-example.md"
-            source.parent.mkdir(parents=True)
-            source.write_text(SIMPLE_CASE, encoding="utf-8")
-            result, _ = extractor.build_result(root, (source,))
-            json.dumps(result)
-
-
-class RepositoryTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.root = Path(__file__).resolve().parents[4]
-        paths = tuple(cls.root / path for path in extractor.SOURCE_PATHS)
-        cls.result, cls.diagnostics = extractor.build_result(cls.root, paths)
-        cls.by_id = {item["id"]: item for item in cls.result["definitions"]}
-
-    def test_repository_extracts_without_diagnostics(self) -> None:
-        self.assertEqual(self.diagnostics, [])
-
-    def test_repository_definition_count(self) -> None:
-        self.assertEqual(len(self.result["definitions"]), 55)
-
-    def test_repository_ids_are_unique(self) -> None:
-        ids = [item["id"] for item in self.result["definitions"]]
-        self.assertEqual(len(ids), len(set(ids)))
-
-    def test_hlt_capture_is_capture_only(self) -> None:
-        item = self.by_id["01:3.4.4"]
-        self.assertEqual(item["direct_assignments"], ["HLT_REQ_NEXT = 1"])
-        self.assertEqual(item["state_commits"], ["HLT_REQ <- 1 at TP3"])
-
-    def test_stop_capture_is_capture_only(self) -> None:
-        item = self.by_id["01:3.4.3"]
-        self.assertEqual(item["direct_assignments"], ["HLT_REQ_NEXT = 1"])
-        self.assertEqual(item["state_commits"], ["HLT_REQ <- 1 at TP"])
-
-    def test_field_values_are_separated_from_micro_operations(self) -> None:
-        item = self.by_id["01:5.1"]
-        self.assertEqual(item["control_supplied_values"], ["DF_VAL = IR_DF"])
-        self.assertEqual(
-            item["micro_operation_assignments"],
-            ["DF_LOAD = 1\nDF_SRC  = Control"],
-        )
-
-    def test_fixed_dif_value_is_control_supplied(self) -> None:
-        self.assertEqual(
-            self.by_id["01:5.3"]["control_supplied_values"],
-            ["DIF_VAL = 0"],
-        )
-
-    def test_iot_transfer_cases_are_independent(self) -> None:
-        expected = {
-            "01:5.5.1": "IOT_TRANSFER_LOAD = 1\nIOT_TRANSFER_VAL  = READ",
-            "01:5.5.2": "IOT_TRANSFER_LOAD = 1\nIOT_TRANSFER_VAL  = WRITE",
-            "01:5.5.3": "IOT_TRANSFER_LOAD = 1\nIOT_TRANSFER_VAL  = NONE",
-            "01:5.5.4": "IOT_TRANSFER_LOAD = 1\nIOT_TRANSFER_VAL  = READ",
-            "01:5.5.5": "IOT_TRANSFER_LOAD = 1\nIOT_TRANSFER_VAL  = WRITE",
-        }
-        for definition_id, assignment in expected.items():
-            self.assertEqual(
-                self.by_id[definition_id]["direct_assignments"], [assignment]
+    def test_each_code_block_is_one_value(self) -> None:
+        definition = only(
+            case(
+                "3.2.1",
+                "Example",
+                ("Assignment", code("A = 1\nB  = 2") + "\n\n" + code("C = 3")),
             )
-
-    def test_memory_read_strobes_are_micro_operation_owned(self) -> None:
-        item = self.by_id["02:4.2"]
-        self.assertEqual(item["direct_assignments"], [])
-        self.assertEqual(
-            item["micro_operation_assignments"], ["/RD = 0\n/WR = 1"]
         )
-        self.assertIn("CPU MDB driver = HIGH_Z", item["drive_states"][0])
 
-    def test_memory_writes_preserve_distinct_data_sources(self) -> None:
+        self.assertEqual(
+            definition["direct_assignments"], ["A = 1\nB  = 2", "C = 3"]
+        )
+
+    def test_empty_section_is_ignored(self) -> None:
+        definition = only(
+            case(
+                "3.2.1",
+                "Example",
+                ("Applicable context", ""),
+                ("Assignment", code("X = 1")),
+            )
+        )
+
+        self.assertEqual(definition["applicable_context"], [])
+
+    def test_or_separates_alternative_contexts(self) -> None:
+        context = code("A = 1") + "\n\nor:\n\n" + code("A = 2") + "\n\nOr:\n\n"
+        definition = only(
+            case(
+                "3.2.1",
+                "Example",
+                ("Applicable context", context + code("A = 3")),
+                ("Assignment", code("X = 1")),
+            )
+        )
+
+        self.assertEqual(
+            definition["applicable_context"], ["A = 1", "A = 2", "A = 3"]
+        )
+
+    def test_or_is_kept_in_a_prose_context(self) -> None:
+        definition = only(
+            case(
+                "3.2.1",
+                "Example",
+                ("Applicable context", "RUN = 1\n\nor:\n\nHLT = 1"),
+                ("Assignment", code("X = 1")),
+            )
+        )
+
+        self.assertEqual(
+            definition["applicable_context"], ["RUN = 1\n\nor:\n\nHLT = 1"]
+        )
+
+    def test_or_ends_other_sections(self) -> None:
+        definition = only(
+            case(
+                "3.2.1",
+                "Example",
+                ("Assignment", code("X = 1") + "\n\nor:\n\n" + code("X = 2")),
+            )
+        )
+
+        self.assertEqual(definition["direct_assignments"], ["X = 1"])
+
+    def test_applicable_context_falls_back_to_prose(self) -> None:
+        definition = only(
+            case(
+                "3.2.1",
+                "Example",
+                ("Applicable context", "RUN = 1\nAND\nno halt applies"),
+                ("Assignment", code("RUN_NEXT = 1")),
+            )
+        )
+
+        self.assertEqual(
+            definition["applicable_context"], ["RUN = 1\nAND\nno halt applies"]
+        )
+
+    def test_applicable_context_keeps_indentation(self) -> None:
+        context = "RUN = 1\nNOT (\n    HLT_REQ = 1\n    AND TS = 4\n)"
+
+        definition = only(
+            case(
+                "3.2.1",
+                "Example",
+                ("Applicable context", code(context)),
+                ("Assignment", code("X = 1")),
+            )
+        )
+
+        self.assertEqual(definition["applicable_context"], [context])
+
+
+# ---------------------------------------------------------------------------
+# Validation
+# ---------------------------------------------------------------------------
+
+
+class ValidationTests(unittest.TestCase):
+    def test_section_without_text_code_block_is_an_error(self) -> None:
+        for body in (
+            "MS_NEXT = FETCH",
+            "```python\nX = 1\n```",
+            "```text\n```",
+            "```text\n \n```",
+        ):
+            with self.subTest(body=body):
+                definitions, diagnostics = extract(
+                    case(
+                        "3.2.1",
+                        "Example",
+                        ("Assignment", body),
+                        ("Commit", code("MS <- FETCH")),
+                    )
+                )
+
+                self.assertEqual(definitions[0]["direct_assignments"], [])
+                self.assertEqual(codes(diagnostics), ["UNSTRUCTURED_FIELD"])
+                self.assertEqual(
+                    diagnostics[0].message,
+                    "The 'direct_assignments' section must contain a text "
+                    "code block.",
+                )
+
+    def test_definition_without_content_is_an_error(self) -> None:
+        definitions, diagnostics = extract(
+            case(
+                "3.2.1",
+                "Example",
+                ("Assignment", "X = 1"),
+                ("Widths", code("X: 1")),
+            )
+        )
+
+        self.assertEqual(len(definitions), 1)
+        self.assertEqual(
+            [(d.code, d.line, d.definition_id) for d in diagnostics],
+            [
+                ("UNSTRUCTURED_FIELD", 5, "01:3.2.1"),
+                ("EMPTY_DEFINITION", 5, "01:3.2.1"),
+            ],
+        )
+
+    def test_duplicate_ids_are_reported_on_the_repeat(self) -> None:
+        definitions, diagnostics = extract_direct_control(
+            [
+                (PATH, document(case(), case())),
+                ("docs/02-other.md", document(case())),
+            ]
+        )
+
+        self.assertEqual(
+            [item["id"] for item in definitions],
+            ["01:3.2.1", "01:3.2.1", "02:3.2.1"],
+        )
+        self.assertEqual(
+            [(d.code, d.line) for d in diagnostics],
+            [("DUPLICATE_DEFINITION_ID", definitions[1]["source"]["line"])],
+        )
+
+    def test_diagnostics_are_sorted(self) -> None:
+        _, diagnostics = extract_direct_control(
+            [
+                (
+                    PATH,
+                    document(
+                        case("3.2.2", "B", ("Assignment", "x")),
+                        case("3.2.1", "A", ("Assignment", "y")),
+                    ),
+                )
+            ]
+        )
+
+        self.assertEqual(
+            [(d.code, d.definition_id) for d in diagnostics],
+            [
+                ("EMPTY_DEFINITION", "01:3.2.2"),
+                ("EMPTY_DEFINITION", "01:3.2.1"),
+                ("UNSTRUCTURED_FIELD", "01:3.2.2"),
+                ("UNSTRUCTURED_FIELD", "01:3.2.1"),
+            ],
+        )
+
+
+# ---------------------------------------------------------------------------
+# Output
+# ---------------------------------------------------------------------------
+
+
+class OutputTests(unittest.TestCase):
+    def test_report(self) -> None:
+        report = build_report(
+            [
+                Diagnostic("ERROR", "E", "Err.", PATH, 5, "01:1"),
+                Diagnostic("FATAL", "F", "Fatal.", "<input>"),
+            ],
+            3,
+        )
+
+        self.assertEqual(
+            report,
+            "Direct-Control Extraction Report\n"
+            "================================\n"
+            "\n"
+            "Definitions extracted: 3\n"
+            "Information diagnostics: 0\n"
+            "Warnings: 0\n"
+            "Errors: 1\n"
+            "Fatal errors: 1\n"
+            "\n"
+            "Diagnostics\n"
+            "-----------\n"
+            f"ERROR E [01:1] {PATH}:5: Err.\n"
+            "FATAL F <input>: Fatal.\n",
+        )
+
+    def test_empty_report_says_no_diagnostics(self) -> None:
+        self.assertTrue(build_report([], 0).endswith("No diagnostics.\n"))
+
+
+# ---------------------------------------------------------------------------
+# End to end
+# ---------------------------------------------------------------------------
+
+GOLDEN_DIRECTORY = Path(__file__).resolve().parent / "golden"
+UPDATE_GOLDEN = os.environ.get("UPDATE_GOLDEN") == "1"
+
+VALID_DOCUMENTS = (
+    "# Sequencing and Internal Control\n\n"
+    "## 1. Purpose\n\n"
+    "This document defines direct-control results for:\n\n"
+    "- sequencing\n\n"
+    "## 3. Major-State Sequencing\n\n"
+    "### 3.2 Major-State Transitions\n\n"
+    + case(
+        "3.2.1",
+        "FETCH to EXECUTE",
+        ("Applicable context", code("RUN = 1\nMS = FETCH\nTS = 4")),
+        ("Assignment", code("MS_NEXT = EXECUTE")),
+        ("Commit", code("MS <- EXECUTE at TP4")),
+        ("Constraints", "- One transition per TS4."),
+        (
+            "Sources",
+            "- [State Model](../../03-microarchitecture/00-state-model.md)",
+        ),
+    )
+    + "---\n\n"
+    + case(
+        "3.2.2",
+        "Continued Running",
+        ("Applicable context", "RUN = 1\nAND\nno halt condition applies"),
+        ("Assignment", code("RUN_NEXT = 1")),
+    )
+    + "Examples include:\n\n"
+    + code("FETCH -> EXECUTE")
+    + "\n\n### 3.3 Memory Reads\n\n"
+    + case(
+        "3.3.1",
+        "MRI Read",
+        (
+            "Applicable context",
+            code("MS = EXECUTE\nIR_MRI_OPCODE = 000")
+            + "\n\nor:\n\n"
+            + code("MS = EXECUTE\nIR_MRI_OPCODE = 001"),
+        ),
+        ("Assignment", code("AB_SRC = MA")),
+    )
+    + case("3.3.2", "Direct Access", ("Constraints", "- Never uses DF."))
+    + case(
+        "3.3.2.1",
+        "Direct Read",
+        ("Applicable context", code("TS = 2")),
+        ("Assignment", code("MFB_SRC = IF")),
+        level=5,
+    )
+    + "\n\n## 5. Value Bindings\n\n"
+    + case(
+        "5.1",
+        "Data Field from Instruction",
+        (
+            "Micro-operation assignments",
+            code("DF_LOAD = 1\nDF_SRC  = Control"),
+        ),
+        ("Control-supplied value", code("DF_VAL = IR_DF")),
+        ("Widths", code("DF_VAL: 3")),
+        level=3,
+    ),
+    "# Interface and Ownership Control\n\n"
+    "## 4. Memory Interface\n\n"
+    + case(
+        "4.2",
+        "Memory Read",
+        ("Applicable context", code("MEM_READ_TO_MB is selected")),
+        ("Micro-operation assignments", code("/RD = 0\n/WR = 1")),
+        ("CPU output-drive states", code("CPU MDB driver = HIGH_Z")),
+        ("Memory behavior", code("memory drives MDB")),
+        level=3,
+    )
+    + "## 5. DMA Ownership\n\n"
+    + case(
+        "5.2",
+        "DMA Ownership",
+        ("Assignment", code("/DMA_GRANT = 0")),
+        ("External ownership", code("DMA controller drives AB")),
+        ("Related derived values", code("IOA = IR_IOA")),
+        ("Value relationships", code("IOA = IR[8:3]")),
+        level=3,
+    ),
+)
+
+INVALID_DOCUMENTS = (
+    document(
+        case("3.2.1", "Prose", ("Assignment", "MS_NEXT = FETCH")),
+        case("3.2.2", "Python", ("Commit", "```python\nMS <- FETCH\n```")),
+        case("3.2.3"),
+        case("3.2.3", "Repeat"),
+    ),
+    document(case("3.2.1", "Other file")),
+)
+
+
+class EndToEndTests(unittest.TestCase):
+    def setUp(self) -> None:
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.root = Path(directory.name)
+        self.json_output = self.root / DEFAULT_JSON_OUTPUT
+        self.report_output = self.root / DEFAULT_REPORT_OUTPUT
+
+    def write_sources(self, texts) -> None:
+        for path, text in zip(SOURCE_PATHS, texts, strict=False):
+            source = self.root / path
+            source.parent.mkdir(parents=True, exist_ok=True)
+            source.write_text(text, encoding="utf-8")
+
+    def run_main(self, *extra: str) -> tuple[int, str]:
+        stdout = io.StringIO()
+        with redirect_stdout(stdout):
+            exit_code = main(["--repo-root", str(self.root), *extra])
+        return exit_code, stdout.getvalue()
+
+    def assert_outputs_match_golden(self, name: str) -> None:
+        """Compare the JSON and report against ``golden/<name>/``.
+
+        Run with ``UPDATE_GOLDEN=1`` to rewrite the expected files after an
+        intended output change, then review the diff.
+        """
+
+        outputs = {
+            "direct-control-definitions.json": self.json_output,
+            "extraction-report.txt": self.report_output,
+        }
+        for file_name, output in outputs.items():
+            with self.subTest(file=file_name):
+                actual = output.read_bytes().decode("utf-8")
+                golden_path = GOLDEN_DIRECTORY / name / file_name
+                if UPDATE_GOLDEN:
+                    golden_path.parent.mkdir(parents=True, exist_ok=True)
+                    golden_path.write_text(
+                        actual, encoding="utf-8", newline="\n"
+                    )
+                self.assertEqual(
+                    actual, golden_path.read_text(encoding="utf-8")
+                )
+
+    def test_valid_outputs_match_golden(self) -> None:
+        self.write_sources(VALID_DOCUMENTS)
+
+        exit_code, stdout = self.run_main()
+
+        self.assertEqual(exit_code, 0)
+        self.assertIn("Definitions: 7", stdout)
+        self.assert_outputs_match_golden("valid")
+
+    def test_invalid_outputs_match_golden(self) -> None:
+        self.write_sources(INVALID_DOCUMENTS)
+
+        exit_code, stdout = self.run_main()
+
+        self.assertEqual(exit_code, 1)
         self.assertIn(
-            "MDB_SRC = MB",
-            self.by_id["02:4.3"]["micro_operation_assignments"][0],
+            "ERROR DUPLICATE_DEFINITION_ID\n"
+            f"  Source: {SOURCE_PATHS[0].as_posix()}:",
+            stdout,
         )
+        self.assert_outputs_match_golden("invalid")
+
+    def test_unreadable_source_is_fatal(self) -> None:
+        self.write_sources(VALID_DOCUMENTS[:1])
+        self.json_output.parent.mkdir(parents=True)
+        self.json_output.write_text("stale\n", encoding="utf-8")
+
+        exit_code, stdout = self.run_main()
+
+        self.assertEqual(exit_code, 1)
+        self.assertFalse(self.json_output.exists())
+        report = self.report_output.read_text(encoding="utf-8")
+        self.assertIn("Definitions extracted: 0", report)
         self.assertIn(
-            "MDB_SRC = FP_SR",
-            self.by_id["02:4.4"]["micro_operation_assignments"][0],
+            "FATAL EXTRACTION_FAILURE <input>: Required source does not exist",
+            report,
+        )
+        self.assertIn("Definitions: 0", stdout)
+
+    def test_output_that_is_an_input_is_refused(self) -> None:
+        self.write_sources(VALID_DOCUMENTS)
+
+        exit_code, stdout = self.run_main(
+            "--report-output", str(SOURCE_PATHS[0])
         )
 
-    def test_db_strobes_are_micro_operation_owned(self) -> None:
-        for definition_id in ("02:6.2", "02:6.3"):
-            item = self.by_id[definition_id]
-            self.assertEqual(item["direct_assignments"], [])
-            self.assertTrue(item["micro_operation_assignments"])
-            self.assertTrue(item["drive_states"])
-
-    def test_dma_ownership_releases_cpu_drivers(self) -> None:
-        item = self.by_id["02:5.2"]
-        self.assertEqual(item["direct_assignments"], ["/DMA_GRANT = 0"])
-        self.assertIn("CPU AB driver  = HIGH_Z", item["drive_states"][0])
-        self.assertIn("CPU MFB driver = HIGH_Z", item["drive_states"][0])
-
-    def test_derived_iot_values_are_not_direct_assignments(self) -> None:
-        item = self.by_id["02:7.2"]
-        self.assertEqual(item["direct_assignments"], ["IOT_ACTIVE = 1"])
-        self.assertEqual(item["derived_values"], ["IOA = IR_IOA\nIOP = IR[2:0]"])
-
-    def test_initialization_cases_are_distinct(self) -> None:
+        self.assertEqual(exit_code, 1)
+        self.assertIn("ERROR: Output path is also an input", stdout)
         self.assertEqual(
-            self.by_id["02:8.2"]["direct_assignments"], ["/INITIALIZE = 0"]
-        )
-        self.assertEqual(
-            self.by_id["02:8.3"]["direct_assignments"], ["/INITIALIZE = 0"]
-        )
-        self.assertEqual(
-            self.by_id["02:8.4"]["direct_assignments"], ["/INITIALIZE = 1"]
+            (self.root / SOURCE_PATHS[0]).read_text(encoding="utf-8"),
+            VALID_DOCUMENTS[0],
         )
 
-    def test_structured_fields_do_not_contain_markdown_fences(self) -> None:
-        for item in self.result["definitions"]:
-            for field in extractor.CODE_FIELDS:
+    def test_output_that_is_a_directory_is_refused(self) -> None:
+        self.write_sources(VALID_DOCUMENTS)
+        self.report_output.parent.mkdir(parents=True)
+        self.report_output.write_text("earlier\n", encoding="utf-8")
+        (self.root / "dir").mkdir()
+
+        exit_code, stdout = self.run_main("--json-output", "dir")
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn("ERROR: Output path is a directory", stdout)
+        self.assertTrue(self.report_output.exists())
+
+    def test_code_fields_never_contain_fences(self) -> None:
+        self.write_sources(VALID_DOCUMENTS)
+        self.run_main()
+
+        data = json.loads(self.json_output.read_text(encoding="utf-8"))
+
+        for definition in data["definitions"]:
+            for field in CODE_FIELDS:
                 self.assertFalse(
-                    any("```" in value for value in item[field]),
-                    (item["id"], field),
+                    any("```" in value for value in definition[field]),
+                    (definition["id"], field),
                 )
 
 

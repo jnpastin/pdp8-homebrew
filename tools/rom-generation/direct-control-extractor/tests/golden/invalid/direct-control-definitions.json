@@ -1,0 +1,170 @@
+{
+  "format_version": 1,
+  "control_design_version": "v1",
+  "artifact": "direct-control-definitions",
+  "extraction_stage": "documentation-extraction",
+  "sources": [
+    "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+    "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md"
+  ],
+  "definitions": [
+    {
+      "id": "01:3.2.1",
+      "title": "3.2.1 Prose",
+      "group": "3.2 Cases",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 5
+      },
+      "applicable_context": [],
+      "direct_assignments": [],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.2.2",
+      "title": "3.2.2 Python",
+      "group": "3.2 Cases",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 11
+      },
+      "applicable_context": [],
+      "direct_assignments": [],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.2.3",
+      "title": "3.2.3 Example",
+      "group": "3.2 Cases",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 19
+      },
+      "applicable_context": [],
+      "direct_assignments": [
+        "MS_NEXT = EXECUTE"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.2.3",
+      "title": "3.2.3 Repeat",
+      "group": "3.2 Cases",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 27
+      },
+      "applicable_context": [],
+      "direct_assignments": [
+        "MS_NEXT = EXECUTE"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "02:3.2.1",
+      "title": "3.2.1 Other file",
+      "group": "3.2 Cases",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
+        "line": 5
+      },
+      "applicable_context": [],
+      "direct_assignments": [
+        "MS_NEXT = EXECUTE"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    }
+  ],
+  "diagnostics": [
+    {
+      "severity": "ERROR",
+      "code": "DUPLICATE_DEFINITION_ID",
+      "message": "Duplicate definition id: 01:3.2.3",
+      "source_path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+      "line": 27,
+      "definition_id": "01:3.2.3"
+    },
+    {
+      "severity": "ERROR",
+      "code": "EMPTY_DEFINITION",
+      "message": "Definition contains no extractable control or ownership result.",
+      "source_path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+      "line": 5,
+      "definition_id": "01:3.2.1"
+    },
+    {
+      "severity": "ERROR",
+      "code": "EMPTY_DEFINITION",
+      "message": "Definition contains no extractable control or ownership result.",
+      "source_path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+      "line": 11,
+      "definition_id": "01:3.2.2"
+    },
+    {
+      "severity": "ERROR",
+      "code": "UNSTRUCTURED_FIELD",
+      "message": "The 'direct_assignments' section must contain a text code block.",
+      "source_path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+      "line": 5,
+      "definition_id": "01:3.2.1"
+    },
+    {
+      "severity": "ERROR",
+      "code": "UNSTRUCTURED_FIELD",
+      "message": "The 'state_commits' section must contain a text code block.",
+      "source_path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+      "line": 11,
+      "definition_id": "01:3.2.2"
+    }
+  ]
+}
