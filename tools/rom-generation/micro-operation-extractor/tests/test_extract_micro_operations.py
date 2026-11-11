@@ -705,14 +705,14 @@ class EndToEndTests(unittest.TestCase):
         self.json_output = self.root / DEFAULT_JSON_OUTPUT
         self.report_output = self.root / DEFAULT_REPORT_OUTPUT
 
-    def run_main(self, text: str | None) -> tuple[int, str]:
+    def run_main(self, text: str | None, *extra: str) -> tuple[int, str]:
         if text is not None:
             source = self.root / SOURCE_PATH
-            source.parent.mkdir(parents=True)
+            source.parent.mkdir(parents=True, exist_ok=True)
             source.write_text(text, encoding="utf-8")
         stdout = io.StringIO()
         with redirect_stdout(stdout):
-            exit_code = main(["--repo-root", str(self.root)])
+            exit_code = main(["--repo-root", str(self.root), *extra])
         return exit_code, stdout.getvalue()
 
     def assert_outputs_match_golden(self, name: str) -> None:
@@ -760,6 +760,9 @@ class EndToEndTests(unittest.TestCase):
         self.assert_outputs_match_golden("invalid")
 
     def test_unreadable_source_is_fatal(self) -> None:
+        self.json_output.parent.mkdir(parents=True)
+        self.json_output.write_text("stale\n", encoding="utf-8")
+
         exit_code, stdout = self.run_main(None)
 
         self.assertEqual(exit_code, 1)
@@ -772,6 +775,32 @@ class EndToEndTests(unittest.TestCase):
             report,
         )
         self.assertIn("Micro-operations: 0", stdout)
+
+    def test_output_that_is_an_input_is_refused(self) -> None:
+        exit_code, stdout = self.run_main(
+            VALID_DOCUMENT, "--report-output", str(SOURCE_PATH)
+        )
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn("ERROR: Output path is also an input", stdout)
+        self.assertEqual(
+            (self.root / SOURCE_PATH).read_text(encoding="utf-8"),
+            VALID_DOCUMENT,
+        )
+        self.assertFalse(self.json_output.exists())
+
+    def test_output_that_is_a_directory_is_refused(self) -> None:
+        self.report_output.parent.mkdir(parents=True)
+        self.report_output.write_text("earlier\n", encoding="utf-8")
+        (self.root / "dir").mkdir()
+
+        exit_code, stdout = self.run_main(
+            VALID_DOCUMENT, "--json-output", "dir"
+        )
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn("ERROR: Output path is a directory", stdout)
+        self.assertTrue(self.report_output.exists())
 
     def test_outputs_are_deterministic(self) -> None:
         self.run_main(VALID_DOCUMENT)

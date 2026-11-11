@@ -76,7 +76,7 @@ build/
 
 The report is written on every run. The candidate is written only when the run reports no `ERROR` or `FATAL` diagnostics.
 
-A failed run does not delete a candidate left by an earlier successful run. Check the report's `Candidate written:` line, or the exit status, before reviewing a candidate file.
+Each run first deletes the candidate and report from any earlier run, so a candidate on disk always comes from the latest run, and that run succeeded (see the shared README, section 15.2). The tool refuses to run if an output path is one of its inputs or a directory.
 
 Generated outputs:
 

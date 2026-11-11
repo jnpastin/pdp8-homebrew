@@ -344,6 +344,12 @@ path.write_text(report_text, encoding="utf-8", newline="\n")
 
 Because keys are not sorted, a tool must build its output objects in a fixed order. It must never build an output object by iterating over a set.
 
+### 15.2 Removing Earlier Outputs
+
+Every run starts by deleting the output files it is about to produce, before reading any input. Any output present after a run was therefore written by that run. A failed run never leaves an older candidate or report behind to be mistaken for the current one.
+
+A tool deletes only its own output files, never directories. Before deleting anything, it refuses to run, exiting with status `1`, if an output path is also one of its inputs or is a directory. This stops a mistyped option from deleting a maintained or source file.
+
 ## 16. Change Process
 
 When documented control behavior or micro-operation logic changes:

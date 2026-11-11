@@ -601,7 +601,7 @@ class MainTests(unittest.TestCase):
                 json.dumps(maintained), encoding="utf-8"
             )
 
-    def run_main(self) -> tuple[int, str]:
+    def run_main(self, *extra: str) -> tuple[int, str]:
         stdout = io.StringIO()
         with redirect_stdout(stdout):
             exit_code = main(
@@ -611,9 +611,47 @@ class MainTests(unittest.TestCase):
                     "--maintained-schema", "maintained.json",
                     "--candidate-output", "out/candidate.json",
                     "--report-output", "out/report.txt",
+                    *extra,
                 ]
             )
         return exit_code, stdout.getvalue()
+
+    def test_failed_run_removes_previous_candidate(self) -> None:
+        self.write_inputs(make_extracted(), make_maintained(make_field()))
+        self.assertEqual(self.run_main()[0], 0)
+        self.assertTrue(self.candidate.exists())
+        extracted = make_extracted()
+        extracted["format_version"] = 2
+        self.write_inputs(extracted, None)
+
+        exit_code, _ = self.run_main()
+
+        self.assertEqual(exit_code, 1)
+        self.assertFalse(self.candidate.exists())
+        self.assertIn("Candidate written: no", self.report.read_text(encoding="utf-8"))
+
+    def test_output_that_is_an_input_is_refused(self) -> None:
+        self.write_inputs(make_extracted(), make_maintained(make_field()))
+        maintained = (self.root / "maintained.json").read_bytes()
+
+        exit_code, stdout = self.run_main("--candidate-output", "maintained.json")
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn("ERROR: Output path is also an input", stdout)
+        self.assertEqual((self.root / "maintained.json").read_bytes(), maintained)
+        self.assertFalse(self.report.exists())
+
+    def test_output_that_is_a_directory_is_refused(self) -> None:
+        self.write_inputs(make_extracted(), make_maintained(make_field()))
+        self.report.parent.mkdir()
+        self.report.write_text("earlier\n", encoding="utf-8")
+        (self.root / "dir").mkdir()
+
+        exit_code, stdout = self.run_main("--candidate-output", "dir")
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn("ERROR: Output path is a directory", stdout)
+        self.assertTrue(self.report.exists())
 
     def test_successful_run_writes_candidate_and_report(self) -> None:
         self.write_inputs(make_extracted(), make_maintained(make_field()))

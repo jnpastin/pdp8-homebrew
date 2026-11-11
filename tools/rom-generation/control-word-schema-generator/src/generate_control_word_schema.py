@@ -849,6 +849,26 @@ def write_text(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8", newline="\n")
 
 
+def remove_previous_outputs(
+    outputs: Sequence[Path],
+    inputs: Sequence[Path],
+) -> None:
+    """Delete earlier output files, so no output outlives the run.
+
+    Raises ``ValueError``, deleting nothing, if an output path is also an
+    input or is a directory.
+    """
+
+    for path in outputs:
+        if path in inputs:
+            raise ValueError(f"Output path is also an input: {path}")
+        if path.is_dir():
+            raise ValueError(f"Output path is a directory: {path}")
+
+    for path in outputs:
+        path.unlink(missing_ok=True)
+
+
 def write_json(data: dict[str, Any], path: Path) -> None:
     """Write deterministic JSON."""
 
@@ -970,6 +990,14 @@ def main(arguments: Sequence[str] | None = None) -> int:
     maintained_path = resolve_from_repo(root, options.maintained_schema)
     candidate_path = resolve_from_repo(root, options.candidate_output)
     report_path = resolve_from_repo(root, options.report_output)
+
+    try:
+        remove_previous_outputs(
+            (candidate_path, report_path), (input_path, maintained_path)
+        )
+    except (OSError, ValueError) as error:
+        print(f"ERROR: {error}")
+        return 1
 
     diagnostics: list[Diagnostic] = []
     field_count = 0

@@ -811,6 +811,26 @@ def write_text(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8", newline="\n")
 
 
+def remove_previous_outputs(
+    outputs: Sequence[Path],
+    inputs: Sequence[Path],
+) -> None:
+    """Delete earlier output files, so no output outlives the run.
+
+    Raises ``ValueError``, deleting nothing, if an output path is also an
+    input or is a directory.
+    """
+
+    for path in outputs:
+        if path in inputs:
+            raise ValueError(f"Output path is also an input: {path}")
+        if path.is_dir():
+            raise ValueError(f"Output path is a directory: {path}")
+
+    for path in outputs:
+        path.unlink(missing_ok=True)
+
+
 def main(arguments: Sequence[str] | None = None) -> int:
     """Run the extractor; return 1 if any error-level diagnostic exists.
 
@@ -822,9 +842,16 @@ def main(arguments: Sequence[str] | None = None) -> int:
     json_output = resolve_from_repo(root, options.json_output)
     report_output = resolve_from_repo(root, options.report_output)
     source_path = SOURCE_PATH.as_posix()
+    source = resolve_from_repo(root, SOURCE_PATH)
 
     try:
-        text = read_source(resolve_from_repo(root, SOURCE_PATH))
+        remove_previous_outputs((json_output, report_output), (source,))
+    except (OSError, ValueError) as error:
+        print(f"ERROR: {error}")
+        return 1
+
+    try:
+        text = read_source(source)
     except ExtractionFailure as error:
         diagnostics = [
             Diagnostic(FATAL, "EXTRACTION_FAILURE", str(error), source_path)

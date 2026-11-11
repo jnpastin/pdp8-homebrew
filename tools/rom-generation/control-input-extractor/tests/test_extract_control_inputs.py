@@ -1783,6 +1783,12 @@ class EndToEndTests(unittest.TestCase):
 
     def test_missing_source_file_fails_before_extraction(self) -> None:
         (self.repo_root / SOURCE_PATHS[4]).unlink()
+        outputs = [
+            self.repo_root / DEFAULT_JSON_OUTPUT,
+            self.repo_root / DEFAULT_REPORT_OUTPUT,
+        ]
+        for output in outputs:
+            write_text(output, "stale\n")
 
         stdout = io.StringIO()
         with redirect_stdout(stdout):
@@ -1790,7 +1796,37 @@ class EndToEndTests(unittest.TestCase):
 
         self.assertEqual(exit_code, 1)
         self.assertIn("ERROR: Required control-input source files", stdout.getvalue())
-        self.assertFalse((self.repo_root / DEFAULT_JSON_OUTPUT).exists())
+        self.assertEqual([output.exists() for output in outputs], [False, False])
+
+    def test_output_that_is_an_input_is_refused(self) -> None:
+        source = self.repo_root / SOURCE_PATHS[0]
+        original = source.read_bytes()
+
+        stdout = io.StringIO()
+        with redirect_stdout(stdout):
+            exit_code = main(
+                ["--repo-root", str(self.repo_root), "--json-output", str(source)]
+            )
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn("ERROR: Output path is also an input", stdout.getvalue())
+        self.assertEqual(source.read_bytes(), original)
+
+    def test_output_that_is_a_directory_is_refused(self) -> None:
+        report = self.repo_root / DEFAULT_REPORT_OUTPUT
+        write_text(report, "earlier\n")
+        directory = self.repo_root / "out"
+        directory.mkdir()
+
+        stdout = io.StringIO()
+        with redirect_stdout(stdout):
+            exit_code = main(
+                ["--repo-root", str(self.repo_root), "--json-output", str(directory)]
+            )
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn("ERROR: Output path is a directory", stdout.getvalue())
+        self.assertTrue(report.exists())
 
 
 def codes_of(result: dict) -> list[str]:

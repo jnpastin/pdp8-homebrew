@@ -216,7 +216,7 @@ Generated outputs:
 
 Each diagnostic has `severity`, `code`, `message`, and `source_path`, plus `line` and `micro_operation` when known. Diagnostics are sorted by severity, code, source path, line, micro-operation, and message.
 
-The JSON is written whenever the source document can be read, even when it has errors. Paths are repository-relative. The file follows the shared output format: UTF-8 with LF line endings and one trailing newline, two-space indentation, non-ASCII characters written directly, and keys in the fixed order shown, never sorted.
+Each run first deletes the JSON and report from any earlier run (see the shared README, section 15.2), and refuses to run if an output path is the source document or a directory. The JSON is written whenever the source document can be read, even when it has errors. Paths are repository-relative. The file follows the shared output format: UTF-8 with LF line endings and one trailing newline, two-space indentation, non-ASCII characters written directly, and keys in the fixed order shown, never sorted.
 
 ### 7.2 Extraction Report
 

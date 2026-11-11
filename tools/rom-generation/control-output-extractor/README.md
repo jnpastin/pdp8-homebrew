@@ -345,7 +345,7 @@ Relative output paths are resolved from the supplied repository root. Absolute o
 
 The tool prints a short summary, followed by any `ERROR` or `FATAL` diagnostics.
 
-The tool exits with status `1` when the repository root or a source file is missing or unreadable, or when any `ERROR` or `FATAL` diagnostic is reported, and with status `0` otherwise. When the repository root or a source file is missing or unreadable, no output files are written.
+The tool exits with status `1` when the repository root or a source file is missing or unreadable, or when any `ERROR` or `FATAL` diagnostic is reported, and with status `0` otherwise. Each run first deletes the JSON and report from any earlier run (see the shared README, section 15.2). It refuses to run if an output path is a source file or a directory. When the repository root or a source file is missing or unreadable, no output files are written, so none are left afterwards.
 
 ## 12. Running the Tool
 

@@ -2060,6 +2060,26 @@ def write_text(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8", newline="\n")
 
 
+def remove_previous_outputs(
+    outputs: Sequence[Path],
+    inputs: Sequence[Path],
+) -> None:
+    """Delete earlier output files, so no output outlives the run.
+
+    Raises ``ValueError``, deleting nothing, if an output path is also an
+    input or is a directory.
+    """
+
+    for path in outputs:
+        if path in inputs:
+            raise ValueError(f"Output path is also an input: {path}")
+        if path.is_dir():
+            raise ValueError(f"Output path is a directory: {path}")
+
+    for path in outputs:
+        path.unlink(missing_ok=True)
+
+
 def print_summary(result: ExtractionResult, paths: ToolPaths) -> None:
     """Print the run summary and any failure diagnostics."""
 
@@ -2089,6 +2109,9 @@ def main(arguments: Sequence[str] | None = None) -> int:
     paths = resolve_tool_paths(parse_arguments(arguments))
 
     try:
+        remove_previous_outputs(
+            (paths.json_output, paths.report_output), paths.source_paths
+        )
         validate_source_paths(paths.source_paths)
         index_document, *definition_documents = load_source_documents(
             paths.source_paths, paths.repo_root
