@@ -4718,12 +4718,12 @@
         "mnemonic": "IOT_TRANSFER_VAL",
         "display_name": "Pending External-IOT Transfer Value",
         "signal_class": "Data Value",
-        "purpose": "Specifies the value loaded into IOT_TRANSFER."
+        "purpose": "Specifies the value loaded into IOT_TRANSFER: NONE (no pending DB transfer), READ (a pending device-to-CPU read), or WRITE (a pending CPU-to-device write)."
       },
       "values": [
         {
           "encoding": "0",
-          "meaning": "no pending DB transfer",
+          "meaning": "NONE",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
             "line": 1338
@@ -4731,7 +4731,7 @@
         },
         {
           "encoding": "1",
-          "meaning": "pending device-to-CPU read",
+          "meaning": "READ",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
             "line": 1339
@@ -4739,7 +4739,7 @@
         },
         {
           "encoding": "2",
-          "meaning": "pending CPU-to-device write",
+          "meaning": "WRITE",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
             "line": 1340
@@ -4756,28 +4756,28 @@
       ],
       "constraints": [
         {
-          "text": "1 is selected when IO_READ_REQ is accepted.",
+          "text": "READ is selected when IO_READ_REQ is accepted.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
             "line": 1346
           }
         },
         {
-          "text": "2 is selected when IO_WRITE_REQ is accepted.",
+          "text": "WRITE is selected when IO_WRITE_REQ is accepted.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
             "line": 1347
           }
         },
         {
-          "text": "0 is selected when a completed transfer is cleared without replacement.",
+          "text": "NONE is selected when a completed transfer is cleared without replacement.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
             "line": 1348
           }
         },
         {
-          "text": "If completion and request acceptance occur at the same TP, the newly accepted direction is selected instead of 0.",
+          "text": "If completion and request acceptance occur at the same TP, the newly accepted direction is selected instead of NONE.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
             "line": 1349

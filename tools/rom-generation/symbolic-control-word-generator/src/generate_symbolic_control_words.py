@@ -110,8 +110,6 @@ def encoding(field,value):
  by_e={str(v["encoding"]):str(v["encoding"]) for v in vals}; by_m={str(v["meaning"]):str(v["encoding"]) for v in vals}
  if value in by_e:return by_e[value]
  if value in by_m:return by_m[value]
- aliases={"NONE":"0","READ":"1","WRITE":"2"}
- if value in aliases and aliases[value] in by_e:return aliases[value]
  if not vals:
   w=int(field["width"])
   if set(value)<={"0","1"} and len(value)<=w:return value.zfill(w)

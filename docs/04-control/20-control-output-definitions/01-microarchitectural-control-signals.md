@@ -1330,23 +1330,23 @@ IF_DF_COMBINED[5:3]=IF
 **Explicit Value Required:** Conditionally  
 **Value Required When:** IOT_TRANSFER_LOAD=1  
 
-**Purpose:** Specifies the value loaded into `IOT_TRANSFER`.
+**Purpose:** Specifies the value loaded into `IOT_TRANSFER`: `NONE` (no pending DB transfer), `READ` (a pending device-to-CPU read), or `WRITE` (a pending CPU-to-device write).
 
 **Encoding:**
 
 ```text
-0 = no pending DB transfer
-1 = pending device-to-CPU read
-2 = pending CPU-to-device write
+0 = NONE
+1 = READ
+2 = WRITE
 3 = invalid
 ```
 
 **Constraints:**
 
-- `1` is selected when `IO_READ_REQ` is accepted.
-- `2` is selected when `IO_WRITE_REQ` is accepted.
-- `0` is selected when a completed transfer is cleared without replacement.
-- If completion and request acceptance occur at the same TP, the newly accepted direction is selected instead of `0`.
+- `READ` is selected when `IO_READ_REQ` is accepted.
+- `WRITE` is selected when `IO_WRITE_REQ` is accepted.
+- `NONE` is selected when a completed transfer is cleared without replacement.
+- If completion and request acceptance occur at the same TP, the newly accepted direction is selected instead of `NONE`.
 - Encoding `3` must never be selected.
 - The value has no effect unless `IOT_TRANSFER_LOAD` is asserted.
 

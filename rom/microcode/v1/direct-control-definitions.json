@@ -953,7 +953,9 @@
         "line": 1179
       },
       "applicable_context": [
-        "RUN = 1\nMS = EXECUTE\nTS = 2\nIR_IS_MRI = 1\nIR_MRI_OPCODE = 000"
+        "RUN = 1\nMS = EXECUTE\nTS = 2\nIR_IS_MRI = 1\nIR_MRI_OPCODE = 000",
+        "RUN = 1\nMS = EXECUTE\nTS = 2\nIR_IS_MRI = 1\nIR_MRI_OPCODE = 001",
+        "RUN = 1\nMS = EXECUTE\nTS = 2\nIR_IS_MRI = 1\nIR_MRI_OPCODE = 010"
       ],
       "direct_assignments": [
         "AB_SRC = MA"
@@ -1122,21 +1124,17 @@
       "derived_values": []
     },
     {
-      "id": "01:4.5.2",
-      "title": "4.5.2 Direct MRI Access",
-      "group": "4.5 Memory Field Selection Rules",
+      "id": "01:4.5.2.1",
+      "title": "4.5.2.1 Direct MRI Read",
+      "group": "4.5.2 Direct MRI Access",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1352
+        "line": 1375
       },
       "applicable_context": [
-        "MS = EXECUTE\nTS = 2\nIR_IS_MRI = 1\nIR_INDIRECT = 0\nAND (\n    IR_MRI_OPCODE = 000\n    OR IR_MRI_OPCODE = 001\n    OR IR_MRI_OPCODE = 010\n)",
-        "MS = EXECUTE\nTS = 4\nIR_IS_MRI = 1\nIR_INDIRECT = 0\nIR_MRI_OPCODE = 010",
-        "MS = EXECUTE\nTS = 3\nIR_IS_MRI = 1\nIR_INDIRECT = 0\nAND (\n    IR_MRI_OPCODE = 011\n    OR IR_MRI_OPCODE = 100\n)"
+        "MS = EXECUTE\nTS = 2\nIR_IS_MRI = 1\nIR_INDIRECT = 0\nAND (\n    IR_MRI_OPCODE = 000\n    OR IR_MRI_OPCODE = 001\n    OR IR_MRI_OPCODE = 010\n)"
       ],
       "direct_assignments": [
-        "MFB_SRC = IF",
-        "MFB_SRC = IF",
         "MFB_SRC = IF"
       ],
       "control_supplied_values": [],
@@ -1144,21 +1142,60 @@
       "state_commits": [],
       "value_relationships": [],
       "widths": [],
-      "constraints": [
-        "Direct MRI access never uses `DF`.",
-        "The zero-page or current-page selection determines the 12-bit address within the field; it does not change the field source.",
-        "`MFB_SRC` remains `IF` for both zero-page and current-page direct addressing."
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.5.2.2",
+      "title": "4.5.2.2 Direct ISZ Writeback",
+      "group": "4.5.2 Direct MRI Access",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1397
+      },
+      "applicable_context": [
+        "MS = EXECUTE\nTS = 4\nIR_IS_MRI = 1\nIR_INDIRECT = 0\nIR_MRI_OPCODE = 010"
       ],
-      "sources": [
-        {
-          "label": "Addressing Model",
-          "target": "../../02-isa/05-addressing-model.md"
-        },
-        {
-          "label": "MRI Execution",
-          "target": "../../03-microarchitecture/05-mri-execution.md"
-        }
+      "direct_assignments": [
+        "MFB_SRC = IF"
       ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.5.2.3",
+      "title": "4.5.2.3 Direct DCA/JMS Write",
+      "group": "4.5.2 Direct MRI Access",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1415
+      },
+      "applicable_context": [
+        "MS = EXECUTE\nTS = 3\nIR_IS_MRI = 1\nIR_INDIRECT = 0\nAND (\n    IR_MRI_OPCODE = 011\n    OR IR_MRI_OPCODE = 100\n)"
+      ],
+      "direct_assignments": [
+        "MFB_SRC = IF"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
       "drive_states": [],
       "external_ownership": [],
       "memory_behavior": [],
