@@ -100,14 +100,10 @@ TS/TP behavior is defined in:
 
 ### 4.1 Next Major State (MS_NEXT)
 
-**Name**  
-MS_NEXT  
-
-**Type**  
-Encoded field  
-
-**Domain**  
-Sequencing  
+**Mnemonic:** MS_NEXT  
+**Name:** Next Major State  
+**Type:** Encoded field  
+**Domain:** Sequencing  
 
 **Width** 3 bits
 
@@ -145,9 +141,10 @@ Defined in:
 
 ### 4.2 Run State Next Value (RUN_NEXT)
 
-**Name** RUN_NEXT  
-**Type** Single-bit state-output field  
-**Domain** Sequencing  
+**Mnemonic:** RUN_NEXT  
+**Name:** Run State Next Value  
+**Type:** Single-bit state-output field  
+**Domain:** Sequencing  
 **Width** 1 bit  
 
 **Default Value:** 1  
@@ -184,9 +181,10 @@ Defined in:
 
 ### 4.3 Halt Request Next Value (HLT_REQ_NEXT)
 
-**Name** HLT_REQ_NEXT  
-**Type** Single-bit state-output field  
-**Domain** Sequencing  
+**Mnemonic:** HLT_REQ_NEXT  
+**Name:** Halt Request Next Value  
+**Type:** Single-bit state-output field  
+**Domain:** Sequencing  
 **Width** 1 bit  
 
 **Default Value:** 0  

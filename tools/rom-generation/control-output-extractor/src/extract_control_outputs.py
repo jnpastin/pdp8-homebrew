@@ -1355,11 +1355,16 @@ def validate_category_requirements(
     category = signal.entry.category
 
     if category == ENABLE_SIGNALS and signal.bit_width != 1:
+        found = (
+            "none is specified"
+            if signal.bit_width is None
+            else f"found {signal.bit_width}"
+        )
         diagnostics.append(
             signal_diagnostic(
                 signal,
                 "INVALID_ENABLE_WIDTH",
-                "An enable signal must have a bit width of 1.",
+                f"An enable signal must have a bit width of 1; {found}.",
             )
         )
 

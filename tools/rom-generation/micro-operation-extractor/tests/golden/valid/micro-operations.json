@@ -78,9 +78,9 @@
       ],
       "expression": [
         "if IO_READ_REQ = 1:",
-        "IOT_TRANSFER <- READ",
+        "    IOT_TRANSFER <- READ",
         "else:",
-        "IOT_TRANSFER <- NONE"
+        "    IOT_TRANSFER <- NONE"
       ],
       "sources": [
         "IO_READ_REQ"

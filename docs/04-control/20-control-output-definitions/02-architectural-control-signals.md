@@ -79,14 +79,10 @@ For every TS:
 
 ### 4.1 Memory Read (/RD)
 
-**Name**  
-/RD
-
-**Polarity**  
-Active-low externally (`/RD`), active-high internally
-
-**Domain**  
-Architectural
+**Mnemonic:** /RD  
+**Name:** Memory Read  
+**Polarity:** Active-low externally (`/RD`), active-high internally  
+**Domain:** Architectural  
 
 **Bit Width:** 1
 
@@ -129,14 +125,10 @@ When asserted:
 
 ### 4.2 Memory Write (/WR)
 
-**Name**  
-/WR
-
-**Polarity**  
-Active-low externally (`/WR`), active-high internally
-
-**Domain**  
-Architectural
+**Mnemonic:** /WR  
+**Name:** Memory Write  
+**Polarity:** Active-low externally (`/WR`), active-high internally  
+**Domain:** Architectural  
 
 **Bit Width:** 1
 
@@ -178,6 +170,8 @@ When asserted:
 
 ### 4.3 /DB_READ
 
+**Mnemonic:** /DB_READ  
+**Name:** DB Read  
 **Category:** Architectural Control Signal  
 
 **Bit Width:** 1
@@ -217,6 +211,8 @@ When asserted:
 
 ### 4.4 /DB_WRITE
 
+**Mnemonic:** /DB_WRITE  
+**Name:** DB Write  
 **Category:** Architectural Control Signal  
 
 **Bit Width:** 1
@@ -257,9 +253,10 @@ When asserted:
 
 ### 4.5 /DMA_GRANT
 
-**Name** /DMA_GRANT  
-**Polarity** Active-low  
-**Domain** Architectural  
+**Mnemonic:** /DMA_GRANT  
+**Name:** DMA Grant  
+**Polarity:** Active-low  
+**Domain:** Architectural  
 
 **Bit Width:** 1
 
@@ -308,14 +305,10 @@ Controller selection uses the grant identity defined in [DMA Arbitration](../../
 
 ### 4.6 I/O Address Bus (IOA[5:0])
 
-**Name**  
-IOA[5:0]
-
-**Polarity**  
-Active-high
-
-**Domain**  
-Architectural
+**Mnemonic:** IOA[5:0]  
+**Name:** I/O Address Bus  
+**Polarity:** Active-high  
+**Domain:** Architectural  
 
 **Bit Width:** 6
 
@@ -354,14 +347,10 @@ Defined in:
 
 ### 4.7 I/O Operation Field (`IOP[2:0]`)
 
-**Name:**  
-IOP[2:0]  
-
-**Polarity:**  
-Active-high  
-
-**Domain:**  
-Architectural  
+**Mnemonic:** IOP[2:0]  
+**Name:** I/O Operation Field  
+**Polarity:** Active-high  
+**Domain:** Architectural  
 
 **Bit Width:** 3
 
@@ -390,14 +379,10 @@ Architectural
 
 ### 4.8 External IOT Active (`IOT_ACTIVE`)
 
-**Name:**  
-IOT_ACTIVE  
-
-**Polarity:**  
-Active-high  
-
-**Domain:**  
-Architectural  
+**Mnemonic:** IOT_ACTIVE  
+**Name:** External IOT Active  
+**Polarity:** Active-high  
+**Domain:** Architectural  
 
 **Bit Width:** 1
 
@@ -429,14 +414,10 @@ Architectural
 
 ### 4.9 System Initialization (/INITIALIZE)
 
-**Name:** 
-/INITIALIZE  
-
-**Polarity:** 
-Active-low  
-
-**Domain:** 
-Architectural  
+**Mnemonic:** /INITIALIZE  
+**Name:** System Initialization  
+**Polarity:** Active-low  
+**Domain:** Architectural  
 
 **Bit Width:** 1
 

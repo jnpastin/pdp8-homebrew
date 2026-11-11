@@ -56,13 +56,24 @@ These labels are recognized, ignoring case and space before the colon:
 | `Preconditions` | list | no |
 | `Constraints` | list | no |
 
-A label's content is the text after it on the same line plus every following line up to the next recognized label. Several labels may share one line. Text before the first label is ignored.
+A label's content is the text after it on the same line plus every following line up to the next recognized label. Several labels may share one line. Text before the first label is ignored. Fenced code blocks are always content: a label inside one is not recognized.
 
-Any other bold label, such as `**Note:**`, is not recognized: it is ordinary text and becomes part of the preceding attribute's content.
+Any other bold label at the start of a line, such as `**Note:**`, is reported as a warning, because it is usually a misspelling. Its line is then read as ordinary text of the preceding section.
 
 ### 3.4 Single-Valued Attributes
 
-The content's non-empty lines are read in order. Fenced code-block markers and `---` rules are dropped, and lines are stripped of surrounding whitespace, so code-block indentation is not preserved.
+The content's non-empty lines are read in order. Fenced code-block markers and `---` rules are dropped. Lines are stripped of surrounding whitespace, except that lines inside a code block keep their indentation, so a conditional expression keeps its structure:
+
+```json
+"expression": [
+  "if IO_READ_REQ = 1:",
+  "    IOT_TRANSFER <- READ",
+  "else:",
+  "    IOT_TRANSFER <- NONE"
+]
+```
+
+Explanatory text after an expression, such as a `Where:` block, is part of the expression.
 
 | Attribute | Extracted as |
 |---|---|
@@ -80,7 +91,7 @@ If a single-valued label occurs more than once, the last occurrence is used and 
 
 `Preconditions` and `Constraints` each produce a list of entries. The text after the label on its own line, if any, is the first entry; each following `- ` list item is another. Blank lines and `---` rules are skipped.
 
-Any other text, and any fenced code block, is skipped and reported as a warning, because only list items are extracted. Reading continues with the next list item.
+Any other text, and any fenced code block, is skipped and reported as a warning, because only list items are extracted. An unrecognized label is skipped too, reported once as an unrecognized label. Reading continues with the next list item.
 
 A repeated list label adds to the same list.
 
@@ -145,6 +156,9 @@ The extractor does not:
 | Code | Condition | Location |
 |---|---|---|
 | `UNEXPECTED_LIST_TEXT` | text or a code block in a precondition or constraint list that is not a list item | that line |
+| `UNRECOGNIZED_LABEL` | a bold label, outside code blocks, that is not one of the labels in section 3.3 | that line |
+
+Warnings do not change a definition's `extraction_status` or the exit status.
 
 `FATAL`: `EXTRACTION_FAILURE` when the source document is missing, unreadable, or not valid UTF-8. No JSON is written.
 
@@ -254,7 +268,7 @@ The tests build small documents inline and use temporary directories. Unit tests
 Two end-to-end tests compare the complete JSON and report with expected files under `tests/golden/`:
 
 - `valid/`: a document covering multiline attributes, code blocks, list-form sources, `(none)`, preconditions, and constraints, which extracts without diagnostics
-- `invalid/`: a document with missing, empty, and duplicated attributes, a duplicated name, and stray list text, which fixes diagnostic order
+- `invalid/`: a document with missing, empty, and duplicated attributes, a duplicated name, stray list text, and an unrecognized label, which fixes diagnostic order
 
 `valid/micro-operations.json` is also the reference for later tools' contract tests.
 

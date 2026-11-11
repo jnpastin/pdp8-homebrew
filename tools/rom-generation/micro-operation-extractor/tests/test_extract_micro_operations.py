@@ -228,11 +228,14 @@ class DefinitionBlockTests(unittest.TestCase):
 
 
 class LabeledSectionTests(unittest.TestCase):
-    def sections(self, body: str):
+    def group(self, body: str):
         blocks, _ = extract_definition_blocks(
             document(f"### X\n\n{body}"), PATH
         )
         return group_labeled_sections(blocks[0])
+
+    def sections(self, body: str):
+        return self.group(body)[0]
 
     def test_lines_are_grouped_under_labels(self) -> None:
         sections = self.sections(
@@ -263,9 +266,22 @@ class LabeledSectionTests(unittest.TestCase):
         )
 
     def test_unrecognized_labels_are_text(self) -> None:
-        sections = self.sections("**Category:** A\n**Note:** B\n")
+        sections, unrecognized = self.group("**Category:** A\n**Note:** B\n")
 
         self.assertEqual(sections[0].lines[0], (12, "**Note:** B"))
+        self.assertEqual(unrecognized, [(12, "Note")])
+
+    def test_code_blocks_are_content(self) -> None:
+        sections, unrecognized = self.group(
+            "**Expression:**\n```\n**Target:** X\n**Note:** Y\n```\n"
+        )
+
+        self.assertEqual([s.label for s in sections], ["expression"])
+        self.assertEqual(
+            [text for _, text in sections[0].lines][:4],
+            ["```", "**Target:** X", "**Note:** Y", "```"],
+        )
+        self.assertEqual(unrecognized, [])
 
 
 class AttributeTests(unittest.TestCase):
@@ -301,14 +317,15 @@ class AttributeTests(unittest.TestCase):
 
     def test_expression_lines_are_kept_in_order(self) -> None:
         expression = (
-            "\n```text\nif X:\n    AC ← MQ\nelse:\n    MQ ← AC\n```\nWhere:"
+            "\n```text\nif X:\n    AC ← `MQ`  \n\nelse:\n    MQ ← AC\n```"
+            "\n  Where:  "
         )
 
         operation = only(definition(Expression=expression))
 
         self.assertEqual(
             operation["expression"],
-            ["if X:", "AC ← MQ", "else:", "MQ ← AC", "Where:"],
+            ["if X:", "    AC ← MQ", "else:", "    MQ ← AC", "Where:"],
         )
 
     def test_sources_lists_and_commas_are_split(self) -> None:
@@ -478,6 +495,19 @@ class ValidationTests(unittest.TestCase):
         self.assertEqual(
             [item.status for item in result.micro_operations],
             ["definition-validated", "definition-error"],
+        )
+
+    def test_unrecognized_label_is_a_warning(self) -> None:
+        result = extract(definition(extra="**Constraint:** misspelled\n"))
+
+        self.assertEqual(
+            [(d.code, d.severity, d.line) for d in result.diagnostics],
+            [("UNRECOGNIZED_LABEL", "WARNING", 16)],
+        )
+        self.assertFalse(result.failed)
+        self.assertEqual(
+            result.micro_operations[0].sources,
+            ["PC", "**Constraint:** misspelled"],
         )
 
     def test_errors_in_one_definition_do_not_affect_others(self) -> None:
@@ -660,7 +690,10 @@ VALID_DOCUMENT = document(
 
 INVALID_DOCUMENT = document(
     definition("A", Category=None, Target=""),
-    definition("A", extra="**Expression:** again\n**Constraints:**\nprose\n"),
+    definition(
+        "A",
+        extra="**Expression:** again\n**Constraints:**\nprose\n**Notes:** x\n",
+    ),
 )
 
 

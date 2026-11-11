@@ -894,14 +894,19 @@ class EncodingWidthTests(unittest.TestCase):
 
 class CategoryRequirementTests(unittest.TestCase):
     def test_enable_signal_needs_one_bit_and_encodings(self) -> None:
-        for bit_width in (2, None):
+        for bit_width, found in ((2, "found 2"), (None, "none is specified")):
             with self.subTest(bit_width=bit_width):
                 signal = make_signal(
                     "AC_LOAD", "Enable Signals", bit_width=bit_width
                 )
+                diagnostics = validate_category_requirements(signal)
                 self.assertEqual(
-                    codes(validate_category_requirements(signal)),
+                    codes(diagnostics),
                     ["INVALID_ENABLE_WIDTH", "MISSING_ENUMERATED_ENCODINGS"],
+                )
+                self.assertEqual(
+                    diagnostics[0].message,
+                    f"An enable signal must have a bit width of 1; {found}.",
                 )
 
     def test_encodings_are_required_by_category(self) -> None:

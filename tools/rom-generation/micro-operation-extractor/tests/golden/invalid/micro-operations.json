@@ -58,6 +58,14 @@
       "micro_operation": "A"
     },
     {
+      "severity": "WARNING",
+      "code": "UNRECOGNIZED_LABEL",
+      "message": "Label 'Notes' is not recognized; its line is read as ordinary text of the preceding section.",
+      "source_path": "docs/03-microarchitecture/02-micro-operations.md",
+      "line": 28,
+      "micro_operation": "A"
+    },
+    {
       "severity": "ERROR",
       "code": "DUPLICATE_ATTRIBUTE",
       "message": "Attribute 'expression' occurs more than once.",

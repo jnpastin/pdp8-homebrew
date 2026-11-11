@@ -339,26 +339,45 @@ def parse_label(text: str) -> tuple[str, str] | None:
     return label, normalize_markdown_text(match.group(2).strip())
 
 
-def group_labeled_sections(block: DefinitionBlock) -> list[LabeledSection]:
+def group_labeled_sections(
+    block: DefinitionBlock,
+) -> tuple[list[LabeledSection], list[tuple[int, str]]]:
     """Group a block's lines under the recognized label that precedes them.
 
     A line holding several labels is split before each one. Lines before
-    the first label are ignored; unrecognized bold labels are ordinary text.
+    the first label are ignored. Code blocks, including their fence lines,
+    are always content.
+
+    Returns the sections, and ``(line, label)`` for each unrecognized bold
+    label outside code blocks; such a label is kept as ordinary text.
     """
 
     sections: list[LabeledSection] = []
+    unrecognized: list[tuple[int, str]] = []
     current: tuple[str, int, str] | None = None
     content: list[tuple[int, str]] = []
+    in_fence = False
 
     def close() -> None:
         if current is not None:
             sections.append(LabeledSection(*current, tuple(content)))
 
     for line, text in block.lines:
+        if is_code_fence(text):
+            in_fence = not in_fence
+            content.append((line, text))
+            continue
+        if in_fence:
+            content.append((line, text))
+            continue
+
         parts = [part for part in LABEL_START_PATTERN.split(text) if part]
         for part in parts or [text]:
             label = parse_label(part)
             if label is None:
+                other = LABEL_PATTERN.match(part)
+                if other is not None:
+                    unrecognized.append((line, other.group(1).strip()))
                 content.append((line, part))
                 continue
             close()
@@ -366,20 +385,28 @@ def group_labeled_sections(block: DefinitionBlock) -> list[LabeledSection]:
             content = []
 
     close()
-    return sections
+    return sections, unrecognized
 
 
 def scalar_values(section: LabeledSection) -> list[str]:
     """Return the non-empty text lines of a single-valued attribute.
 
-    Code fences and horizontal rules are dropped. A ``- `` list marker is
-    removed from Sources lines.
+    Lines are stripped, except that indentation inside code blocks is kept.
+    Code-fence lines and horizontal rules are dropped. A ``- `` list marker
+    is removed from Sources lines.
     """
 
     values = [section.inline] if section.inline else []
+    in_fence = False
 
     for _, text in section.lines:
         if is_code_fence(text):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            value = normalize_markdown_text(text.rstrip())
+            if value.strip():
+                values.append(value)
             continue
         value = normalize_markdown_text(text.strip())
         if not value or value == HORIZONTAL_RULE:
@@ -400,7 +427,8 @@ def list_entries(
 
     The inline text and each ``- `` list item are entries. Blank lines and
     horizontal rules are skipped. Any other line, and any code block, is
-    reported once and skipped.
+    reported once and skipped; an unrecognized label line is skipped
+    without a report here, because it is reported as UNRECOGNIZED_LABEL.
     """
 
     entries = []
@@ -434,7 +462,8 @@ def list_entries(
             continue
         item = LIST_ITEM_PATTERN.match(text)
         if item is None:
-            skip(line, repr(stripped))
+            if LABEL_PATTERN.match(text) is None:
+                skip(line, repr(stripped))
             continue
         entries.append(TextEntry(normalize_markdown_text(item.group(1)), line))
 
@@ -480,7 +509,18 @@ def extract_micro_operation(
             )
         )
 
-    for section in group_labeled_sections(block):
+    sections, unrecognized = group_labeled_sections(block)
+
+    for line, label in unrecognized:
+        report(
+            "UNRECOGNIZED_LABEL",
+            f"Label {label!r} is not recognized; its line is read as "
+            "ordinary text of the preceding section.",
+            line,
+            WARNING,
+        )
+
+    for section in sections:
         if section.label in lists:
             entries, list_diagnostics = list_entries(section, block)
             lists[section.label] += entries

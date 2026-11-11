@@ -209,7 +209,7 @@ The implementation validates:
 - the control-word attributes in section 7 are present and valid
 - encoding lines are well formed and their values are not duplicated
 - encoding values are octal and fit the bit width
-- enable signals are one bit wide
+- enable signals are one bit wide; for them a missing bit width is an error, not only the `MISSING_BIT_WIDTH` warning
 - enable, select, and control-flow signals document encodings
 - source traceability is retained
 
