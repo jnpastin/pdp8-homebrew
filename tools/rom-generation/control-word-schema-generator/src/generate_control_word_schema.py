@@ -1,63 +1,93 @@
-"""Generate a candidate control-word schema from extracted control outputs."""
+"""Generate a candidate control-word schema for review.
+
+The generator combines the control-output extractor's output with the
+maintained schema's reviewed ``control_word_role`` decisions and writes a
+candidate schema plus a report.  It never modifies the maintained schema.
+
+Pipeline:
+
+1. Read the extractor output and, if present, the maintained schema.
+2. Validate both structurally.  Any error stops candidate construction.
+3. Build one candidate field per extracted signal, carrying forward the
+   reviewed ``control_word_role`` for that signal.
+4. Report unresolved roles and stale maintained fields.
+5. Write the candidate (only when no errors remain) and the report.
+
+See the tool README for the schema contract.
+"""
 
 from __future__ import annotations
 
 import argparse
 import json
-import sys
+import re
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any
 
+# ---------------------------------------------------------------------------
+# Paths
+# ---------------------------------------------------------------------------
 
 DEFAULT_INPUT = Path(
-    "build/simulation_outputs/rom-generation/"
-    "control-output-extractor/control-outputs.json"
+    "build/simulation_outputs/rom-generation/control-output-extractor/"
+    "control-outputs.json"
+)
+DEFAULT_MAINTAINED = Path("rom/microcode/v1/control-word-schema.json")
+
+OUTPUT_DIRECTORY = Path(
+    "build/simulation_outputs/rom-generation/control-word-schema-generator"
+)
+DEFAULT_CANDIDATE = OUTPUT_DIRECTORY / "control-word-schema.candidate.json"
+DEFAULT_REPORT = OUTPUT_DIRECTORY / "generation-report.txt"
+
+# ---------------------------------------------------------------------------
+# Expected extractor output
+# ---------------------------------------------------------------------------
+
+EXTRACTOR_TYPE = "control-output-extractor"
+EXTRACTOR_FORMAT_VERSION = 1
+EXTRACTOR_STAGE = "category-validation"
+VALIDATED_STATUS = "category-validated"
+EXPLICIT_VALUE_REQUIRED_VALUES = frozenset({"Yes", "No", "Conditionally"})
+NOT_APPLICABLE = "N/A"
+OCTAL_PATTERN = re.compile(r"[0-7]+")
+
+# Extracted attributes promoted to top-level field properties.
+CONTROL_METADATA_KEYS = (
+    "default_value",
+    "explicit_value_required",
+    "value_required_when",
 )
 
-DEFAULT_MAINTAINED_SCHEMA = Path(
-    "rom/microcode/v1/control-word-schema.json"
-)
+# ---------------------------------------------------------------------------
+# Schema
+# ---------------------------------------------------------------------------
 
-DEFAULT_CANDIDATE_OUTPUT = Path(
-    "build/simulation_outputs/rom-generation/"
-    "control-word-schema-generator/control-word-schema.candidate.json"
-)
-
-DEFAULT_REPORT_OUTPUT = Path(
-    "build/simulation_outputs/rom-generation/"
-    "control-word-schema-generator/generation-report.txt"
-)
-
-SUPPORTED_INPUT_FORMAT_VERSION = 1
-OUTPUT_SCHEMA_VERSION = 1
+SCHEMA_TYPE = "control-word-schema"
+SCHEMA_VERSION = 1
 CONTROL_DESIGN_VERSION = "v1"
+SCHEMA_DESCRIPTION = "Logical symbolic control-word schema for version 1 CPU control."
+CONTROL_WORD_ROLES = frozenset({"encoded", "derived", "external_input"})
 
-EXPECTED_EXTRACTION_STAGE = "category-validation"
-EXPECTED_EXTRACTION_STATUS = "category-validated"
+# ---------------------------------------------------------------------------
+# Diagnostics
+# ---------------------------------------------------------------------------
 
-DIAGNOSTIC_SEVERITY_ORDER = {
-    "INFO": 0,
-    "WARNING": 1,
-    "ERROR": 2,
-    "FATAL": 3,
-}
-FAILURE_SEVERITIES = {"ERROR", "FATAL"}
+INFO = "INFO"
+WARNING = "WARNING"
+ERROR = "ERROR"
+FATAL = "FATAL"
 
+SEVERITIES = (INFO, WARNING, ERROR, FATAL)
+SEVERITY_ORDER = {severity: rank for rank, severity in enumerate(SEVERITIES)}
+FAILURE_SEVERITIES = frozenset({ERROR, FATAL})
 
-@dataclass(frozen=True)
-class ToolPaths:
-    """Resolved paths used for one generator run."""
-
-    repo_root: Path
-    input_path: Path
-    maintained_schema_path: Path
-    candidate_output_path: Path
-    report_output_path: Path
 
 @dataclass(frozen=True)
 class Diagnostic:
-    """One generator diagnostic."""
+    """One validation or generation finding."""
 
     severity: str
     code: str
@@ -68,163 +98,10 @@ class Diagnostic:
 
 
 class GenerationFailure(Exception):
-    """Raised when reliable candidate generation cannot continue."""
+    """An input could not be read; generation cannot proceed."""
 
 
-def parse_arguments(arguments: Sequence[str] | None = None) -> argparse.Namespace:
-    """Parse command-line arguments."""
-
-    parser = argparse.ArgumentParser(
-        description=(
-            "Generate a candidate control-word schema from extracted "
-            "control-output definitions."
-        )
-    )
-
-    parser.add_argument(
-        "--repo-root",
-        required=True,
-        type=Path,
-        help="Repository root used to resolve relative paths.",
-    )
-
-    parser.add_argument(
-        "--input",
-        type=Path,
-        default=DEFAULT_INPUT,
-        help="Control-output extractor JSON input.",
-    )
-    
-    parser.add_argument(
-        "--maintained-schema",
-        type=Path,
-        default=DEFAULT_MAINTAINED_SCHEMA,
-        help=(
-            "Reviewed maintained schema from which existing "
-            "control-word roles are preserved. A missing file is allowed."
-        ),
-    )
-
-    parser.add_argument(
-        "--candidate-output",
-        type=Path,
-        default=DEFAULT_CANDIDATE_OUTPUT,
-        help="Candidate control-word schema output.",
-    )
-
-    parser.add_argument(
-        "--report-output",
-        type=Path,
-        default=DEFAULT_REPORT_OUTPUT,
-        help="Human-readable generation report output.",
-    )
-
-    return parser.parse_args(arguments)
-
-
-def resolve_from_repo(repo_root: Path, path: Path) -> Path:
-    """Resolve a path relative to the repository root when necessary."""
-
-    if path.is_absolute():
-        return path.resolve()
-
-    return (repo_root / path).resolve()
-
-
-def build_tool_paths(arguments: argparse.Namespace) -> ToolPaths:
-    """Build the fully resolved path set for one run."""
-
-    repo_root = arguments.repo_root.resolve()
-
-    return ToolPaths(
-        repo_root=repo_root,
-        input_path=resolve_from_repo(repo_root, arguments.input),
-        maintained_schema_path=resolve_from_repo(
-            repo_root,
-            arguments.maintained_schema,
-        ),
-        candidate_output_path=resolve_from_repo(
-            repo_root,
-            arguments.candidate_output,
-        ),
-        report_output_path=resolve_from_repo(
-            repo_root,
-            arguments.report_output,
-        ),
-    )
-
-
-def read_json_input(input_path: Path) -> dict[str, Any]:
-    """Read and decode the extractor JSON input."""
-
-    try:
-        input_text = input_path.read_text(encoding="utf-8")
-    except FileNotFoundError as error:
-        raise GenerationFailure(
-            f"Input file does not exist: {input_path}"
-        ) from error
-    except UnicodeDecodeError as error:
-        raise GenerationFailure(
-            f"Input file is not valid UTF-8: {input_path}"
-        ) from error
-    except OSError as error:
-        raise GenerationFailure(
-            f"Unable to read input file {input_path}: {error}"
-        ) from error
-
-    try:
-        result = json.loads(input_text)
-    except json.JSONDecodeError as error:
-        raise GenerationFailure(
-            f"Input file is not valid JSON: {input_path}: "
-            f"line {error.lineno}, column {error.colno}: {error.msg}"
-        ) from error
-
-    if not isinstance(result, dict):
-        raise GenerationFailure(
-            "Extractor input must contain a top-level JSON object."
-        )
-
-    return result
-
-def read_maintained_schema(
-    schema_path: Path,
-) -> dict[str, Any] | None:
-    """Read the maintained schema when it exists."""
-
-    if not schema_path.exists():
-        return None
-
-    try:
-        schema_text = schema_path.read_text(encoding="utf-8")
-    except UnicodeDecodeError as error:
-        raise GenerationFailure(
-            f"Maintained schema is not valid UTF-8: {schema_path}"
-        ) from error
-    except OSError as error:
-        raise GenerationFailure(
-            f"Unable to read maintained schema {schema_path}: {error}"
-        ) from error
-
-    if not schema_text.strip(): 
-        return None
-
-    try:
-        schema = json.loads(schema_text)
-    except json.JSONDecodeError as error:
-        raise GenerationFailure(
-            f"Maintained schema is not valid JSON: {schema_path}: "
-            f"line {error.lineno}, column {error.colno}: {error.msg}"
-        ) from error
-
-    if not isinstance(schema, dict):
-        raise GenerationFailure(
-            "Maintained schema must contain a top-level JSON object."
-        )
-
-    return schema
-    
-def diagnostic(
+def make_diagnostic(
     severity: str,
     code: str,
     message: str,
@@ -232,70 +109,213 @@ def diagnostic(
     field_name: str | None = None,
     source: Any = None,
 ) -> Diagnostic:
-    """Create a diagnostic with optional source information."""
+    """Build a diagnostic, taking its location from an extractor source.
 
-    source_path: str | None = None
-    source_line: int | None = None
+    ``source`` is an extractor ``{"path": ..., "line": ...}`` object.  Parts
+    of it with the wrong type, and any non-object value, are left out.
+    """
 
-    if isinstance(source, dict):
-        path_value = source.get("path")
-        line_value = source.get("line")
-
-        if isinstance(path_value, str):
-            source_path = path_value
-
-        if isinstance(line_value, int):
-            source_line = line_value
+    if not isinstance(source, dict):
+        source = {}
+    path = source.get("path")
+    line = source.get("line")
 
     return Diagnostic(
         severity=severity,
         code=code,
         message=message,
         field_name=field_name,
-        source_path=source_path,
-        source_line=source_line,
+        source_path=path if isinstance(path, str) else None,
+        source_line=line if isinstance(line, int) else None,
     )
 
 
-def validate_source(
-    source: Any,
+def make_error(
+    code: str,
+    message: str,
     *,
-    field_name: str,
-    context: str,
-) -> list[Diagnostic]:
-    """Validate one extractor source-reference object."""
+    field_name: str | None = None,
+    source: Any = None,
+) -> Diagnostic:
+    """Build an ERROR diagnostic."""
 
-    diagnostics = []
+    return make_diagnostic(ERROR, code, message, field_name=field_name, source=source)
 
-    if not isinstance(source, dict):
+
+def has_failures(diagnostics: Sequence[Diagnostic]) -> bool:
+    """Return whether any diagnostic prevents a candidate from being written."""
+
+    return any(item.severity in FAILURE_SEVERITIES for item in diagnostics)
+
+
+def diagnostic_sort_key(diagnostic: Diagnostic) -> tuple:
+    """Order diagnostics deterministically, least severe first."""
+
+    return (
+        SEVERITY_ORDER.get(diagnostic.severity, 99),
+        diagnostic.code,
+        diagnostic.source_path or "",
+        diagnostic.source_line if diagnostic.source_line is not None else -1,
+        diagnostic.field_name or "",
+        diagnostic.message,
+    )
+
+
+def is_text(value: Any) -> bool:
+    """Return whether ``value`` is a non-empty string."""
+
+    return isinstance(value, str) and bool(value)
+
+
+def is_positive_integer(value: Any) -> bool:
+    """Return whether ``value`` is an integer (not a bool) of at least 1."""
+
+    return isinstance(value, int) and not isinstance(value, bool) and value >= 1
+
+
+# ---------------------------------------------------------------------------
+# Reading inputs
+# ---------------------------------------------------------------------------
+
+
+def resolve_from_repo(root: Path, path: Path) -> Path:
+    """Resolve a relative path from the repository root."""
+
+    return path.resolve() if path.is_absolute() else (root / path).resolve()
+
+
+def read_json(
+    path: Path,
+    label: str,
+    optional: bool = False,
+) -> dict[str, Any] | None:
+    """Read a JSON object from ``path``; ``label`` names it in messages.
+
+    An optional file that is missing or blank yields None.  Every other
+    problem raises ``GenerationFailure``.
+    """
+
+    if optional and not path.exists():
+        return None
+
+    try:
+        text = path.read_text(encoding="utf-8")
+    except FileNotFoundError as error:
+        raise GenerationFailure(f"{label} does not exist: {path}") from error
+    except UnicodeDecodeError as error:
+        raise GenerationFailure(f"{label} is not valid UTF-8: {path}") from error
+    except OSError as error:
+        raise GenerationFailure(
+            f"Unable to read {label.lower()} {path}: {error}"
+        ) from error
+
+    if optional and not text.strip():
+        return None
+
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError as error:
+        raise GenerationFailure(
+            f"{label} is not valid JSON: {path}: "
+            f"line {error.lineno}, column {error.colno}: {error.msg}"
+        ) from error
+
+    if not isinstance(data, dict):
+        raise GenerationFailure(f"{label} must contain a top-level JSON object.")
+
+    return data
+
+
+# ---------------------------------------------------------------------------
+# Extractor validation
+# ---------------------------------------------------------------------------
+
+
+def validate_extracted(data: dict[str, Any]) -> list[Diagnostic]:
+    """Validate the structure of the extractor output."""
+
+    diagnostics: list[Diagnostic] = []
+
+    format_version = data.get("format_version")
+    if format_version != EXTRACTOR_FORMAT_VERSION:
         diagnostics.append(
-            diagnostic(
-                "ERROR",
-                "INVALID_SOURCE",
-                f"{context} source must be an object.",
-                field_name=field_name,
+            make_error(
+                "UNSUPPORTED_FORMAT_VERSION",
+                f"Expected extractor format_version {EXTRACTOR_FORMAT_VERSION}, "
+                f"found {format_version!r}.",
+            )
+        )
+
+    extraction_stage = data.get("extraction_stage")
+    if extraction_stage != EXTRACTOR_STAGE:
+        diagnostics.append(
+            make_error(
+                "UNSUPPORTED_EXTRACTION_STAGE",
+                f"Expected extraction_stage {EXTRACTOR_STAGE!r}, "
+                f"found {extraction_stage!r}.",
+            )
+        )
+
+    extractor_diagnostics = data.get("diagnostics")
+    if not isinstance(extractor_diagnostics, list):
+        diagnostics.append(
+            make_error(
+                "INVALID_INPUT_DIAGNOSTICS", "Extractor diagnostics must be an array."
+            )
+        )
+    elif extractor_diagnostics:
+        diagnostics.append(
+            make_error(
+                "EXTRACTOR_DIAGNOSTICS_PRESENT",
+                "Extractor input contains unresolved diagnostics.",
+            )
+        )
+
+    signals = data.get("signals")
+    if not isinstance(signals, list):
+        diagnostics.append(
+            make_error(
+                "INVALID_SIGNALS", "Extractor input must contain a signals array."
             )
         )
         return diagnostics
 
-    path = source.get("path")
-    line = source.get("line")
+    seen_names: set[str] = set()
+    for signal in signals:
+        diagnostics += validate_signal(signal, seen_names)
 
-    if not isinstance(path, str) or not path:
+    return diagnostics
+
+
+def validate_source(source: Any, field_name: str, context: str) -> list[Diagnostic]:
+    """Validate one extractor ``{"path": ..., "line": ...}`` reference.
+
+    ``context`` names the source's owner in messages, e.g. "Encoding".
+    """
+
+    if not isinstance(source, dict):
+        return [
+            make_error(
+                "INVALID_SOURCE",
+                f"{context} source must be an object.",
+                field_name=field_name,
+            )
+        ]
+
+    diagnostics: list[Diagnostic] = []
+
+    if not is_text(source.get("path")):
         diagnostics.append(
-            diagnostic(
-                "ERROR",
+            make_error(
                 "MISSING_SOURCE_PATH",
                 f"{context} source does not contain a valid path.",
                 field_name=field_name,
                 source=source,
             )
         )
-
-    if not isinstance(line, int) or line < 1:
+    if not is_positive_integer(source.get("line")):
         diagnostics.append(
-            diagnostic(
-                "ERROR",
+            make_error(
                 "INVALID_SOURCE_LINE",
                 f"{context} source does not contain a positive line number.",
                 field_name=field_name,
@@ -306,556 +326,330 @@ def validate_source(
     return diagnostics
 
 
-def validate_top_level(input_data: dict[str, Any]) -> list:
-    """Validate the extractor input's top-level structure."""
-
-    diagnostics: list[Diagnostic] = []
-
-    format_version = input_data.get("format_version")
-    if format_version != SUPPORTED_INPUT_FORMAT_VERSION:
-        diagnostics.append(
-            diagnostic(
-                "ERROR",
-                "UNSUPPORTED_FORMAT_VERSION",
-                "Expected extractor format_version "
-                f"{SUPPORTED_INPUT_FORMAT_VERSION}, found "
-                f"{format_version!r}.",
-            )
-        )
-
-    extraction_stage = input_data.get("extraction_stage")
-    if extraction_stage != EXPECTED_EXTRACTION_STAGE:
-        diagnostics.append(
-            diagnostic(
-                "ERROR",
-                "UNSUPPORTED_EXTRACTION_STAGE",
-                f"Expected extraction_stage "
-                f"{EXPECTED_EXTRACTION_STAGE!r}, found "
-                f"{extraction_stage!r}.",
-            )
-        )
-
-    input_diagnostics = input_data.get("diagnostics")
-    if not isinstance(input_diagnostics, list):
-        diagnostics.append(
-            diagnostic(
-                "ERROR",
-                "INVALID_INPUT_DIAGNOSTICS",
-                "Extractor diagnostics must be an array.",
-            )
-        )
-    elif input_diagnostics:
-        diagnostics.append(
-            diagnostic(
-                "ERROR",
-                "EXTRACTOR_DIAGNOSTICS_PRESENT",
-                "Extractor input contains unresolved diagnostics.",
-            )
-        )
-
-    signals = input_data.get("signals")
-    if not isinstance(signals, list):
-        diagnostics.append(
-            diagnostic(
-                "ERROR",
-                "INVALID_SIGNALS",
-                "Extractor input must contain a signals array.",
-            )
-        )
-
-    return diagnostics
-
-
-def validate_encoding(
-    encoding: Any,
-    *,
-    field_name: str,
-    width: int | None,
-) -> list:
-    """Validate one extracted encoding entry."""
-
-    diagnostics: list[Diagnostic] = []
-
-    if not isinstance(encoding, dict):
-        diagnostics.append(
-            diagnostic(
-                "ERROR",
-                "INVALID_ENCODING",
-                "Encoding entry must be an object.",
-                field_name=field_name,
-            )
-        )
-        return diagnostics
-
-    value = encoding.get("value")
-    meaning = encoding.get("meaning")
-    source = encoding.get("source")
-
-    if not isinstance(value, str) or not value:
-        diagnostics.append(
-            diagnostic(
-                "ERROR",
-                "INVALID_ENCODING_VALUE",
-                "Encoding value must be a non-empty string.",
-                field_name=field_name,
-                source=source,
-            )
-        )
-    elif width is not None:
-        try:
-            numeric_value = int(value, 8)
-        except ValueError:
-            diagnostics.append(
-                diagnostic(
-                    "ERROR",
-                    "NON_OCTAL_ENCODING",
-                    f"Encoding {value!r} is not valid octal.",
-                    field_name=field_name,
-                    source=source,
-                )
-            )
-        else:
-            if numeric_value >= (1 << width):
-                diagnostics.append(
-                    diagnostic(
-                        "ERROR",
-                        "ENCODING_EXCEEDS_WIDTH",
-                        f"Encoding {value!r} does not fit in "
-                        f"{width} bits.",
-                        field_name=field_name,
-                        source=source,
-                    )
-                )
-
-    if not isinstance(meaning, str) or not meaning:
-        diagnostics.append(
-            diagnostic(
-                "ERROR",
-                "INVALID_ENCODING_MEANING",
-                "Encoding meaning must be a non-empty string.",
-                field_name=field_name,
-                source=source,
-            )
-        )
-
-    diagnostics.extend(
-        validate_source(
-            source,
-            field_name=field_name,
-            context="Encoding",
-        )
-    )
-
-    return diagnostics
-
-
-def validate_signal(
-    signal: Any,
-    seen_names: set[str],
-) -> list:
-    """Validate one extracted control-output signal."""
-
-    diagnostics: list[Diagnostic] = []
+def validate_signal(signal: Any, seen_names: set[str]) -> list[Diagnostic]:
+    """Validate one extracted signal; record its name in ``seen_names``."""
 
     if not isinstance(signal, dict):
-        diagnostics.append(
-            diagnostic(
-                "ERROR",
-                "INVALID_SIGNAL",
-                "Signal entry must be an object.",
-            )
-        )
-        return diagnostics
+        return [make_error("INVALID_SIGNAL", "Signal entry must be an object.")]
 
     name = signal.get("name")
     source = signal.get("source")
 
-    if not isinstance(name, str) or not name:
-        diagnostics.append(
-            diagnostic(
-                "ERROR",
+    if not is_text(name):
+        return [
+            make_error(
                 "INVALID_SIGNAL_NAME",
                 "Signal name must be a non-empty string.",
                 source=source,
             )
-        )
-        return diagnostics
+        ]
+
+    diagnostics: list[Diagnostic] = []
+
+    def report(code: str, message: str) -> None:
+        diagnostics.append(make_error(code, message, field_name=name, source=source))
 
     if name in seen_names:
-        diagnostics.append(
-            diagnostic(
-                "ERROR",
-                "DUPLICATE_SIGNAL_NAME",
-                f"Signal {name!r} appears more than once.",
-                field_name=name,
-                source=source,
-            )
-        )
-    else:
-        seen_names.add(name)
+        report("DUPLICATE_SIGNAL_NAME", f"Signal {name!r} appears more than once.")
+    seen_names.add(name)
 
-    category = signal.get("category")
-    if not isinstance(category, str) or not category:
-        diagnostics.append(
-            diagnostic(
-                "ERROR",
-                "INVALID_CATEGORY",
-                "Signal category must be a non-empty string.",
-                field_name=name,
-                source=source,
-            )
-        )
+    if not is_text(signal.get("category")):
+        report("INVALID_CATEGORY", "Signal category must be a non-empty string.")
 
     extraction_status = signal.get("extraction_status")
-    if extraction_status != EXPECTED_EXTRACTION_STATUS:
-        diagnostics.append(
-            diagnostic(
-                "ERROR",
-                "INVALID_EXTRACTION_STATUS",
-                f"Expected extraction_status "
-                f"{EXPECTED_EXTRACTION_STATUS!r}, found "
-                f"{extraction_status!r}.",
-                field_name=name,
-                source=source,
-            )
+    if extraction_status != VALIDATED_STATUS:
+        report(
+            "INVALID_EXTRACTION_STATUS",
+            f"Expected extraction_status {VALIDATED_STATUS!r}, "
+            f"found {extraction_status!r}.",
         )
 
-    diagnostics.extend(
-        validate_source(
-            source,
-            field_name=name,
-            context="Index",
-        )
-    )
+    diagnostics += validate_source(source, name, "Index")
 
     definition = signal.get("definition")
     if not isinstance(definition, dict):
+        report("INVALID_DEFINITION", "Signal definition must be an object.")
+        return diagnostics
+
+    return diagnostics + validate_definition(definition, name)
+
+
+def validate_definition(definition: dict[str, Any], name: str) -> list[Diagnostic]:
+    """Validate one signal's extracted definition."""
+
+    source = definition.get("source")
+    diagnostics = validate_source(source, name, "Definition")
+
+    def report(code: str, message: str) -> None:
+        diagnostics.append(make_error(code, message, field_name=name, source=source))
+
+    if not is_text(definition.get("heading")):
+        report(
+            "INVALID_DEFINITION_HEADING",
+            "Definition heading must be a non-empty string.",
+        )
+
+    attributes = definition.get("attributes")
+    if isinstance(attributes, dict):
+        diagnostics += validate_attributes(attributes, name, source)
+    else:
+        report("INVALID_ATTRIBUTES", "Definition attributes must be an object.")
+
+    width = definition.get("bit_width")
+    if not is_positive_integer(width):
+        report("INVALID_BIT_WIDTH", "Definition bit_width must be a positive integer.")
+        width = None
+
+    encodings = definition.get("encodings")
+    if isinstance(encodings, list):
+        diagnostics += validate_encodings(encodings, name, width)
+    else:
+        report("INVALID_ENCODINGS", "Definition encodings must be an array.")
+
+    uses = definition.get("used_by_micro_operations")
+    if isinstance(uses, list):
+        for use in uses:
+            diagnostics += validate_micro_operation_use(use, name, source)
+    else:
+        report(
+            "INVALID_USED_BY_MICRO_OPERATIONS",
+            "Definition used_by_micro_operations must be an array.",
+        )
+
+    constraints = definition.get("constraints")
+    if isinstance(constraints, list):
+        for constraint in constraints:
+            diagnostics += validate_constraint(constraint, name, source)
+    else:
+        report("INVALID_CONSTRAINTS", "Definition constraints must be an array.")
+
+    return diagnostics
+
+
+def validate_attributes(
+    attributes: dict[str, Any],
+    name: str,
+    source: Any,
+) -> list[Diagnostic]:
+    """Validate the control-word attributes the candidate promotes."""
+
+    diagnostics: list[Diagnostic] = []
+
+    def report(code: str, message: str) -> None:
+        diagnostics.append(make_error(code, message, field_name=name, source=source))
+
+    if not is_text(attributes.get("default_value")):
+        report(
+            "INVALID_EXTRACTED_DEFAULT_VALUE",
+            "Extracted default_value must be a non-empty string.",
+        )
+    if attributes.get("explicit_value_required") not in EXPLICIT_VALUE_REQUIRED_VALUES:
+        report(
+            "INVALID_EXTRACTED_EXPLICIT_REQUIREMENT",
+            "Extracted explicit_value_required must be Yes, No, or Conditionally.",
+        )
+    if not is_text(attributes.get("value_required_when")):
+        report(
+            "INVALID_EXTRACTED_VALUE_CONDITION",
+            "Extracted value_required_when must be a non-empty string.",
+        )
+
+    return diagnostics
+
+
+def validate_encodings(
+    encodings: list[Any],
+    name: str,
+    width: int | None,
+) -> list[Diagnostic]:
+    """Validate a signal's encodings; ``width`` is None when it is invalid."""
+
+    diagnostics: list[Diagnostic] = []
+    seen_values: set[str] = set()
+
+    for encoding in encodings:
+        diagnostics += validate_encoding(encoding, name, width)
+
+        value = encoding.get("value") if isinstance(encoding, dict) else None
+        if not isinstance(value, str):
+            continue
+        if value in seen_values:
+            diagnostics.append(
+                make_error(
+                    "DUPLICATE_ENCODING_VALUE",
+                    f"Encoding {value!r} appears more than once.",
+                    field_name=name,
+                    source=encoding.get("source"),
+                )
+            )
+        seen_values.add(value)
+
+    return diagnostics
+
+
+def validate_encoding(encoding: Any, name: str, width: int | None) -> list[Diagnostic]:
+    """Validate one encoding entry on its own."""
+
+    if not isinstance(encoding, dict):
+        return [
+            make_error(
+                "INVALID_ENCODING",
+                "Encoding entry must be an object.",
+                field_name=name,
+            )
+        ]
+
+    value = encoding.get("value")
+    source = encoding.get("source")
+    diagnostics: list[Diagnostic] = []
+
+    def report(code: str, message: str) -> None:
+        diagnostics.append(make_error(code, message, field_name=name, source=source))
+
+    if not is_text(value):
+        report("INVALID_ENCODING_VALUE", "Encoding value must be a non-empty string.")
+    elif not OCTAL_PATTERN.fullmatch(value):
+        report("NON_OCTAL_ENCODING", f"Encoding {value!r} is not valid octal.")
+    elif width is not None and int(value, 8) >= 1 << width:
+        report(
+            "ENCODING_EXCEEDS_WIDTH",
+            f"Encoding {value!r} does not fit in {width} bits.",
+        )
+
+    if not is_text(encoding.get("meaning")):
+        report(
+            "INVALID_ENCODING_MEANING", "Encoding meaning must be a non-empty string."
+        )
+
+    return diagnostics + validate_source(source, name, "Encoding")
+
+
+def validate_micro_operation_use(
+    use: Any,
+    name: str,
+    definition_source: Any,
+) -> list[Diagnostic]:
+    """Validate one ``used_by_micro_operations`` entry."""
+
+    if not isinstance(use, dict) or not is_text(use.get("micro_operation")):
+        location = use.get("source") if isinstance(use, dict) else definition_source
+        return [
+            make_error(
+                "INVALID_USED_BY_MICRO_OPERATION",
+                "Used-by entry must name a micro-operation.",
+                field_name=name,
+                source=location,
+            )
+        ]
+
+    diagnostics: list[Diagnostic] = []
+
+    if "value" in use and not is_text(use["value"]):
         diagnostics.append(
-            diagnostic(
-                "ERROR",
-                "INVALID_DEFINITION",
-                "Signal definition must be an object.",
+            make_error(
+                "INVALID_USED_BY_VALUE",
+                "Used-by value must be a non-empty string when present.",
+                field_name=name,
+                source=use.get("source"),
+            )
+        )
+
+    return diagnostics + validate_source(
+        use.get("source"), name, "Used-by micro-operation"
+    )
+
+
+def validate_constraint(
+    constraint: Any,
+    name: str,
+    definition_source: Any,
+) -> list[Diagnostic]:
+    """Validate one extracted constraint."""
+
+    if not isinstance(constraint, dict):
+        return [
+            make_error(
+                "INVALID_CONSTRAINT",
+                "Constraint entry must be an object.",
+                field_name=name,
+                source=definition_source,
+            )
+        ]
+
+    diagnostics: list[Diagnostic] = []
+    source = constraint.get("source")
+
+    if not is_text(constraint.get("text")):
+        diagnostics.append(
+            make_error(
+                "INVALID_CONSTRAINT_TEXT",
+                "Constraint text must be a non-empty string.",
                 field_name=name,
                 source=source,
             )
         )
-        return diagnostics
 
-    definition_source = definition.get("source")
-    diagnostics.extend(
-        validate_source(
-            definition_source,
-            field_name=name,
-            context="Definition",
-        )
-    )
-
-    heading = definition.get("heading")
-    if not isinstance(heading, str) or not heading:
-        diagnostics.append(
-            diagnostic(
-                "ERROR",
-                "INVALID_DEFINITION_HEADING",
-                "Definition heading must be a non-empty string.",
-                field_name=name,
-                source=definition_source,
-            )
-        )
-
-    attributes = definition.get("attributes")
-
-    if not isinstance(attributes, dict):
-        diagnostics.append(
-            diagnostic(
-                "ERROR",
-                "INVALID_ATTRIBUTES",
-                "Definition attributes must be an object.",
-                field_name=name,
-                source=definition_source,
-            )
-        )
-    else:
-        default_value = attributes.get("default_value")
-        explicit_value_required = attributes.get(
-            "explicit_value_required"
-        )
-        value_required_when = attributes.get(
-            "value_required_when"
-        )
-
-        if not isinstance(default_value, str) or not default_value:
-            diagnostics.append(
-                diagnostic(
-                    "ERROR",
-                    "INVALID_EXTRACTED_DEFAULT_VALUE",
-                    "Extracted default_value must be a non-empty string.",
-                    field_name=name,
-                    source=definition_source,
-                )
-            )
-
-        if explicit_value_required not in {
-            "Yes",
-            "No",
-            "Conditionally",
-        }:
-            diagnostics.append(
-                diagnostic(
-                    "ERROR",
-                    "INVALID_EXTRACTED_EXPLICIT_REQUIREMENT",
-                    "Extracted explicit_value_required must be Yes, "
-                    "No, or Conditionally.",
-                    field_name=name,
-                    source=definition_source,
-                )
-            )
-
-        if (
-            not isinstance(value_required_when, str)
-            or not value_required_when
-        ):
-            diagnostics.append(
-                diagnostic(
-                    "ERROR",
-                    "INVALID_EXTRACTED_VALUE_CONDITION",
-                    "Extracted value_required_when must be a "
-                    "non-empty string.",
-                    field_name=name,
-                    source=definition_source,
-                )
-            )
+    return diagnostics + validate_source(source, name, "Constraint")
 
 
-    width = definition.get("bit_width")
-    normalized_width: int | None = None
-
-    if not isinstance(width, int) or isinstance(width, bool) or width < 1:
-        diagnostics.append(
-            diagnostic(
-                "ERROR",
-                "INVALID_BIT_WIDTH",
-                "Definition bit_width must be a positive integer.",
-                field_name=name,
-                source=definition_source,
-            )
-        )
-    else:
-        normalized_width = width
-
-    encodings = definition.get("encodings")
-    if not isinstance(encodings, list):
-        diagnostics.append(
-            diagnostic(
-                "ERROR",
-                "INVALID_ENCODINGS",
-                "Definition encodings must be an array.",
-                field_name=name,
-                source=definition_source,
-            )
-        )
-    else:
-        seen_encoding_values: set[str] = set()
-
-        for encoding in encodings:
-            diagnostics.extend(
-                validate_encoding(
-                    encoding,
-                    field_name=name,
-                    width=normalized_width,
-                )
-            )
-
-            if isinstance(encoding, dict):
-                value = encoding.get("value")
-                if isinstance(value, str):
-                    if value in seen_encoding_values:
-                        diagnostics.append(
-                            diagnostic(
-                                "ERROR",
-                                "DUPLICATE_ENCODING_VALUE",
-                                f"Encoding {value!r} appears more than once.",
-                                field_name=name,
-                                source=encoding.get("source"),
-                            )
-                        )
-                    else:
-                        seen_encoding_values.add(value)
-
-    used_by = definition.get("used_by_micro_operations")
-    if not isinstance(used_by, list):
-        diagnostics.append(
-            diagnostic(
-                "ERROR",
-                "INVALID_USED_BY_MICRO_OPERATIONS",
-                "Definition used_by_micro_operations must be an array.",
-                field_name=name,
-                source=definition_source,
-            )
-        )
-    else:
-        for use in used_by:
-            if (
-                not isinstance(use, dict)
-                or not isinstance(use.get("micro_operation"), str)
-                or not use["micro_operation"]
-            ):
-                diagnostics.append(
-                    diagnostic(
-                        "ERROR",
-                        "INVALID_USED_BY_MICRO_OPERATION",
-                        "Used-by entry must name a micro-operation.",
-                        field_name=name,
-                        source=(
-                            use.get("source")
-                            if isinstance(use, dict)
-                            else definition_source
-                        ),
-                    )
-                )
-                continue
-            if "value" in use and (
-                not isinstance(use["value"], str) or not use["value"]
-            ):
-                diagnostics.append(
-                    diagnostic(
-                        "ERROR",
-                        "INVALID_USED_BY_VALUE",
-                        "Used-by value must be a non-empty string when present.",
-                        field_name=name,
-                        source=use.get("source"),
-                    )
-                )
-            diagnostics.extend(
-                validate_source(
-                    use.get("source"),
-                    field_name=name,
-                    context="Used-by micro-operation",
-                )
-            )
-
-    constraints = definition.get("constraints")
-    if not isinstance(constraints, list):
-        diagnostics.append(
-            diagnostic(
-                "ERROR",
-                "INVALID_CONSTRAINTS",
-                "Definition constraints must be an array.",
-                field_name=name,
-                source=definition_source,
-            )
-        )
-    else:
-        for constraint in constraints:
-            if not isinstance(constraint, dict):
-                diagnostics.append(
-                    diagnostic(
-                        "ERROR",
-                        "INVALID_CONSTRAINT",
-                        "Constraint entry must be an object.",
-                        field_name=name,
-                        source=definition_source,
-                    )
-                )
-                continue
-
-            text = constraint.get("text")
-            constraint_source = constraint.get("source")
-
-            if not isinstance(text, str) or not text:
-                diagnostics.append(
-                    diagnostic(
-                        "ERROR",
-                        "INVALID_CONSTRAINT_TEXT",
-                        "Constraint text must be a non-empty string.",
-                        field_name=name,
-                        source=constraint_source,
-                    )
-                )
-
-            diagnostics.extend(
-                validate_source(
-                    constraint_source,
-                    field_name=name,
-                    context="Constraint",
-                )
-            )
-
-    return diagnostics
+# ---------------------------------------------------------------------------
+# Maintained schema validation
+# ---------------------------------------------------------------------------
 
 
-def validate_signals(input_data: dict[str, Any]) -> list:
-    """Validate all extracted signals."""
+def validate_maintained(
+    data: dict[str, Any] | None,
+) -> tuple[list[Diagnostic], dict[str, str]]:
+    """Validate the maintained schema and index its roles by field name.
 
-    signals = input_data.get("signals")
-    if not isinstance(signals, list):
-        return []
+    A missing schema (None) is valid and has no fields.  The returned roles
+    are only meaningful when no diagnostics are returned.
+    """
 
-    diagnostics: list[Diagnostic] = []
-    seen_names: set[str] = set()
-
-    for signal in signals:
-        diagnostics.extend(validate_signal(signal, seen_names))
-
-    return diagnostics
-
-def validate_maintained_schema(
-    schema: dict[str, Any] | None,
-) -> list[Diagnostic]:
-    """Validate maintained control-word role decisions."""
-
-    if schema is None:
-        return []
+    if data is None:
+        return [], {}
 
     diagnostics: list[Diagnostic] = []
 
-    if schema.get("specification_type") != "control-word-schema":
+    if data.get("specification_type") != SCHEMA_TYPE:
         diagnostics.append(
-            diagnostic(
-                "ERROR",
+            make_error(
                 "INVALID_MAINTAINED_SPECIFICATION_TYPE",
-                "Maintained schema specification_type must be "
-                "'control-word-schema'.",
+                f"Maintained schema specification_type must be {SCHEMA_TYPE!r}.",
             )
         )
-
-    if schema.get("schema_version") != OUTPUT_SCHEMA_VERSION:
+    if data.get("schema_version") != SCHEMA_VERSION:
         diagnostics.append(
-            diagnostic(
-                "ERROR",
+            make_error(
                 "UNSUPPORTED_MAINTAINED_SCHEMA_VERSION",
                 "Maintained schema uses an unsupported schema_version.",
             )
         )
-
-    if schema.get("control_design_version") != CONTROL_DESIGN_VERSION:
+    if data.get("control_design_version") != CONTROL_DESIGN_VERSION:
         diagnostics.append(
-            diagnostic(
-                "ERROR",
+            make_error(
                 "INVALID_MAINTAINED_DESIGN_VERSION",
-                "Maintained schema uses a different "
-                "control_design_version.",
+                "Maintained schema uses a different control_design_version.",
             )
         )
 
-    fields = schema.get("fields")
+    fields = data.get("fields")
 
     if not isinstance(fields, list):
         diagnostics.append(
-            diagnostic(
-                "ERROR",
+            make_error(
                 "INVALID_MAINTAINED_FIELDS",
                 "Maintained schema must contain a fields array.",
             )
         )
-        return diagnostics
+        return diagnostics, {}
 
-    seen_names: set[str] = set()
+    roles: dict[str, str] = {}
 
     for field in fields:
         if not isinstance(field, dict):
             diagnostics.append(
-                diagnostic(
-                    "ERROR",
+                make_error(
                     "INVALID_MAINTAINED_FIELD",
                     "Maintained field entry must be an object.",
                 )
@@ -864,150 +658,95 @@ def validate_maintained_schema(
 
         name = field.get("name")
 
-        if not isinstance(name, str) or not name:
+        if not is_text(name):
             diagnostics.append(
-                diagnostic(
-                    "ERROR",
+                make_error(
                     "INVALID_MAINTAINED_FIELD_NAME",
                     "Maintained field name must be a non-empty string.",
                 )
             )
             continue
 
-        if name in seen_names:
+        if name in roles:
             diagnostics.append(
-                diagnostic(
-                    "ERROR",
+                make_error(
                     "DUPLICATE_MAINTAINED_FIELD",
                     f"Maintained field {name!r} appears more than once.",
                     field_name=name,
                 )
             )
-        else:
-            seen_names.add(name)
+
+        role = field.get("control_word_role")
+        roles[name] = role
 
         if "control_word_role" not in field:
             diagnostics.append(
-                diagnostic(
-                    "ERROR",
+                make_error(
                     "MISSING_CONTROL_WORD_ROLE",
-                    "Maintained field does not contain "
-                    "control_word_role.",
+                    "Maintained field does not contain control_word_role.",
                     field_name=name,
                 )
             )
-            continue
-
-        if field["control_word_role"] not in {
-            "encoded",
-            "derived",
-            "external_input",
-        }:
+        elif role not in CONTROL_WORD_ROLES:
             diagnostics.append(
-                diagnostic(
-                    "ERROR",
+                make_error(
                     "INVALID_CONTROL_WORD_ROLE",
-                    "Maintained control_word_role must be encoded, "
-                    "derived, or external_input.",
+                    "Maintained control_word_role must be encoded, derived, "
+                    "or external_input.",
                     field_name=name,
                 )
             )
 
-    return diagnostics
+    return diagnostics, roles
 
 
-def build_maintained_role_map(
-    schema: dict[str, Any] | None,
-) -> dict[str, str | None]:
-    """Return reviewed control-word roles indexed by field name."""
+# ---------------------------------------------------------------------------
+# Candidate construction
+# ---------------------------------------------------------------------------
 
-    if schema is None:
-        return {}
 
-    return {
-        field["name"]: field.get("control_word_role")
-        for field in schema["fields"]
-        if isinstance(field, dict)
-        and isinstance(field.get("name"), str)
-    }
-    
 def convert_source(source: dict[str, Any]) -> dict[str, Any]:
-    """Convert extractor source keys to maintained-schema source keys."""
+    """Convert an extractor source to the schema's ``document``/``line`` form."""
 
-    return {
-        "document": source["path"],
-        "line": source["line"],
-    }
+    return {"document": source["path"], "line": source["line"]}
 
 
-def convert_encoding(encoding: dict[str, Any]) -> dict[str, Any]:
-    """Convert one extracted encoding without changing its meaning."""
+def field_from_signal(signal: dict[str, Any], role: str | None) -> dict[str, Any]:
+    """Build one candidate field from a validated extracted signal.
 
-    return {
-        "encoding": encoding["value"],
-        "meaning": encoding["meaning"],
-        "source": convert_source(encoding["source"]),
-    }
+    Key order is part of the output format.
+    """
 
-
-def convert_constraint(constraint: dict[str, Any]) -> dict[str, Any]:
-    """Convert one extracted constraint with its source reference."""
-
-    return {
-        "text": constraint["text"],
-        "source": convert_source(constraint["source"]),
-    }
-
-
-def convert_signal(
-    signal: dict[str, Any],
-    maintained_roles: dict[str, str | None],
-) -> tuple[dict[str, Any], list[Diagnostic]]:
-    """Convert one extracted signal into one candidate field."""
-
-    name = signal["name"]
     definition = signal["definition"]
-    definition_source = definition["source"]
-    extracted_attributes = definition["attributes"]
+    attributes = definition["attributes"]
+    default_value = attributes["default_value"]
 
-    control_word_role = maintained_roles.get(name)
-    default_value = extracted_attributes["default_value"]
-    explicit_value_required = extracted_attributes[
-        "explicit_value_required"
-    ]
-    value_required_when = extracted_attributes[
-        "value_required_when"
-    ]
-
-    field_attributes = {
-        key: value
-        for key, value in extracted_attributes.items()
-        if key not in {
-            "default_value",
-            "explicit_value_required",
-            "value_required_when",
-        }
-    }
-
-    field = {
-        "name": name,
+    return {
+        "name": signal["name"],
         "category": signal["category"],
         "width": definition["bit_width"],
-        "control_word_role": control_word_role,
-        "default_value": (
-            None
-            if default_value == "N/A"
-            else default_value
-        ),
-        "explicit_value_required": explicit_value_required,
-        "value_required_when": value_required_when,
-        "attributes": field_attributes,
+        "control_word_role": role,
+        "default_value": None if default_value == NOT_APPLICABLE else default_value,
+        "explicit_value_required": attributes["explicit_value_required"],
+        "value_required_when": attributes["value_required_when"],
+        "attributes": {
+            key: value
+            for key, value in attributes.items()
+            if key not in CONTROL_METADATA_KEYS
+        },
         "values": [
-            convert_encoding(encoding)
+            {
+                "encoding": encoding["value"],
+                "meaning": encoding["meaning"],
+                "source": convert_source(encoding["source"]),
+            }
             for encoding in definition["encodings"]
         ],
         "constraints": [
-            convert_constraint(constraint)
+            {
+                "text": constraint["text"],
+                "source": convert_source(constraint["source"]),
+            }
             for constraint in definition["constraints"]
         ],
         "used_by_micro_operations": [
@@ -1021,306 +760,257 @@ def convert_signal(
         "sources": {
             "index": convert_source(signal["source"]),
             "definition": {
-                "document": definition_source["path"],
+                "document": definition["source"]["path"],
                 "section": definition["heading"],
-                "line": definition_source["line"],
+                "line": definition["source"]["line"],
             },
         },
     }
 
-    diagnostics: list[Diagnostic] = []
-
-    if control_word_role is None:
-        diagnostics.append(
-            diagnostic(
-                "WARNING",
-                "CONTROL_WORD_ROLE_UNRESOLVED",
-                "Control-word role requires review and was not inferred.",
-                field_name=name,
-                source=definition_source,
-            )
-        )
-
-    return field, diagnostics
-
 
 def build_candidate(
-    input_data: dict[str, Any],
-    maintained_schema: dict[str, Any] | None = None,
-) -> tuple[dict[str, Any], list[Diagnostic]]:
-    """Build a candidate using extracted control metadata."""
+    extracted: dict[str, Any],
+    maintained: dict[str, Any] | None = None,
+) -> tuple[dict[str, Any] | None, list[Diagnostic]]:
+    """Validate the inputs and build the candidate schema.
 
-    fields: list[dict[str, Any]] = []
-    diagnostics: list[Diagnostic] = []
+    Returns ``(None, diagnostics)`` when either input is structurally
+    invalid.  Otherwise returns the candidate and its warnings.
+    """
 
-    maintained_roles = build_maintained_role_map(
-        maintained_schema
-    )
-    extracted_names = {
-        signal["name"]
-        for signal in input_data["signals"]
-    }
+    diagnostics = validate_extracted(extracted)
+    maintained_diagnostics, roles = validate_maintained(maintained)
+    diagnostics += maintained_diagnostics
 
-    for signal in input_data["signals"]:
-        field, field_diagnostics = convert_signal(
-            signal,
-            maintained_roles,
-        )
-        fields.append(field)
-        diagnostics.extend(field_diagnostics)
+    if has_failures(diagnostics):
+        return None, diagnostics
 
-    for maintained_name in maintained_roles:
-        if maintained_name not in extracted_names:
+    signals = extracted["signals"]
+    signal_names = {signal["name"] for signal in signals}
+    fields = []
+
+    for signal in signals:
+        role = roles.get(signal["name"])
+
+        if role is None:
             diagnostics.append(
-                diagnostic(
-                    "WARNING",
-                    "STALE_MAINTAINED_FIELD",
-                    "Maintained field is absent from the current "
-                    "extractor output.",
-                    field_name=maintained_name,
+                make_diagnostic(
+                    WARNING,
+                    "CONTROL_WORD_ROLE_UNRESOLVED",
+                    "Control-word role requires review and was not inferred.",
+                    field_name=signal["name"],
+                    source=signal["definition"]["source"],
                 )
             )
 
+        fields.append(field_from_signal(signal, role))
+
+    diagnostics.extend(
+        make_diagnostic(
+            WARNING,
+            "STALE_MAINTAINED_FIELD",
+            "Maintained field is absent from the current extractor output.",
+            field_name=name,
+        )
+        for name in roles
+        if name not in signal_names
+    )
+
     candidate = {
-        "specification_type": "control-word-schema",
-        "schema_version": OUTPUT_SCHEMA_VERSION,
+        "specification_type": SCHEMA_TYPE,
+        "schema_version": SCHEMA_VERSION,
         "control_design_version": CONTROL_DESIGN_VERSION,
-        "description": (
-            "Logical symbolic control-word schema for version 1 CPU control."
-        ),
+        "description": SCHEMA_DESCRIPTION,
         "source": {
-            "specification_type": "control-output-extractor",
-            "format_version": input_data["format_version"],
-            "extraction_stage": input_data["extraction_stage"],
+            "specification_type": EXTRACTOR_TYPE,
+            "format_version": extracted["format_version"],
+            "extraction_stage": extracted["extraction_stage"],
         },
         "fields": fields,
     }
-
     return candidate, diagnostics
 
-def has_errors(diagnostics: Sequence[Diagnostic]) -> bool:
-    """Return whether any diagnostic has error severity."""
 
-    return any(
-        item.severity in {"ERROR", "FATAL"}
-        for item in diagnostics
-    )
+# ---------------------------------------------------------------------------
+# Output
+# ---------------------------------------------------------------------------
 
 
-def write_json_output(
-    candidate: dict[str, Any],
-    output_path: Path,
-) -> None:
-    """Write deterministic, human-readable candidate JSON."""
+def serialize_json(data: dict[str, Any]) -> str:
+    """Serialize JSON preserving key order, with a trailing newline."""
 
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-
-    text = json.dumps(
-        candidate,
-        indent=2,
-        ensure_ascii=False,
-    )
-
-    output_path.write_text(
-        text + "\n",
-        encoding="utf-8",
-        newline="\n",
-    )
+    return json.dumps(data, indent=2, ensure_ascii=False) + "\n"
 
 
-def format_diagnostic(item: Diagnostic) -> str:
-    """Format one diagnostic for the human-readable report."""
+def write_text(path: Path, text: str) -> None:
+    """Write UTF-8 text with LF line endings, creating parent directories."""
 
-    location_parts: list[str] = []
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8", newline="\n")
 
-    if item.source_path is not None:
-        location_parts.append(item.source_path)
 
-    if item.source_line is not None:
-        location_parts.append(str(item.source_line))
+def write_json(data: dict[str, Any], path: Path) -> None:
+    """Write deterministic JSON."""
 
-    location = ":".join(location_parts)
-    field = item.field_name or "-"
+    write_text(path, serialize_json(data))
 
-    prefix = f"{item.severity} {item.code} [{field}]"
 
+def format_location(diagnostic: Diagnostic) -> str:
+    """Return ``path:line``, either part, or "" when neither is known."""
+
+    parts = [diagnostic.source_path, diagnostic.source_line]
+    return ":".join(str(part) for part in parts if part is not None)
+
+
+def format_diagnostic(diagnostic: Diagnostic) -> str:
+    """Format one diagnostic as a report line."""
+
+    location = format_location(diagnostic)
+    prefix = f"{diagnostic.severity} {diagnostic.code} [{diagnostic.field_name or '-'}]"
     if location:
         prefix += f" {location}"
+    return f"{prefix}: {diagnostic.message}"
 
-    return f"{prefix}: {item.message}"
 
-
-def write_report(
+def build_report(
     diagnostics: Sequence[Diagnostic],
-    report_path: Path,
-    *,
     field_count: int,
     candidate_written: bool,
-) -> None:
-    """Write the human-readable generation report."""
+) -> str:
+    """Build the human-readable generation report."""
 
-    report_path.parent.mkdir(parents=True, exist_ok=True)
-
-    severity_counts = {
-        "INFO": 0,
-        "WARNING": 0,
-        "ERROR": 0,
-        "FATAL": 0,
+    counts = {
+        severity: sum(item.severity == severity for item in diagnostics)
+        for severity in SEVERITIES
     }
-
-    for item in diagnostics:
-        severity_counts[item.severity] = (
-            severity_counts.get(item.severity, 0) + 1
-        )
-
+    title = "Control-Word Schema Generation Report"
     lines = [
-        "Control-Word Schema Generation Report",
-        "=====================================",
+        title,
+        "=" * len(title),
         "",
         f"Fields processed: {field_count}",
         f"Candidate written: {'yes' if candidate_written else 'no'}",
-        f"Information diagnostics: {severity_counts['INFO']}",
-        f"Warnings: {severity_counts['WARNING']}",
-        f"Errors: {severity_counts['ERROR']}",
-        f"Fatal errors: {severity_counts['FATAL']}",
+        f"Information diagnostics: {counts[INFO]}",
+        f"Warnings: {counts[WARNING]}",
+        f"Errors: {counts[ERROR]}",
+        f"Fatal errors: {counts[FATAL]}",
         "",
         "Diagnostics",
         "-----------",
     ]
+    lines += [format_diagnostic(item) for item in diagnostics] or ["No diagnostics."]
+    return "\n".join(lines) + "\n"
 
-    if diagnostics:
-        lines.extend(format_diagnostic(item) for item in diagnostics)
-    else:
-        lines.append("No diagnostics.")
 
-    report_path.write_text(
-        "\n".join(lines) + "\n",
-        encoding="utf-8",
-        newline="\n",
+def format_failure(diagnostic: Diagnostic) -> list[str]:
+    """Format one failure diagnostic for the console."""
+
+    location = diagnostic.source_path or "<unknown source>"
+    if diagnostic.source_line is not None:
+        location = f"{location}:{diagnostic.source_line}"
+    name = f" [{diagnostic.field_name}]" if diagnostic.field_name else ""
+
+    return [
+        f"{diagnostic.severity} {diagnostic.code}{name}",
+        f"  Source: {location}",
+        f"  {diagnostic.message}",
+    ]
+
+
+# ---------------------------------------------------------------------------
+# Command line
+# ---------------------------------------------------------------------------
+
+
+def parse_arguments(arguments: Sequence[str] | None = None) -> argparse.Namespace:
+    """Parse command-line arguments."""
+
+    parser = argparse.ArgumentParser(
+        description="Generate a candidate control-word schema for review."
     )
+    parser.add_argument(
+        "--repo-root", required=True, type=Path, help="Path to the repository root."
+    )
+    parser.add_argument(
+        "--input",
+        type=Path,
+        default=DEFAULT_INPUT,
+        help="Control-output extractor JSON.",
+    )
+    parser.add_argument(
+        "--maintained-schema",
+        type=Path,
+        default=DEFAULT_MAINTAINED,
+        help="Maintained control-word schema; may be absent.",
+    )
+    parser.add_argument(
+        "--candidate-output",
+        type=Path,
+        default=DEFAULT_CANDIDATE,
+        help="Candidate schema output path.",
+    )
+    parser.add_argument(
+        "--report-output",
+        type=Path,
+        default=DEFAULT_REPORT,
+        help="Generation report output path.",
+    )
+    return parser.parse_args(arguments)
 
 
-def run(arguments: Sequence[str] | None = None) -> int:
-    """Run the complete candidate-generation process."""
+def main(arguments: Sequence[str] | None = None) -> int:
+    """Run the generator; return 1 if any error-level diagnostic exists.
 
-    parsed_arguments = parse_arguments(arguments)
-    paths = build_tool_paths(parsed_arguments)
+    Relative paths are resolved from the repository root.
+    """
+
+    options = parse_arguments(arguments)
+    root = options.repo_root.resolve()
+    input_path = resolve_from_repo(root, options.input)
+    maintained_path = resolve_from_repo(root, options.maintained_schema)
+    candidate_path = resolve_from_repo(root, options.candidate_output)
+    report_path = resolve_from_repo(root, options.report_output)
 
     diagnostics: list[Diagnostic] = []
-    candidate_written = False
     field_count = 0
+    candidate_written = False
 
     try:
-        input_data = read_json_input(paths.input_path)
-        maintained_schema = read_maintained_schema(
-            paths.maintained_schema_path
-        )
+        extracted = read_json(input_path, "Input file")
+        maintained = read_json(maintained_path, "Maintained schema", optional=True)
+        signals = extracted.get("signals")
+        field_count = len(signals) if isinstance(signals, list) else 0
+        candidate, diagnostics = build_candidate(extracted, maintained)
 
-        diagnostics.extend(
-            validate_maintained_schema(maintained_schema)
-        )
-
-        diagnostics.extend(validate_top_level(input_data))
-
-        if not has_errors(diagnostics):
-            diagnostics.extend(validate_signals(input_data))
-
-        signals = input_data.get("signals")
-        if isinstance(signals, list):
-            field_count = len(signals)
-
-        if not has_errors(diagnostics):
-            candidate, generation_diagnostics = build_candidate(
-                input_data,
-                maintained_schema,
-            )
-            diagnostics.extend(generation_diagnostics)
-
-            write_json_output(
-                candidate,
-                paths.candidate_output_path,
-            )
+        if candidate is not None:
+            write_json(candidate, candidate_path)
             candidate_written = True
-
     except GenerationFailure as error:
-        diagnostics.append(
-            diagnostic(
-                "FATAL",
-                "GENERATION_FAILURE",
-                str(error),
-            )
-        )
-    except OSError as error:
-        diagnostics.append(
-            diagnostic(
-                "FATAL",
-                "OUTPUT_WRITE_FAILURE",
-                f"Unable to write generated output: {error}",
-            )
-        )
+        diagnostics = [make_diagnostic(FATAL, "GENERATION_FAILURE", str(error))]
 
-    diagnostics = sorted(
-        diagnostics,
-        key=lambda item: (
-            DIAGNOSTIC_SEVERITY_ORDER.get(item.severity, 99),
-            item.code,
-            item.source_path or "",
-            item.source_line if item.source_line is not None else -1,
-            item.field_name or "",
-            item.message,
-        ),
-    )
+    diagnostics = sorted(diagnostics, key=diagnostic_sort_key)
+    write_text(report_path, build_report(diagnostics, field_count, candidate_written))
 
-    try:
-        write_report(
-            diagnostics,
-            paths.report_output_path,
-            field_count=field_count,
-            candidate_written=candidate_written,
-        )
-    except OSError as error:
-        print(
-            f"Unable to write generation report: {error}",
-            file=sys.stderr,
-        )
-        return 1
-
-    failure_diagnostics = [
-        item
-        for item in diagnostics
-        if item.severity in FAILURE_SEVERITIES
-    ]
-    exit_code = 1 if failure_diagnostics else 0
+    failures = [item for item in diagnostics if item.severity in FAILURE_SEVERITIES]
+    exit_code = 1 if failures else 0
 
     print("Control-word schema generation")
     print(f"Status: {'FAILED' if exit_code else 'SUCCEEDED'}")
     print(f"Control outputs: {field_count}")
     print(f"Candidate written: {'yes' if candidate_written else 'no'}")
     print(f"Diagnostics: {len(diagnostics)}")
-    print(f"Candidate output: {paths.candidate_output_path}")
-    print(f"Report output: {paths.report_output_path}")
+    print(f"Candidate output: {candidate_path}")
+    print(f"Report output: {report_path}")
 
-    if exit_code:
+    if failures:
         print()
         print("Failure diagnostics")
         print("-------------------")
-        for item in failure_diagnostics:
-            field = f" [{item.field_name}]" if item.field_name else ""
-            location = item.source_path or "<unknown source>"
-            if item.source_line is not None:
-                location = f"{location}:{item.source_line}"
-            print(f"{item.severity} {item.code}{field}")
-            print(f"  Source: {location}")
-            print(f"  {item.message}")
+        for item in failures:
+            print("\n".join(format_failure(item)))
 
     return exit_code
 
 
-def main() -> None:
-    """Command-line entry point."""
-
-    raise SystemExit(run())
-
-
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

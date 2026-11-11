@@ -1,0 +1,21 @@
+Control Output Extraction Report
+================================
+
+Stage: category validation
+Indexed signals: 5
+Matched definitions: 5
+Definitions with extracted attributes: 5
+Definitions with normalized bit widths: 5
+Definitions with extracted encodings: 3
+Encoding entries extracted: 8
+Definitions with extracted constraints: 2
+Constraint entries extracted: 4
+Missing definitions: 0
+Informational diagnostics: 0
+Warnings: 0
+Errors: 0
+Fatal errors: 0
+
+Diagnostics
+-----------
+None.

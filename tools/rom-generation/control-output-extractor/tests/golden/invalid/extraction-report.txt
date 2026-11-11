@@ -1,0 +1,43 @@
+Control Output Extraction Report
+================================
+
+Stage: category validation
+Indexed signals: 5
+Matched definitions: 5
+Definitions with extracted attributes: 5
+Definitions with normalized bit widths: 5
+Definitions with extracted encodings: 3
+Encoding entries extracted: 9
+Definitions with extracted constraints: 2
+Constraint entries extracted: 4
+Missing definitions: 0
+Informational diagnostics: 0
+Warnings: 3
+Errors: 3
+Fatal errors: 0
+
+Diagnostics
+-----------
+WARNING MALFORMED_ENCODING [AC_SRC]
+  Source: docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md:48
+  Encoding line could not be parsed: unparsable
+
+WARNING MISSING_DESCRIPTION [/RD]
+  Source: docs/04-control/20-control-output-definitions/02-architectural-control-signals.md:5
+  Definition does not specify a purpose or description.
+
+WARNING UNINDEXED_DEFINITION
+  Source: docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md:25
+  Definition heading does not identify an indexed control-output signal: Unindexed Signal (GHOST)
+
+ERROR DUPLICATE_ENCODING_VALUE [AC_LOAD]
+  Source: docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md:25
+  Encoding value '1' is already defined at line 24.
+
+ERROR ENCODING_EXCEEDS_BIT_WIDTH [AC_SRC]
+  Source: docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md:47
+  Octal encoding 10 has numeric value 8, which does not fit in the documented 3-bit field.
+
+ERROR MNEMONIC_MISMATCH [PC_VAL]
+  Source: docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md:62
+  Documented mnemonic 'PC' does not match indexed signal 'PC_VAL'.

@@ -1,0 +1,265 @@
+{
+  "format_version": 1,
+  "extraction_stage": "category-validation",
+  "signals": [
+    {
+      "name": "AC_LOAD",
+      "category": "Enable Signals",
+      "definition": {
+        "heading": "AC_LOAD",
+        "attributes": {
+          "mnemonic": "AC_LOAD",
+          "display_name": "Accumulator Load",
+          "signal_class": "Enable",
+          "default_value": "0",
+          "explicit_value_required": "Yes",
+          "value_required_when": "Always",
+          "purpose": "Loads AC."
+        },
+        "bit_width": 1,
+        "encodings": [
+          {
+            "value": "0",
+            "meaning": "no load",
+            "source": {
+              "path": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+              "line": 23
+            }
+          },
+          {
+            "value": "1",
+            "meaning": "load",
+            "source": {
+              "path": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+              "line": 24
+            }
+          }
+        ],
+        "constraints": [],
+        "used_by_micro_operations": [
+          {
+            "micro_operation": "AC_CLEAR",
+            "source": {
+              "path": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+              "line": 28
+            },
+            "value": "1"
+          }
+        ],
+        "source": {
+          "path": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "line": 9
+        }
+      },
+      "source": {
+        "path": "docs/04-control/20-control-output-definitions/00-index.md",
+        "line": 9
+      },
+      "extraction_status": "category-validated"
+    },
+    {
+      "name": "AC_SRC",
+      "category": "Select Signals",
+      "definition": {
+        "heading": "AC_SRC",
+        "attributes": {
+          "mnemonic": "AC_SRC",
+          "default_value": "0",
+          "explicit_value_required": "Conditionally",
+          "value_required_when": "AC_LOAD=1",
+          "purpose": "Selects the AC input."
+        },
+        "bit_width": 3,
+        "encodings": [
+          {
+            "value": "0",
+            "meaning": "IDB",
+            "source": {
+              "path": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+              "line": 44
+            }
+          },
+          {
+            "value": "1",
+            "meaning": "DB",
+            "source": {
+              "path": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+              "line": 45
+            }
+          },
+          {
+            "value": "7",
+            "meaning": "reserved",
+            "source": {
+              "path": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+              "line": 46
+            }
+          }
+        ],
+        "constraints": [
+          {
+            "text": "Field-merge encodings preserve other AC bits:",
+            "source": {
+              "path": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+              "line": 50
+            }
+          },
+          {
+            "text": "IF → AC[5:3]",
+            "source": {
+              "path": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+              "line": 51
+            }
+          },
+          {
+            "text": "MQ replaces AC in full.",
+            "source": {
+              "path": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+              "line": 52
+            }
+          }
+        ],
+        "used_by_micro_operations": [
+          {
+            "micro_operation": "AC_CLEAR",
+            "source": {
+              "path": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+              "line": 55
+            },
+            "value": "0"
+          },
+          {
+            "micro_operation": "DB_READ_TO_AC",
+            "source": {
+              "path": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+              "line": 56
+            },
+            "value": "1"
+          }
+        ],
+        "source": {
+          "path": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "line": 32
+        }
+      },
+      "source": {
+        "path": "docs/04-control/20-control-output-definitions/00-index.md",
+        "line": 13
+      },
+      "extraction_status": "category-validated"
+    },
+    {
+      "name": "PC_VAL",
+      "category": "Data Value Signals",
+      "definition": {
+        "heading": "PC_VAL",
+        "attributes": {
+          "mnemonic": "PC_VAL",
+          "default_value": "N/A",
+          "explicit_value_required": "No",
+          "value_required_when": "PC_LOAD=1 AND PC_SRC=2",
+          "purpose": "Supplies a PC value."
+        },
+        "bit_width": 12,
+        "encodings": [],
+        "constraints": [],
+        "used_by_micro_operations": [],
+        "source": {
+          "path": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+          "line": 60
+        }
+      },
+      "source": {
+        "path": "docs/04-control/20-control-output-definitions/00-index.md",
+        "line": 17
+      },
+      "extraction_status": "category-validated"
+    },
+    {
+      "name": "/RD",
+      "category": "Memory Interface",
+      "definition": {
+        "heading": "Memory Read (/RD)",
+        "attributes": {
+          "default_value": "N/A",
+          "explicit_value_required": "No",
+          "value_required_when": "Memory read cycle",
+          "description": "Requests a memory read."
+        },
+        "bit_width": 1,
+        "encodings": [],
+        "constraints": [
+          {
+            "text": "Must not be asserted with /WR.",
+            "source": {
+              "path": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+              "line": 23
+            }
+          }
+        ],
+        "used_by_micro_operations": [],
+        "source": {
+          "path": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+          "line": 5
+        }
+      },
+      "source": {
+        "path": "docs/04-control/20-control-output-definitions/00-index.md",
+        "line": 23
+      },
+      "extraction_status": "category-validated"
+    },
+    {
+      "name": "MS_NEXT",
+      "category": "Control Flow",
+      "definition": {
+        "heading": "Next Major State (MS_NEXT)",
+        "attributes": {
+          "default_value": "0",
+          "explicit_value_required": "Yes",
+          "value_required_when": "TS=4",
+          "description": "Specifies the next Major State."
+        },
+        "bit_width": 3,
+        "encodings": [
+          {
+            "value": "0",
+            "meaning": "FETCH",
+            "source": {
+              "path": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+              "line": 20
+            }
+          },
+          {
+            "value": "1",
+            "meaning": "DEFER",
+            "source": {
+              "path": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+              "line": 21
+            }
+          },
+          {
+            "value": "2",
+            "meaning": "EXECUTE",
+            "source": {
+              "path": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+              "line": 22
+            }
+          }
+        ],
+        "constraints": [],
+        "used_by_micro_operations": [],
+        "source": {
+          "path": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
+          "line": 5
+        }
+      },
+      "source": {
+        "path": "docs/04-control/20-control-output-definitions/00-index.md",
+        "line": 29
+      },
+      "extraction_status": "category-validated"
+    }
+  ],
+  "diagnostics": []
+}
