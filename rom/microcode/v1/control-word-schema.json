@@ -18,10 +18,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
-        "display_name": "Accumulator Load",
         "mnemonic": "AC_LOAD",
-        "purpose": "Load AC at TP.",
-        "signal_class": "Enable"
+        "display_name": "Accumulator Load",
+        "signal_class": "Enable",
+        "purpose": "Load AC at TP."
       },
       "values": [
         {
@@ -217,10 +217,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
-        "display_name": "CIF Pending Load",
         "mnemonic": "CIFP_LOAD",
-        "purpose": "Loads the CIFP register.",
-        "signal_class": "Enable"
+        "display_name": "CIF Pending Load",
+        "signal_class": "Enable",
+        "purpose": "Loads the CIFP register."
       },
       "values": [
         {
@@ -288,10 +288,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
-        "display_name": "Data Field Load",
         "mnemonic": "DF_LOAD",
-        "purpose": "Loads the DF register.",
-        "signal_class": "Enable"
+        "display_name": "Data Field Load",
+        "signal_class": "Enable",
+        "purpose": "Loads the DF register."
       },
       "values": [
         {
@@ -383,10 +383,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
-        "display_name": "Deferred Instruction Field Load",
         "mnemonic": "DIF_LOAD",
-        "purpose": "Loads the DIF register.",
-        "signal_class": "Enable"
+        "display_name": "Deferred Instruction Field Load",
+        "signal_class": "Enable",
+        "purpose": "Loads the DIF register."
       },
       "values": [
         {
@@ -478,10 +478,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
-        "display_name": "Effective Address Load (Address Portion)",
         "mnemonic": "EA_ADDR_LOAD",
-        "purpose": "Loads the EA_ADDR register.",
-        "signal_class": "Enable"
+        "display_name": "Effective Address Load (Address Portion)",
+        "signal_class": "Enable",
+        "purpose": "Loads the EA_ADDR register."
       },
       "values": [
         {
@@ -557,10 +557,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
-        "display_name": "Interrupt Buffer Load",
         "mnemonic": "IB_LOAD",
-        "purpose": "Loads the IB register.",
-        "signal_class": "Enable"
+        "display_name": "Interrupt Buffer Load",
+        "signal_class": "Enable",
+        "purpose": "Loads the IB register."
       },
       "values": [
         {
@@ -620,10 +620,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
-        "display_name": "Internal Data Bus Drive Enable",
         "mnemonic": "IDB_DRIVE",
-        "purpose": "Enables the selected source to drive the internal datapath bus (IDB).",
-        "signal_class": "Enable"
+        "display_name": "Internal Data Bus Drive Enable",
+        "signal_class": "Enable",
+        "purpose": "Enables the selected source to drive the internal datapath bus (IDB)."
       },
       "values": [
         {
@@ -858,10 +858,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
-        "display_name": "Interrupt Enable Load",
         "mnemonic": "IE_LOAD",
-        "purpose": "Loads the IE register.",
-        "signal_class": "Enable"
+        "display_name": "Interrupt Enable Load",
+        "signal_class": "Enable",
+        "purpose": "Loads the IE register."
       },
       "values": [
         {
@@ -929,10 +929,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
-        "display_name": "Instruction Field Load",
         "mnemonic": "IF_LOAD",
-        "purpose": "Loads the IF register.",
-        "signal_class": "Enable"
+        "display_name": "Instruction Field Load",
+        "signal_class": "Enable",
+        "purpose": "Loads the IF register."
       },
       "values": [
         {
@@ -1008,10 +1008,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
-        "display_name": "Interrupt Inhibit Load",
         "mnemonic": "II_LOAD",
-        "purpose": "Loads the II register.",
-        "signal_class": "Enable"
+        "display_name": "Interrupt Inhibit Load",
+        "signal_class": "Enable",
+        "purpose": "Loads the II register."
       },
       "values": [
         {
@@ -1079,10 +1079,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
-        "display_name": "Pending External-IOT Transfer Load",
         "mnemonic": "IOT_TRANSFER_LOAD",
-        "purpose": "Loads the IOT_TRANSFER register at TP.",
-        "signal_class": "Enable"
+        "display_name": "Pending External-IOT Transfer Load",
+        "signal_class": "Enable",
+        "purpose": "Loads the IOT_TRANSFER register at TP."
       },
       "values": [
         {
@@ -1185,10 +1185,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
-        "display_name": "Instruction Register Load",
         "mnemonic": "IR_LOAD",
-        "purpose": "Loads the IR register.",
-        "signal_class": "Enable"
+        "display_name": "Instruction Register Load",
+        "signal_class": "Enable",
+        "purpose": "Loads the IR register."
       },
       "values": [
         {
@@ -1248,10 +1248,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
-        "display_name": "Link Register Load",
         "mnemonic": "L_LOAD",
-        "purpose": "Loads the Link (L) register.",
-        "signal_class": "Enable"
+        "display_name": "Link Register Load",
+        "signal_class": "Enable",
+        "purpose": "Loads the Link (L) register."
       },
       "values": [
         {
@@ -1375,10 +1375,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
-        "display_name": "Memory Address Load",
         "mnemonic": "MA_LOAD",
-        "purpose": "Loads the MA register.",
-        "signal_class": "Enable"
+        "display_name": "Memory Address Load",
+        "signal_class": "Enable",
+        "purpose": "Loads the MA register."
       },
       "values": [
         {
@@ -1454,10 +1454,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
-        "display_name": "Memory Buffer Load",
         "mnemonic": "MB_LOAD",
-        "purpose": "Loads the MB register.",
-        "signal_class": "Enable"
+        "display_name": "Memory Buffer Load",
+        "signal_class": "Enable",
+        "purpose": "Loads the MB register."
       },
       "values": [
         {
@@ -1549,10 +1549,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
-        "display_name": "Multiplier Quotient Load",
         "mnemonic": "MQ_LOAD",
-        "purpose": "Loads the MQ register.",
-        "signal_class": "Enable"
+        "display_name": "Multiplier Quotient Load",
+        "signal_class": "Enable",
+        "purpose": "Loads the MQ register."
       },
       "values": [
         {
@@ -1628,10 +1628,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
-        "display_name": "Program Counter Increment",
         "mnemonic": "PC_INC",
-        "purpose": "Increments PC via ALU.",
-        "signal_class": "Enable"
+        "display_name": "Program Counter Increment",
+        "signal_class": "Enable",
+        "purpose": "Increments PC via ALU."
       },
       "values": [
         {
@@ -1712,10 +1712,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
-        "display_name": "Program Counter Load",
         "mnemonic": "PC_LOAD",
-        "purpose": "Loads the PC register.",
-        "signal_class": "Enable"
+        "display_name": "Program Counter Load",
+        "signal_class": "Enable",
+        "purpose": "Loads the PC register."
       },
       "values": [
         {
@@ -1798,10 +1798,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "/RD=0 OR /WR=0",
       "attributes": {
-        "display_name": "Address Bus Source Select",
         "mnemonic": "AB_SRC",
-        "purpose": "Selects the address source for memory reads and writes.",
-        "signal_class": "Select"
+        "display_name": "Address Bus Source Select",
+        "signal_class": "Select",
+        "purpose": "Selects the address source for memory reads and writes."
       },
       "values": [
         {
@@ -1852,10 +1852,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "AC_LOAD=1",
       "attributes": {
-        "display_name": "Accumulator Source Select",
         "mnemonic": "AC_SRC",
-        "purpose": "Selects the input source for AC.",
-        "signal_class": "Select"
+        "display_name": "Accumulator Source Select",
+        "signal_class": "Select",
+        "purpose": "Selects the input source for AC."
       },
       "values": [
         {
@@ -2149,10 +2149,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "Any micro-operation listed below is selected",
       "attributes": {
-        "display_name": "ALU Input A Select",
         "mnemonic": "ALU_A_SRC",
-        "purpose": "Select primary ALU operand.",
-        "signal_class": "Select"
+        "display_name": "ALU Input A Select",
+        "signal_class": "Select",
+        "purpose": "Select primary ALU operand."
       },
       "values": [
         {
@@ -2355,10 +2355,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "Any micro-operation listed below is selected",
       "attributes": {
-        "display_name": "ALU Input B Select",
         "mnemonic": "ALU_B_SRC",
-        "purpose": "Select secondary ALU operand.",
-        "signal_class": "Select"
+        "display_name": "ALU Input B Select",
+        "signal_class": "Select",
+        "purpose": "Select secondary ALU operand."
       },
       "values": [
         {
@@ -2586,10 +2586,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "Any micro-operation listed below is selected",
       "attributes": {
-        "display_name": "ALU Operation",
         "mnemonic": "ALU_OP",
-        "purpose": "Defines ALU computation.",
-        "signal_class": "Select"
+        "display_name": "ALU Operation",
+        "signal_class": "Select",
+        "purpose": "Defines ALU computation."
       },
       "values": [
         {
@@ -2881,10 +2881,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "DF_LOAD=1",
       "attributes": {
-        "display_name": "DF Source Select",
         "mnemonic": "DF_SRC",
-        "purpose": "Selects the source input for DF.",
-        "signal_class": "Select"
+        "display_name": "DF Source Select",
+        "signal_class": "Select",
+        "purpose": "Selects the source input for DF."
       },
       "values": [
         {
@@ -2984,10 +2984,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "DIF_LOAD=1",
       "attributes": {
-        "display_name": "DIF Source Select",
         "mnemonic": "DIF_SRC",
-        "purpose": "Selects the source input for DIF.",
-        "signal_class": "Select"
+        "display_name": "DIF Source Select",
+        "signal_class": "Select",
+        "purpose": "Selects the source input for DIF."
       },
       "values": [
         {
@@ -3087,10 +3087,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "EA_ADDR_LOAD=1",
       "attributes": {
-        "display_name": "EA_ADDR Source Select",
         "mnemonic": "EA_ADDR_SRC",
-        "purpose": "Selects the source input for EA_ADDR.",
-        "signal_class": "Select"
+        "display_name": "EA_ADDR Source Select",
+        "signal_class": "Select",
+        "purpose": "Selects the source input for EA_ADDR."
       },
       "values": [
         {
@@ -3166,10 +3166,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "IF_LOAD=1",
       "attributes": {
-        "display_name": "IF Source Select",
         "mnemonic": "IF_SRC",
-        "purpose": "Selects the source input for IF.",
-        "signal_class": "Select"
+        "display_name": "IF Source Select",
+        "signal_class": "Select",
+        "purpose": "Selects the source input for IF."
       },
       "values": [
         {
@@ -3253,10 +3253,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "IDB_DRIVE=1",
       "attributes": {
-        "display_name": "Internal Data Bus Source Select",
         "mnemonic": "IDB_SRC",
-        "purpose": "Selects which source drives the internal datapath bus (IDB).",
-        "signal_class": "Select"
+        "display_name": "Internal Data Bus Source Select",
+        "signal_class": "Select",
+        "purpose": "Selects which source drives the internal datapath bus (IDB)."
       },
       "values": [
         {
@@ -3546,10 +3546,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "L_LOAD=1",
       "attributes": {
-        "display_name": "Link Operation",
         "mnemonic": "L_OP",
-        "purpose": "Selects the operation applied to the Link (L) register.",
-        "signal_class": "Select"
+        "display_name": "Link Operation",
+        "signal_class": "Select",
+        "purpose": "Selects the operation applied to the Link (L) register."
       },
       "values": [
         {
@@ -3696,10 +3696,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "MA_LOAD=1",
       "attributes": {
-        "display_name": "MA Source Select",
         "mnemonic": "MA_SRC",
-        "purpose": "Selects the input source for MA.",
-        "signal_class": "Select"
+        "display_name": "MA Source Select",
+        "signal_class": "Select",
+        "purpose": "Selects the input source for MA."
       },
       "values": [
         {
@@ -3783,10 +3783,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "MB_LOAD=1",
       "attributes": {
-        "display_name": "MB Source Select",
         "mnemonic": "MB_SRC",
-        "purpose": "Selects the input source for MB.",
-        "signal_class": "Select"
+        "display_name": "MB Source Select",
+        "signal_class": "Select",
+        "purpose": "Selects the input source for MB."
       },
       "values": [
         {
@@ -3901,10 +3901,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
-        "display_name": "Memory Data Bus Source Select",
         "mnemonic": "MDB_SRC",
-        "purpose": "Selects the data source used for driving MDB.",
-        "signal_class": "Select"
+        "display_name": "Memory Data Bus Source Select",
+        "signal_class": "Select",
+        "purpose": "Selects the data source used for driving MDB."
       },
       "values": [
         {
@@ -3996,10 +3996,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
-        "display_name": "Memory Field Bus Source Select",
         "mnemonic": "MFB_SRC",
-        "purpose": "Selects the field register that drives the Memory Field Bus (MFB) as EA_FIELD for memory operations.",
-        "signal_class": "Select"
+        "display_name": "Memory Field Bus Source Select",
+        "signal_class": "Select",
+        "purpose": "Selects the field register that drives the Memory Field Bus (MFB) as EA_FIELD for memory operations."
       },
       "values": [
         {
@@ -4071,10 +4071,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "MQ_LOAD=1",
       "attributes": {
-        "display_name": "MQ Source Select",
         "mnemonic": "MQ_SRC",
-        "purpose": "Selects the input source for MQ.",
-        "signal_class": "Select"
+        "display_name": "MQ Source Select",
+        "signal_class": "Select",
+        "purpose": "Selects the input source for MQ."
       },
       "values": [
         {
@@ -4142,10 +4142,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "PC_LOAD=1",
       "attributes": {
-        "display_name": "Program Counter Source Select",
         "mnemonic": "PC_SRC",
-        "purpose": "Selects the input source for PC.",
-        "signal_class": "Select"
+        "display_name": "Program Counter Source Select",
+        "signal_class": "Select",
+        "purpose": "Selects the input source for PC."
       },
       "values": [
         {
@@ -4228,10 +4228,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "CIFP_LOAD=1",
       "attributes": {
-        "display_name": "CIF Pending Value",
         "mnemonic": "CIFP_VAL",
-        "purpose": "Specifies the value to load into the CIFP register.",
-        "signal_class": "Data Value"
+        "display_name": "CIF Pending Value",
+        "signal_class": "Data Value",
+        "purpose": "Specifies the value to load into the CIFP register."
       },
       "values": [
         {
@@ -4299,10 +4299,10 @@
       "explicit_value_required": "No",
       "value_required_when": "AC_LOAD=1 AND AC_SRC=1",
       "attributes": {
-        "display_name": "External I/O Data Input",
         "mnemonic": "DB_INPUT",
-        "purpose": "Provides externally sourced I/O data into the CPU.",
-        "signal_class": "Data Value"
+        "display_name": "External I/O Data Input",
+        "signal_class": "Data Value",
+        "purpose": "Provides externally sourced I/O data into the CPU."
       },
       "values": [],
       "constraints": [
@@ -4343,10 +4343,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "DF_LOAD=1 AND DF_SRC=0",
       "attributes": {
-        "display_name": "DF Value Input",
         "mnemonic": "DF_VAL",
-        "purpose": "Represents the value loaded into DF",
-        "signal_class": "Data Value"
+        "display_name": "DF Value Input",
+        "signal_class": "Data Value",
+        "purpose": "Represents the value loaded into DF"
       },
       "values": [],
       "constraints": [
@@ -4389,10 +4389,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "DIF_LOAD=1 AND DIF_SRC=1",
       "attributes": {
-        "display_name": "DIF Value Input",
         "mnemonic": "DIF_VAL",
-        "purpose": "Represents the value loaded into DIF",
-        "signal_class": "Data Value"
+        "display_name": "DIF Value Input",
+        "signal_class": "Data Value",
+        "purpose": "Represents the value loaded into DIF"
       },
       "values": [],
       "constraints": [
@@ -4426,10 +4426,10 @@
       "explicit_value_required": "No",
       "value_required_when": "AC_LOAD=1 AND AC_SRC=6",
       "attributes": {
-        "display_name": "Processor Flags Word",
         "mnemonic": "GTF_FLAGS",
-        "purpose": "Provides the implemented PDP-8/E processor flags word to the AC input path.",
-        "signal_class": "Data Value"
+        "display_name": "Processor Flags Word",
+        "signal_class": "Data Value",
+        "purpose": "Provides the implemented PDP-8/E processor flags word to the AC input path."
       },
       "values": [],
       "constraints": [
@@ -4498,10 +4498,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "IE_LOAD=1",
       "attributes": {
-        "display_name": "Interrupt Enable Value",
         "mnemonic": "IE_VAL",
-        "purpose": "Specifies the value to load into the IE register",
-        "signal_class": "Data Value"
+        "display_name": "Interrupt Enable Value",
+        "signal_class": "Data Value",
+        "purpose": "Specifies the value to load into the IE register"
       },
       "values": [
         {
@@ -4569,10 +4569,10 @@
       "explicit_value_required": "No",
       "value_required_when": "Any micro-operation listed below is selected",
       "attributes": {
-        "display_name": "IF/DF Combination",
         "mnemonic": "IF_DF_COMBINED",
-        "purpose": "Represents the concatenation of IF and DF",
-        "signal_class": "Data Value"
+        "display_name": "IF/DF Combination",
+        "signal_class": "Data Value",
+        "purpose": "Represents the concatenation of IF and DF"
       },
       "values": [],
       "constraints": [],
@@ -4598,10 +4598,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "IF_LOAD=1 AND IF_SRC=0",
       "attributes": {
-        "display_name": "IF Value Input",
         "mnemonic": "IF_VAL",
-        "purpose": "Represents the value loaded into IF",
-        "signal_class": "Data Value"
+        "display_name": "IF Value Input",
+        "signal_class": "Data Value",
+        "purpose": "Represents the value loaded into IF"
       },
       "values": [],
       "constraints": [
@@ -4644,10 +4644,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "II_LOAD=1",
       "attributes": {
-        "display_name": "Interrupt Inhibit Value",
         "mnemonic": "II_VAL",
-        "purpose": "Specifies the value to load into the II register",
-        "signal_class": "Data Value"
+        "display_name": "Interrupt Inhibit Value",
+        "signal_class": "Data Value",
+        "purpose": "Specifies the value to load into the II register"
       },
       "values": [
         {
@@ -4715,10 +4715,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "IOT_TRANSFER_LOAD=1",
       "attributes": {
-        "display_name": "Pending External-IOT Transfer Value",
         "mnemonic": "IOT_TRANSFER_VAL",
-        "purpose": "Specifies the value loaded into IOT_TRANSFER.",
-        "signal_class": "Data Value"
+        "display_name": "Pending External-IOT Transfer Value",
+        "signal_class": "Data Value",
+        "purpose": "Specifies the value loaded into IOT_TRANSFER."
       },
       "values": [
         {
@@ -4829,10 +4829,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "MA_LOAD=1 AND MA_SRC=2",
       "attributes": {
-        "display_name": "Memory Address Value",
         "mnemonic": "MA_VAL",
-        "purpose": "Specifies the value to load into the MA register",
-        "signal_class": "Data Value"
+        "display_name": "Memory Address Value",
+        "signal_class": "Data Value",
+        "purpose": "Specifies the value to load into the MA register"
       },
       "values": [],
       "constraints": [
@@ -4875,10 +4875,10 @@
       "explicit_value_required": "No",
       "value_required_when": "Any micro-operation listed below is selected",
       "attributes": {
-        "display_name": "Memory Data Bus Input",
         "mnemonic": "MDB_INPUT",
-        "purpose": "Provides data received from memory via the memory data bus (MDB).",
-        "signal_class": "Data Value"
+        "display_name": "Memory Data Bus Input",
+        "signal_class": "Data Value",
+        "purpose": "Provides data received from memory via the memory data bus (MDB)."
       },
       "values": [],
       "constraints": [
@@ -4926,10 +4926,10 @@
       "explicit_value_required": "Conditionally",
       "value_required_when": "PC_LOAD=1 AND PC_SRC=1",
       "attributes": {
-        "display_name": "Program Counter Value",
         "mnemonic": "PC_VAL",
-        "purpose": "Specifies the value to load into the PC register",
-        "signal_class": "Data Value"
+        "display_name": "Program Counter Value",
+        "signal_class": "Data Value",
+        "purpose": "Specifies the value to load into the PC register"
       },
       "values": [],
       "constraints": [
@@ -4972,6 +4972,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
+        "mnemonic": "/RD",
+        "display_name": "Memory Read",
+        "polarity": "Active-low externally (/RD), active-high internally",
+        "domain": "Architectural",
         "description": "Indicates that the CPU is requesting a memory read operation."
       },
       "values": [
@@ -4980,7 +4984,7 @@
           "meaning": "asserted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 99
+            "line": 95
           }
         },
         {
@@ -4988,7 +4992,7 @@
           "meaning": "deasserted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 100
+            "line": 96
           }
         }
       ],
@@ -4997,42 +5001,42 @@
           "text": "must not be asserted simultaneously with /WR",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 118
+            "line": 114
           }
         },
         {
           "text": "does not imply data transfer into any register",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 119
+            "line": 115
           }
         },
         {
           "text": "does not define MDB validity or timing behavior",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 120
+            "line": 116
           }
         },
         {
           "text": "does not select the memory address source",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 121
+            "line": 117
           }
         },
         {
           "text": "does not select the MDB data source",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 122
+            "line": 118
           }
         },
         {
           "text": "must be paired with [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb) or DMA",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 123
+            "line": 119
           }
         }
       ],
@@ -5042,7 +5046,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 126
+            "line": 122
           }
         }
       ],
@@ -5067,6 +5071,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
+        "mnemonic": "/WR",
+        "display_name": "Memory Write",
+        "polarity": "Active-low externally (/WR), active-high internally",
+        "domain": "Architectural",
         "description": "Indicates that the CPU is requesting a memory write operation."
       },
       "values": [
@@ -5075,7 +5083,7 @@
           "meaning": "asserted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 149
+            "line": 141
           }
         },
         {
@@ -5083,7 +5091,7 @@
           "meaning": "deasserted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 150
+            "line": 142
           }
         }
       ],
@@ -5092,28 +5100,28 @@
           "text": "must not be asserted simultaneously with /RD",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 168
+            "line": 160
           }
         },
         {
           "text": "does not select the memory address source",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 169
+            "line": 161
           }
         },
         {
           "text": "does not select the MDB data source",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 170
+            "line": 162
           }
         },
         {
           "text": "must be paired with a valid memory-write μop or DMA",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 171
+            "line": 163
           }
         }
       ],
@@ -5123,7 +5131,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 174
+            "line": 166
           }
         },
         {
@@ -5131,7 +5139,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 175
+            "line": 167
           }
         }
       ],
@@ -5143,7 +5151,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
           "section": "Memory Write (/WR)",
-          "line": 130
+          "line": 126
         }
       }
     },
@@ -5156,10 +5164,11 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
-        "description": "Indicates that the CPU is in MS = DMA and has released normal CPU ownership of the memory interface.",
-        "display_name": "/DMA_GRANT",
+        "mnemonic": "/DMA_GRANT",
+        "display_name": "DMA Grant",
+        "polarity": "Active-low",
         "domain": "Architectural",
-        "polarity": "Active-low"
+        "description": "Indicates that the CPU is in MS = DMA and has released normal CPU ownership of the memory interface."
       },
       "values": [],
       "constraints": [
@@ -5167,49 +5176,49 @@
           "text": "must be generated only by the control word",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 295
+            "line": 292
           }
         },
         {
           "text": "must not be asserted during normal instruction execution",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 296
+            "line": 293
           }
         },
         {
           "text": "must not be asserted concurrently with CPU-initiated /RD or /WR",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 297
+            "line": 294
           }
         },
         {
           "text": "does not itself define DMA address, data, direction, or device selection",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 298
+            "line": 295
           }
         },
         {
           "text": "does not modify CPU architectural state",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 299
+            "line": 296
           }
         },
         {
           "text": "does not modify RUN or HLT_REQ",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 300
+            "line": 297
           }
         },
         {
           "text": "external DMA ownership and multi-device arbitration are outside CPU control and must be resolved before or during DMA service",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 301
+            "line": 298
           }
         }
       ],
@@ -5222,7 +5231,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
           "section": "/DMA_GRANT",
-          "line": 258
+          "line": 254
         }
       }
     },
@@ -5235,6 +5244,8 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
+        "mnemonic": "/DB_READ",
+        "display_name": "DB Read",
         "description": "Indicates that the CPU is performing an I/O read operation and will sample the System Data Bus (DB) during this timing state.",
         "polarity": "Active-low (/DB_READ)"
       },
@@ -5244,7 +5255,7 @@
           "meaning": "asserted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 191
+            "line": 185
           }
         },
         {
@@ -5252,7 +5263,7 @@
           "meaning": "deasserted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 192
+            "line": 186
           }
         }
       ],
@@ -5261,28 +5272,28 @@
           "text": "Must not be asserted concurrently with /DB_WRITE",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 208
+            "line": 202
           }
         },
         {
           "text": "Must not be asserted without DB_READ_TO_AC",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 209
+            "line": 203
           }
         },
         {
           "text": "CPU must not drive DB while /DB_READ is asserted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 210
+            "line": 204
           }
         },
         {
           "text": "DB must be driven by at most one external device",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 211
+            "line": 205
           }
         }
       ],
@@ -5292,7 +5303,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 214
+            "line": 208
           }
         }
       ],
@@ -5304,7 +5315,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
           "section": "/DB_READ",
-          "line": 179
+          "line": 171
         }
       }
     },
@@ -5317,6 +5328,8 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
+        "mnemonic": "/DB_WRITE",
+        "display_name": "DB Write",
         "description": "Indicates that the CPU is performing an I/O write operation and will drive the System Data Bus (DB) during this timing state.",
         "polarity": "Active-low (/DB_WRITE)"
       },
@@ -5326,7 +5339,7 @@
           "meaning": "asserted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 230
+            "line": 226
           }
         },
         {
@@ -5334,7 +5347,7 @@
           "meaning": "deasserted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 231
+            "line": 227
           }
         }
       ],
@@ -5343,28 +5356,28 @@
           "text": "Must not be asserted concurrently with /DB_READ",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 247
+            "line": 243
           }
         },
         {
           "text": "Must not be asserted without DB_WRITE_FROM_AC",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 248
+            "line": 244
           }
         },
         {
           "text": "CPU is the sole driver of DB when this signal is asserted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 249
+            "line": 245
           }
         },
         {
           "text": "External devices must not drive DB during this interval",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 250
+            "line": 246
           }
         }
       ],
@@ -5374,7 +5387,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 254
+            "line": 250
           }
         }
       ],
@@ -5386,7 +5399,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
           "section": "/DB_WRITE",
-          "line": 218
+          "line": 212
         }
       }
     },
@@ -5399,6 +5412,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
+        "mnemonic": "/INITIALIZE",
+        "display_name": "System Initialization",
+        "polarity": "Active-low",
+        "domain": "Architectural",
         "description": "System-wide reset signal asserted by CAF or an accepted front-panel CLEAR operation."
       },
       "values": [],
@@ -5407,63 +5424,63 @@
           "text": "front-panel CLEAR is accepted only when RUN = 0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 498
+            "line": 479
           }
         },
         {
           "text": "front-panel CLEAR is ignored when RUN = 1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 499
+            "line": 480
           }
         },
         {
           "text": "one /INITIALIZE pulse is generated per distinct accepted front-panel CLEAR press",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 500
+            "line": 481
           }
         },
         {
           "text": "a held front-panel CLEAR input must not generate repeated /INITIALIZE pulses",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 501
+            "line": 482
           }
         },
         {
           "text": "front-panel CLEAR is re-armed only after the synchronized input is released",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 502
+            "line": 483
           }
         },
         {
           "text": "CAF has no effect unless execution reaches EXECUTE TP4",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 503
+            "line": 484
           }
         },
         {
           "text": "CAF and front-panel CLEAR produce the same /INITIALIZE action",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 504
+            "line": 485
           }
         },
         {
           "text": "/INITIALIZE does not modify II, CIFP, DIF, IF, DF, or IB",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 505
+            "line": 486
           }
         },
         {
           "text": "controller-specific initialized states are defined in the corresponding controller documents",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 506
+            "line": 487
           }
         }
       ],
@@ -5476,7 +5493,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
           "section": "System Initialization (/INITIALIZE)",
-          "line": 430
+          "line": 415
         }
       }
     },
@@ -5489,6 +5506,10 @@
       "explicit_value_required": "No",
       "value_required_when": "Instruction class is IOT",
       "attributes": {
+        "mnemonic": "IOA[5:0]",
+        "display_name": "I/O Address Bus",
+        "polarity": "Active-high",
+        "domain": "Architectural",
         "description": "Specifies the target I/O device address during execution of IOT instructions."
       },
       "values": [],
@@ -5497,28 +5518,28 @@
           "text": "Meaningful to external controllers only while IOT_ACTIVE is asserted.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 348
+            "line": 341
           }
         },
         {
           "text": "Must not be modified by a micro-operation.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 349
+            "line": 342
           }
         },
         {
           "text": "Does not imply data transfer or direction.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 350
+            "line": 343
           }
         },
         {
           "text": "Does not define device behavior.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 351
+            "line": 344
           }
         }
       ],
@@ -5531,7 +5552,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
           "section": "I/O Address Bus (IOA[5:0])",
-          "line": 309
+          "line": 306
         }
       }
     },
@@ -5544,6 +5565,10 @@
       "explicit_value_required": "No",
       "value_required_when": "Instruction class is IOT",
       "attributes": {
+        "mnemonic": "IOP[2:0]",
+        "display_name": "I/O Operation Field",
+        "polarity": "Active-high",
+        "domain": "Architectural",
         "description": "Presents IR[2:0] unchanged to external I/O controllers during an external IOT."
       },
       "values": [],
@@ -5552,35 +5577,35 @@
           "text": "Does not select a controller.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 381
+            "line": 370
           }
         },
         {
           "text": "Does not directly determine DB direction.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 382
+            "line": 371
           }
         },
         {
           "text": "Does not define controller behavior.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 383
+            "line": 372
           }
         },
         {
           "text": "Must not be interpreted unless IOT_ACTIVE is asserted.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 384
+            "line": 373
           }
         },
         {
           "text": "Must not be modified by a micro-operation.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 385
+            "line": 374
           }
         }
       ],
@@ -5593,7 +5618,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
           "section": "I/O Operation Field (IOP[2:0])",
-          "line": 355
+          "line": 348
         }
       }
     },
@@ -5606,6 +5631,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
+        "mnemonic": "IOT_ACTIVE",
+        "display_name": "External IOT Active",
+        "polarity": "Active-high",
+        "domain": "Architectural",
         "description": "Identifies execution of an external IOT and qualifies IOA, IOP, controller responses, and I/O wait behavior."
       },
       "values": [],
@@ -5614,21 +5643,21 @@
           "text": "Does not itself cause data movement.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 418
+            "line": 403
           }
         },
         {
           "text": "Does not itself cause controller state change.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 419
+            "line": 404
           }
         },
         {
           "text": "Must be paired with IOA, IOP, TS, and TP according to the controller contract.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 420
+            "line": 405
           }
         }
       ],
@@ -5641,7 +5670,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
           "section": "External IOT Active (IOT_ACTIVE)",
-          "line": 391
+          "line": 380
         }
       }
     },
@@ -5654,6 +5683,10 @@
       "explicit_value_required": "Yes",
       "value_required_when": "TS=4",
       "attributes": {
+        "mnemonic": "MS_NEXT",
+        "display_name": "Next Major State",
+        "signal_type": "Encoded field",
+        "domain": "Sequencing",
         "description": "Specifies the next Major State."
       },
       "values": [
@@ -5662,7 +5695,7 @@
           "meaning": "FETCH",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
-            "line": 125
+            "line": 121
           }
         },
         {
@@ -5670,7 +5703,7 @@
           "meaning": "DEFER",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
-            "line": 126
+            "line": 122
           }
         },
         {
@@ -5678,7 +5711,7 @@
           "meaning": "EXECUTE",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
-            "line": 127
+            "line": 123
           }
         },
         {
@@ -5686,7 +5719,7 @@
           "meaning": "INTERRUPT",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
-            "line": 128
+            "line": 124
           }
         },
         {
@@ -5694,7 +5727,7 @@
           "meaning": "DMA",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
-            "line": 129
+            "line": 125
           }
         }
       ],
@@ -5703,21 +5736,21 @@
           "text": "must be defined for all states at TS4",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
-            "line": 140
+            "line": 136
           }
         },
         {
           "text": "must not change outside TS4",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
-            "line": 141
+            "line": 137
           }
         },
         {
           "text": "must not be modified by μops",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
-            "line": 142
+            "line": 138
           }
         }
       ],
@@ -5743,10 +5776,11 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
-        "description": "Specifies the next value of the RUN state.",
-        "display_name": "RUN_NEXT",
+        "mnemonic": "RUN_NEXT",
+        "display_name": "Run State Next Value",
+        "signal_type": "Single-bit state-output field",
         "domain": "Sequencing",
-        "signal_type": "Single-bit state-output field"
+        "description": "Specifies the next value of the RUN state."
       },
       "values": [
         {
@@ -5754,7 +5788,7 @@
           "meaning": "processor halted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
-            "line": 166
+            "line": 163
           }
         },
         {
@@ -5762,7 +5796,7 @@
           "meaning": "processor running",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
-            "line": 167
+            "line": 164
           }
         }
       ],
@@ -5771,28 +5805,28 @@
           "text": "must be defined in every control word",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
-            "line": 171
+            "line": 168
           }
         },
         {
           "text": "must not be computed outside the control store",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
-            "line": 172
+            "line": 169
           }
         },
         {
           "text": "must not be modified by μops",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
-            "line": 173
+            "line": 170
           }
         },
         {
           "text": "must be consumed as a committed state value through [RUN](../10-control-input-definitions/01-flags.md#run)",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
-            "line": 174
+            "line": 171
           }
         }
       ],
@@ -5805,7 +5839,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
           "section": "Run State Next Value (RUN_NEXT)",
-          "line": 146
+          "line": 142
         }
       }
     },
@@ -5818,10 +5852,11 @@
       "explicit_value_required": "Yes",
       "value_required_when": "Always",
       "attributes": {
-        "description": "Specifies the next value of the halt-request pending state.",
-        "display_name": "HLT_REQ_NEXT",
+        "mnemonic": "HLT_REQ_NEXT",
+        "display_name": "Halt Request Next Value",
+        "signal_type": "Single-bit state-output field",
         "domain": "Sequencing",
-        "signal_type": "Single-bit state-output field"
+        "description": "Specifies the next value of the halt-request pending state."
       },
       "values": [
         {
@@ -5829,7 +5864,7 @@
           "meaning": "no halt request pending",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
-            "line": 205
+            "line": 203
           }
         },
         {
@@ -5837,7 +5872,7 @@
           "meaning": "halt request pending",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
-            "line": 206
+            "line": 204
           }
         }
       ],
@@ -5846,28 +5881,28 @@
           "text": "must be defined in every control word",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
-            "line": 210
+            "line": 208
           }
         },
         {
           "text": "must not be computed outside the control store",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
-            "line": 211
+            "line": 209
           }
         },
         {
           "text": "must not be modified by μops",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
-            "line": 212
+            "line": 210
           }
         },
         {
           "text": "must be consumed as a committed state value through [HLT_REQ](../10-control-input-definitions/01-flags.md#hlt_req)",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
-            "line": 213
+            "line": 211
           }
         }
       ],
@@ -5880,7 +5915,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
           "section": "Halt Request Next Value (HLT_REQ_NEXT)",
-          "line": 185
+          "line": 182
         }
       }
     }
