@@ -75,6 +75,9 @@ SCOPE_LABEL = "Applicable context:"
 # A bullet that is a single code span containing `` IF `` is a constraint.
 CODE_SPAN_BULLET_PATTERN = re.compile(r"^\s*-\s+`([^`]*)`\s*$")
 CONSTRAINT_SEPARATOR = " IF "
+# Level-2 section whose constraints are state invariants: they hold in
+# every timing state, so they need no TS heading and no scope.
+INVARIANT_SECTION = "State Invariants"
 
 # ---------------------------------------------------------------------------
 # Data model
@@ -168,6 +171,19 @@ def timing_state_of(section: Section | None) -> int | None:
     return int(match.group(1)) if match else None
 
 
+def invariant_section_of(section: Section | None) -> Section | None:
+    """Return the enclosing State Invariants section, if any."""
+
+    while section is not None:
+        if (
+            section.heading.level == 2
+            and section.heading.title == INVARIANT_SECTION
+        ):
+            return section
+        section = section.parent
+    return None
+
+
 def extract_constraints(
     text: str, source_path: str
 ) -> tuple[list[dict[str, Any]], list[Diagnostic]]:
@@ -245,6 +261,31 @@ def extract_constraints(
             part.strip()
             for part in bullet.group(1).split(CONSTRAINT_SEPARATOR, 1)
         )
+
+        if invariant_section_of(section) is not None:
+            section.constraint_count += 1
+            constraint_id = (
+                f"invariant:{section.heading.number}."
+                f"{section.constraint_count}"
+            )
+            if not requirement or not condition:
+                error(
+                    "MALFORMED_CONSTRAINT",
+                    "Constraint must be 'REQUIREMENT IF CONDITION'.",
+                    line_number,
+                    constraint_id,
+                )
+                continue
+            scope = scope_of(section) or []
+            constraints.append(
+                {
+                    "id": constraint_id,
+                    "context": " AND ".join([*scope, f"({condition})"]),
+                    "requirement": requirement,
+                    "source": {"path": source_path, "line": line_number},
+                }
+            )
+            continue
 
         timing_state = timing_state_of(section)
         if timing_state is None:

@@ -33,7 +33,7 @@ Bullets with other text, code spans without ` IF `, and anything inside code blo
 
 ### 3.2 Timing State
 
-A constraint's nearest enclosing heading must be a numbered timing-state heading, whose title starts with `TS1` to `TS4`, such as `#### 5.2.5 TS3` or `### 3.1 TS1 — Address Setup`. A constraint under any other heading, such as a `TPn` heading, is an error.
+A constraint's nearest enclosing heading must be a numbered timing-state heading, whose title starts with `TS1` to `TS4`, such as `#### 5.2.5 TS3` or `### 3.1 TS1 — Address Setup`. A constraint under any other heading, such as a `TPn` heading, is an error, except inside the State Invariants section (section 3.4).
 
 ### 3.3 Scope
 
@@ -51,6 +51,16 @@ IOT_ACTIVE = 1
 ````
 
 A constraint takes the scope of its nearest enclosing section that declares one. Every constraint must have a scope; a section may declare only one.
+
+### 3.4 State Invariants
+
+A level-2 section titled `State Invariants` holds conditions true in every reachable state, such as `IR_INDIRECT = 1 IF MS = DEFER`. Its constraints use the same bullet form but need no timing-state heading and no scope:
+
+- the id is `invariant:` followed by the enclosing heading's number and the constraint's position under it, such as `invariant:9.1.1`
+- the context is the parenthesized condition, preceded by the nearest scope when one is declared
+- no `TS = n` term is added
+
+Later stages treat invariants exactly like timing constraints: a state whose context holds and whose requirement does not is unreachable.
 
 ## 4. Extracted Representation
 

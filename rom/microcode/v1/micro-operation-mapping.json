@@ -1092,10 +1092,6 @@
         {
           "field": "IF_SRC",
           "value": "0"
-        },
-        {
-          "field": "IF_VAL",
-          "value": "0"
         }
       ],
       "source": {
@@ -1320,10 +1316,6 @@
         {
           "field": "MA_SRC",
           "value": "2"
-        },
-        {
-          "field": "MA_VAL",
-          "value": "0"
         }
       ],
       "source": {
@@ -1588,10 +1580,6 @@
         {
           "field": "PC_SRC",
           "value": "1"
-        },
-        {
-          "field": "PC_VAL",
-          "value": "1"
         }
       ],
       "source": {
@@ -1675,5 +1663,33 @@
       "notes": []
     }
   ],
-  "diagnostics": []
+  "diagnostics": [
+    {
+      "severity": "WARNING",
+      "code": "MAINTAINED_ASSIGNMENT_REMOVED",
+      "message": "Maintained assignment IF_VAL='0' is no longer produced by the Used-by lists.",
+      "micro_operation": "IF_CLEAR",
+      "field_name": "IF_VAL",
+      "source_path": "docs/03-microarchitecture/02-micro-operations.md",
+      "source_line": 904
+    },
+    {
+      "severity": "WARNING",
+      "code": "MAINTAINED_ASSIGNMENT_REMOVED",
+      "message": "Maintained assignment MA_VAL='0' is no longer produced by the Used-by lists.",
+      "micro_operation": "MA_CLEAR",
+      "field_name": "MA_VAL",
+      "source_path": "docs/03-microarchitecture/02-micro-operations.md",
+      "source_line": 1160
+    },
+    {
+      "severity": "WARNING",
+      "code": "MAINTAINED_ASSIGNMENT_REMOVED",
+      "message": "Maintained assignment PC_VAL='1' is no longer produced by the Used-by lists.",
+      "micro_operation": "PC_SET_1",
+      "field_name": "PC_VAL",
+      "source_path": "docs/03-microarchitecture/02-micro-operations.md",
+      "source_line": 1378
+    }
+  ]
 }

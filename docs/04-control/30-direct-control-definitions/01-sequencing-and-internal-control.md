@@ -1955,12 +1955,11 @@ Sources:
 The following control-selected values are completely defined by their corresponding micro-operation mappings and must not be duplicated as direct-control bindings:
 
 - `DF_VAL = 0` for `DF_CLEAR`
-- `IF_VAL = 0` for `IF_CLEAR`
-- `MA_VAL = 0` for `MA_CLEAR`
-- `PC_VAL = 1` for `PC_SET_1`
 - `IOT_TRANSFER_VAL = NONE` for an unconditional `IOT_TRANSFER_CLEAR`
 
 The maintained micro-operation mapping remains responsible for these fixed assignments.
+
+`IF_CLEAR`, `MA_CLEAR`, and `PC_SET_1` select hardwired constant sources (`IF_SRC = 0`, `MA_SRC = 2`, `PC_SRC = 1`) and carry no value field.
 
 Related:
 

@@ -85,12 +85,9 @@ Defined in:
 - [GTF_FLAGS](./01-microarchitectural-control-signals.md#gtf_flags)  
 - [IE_VAL](./01-microarchitectural-control-signals.md#ie_val)  
 - [IF_DF_COMBINED](./01-microarchitectural-control-signals.md#if_df_combined)  
-- [IF_VAL](./01-microarchitectural-control-signals.md#if_val)  
 - [II_VAL](./01-microarchitectural-control-signals.md#ii_val)  
 - [IOT_TRANSFER_VAL](./01-microarchitectural-control-signals.md#iot_transfer_val)
-- [MA_VAL](./01-microarchitectural-control-signals.md#ma_val)  
 - [MDB_INPUT](./01-microarchitectural-control-signals.md#mdb_input)  
-- [PC_VAL](./01-microarchitectural-control-signals.md#pc_val)  
 
 
 ---

@@ -308,12 +308,9 @@ Constraint:
 - [GTF_FLAGS](#gtf_flags)
 - [IE_VAL](#ie_val)
 - [IF_DF_COMBINED](#if_df_combined)
-- [IF_VAL](#if_val)
 - [II_VAL](#ii_val)
 - [IOT_TRANSFER_VAL](#iot_transfer_val)
-- [MA_VAL](#ma_val)
 - [MDB_INPUT](#mdb_input)
-- [PC_VAL](#pc_val)
 
 ---
 
@@ -457,7 +454,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Bit Width:** 2  
 **Default Value:** 0  
 **Explicit Value Required:** Conditionally  
-**Value Required When:** Any micro-operation listed below is selected  
+**Value Required When:** (IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1  
 
 **Purpose:** Select primary ALU operand.
 
@@ -501,7 +498,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Bit Width:** 3  
 **Default Value:** 0  
 **Explicit Value Required:** Conditionally  
-**Value Required When:** Any micro-operation listed below is selected  
+**Value Required When:** (IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1  
 
 **Purpose:** Select secondary ALU operand.
 
@@ -548,7 +545,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Bit Width:** 4  
 **Default Value:** 0  
 **Explicit Value Required:** Conditionally  
-**Value Required When:** Any micro-operation listed below is selected  
+**Value Required When:** (IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1  
 
 **Purpose:** Defines ALU computation.
 
@@ -1193,40 +1190,18 @@ IF_DF_COMBINED[5:3]=IF
 
 **Encoding:**
 ```
-0 → Control
+0 → Zero (hardwired 000)
 1 → DIF
 2 → FP_IF
 3 → reserved
 ```
 
+**Constraints:**
+- Source 0 is a hardwired constant; no control-word value field supplies it.
+
 **Used by μops:**
 - [DIF_TO_IF](../../03-microarchitecture/02-micro-operations.md#dif_to_if) = 1
 - [FP_IF_TO_IF](../../03-microarchitecture/02-micro-operations.md#fp_if_to_if) = 2
-- [IF_CLEAR](../../03-microarchitecture/02-micro-operations.md#if_clear) = 0
-
----
-
-### IF_VAL
-
-**Mnemonic:** IF_VAL  
-**Name:** IF Value Input  
-**Class:** Data Value  
-**Bit Width:** 3  
-**Default Value:** 0  
-**Explicit Value Required:** Conditionally  
-**Value Required When:** IF_LOAD=1 AND IF_SRC=0  
-
-**Purpose:** Represents the value loaded into IF
-
-**Encoding:**
-```
-0 - 7 (octal)
-```
-
-**Constraints:**
-- Only used when IF_SRC = Control
-
-**Used by μops:**
 - [IF_CLEAR](../../03-microarchitecture/02-micro-operations.md#if_clear) = 0
 
 ---
@@ -1497,7 +1472,7 @@ IF_DF_COMBINED[5:3]=IF
 ```
 0 → PC
 1 → EA_ADDR
-2 → Control
+2 → Zero (hardwired 0000)
 3 → reserved
 ```
 
@@ -1507,31 +1482,6 @@ IF_DF_COMBINED[5:3]=IF
 - [EA_ADDR_TO_MA](../../03-microarchitecture/02-micro-operations.md#ea_addr_to_ma) = 1
 - [MA_CLEAR](../../03-microarchitecture/02-micro-operations.md#ma_clear) = 2
 - [PC_TO_MA](../../03-microarchitecture/02-micro-operations.md#pc_to_ma) = 0
-
----
-
-### MA_VAL
-
-**Mnemonic:** MA_VAL  
-**Name:** Memory Address Value  
-**Class:** Data Value  
-**Bit Width:** 12  
-**Default Value:** 0  
-**Explicit Value Required:** Conditionally  
-**Value Required When:** MA_LOAD=1 AND MA_SRC=2  
-
-**Purpose:** Specifies the value to load into the MA register
-
-**Encoding:**
-```
-0-7777 (octal)
-```
-
-**Constraints:**
-- Only valid when MA_SRC == Control
-
-**Used by μops:**
-- [MA_CLEAR](../../03-microarchitecture/02-micro-operations.md#ma_clear) = 0
 
 ---
 
@@ -1808,7 +1758,7 @@ memory bus value
 **Encoding:**
 ```
 0 → IDB
-1 → Control
+1 → Constant 0001 (hardwired)
 ```
 
 **Constraints:**
@@ -1819,31 +1769,6 @@ memory bus value
 - [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc) = 0
 - [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr) = 0
 - [PC_SET_1](../../03-microarchitecture/02-micro-operations.md#pc_set_1) = 1
----
-
-### PC_VAL
-
-**Mnemonic:** PC_VAL  
-**Name:** Program Counter Value  
-**Class:** Data Value  
-**Bit Width:** 12  
-**Default Value:** 0  
-**Explicit Value Required:** Conditionally  
-**Value Required When:** PC_LOAD=1 AND PC_SRC=1  
-
-**Purpose:** Specifies the value to load into the PC register
-
-**Encoding:**
-```
-0-7777 (octal)
-```
-
-**Constraints:**
-- Only valid when PC_SRC == Control
-
-**Used by μops:**
-- [PC_SET_1](../../03-microarchitecture/02-micro-operations.md#pc_set_1) = 1
-
 ---
 
 ## 6. Global Signal Constraints

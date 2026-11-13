@@ -147,6 +147,47 @@ class ConstraintTests(unittest.TestCase):
             ["MS = EXECUTE AND IOT_ACTIVE = 1 AND TS = 3 AND (D)"],
         )
 
+    def test_state_invariants_need_no_timing_state_or_scope(self) -> None:
+        text = (
+            "## 9. State Invariants\n\nProse.\n\n"
+            "### 9.1 DEFER\n\n- `IR_INDIRECT = 1 IF MS = DEFER`\n"
+            "### 9.2 Pending\n\n" + SCOPE + "- `A = 0 IF B = 1`\n"
+            "- `C = 0 IF D = 1`\n"
+        )
+
+        constraints, diagnostics = extract(text)
+
+        self.assertEqual(diagnostics, [])
+        self.assertEqual(
+            [(c["id"], c["context"], c["requirement"]) for c in constraints],
+            [
+                ("invariant:9.1.1", "(MS = DEFER)", "IR_INDIRECT = 1"),
+                (
+                    "invariant:9.2.1",
+                    "MS = EXECUTE AND IOT_ACTIVE = 1 AND (B = 1)",
+                    "A = 0",
+                ),
+                (
+                    "invariant:9.2.2",
+                    "MS = EXECUTE AND IOT_ACTIVE = 1 AND (D = 1)",
+                    "C = 0",
+                ),
+            ],
+        )
+
+    def test_malformed_state_invariant(self) -> None:
+        _, diagnostics = extract("## 9. State Invariants\n\n- `A IF `\n")
+
+        self.assertEqual(codes(diagnostics), ["MALFORMED_CONSTRAINT"])
+        self.assertEqual(diagnostics[0].constraint_id, "invariant:9.1")
+
+    def test_only_a_level_two_invariant_section_counts(self) -> None:
+        _, diagnostics = extract(
+            "## 9. Other\n\n### 9.1 State Invariants\n\n- `A IF B`\n"
+        )
+
+        self.assertIn("MISSING_TIMING_CONTEXT", codes(diagnostics))
+
     def test_constraint_needs_a_timing_state_heading(self) -> None:
         text = (
             "## 5. A\n\n" + SCOPE + "- `A IF B`\n"

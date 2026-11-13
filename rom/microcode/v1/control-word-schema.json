@@ -29,7 +29,7 @@
           "meaning": "no load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 366
+            "line": 363
           }
         },
         {
@@ -37,7 +37,7 @@
           "meaning": "load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 367
+            "line": 364
           }
         }
       ],
@@ -48,7 +48,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 373
+            "line": 370
           }
         },
         {
@@ -56,7 +56,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 374
+            "line": 371
           }
         },
         {
@@ -64,7 +64,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 375
+            "line": 372
           }
         },
         {
@@ -72,7 +72,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 376
+            "line": 373
           }
         },
         {
@@ -80,7 +80,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 377
+            "line": 374
           }
         },
         {
@@ -88,7 +88,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 378
+            "line": 375
           }
         },
         {
@@ -96,7 +96,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 379
+            "line": 376
           }
         },
         {
@@ -104,7 +104,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 380
+            "line": 377
           }
         },
         {
@@ -112,7 +112,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 381
+            "line": 378
           }
         },
         {
@@ -120,7 +120,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 382
+            "line": 379
           }
         },
         {
@@ -128,7 +128,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 383
+            "line": 380
           }
         },
         {
@@ -136,7 +136,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 384
+            "line": 381
           }
         },
         {
@@ -144,7 +144,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 385
+            "line": 382
           }
         },
         {
@@ -152,7 +152,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 386
+            "line": 383
           }
         },
         {
@@ -160,7 +160,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 387
+            "line": 384
           }
         },
         {
@@ -168,7 +168,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 388
+            "line": 385
           }
         },
         {
@@ -176,7 +176,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 389
+            "line": 386
           }
         },
         {
@@ -184,7 +184,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 390
+            "line": 387
           }
         },
         {
@@ -192,7 +192,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 391
+            "line": 388
           }
         }
       ],
@@ -204,7 +204,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "AC_LOAD",
-          "line": 351
+          "line": 348
         }
       }
     },
@@ -228,7 +228,7 @@
           "meaning": "no load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 612
+            "line": 609
           }
         },
         {
@@ -236,7 +236,7 @@
           "meaning": "load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 613
+            "line": 610
           }
         }
       ],
@@ -245,7 +245,7 @@
           "text": "Uses direct load path (no ALU or IDB involvement)",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 617
+            "line": 614
           }
         }
       ],
@@ -255,7 +255,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 620
+            "line": 617
           }
         },
         {
@@ -263,7 +263,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 621
+            "line": 618
           }
         }
       ],
@@ -275,7 +275,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "CIFP_LOAD",
-          "line": 598
+          "line": 595
         }
       }
     },
@@ -299,7 +299,7 @@
           "meaning": "no load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 692
+            "line": 689
           }
         },
         {
@@ -307,7 +307,7 @@
           "meaning": "load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 693
+            "line": 690
           }
         }
       ],
@@ -316,7 +316,7 @@
           "text": "Uses direct load path (no ALU or IDB involvement)",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 697
+            "line": 694
           }
         }
       ],
@@ -326,7 +326,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 700
+            "line": 697
           }
         },
         {
@@ -334,7 +334,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 701
+            "line": 698
           }
         },
         {
@@ -342,7 +342,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 702
+            "line": 699
           }
         },
         {
@@ -350,7 +350,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 703
+            "line": 700
           }
         },
         {
@@ -358,7 +358,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 704
+            "line": 701
           }
         }
       ],
@@ -370,7 +370,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "DF_LOAD",
-          "line": 678
+          "line": 675
         }
       }
     },
@@ -394,7 +394,7 @@
           "meaning": "no load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 776
+            "line": 773
           }
         },
         {
@@ -402,7 +402,7 @@
           "meaning": "load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 777
+            "line": 774
           }
         }
       ],
@@ -411,7 +411,7 @@
           "text": "Uses direct load path (no ALU or IDB involvement)",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 781
+            "line": 778
           }
         }
       ],
@@ -421,7 +421,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 784
+            "line": 781
           }
         },
         {
@@ -429,7 +429,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 785
+            "line": 782
           }
         },
         {
@@ -437,7 +437,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 786
+            "line": 783
           }
         },
         {
@@ -445,7 +445,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 787
+            "line": 784
           }
         },
         {
@@ -453,7 +453,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 788
+            "line": 785
           }
         }
       ],
@@ -465,7 +465,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "DIF_LOAD",
-          "line": 762
+          "line": 759
         }
       }
     },
@@ -489,7 +489,7 @@
           "meaning": "no load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 859
+            "line": 856
           }
         },
         {
@@ -497,7 +497,7 @@
           "meaning": "load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 860
+            "line": 857
           }
         }
       ],
@@ -506,7 +506,7 @@
           "text": "Must not conflict with other EA writers",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 864
+            "line": 861
           }
         }
       ],
@@ -516,7 +516,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 867
+            "line": 864
           }
         },
         {
@@ -524,7 +524,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 868
+            "line": 865
           }
         },
         {
@@ -532,7 +532,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 869
+            "line": 866
           }
         }
       ],
@@ -544,7 +544,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "EA_ADDR_LOAD",
-          "line": 845
+          "line": 842
         }
       }
     },
@@ -568,7 +568,7 @@
           "meaning": "no load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 959
+            "line": 956
           }
         },
         {
@@ -576,7 +576,7 @@
           "meaning": "load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 960
+            "line": 957
           }
         }
       ],
@@ -585,7 +585,7 @@
           "text": "Uses direct load path (no ALU or IDB involvement)",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 964
+            "line": 961
           }
         }
       ],
@@ -595,7 +595,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 967
+            "line": 964
           }
         }
       ],
@@ -607,7 +607,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "IB_LOAD",
-          "line": 945
+          "line": 942
         }
       }
     },
@@ -631,7 +631,7 @@
           "meaning": "no drive",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 985
+            "line": 982
           }
         },
         {
@@ -639,7 +639,7 @@
           "meaning": "drive IDB",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 986
+            "line": 983
           }
         }
       ],
@@ -648,14 +648,14 @@
           "text": "Must be asserted when IDB_SRC is used",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 990
+            "line": 987
           }
         },
         {
           "text": "Only one source may drive the IDB per cycle",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 991
+            "line": 988
           }
         }
       ],
@@ -665,7 +665,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 994
+            "line": 991
           }
         },
         {
@@ -673,7 +673,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 995
+            "line": 992
           }
         },
         {
@@ -681,7 +681,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 996
+            "line": 993
           }
         },
         {
@@ -689,7 +689,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 997
+            "line": 994
           }
         },
         {
@@ -697,7 +697,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 998
+            "line": 995
           }
         },
         {
@@ -705,7 +705,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 999
+            "line": 996
           }
         },
         {
@@ -713,7 +713,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1000
+            "line": 997
           }
         },
         {
@@ -721,7 +721,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1001
+            "line": 998
           }
         },
         {
@@ -729,7 +729,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1002
+            "line": 999
           }
         },
         {
@@ -737,7 +737,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1003
+            "line": 1000
           }
         },
         {
@@ -745,7 +745,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1004
+            "line": 1001
           }
         },
         {
@@ -753,7 +753,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1005
+            "line": 1002
           }
         },
         {
@@ -761,7 +761,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1006
+            "line": 1003
           }
         },
         {
@@ -769,7 +769,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1007
+            "line": 1004
           }
         },
         {
@@ -777,7 +777,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1008
+            "line": 1005
           }
         },
         {
@@ -785,7 +785,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1009
+            "line": 1006
           }
         },
         {
@@ -793,7 +793,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1010
+            "line": 1007
           }
         },
         {
@@ -801,7 +801,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1011
+            "line": 1008
           }
         },
         {
@@ -809,7 +809,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1012
+            "line": 1009
           }
         },
         {
@@ -817,7 +817,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1013
+            "line": 1010
           }
         },
         {
@@ -825,7 +825,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1014
+            "line": 1011
           }
         },
         {
@@ -833,7 +833,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1015
+            "line": 1012
           }
         }
       ],
@@ -845,7 +845,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "IDB_DRIVE",
-          "line": 971
+          "line": 968
         }
       }
     },
@@ -869,7 +869,7 @@
           "meaning": "no load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1090
+            "line": 1087
           }
         },
         {
@@ -877,7 +877,7 @@
           "meaning": "load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1091
+            "line": 1088
           }
         }
       ],
@@ -886,7 +886,7 @@
           "text": "Uses direct load path (no ALU or IDB involvement)",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1095
+            "line": 1092
           }
         }
       ],
@@ -896,7 +896,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1098
+            "line": 1095
           }
         },
         {
@@ -904,7 +904,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1099
+            "line": 1096
           }
         }
       ],
@@ -916,7 +916,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "IE_LOAD",
-          "line": 1076
+          "line": 1073
         }
       }
     },
@@ -940,7 +940,7 @@
           "meaning": "no load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1168
+            "line": 1165
           }
         },
         {
@@ -948,7 +948,7 @@
           "meaning": "load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1169
+            "line": 1166
           }
         }
       ],
@@ -957,7 +957,7 @@
           "text": "Uses direct load path (no ALU or IDB involvement)",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1173
+            "line": 1170
           }
         }
       ],
@@ -967,7 +967,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1176
+            "line": 1173
           }
         },
         {
@@ -975,7 +975,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1177
+            "line": 1174
           }
         },
         {
@@ -983,7 +983,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1178
+            "line": 1175
           }
         }
       ],
@@ -995,7 +995,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "IF_LOAD",
-          "line": 1154
+          "line": 1151
         }
       }
     },
@@ -1019,7 +1019,7 @@
           "meaning": "no load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1248
+            "line": 1223
           }
         },
         {
@@ -1027,7 +1027,7 @@
           "meaning": "load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1249
+            "line": 1224
           }
         }
       ],
@@ -1036,7 +1036,7 @@
           "text": "Uses direct load path (no ALU or IDB involvement)",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1253
+            "line": 1228
           }
         }
       ],
@@ -1046,7 +1046,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1256
+            "line": 1231
           }
         },
         {
@@ -1054,7 +1054,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1257
+            "line": 1232
           }
         }
       ],
@@ -1066,7 +1066,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "II_LOAD",
-          "line": 1234
+          "line": 1209
         }
       }
     },
@@ -1090,7 +1090,7 @@
           "meaning": "no load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1303
+            "line": 1278
           }
         },
         {
@@ -1098,7 +1098,7 @@
           "meaning": "load IOT_TRANSFER",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1304
+            "line": 1279
           }
         }
       ],
@@ -1107,42 +1107,42 @@
           "text": "May be asserted only during external-IOT EXECUTE.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1309
+            "line": 1284
           }
         },
         {
           "text": "At TP2 or TP3, it may capture an accepted transfer request.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1310
+            "line": 1285
           }
         },
         {
           "text": "At the commit TP of a pending transfer, it clears the completed transfer or replaces it with a newly accepted transfer.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1311
+            "line": 1286
           }
         },
         {
           "text": "A transfer accepted at TP2 executes during TS3 and commits at TP3.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1312
+            "line": 1287
           }
         },
         {
           "text": "A transfer accepted at TP3 executes during TS4 and commits at TP4.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1313
+            "line": 1288
           }
         },
         {
           "text": "It uses a direct load path and does not involve the ALU or IDB.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1314
+            "line": 1289
           }
         }
       ],
@@ -1152,7 +1152,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1318
+            "line": 1293
           }
         },
         {
@@ -1160,7 +1160,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1319
+            "line": 1294
           }
         }
       ],
@@ -1172,7 +1172,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "IOT_TRANSFER_LOAD",
-          "line": 1288
+          "line": 1263
         }
       }
     },
@@ -1196,7 +1196,7 @@
           "meaning": "no load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1373
+            "line": 1348
           }
         },
         {
@@ -1204,7 +1204,7 @@
           "meaning": "load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1374
+            "line": 1349
           }
         }
       ],
@@ -1213,7 +1213,7 @@
           "text": "Requires valid instruction present in MB",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1378
+            "line": 1353
           }
         }
       ],
@@ -1223,7 +1223,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1381
+            "line": 1356
           }
         }
       ],
@@ -1235,7 +1235,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "IR_LOAD",
-          "line": 1359
+          "line": 1334
         }
       }
     },
@@ -1259,7 +1259,7 @@
           "meaning": "no load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1399
+            "line": 1374
           }
         },
         {
@@ -1267,7 +1267,7 @@
           "meaning": "load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1400
+            "line": 1375
           }
         }
       ],
@@ -1276,7 +1276,7 @@
           "text": "Typically used with ALU operations affecting carry or rotate",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1404
+            "line": 1379
           }
         }
       ],
@@ -1286,7 +1286,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1407
+            "line": 1382
           }
         },
         {
@@ -1294,7 +1294,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1408
+            "line": 1383
           }
         },
         {
@@ -1302,7 +1302,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1409
+            "line": 1384
           }
         },
         {
@@ -1310,7 +1310,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1410
+            "line": 1385
           }
         },
         {
@@ -1318,7 +1318,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1411
+            "line": 1386
           }
         },
         {
@@ -1326,7 +1326,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1412
+            "line": 1387
           }
         },
         {
@@ -1334,7 +1334,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1413
+            "line": 1388
           }
         },
         {
@@ -1342,7 +1342,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1414
+            "line": 1389
           }
         },
         {
@@ -1350,7 +1350,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1415
+            "line": 1390
           }
         }
       ],
@@ -1362,7 +1362,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "L_LOAD",
-          "line": 1385
+          "line": 1360
         }
       }
     },
@@ -1386,7 +1386,7 @@
           "meaning": "no load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1470
+            "line": 1445
           }
         },
         {
@@ -1394,7 +1394,7 @@
           "meaning": "load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1471
+            "line": 1446
           }
         }
       ],
@@ -1403,7 +1403,7 @@
           "text": "Must not conflict with other MA writers",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1475
+            "line": 1450
           }
         }
       ],
@@ -1413,7 +1413,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1478
+            "line": 1453
           }
         },
         {
@@ -1421,7 +1421,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1479
+            "line": 1454
           }
         },
         {
@@ -1429,7 +1429,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1480
+            "line": 1455
           }
         }
       ],
@@ -1441,7 +1441,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "MA_LOAD",
-          "line": 1456
+          "line": 1431
         }
       }
     },
@@ -1465,7 +1465,7 @@
           "meaning": "no load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1552
+            "line": 1502
           }
         },
         {
@@ -1473,7 +1473,7 @@
           "meaning": "load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1553
+            "line": 1503
           }
         }
       ],
@@ -1482,7 +1482,7 @@
           "text": "Must not conflict with other MB writers",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1557
+            "line": 1507
           }
         }
       ],
@@ -1492,7 +1492,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1560
+            "line": 1510
           }
         },
         {
@@ -1500,7 +1500,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1561
+            "line": 1511
           }
         },
         {
@@ -1508,7 +1508,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1562
+            "line": 1512
           }
         },
         {
@@ -1516,7 +1516,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1563
+            "line": 1513
           }
         },
         {
@@ -1524,7 +1524,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1564
+            "line": 1514
           }
         }
       ],
@@ -1536,7 +1536,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "MB_LOAD",
-          "line": 1538
+          "line": 1488
         }
       }
     },
@@ -1560,7 +1560,7 @@
           "meaning": "no load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1697
+            "line": 1647
           }
         },
         {
@@ -1568,7 +1568,7 @@
           "meaning": "load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1698
+            "line": 1648
           }
         }
       ],
@@ -1577,7 +1577,7 @@
           "text": "Requires a valid source",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1702
+            "line": 1652
           }
         }
       ],
@@ -1587,7 +1587,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1705
+            "line": 1655
           }
         },
         {
@@ -1595,7 +1595,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1706
+            "line": 1656
           }
         },
         {
@@ -1603,7 +1603,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1707
+            "line": 1657
           }
         }
       ],
@@ -1615,7 +1615,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "MQ_LOAD",
-          "line": 1683
+          "line": 1633
         }
       }
     },
@@ -1639,7 +1639,7 @@
           "meaning": "no increment",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1752
+            "line": 1702
           }
         },
         {
@@ -1647,7 +1647,7 @@
           "meaning": "increment",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1753
+            "line": 1703
           }
         }
       ],
@@ -1656,28 +1656,28 @@
           "text": "Requires ALU to be configured with:",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1757
+            "line": 1707
           }
         },
         {
           "text": "ALU_OP = INC",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1758
+            "line": 1708
           }
         },
         {
           "text": "ALU_A_SRC = PC",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1759
+            "line": 1709
           }
         },
         {
           "text": "Must not be asserted simultaneously with PC_LOAD",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1760
+            "line": 1710
           }
         }
       ],
@@ -1687,7 +1687,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1763
+            "line": 1713
           }
         }
       ],
@@ -1699,7 +1699,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "PC_INC",
-          "line": 1738
+          "line": 1688
         }
       }
     },
@@ -1723,7 +1723,7 @@
           "meaning": "no load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1781
+            "line": 1731
           }
         },
         {
@@ -1731,7 +1731,7 @@
           "meaning": "load",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1782
+            "line": 1732
           }
         }
       ],
@@ -1740,14 +1740,14 @@
           "text": "Must not be asserted simultaneously with PC_INC",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1786
+            "line": 1736
           }
         },
         {
           "text": "Exactly one source must drive PC input when asserted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1787
+            "line": 1737
           }
         }
       ],
@@ -1757,7 +1757,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1790
+            "line": 1740
           }
         },
         {
@@ -1765,7 +1765,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1791
+            "line": 1741
           }
         },
         {
@@ -1773,7 +1773,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1792
+            "line": 1742
           }
         }
       ],
@@ -1785,7 +1785,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "PC_LOAD",
-          "line": 1767
+          "line": 1717
         }
       }
     },
@@ -1809,7 +1809,7 @@
           "meaning": "MA",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 340
+            "line": 337
           }
         },
         {
@@ -1817,7 +1817,7 @@
           "meaning": "PC",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 341
+            "line": 338
           }
         }
       ],
@@ -1826,7 +1826,7 @@
           "text": "Drive must be asserted via either /RD or /WR",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 345
+            "line": 342
           }
         }
       ],
@@ -1839,7 +1839,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "AB_SRC",
-          "line": 326
+          "line": 323
         }
       }
     },
@@ -1863,7 +1863,7 @@
           "meaning": "IDB",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 410
+            "line": 407
           }
         },
         {
@@ -1871,7 +1871,7 @@
           "meaning": "DB",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 411
+            "line": 408
           }
         },
         {
@@ -1879,7 +1879,7 @@
           "meaning": "IF (field-merge)",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 412
+            "line": 409
           }
         },
         {
@@ -1887,7 +1887,7 @@
           "meaning": "DF (field-merge)",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 413
+            "line": 410
           }
         },
         {
@@ -1895,7 +1895,7 @@
           "meaning": "IB (field-merge)",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 414
+            "line": 411
           }
         },
         {
@@ -1903,7 +1903,7 @@
           "meaning": "MQ",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 415
+            "line": 412
           }
         },
         {
@@ -1911,7 +1911,7 @@
           "meaning": "GTF_FLAGS",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 416
+            "line": 413
           }
         },
         {
@@ -1919,7 +1919,7 @@
           "meaning": "reserved",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 417
+            "line": 414
           }
         }
       ],
@@ -1928,49 +1928,49 @@
           "text": "ALU is the source for all arithmetic/logical AC loads via the IDB",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 421
+            "line": 418
           }
         },
         {
           "text": "DB is the source for I/O data ingestion (DB_READ_TO_AC); the DB value is OR'd into AC",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 422
+            "line": 419
           }
         },
         {
           "text": "Field-merge encodings OR the selected field into its DEC-defined AC bit positions and preserve all other AC bits:",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 423
+            "line": 420
           }
         },
         {
           "text": "IF, DF → AC[5:3]",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 424
+            "line": 421
           }
         },
         {
           "text": "IB → AC[5:3] (saved IF), AC[2:0] (saved DF)",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 425
+            "line": 422
           }
         },
         {
           "text": "MQ replaces AC in full (AC ← MQ), not a merge or OR; used by AC_MQ_SWAP",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 426
+            "line": 423
           }
         },
         {
           "text": "GTF_FLAGS is ORed into AC and is used only after AC_CLEAR has committed at the preceding TP.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 427
+            "line": 424
           }
         }
       ],
@@ -1980,7 +1980,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 430
+            "line": 427
           }
         },
         {
@@ -1988,7 +1988,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 431
+            "line": 428
           }
         },
         {
@@ -1996,7 +1996,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 432
+            "line": 429
           }
         },
         {
@@ -2004,7 +2004,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 433
+            "line": 430
           }
         },
         {
@@ -2012,7 +2012,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 434
+            "line": 431
           }
         },
         {
@@ -2020,7 +2020,7 @@
           "value": "5",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 435
+            "line": 432
           }
         },
         {
@@ -2028,7 +2028,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 436
+            "line": 433
           }
         },
         {
@@ -2036,7 +2036,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 437
+            "line": 434
           }
         },
         {
@@ -2044,7 +2044,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 438
+            "line": 435
           }
         },
         {
@@ -2052,7 +2052,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 439
+            "line": 436
           }
         },
         {
@@ -2060,7 +2060,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 440
+            "line": 437
           }
         },
         {
@@ -2068,7 +2068,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 441
+            "line": 438
           }
         },
         {
@@ -2076,7 +2076,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 442
+            "line": 439
           }
         },
         {
@@ -2084,7 +2084,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 443
+            "line": 440
           }
         },
         {
@@ -2092,7 +2092,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 444
+            "line": 441
           }
         },
         {
@@ -2100,7 +2100,7 @@
           "value": "3",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 445
+            "line": 442
           }
         },
         {
@@ -2108,7 +2108,7 @@
           "value": "6",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 446
+            "line": 443
           }
         },
         {
@@ -2116,7 +2116,7 @@
           "value": "4",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 447
+            "line": 444
           }
         },
         {
@@ -2124,7 +2124,7 @@
           "value": "2",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 448
+            "line": 445
           }
         }
       ],
@@ -2136,7 +2136,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "AC_SRC",
-          "line": 395
+          "line": 392
         }
       }
     },
@@ -2147,7 +2147,7 @@
       "control_word_role": "encoded",
       "default_value": "0",
       "explicit_value_required": "Conditionally",
-      "value_required_when": "Any micro-operation listed below is selected",
+      "value_required_when": "(IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1",
       "attributes": {
         "mnemonic": "ALU_A_SRC",
         "display_name": "ALU Input A Select",
@@ -2160,7 +2160,7 @@
           "meaning": "AC",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 466
+            "line": 463
           }
         },
         {
@@ -2168,7 +2168,7 @@
           "meaning": "MB",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 467
+            "line": 464
           }
         },
         {
@@ -2176,7 +2176,7 @@
           "meaning": "PC",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 468
+            "line": 465
           }
         },
         {
@@ -2184,7 +2184,7 @@
           "meaning": "L",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 469
+            "line": 466
           }
         }
       ],
@@ -2193,14 +2193,14 @@
           "text": "Must be valid every cycle",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 473
+            "line": 470
           }
         },
         {
           "text": "Required for all ALU operations",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 474
+            "line": 471
           }
         }
       ],
@@ -2210,7 +2210,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 477
+            "line": 474
           }
         },
         {
@@ -2218,7 +2218,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 478
+            "line": 475
           }
         },
         {
@@ -2226,7 +2226,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 479
+            "line": 476
           }
         },
         {
@@ -2234,7 +2234,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 480
+            "line": 477
           }
         },
         {
@@ -2242,7 +2242,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 481
+            "line": 478
           }
         },
         {
@@ -2250,7 +2250,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 482
+            "line": 479
           }
         },
         {
@@ -2258,7 +2258,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 483
+            "line": 480
           }
         },
         {
@@ -2266,7 +2266,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 484
+            "line": 481
           }
         },
         {
@@ -2274,7 +2274,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 485
+            "line": 482
           }
         },
         {
@@ -2282,7 +2282,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 486
+            "line": 483
           }
         },
         {
@@ -2290,7 +2290,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 487
+            "line": 484
           }
         },
         {
@@ -2298,7 +2298,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 488
+            "line": 485
           }
         },
         {
@@ -2306,7 +2306,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 489
+            "line": 486
           }
         },
         {
@@ -2314,7 +2314,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 490
+            "line": 487
           }
         },
         {
@@ -2322,7 +2322,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 491
+            "line": 488
           }
         },
         {
@@ -2330,7 +2330,7 @@
           "value": "2",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 492
+            "line": 489
           }
         }
       ],
@@ -2342,7 +2342,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "ALU_A_SRC",
-          "line": 452
+          "line": 449
         }
       }
     },
@@ -2353,7 +2353,7 @@
       "control_word_role": "encoded",
       "default_value": "0",
       "explicit_value_required": "Conditionally",
-      "value_required_when": "Any micro-operation listed below is selected",
+      "value_required_when": "(IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1",
       "attributes": {
         "mnemonic": "ALU_B_SRC",
         "display_name": "ALU Input B Select",
@@ -2366,7 +2366,7 @@
           "meaning": "NONE",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 510
+            "line": 507
           }
         },
         {
@@ -2374,7 +2374,7 @@
           "meaning": "AC",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 511
+            "line": 508
           }
         },
         {
@@ -2382,7 +2382,7 @@
           "meaning": "MB",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 512
+            "line": 509
           }
         },
         {
@@ -2390,7 +2390,7 @@
           "meaning": "MQ",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 513
+            "line": 510
           }
         },
         {
@@ -2398,7 +2398,7 @@
           "meaning": "FP_SR",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 514
+            "line": 511
           }
         },
         {
@@ -2406,7 +2406,7 @@
           "meaning": "PC",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 515
+            "line": 512
           }
         },
         {
@@ -2414,7 +2414,7 @@
           "meaning": "L",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 516
+            "line": 513
           }
         },
         {
@@ -2422,7 +2422,7 @@
           "meaning": "reserved",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 517
+            "line": 514
           }
         }
       ],
@@ -2431,7 +2431,7 @@
           "text": "NONE required for unary operations",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 521
+            "line": 518
           }
         }
       ],
@@ -2441,7 +2441,7 @@
           "value": "2",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 524
+            "line": 521
           }
         },
         {
@@ -2449,7 +2449,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 525
+            "line": 522
           }
         },
         {
@@ -2457,7 +2457,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 526
+            "line": 523
           }
         },
         {
@@ -2465,7 +2465,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 527
+            "line": 524
           }
         },
         {
@@ -2473,7 +2473,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 528
+            "line": 525
           }
         },
         {
@@ -2481,7 +2481,7 @@
           "value": "4",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 529
+            "line": 526
           }
         },
         {
@@ -2489,7 +2489,7 @@
           "value": "3",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 530
+            "line": 527
           }
         },
         {
@@ -2497,7 +2497,7 @@
           "value": "6",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 531
+            "line": 528
           }
         },
         {
@@ -2505,7 +2505,7 @@
           "value": "6",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 532
+            "line": 529
           }
         },
         {
@@ -2513,7 +2513,7 @@
           "value": "6",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 533
+            "line": 530
           }
         },
         {
@@ -2521,7 +2521,7 @@
           "value": "6",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 534
+            "line": 531
           }
         },
         {
@@ -2529,7 +2529,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 535
+            "line": 532
           }
         },
         {
@@ -2537,7 +2537,7 @@
           "value": "2",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 536
+            "line": 533
           }
         },
         {
@@ -2545,7 +2545,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 537
+            "line": 534
           }
         },
         {
@@ -2553,7 +2553,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 538
+            "line": 535
           }
         },
         {
@@ -2561,7 +2561,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 539
+            "line": 536
           }
         }
       ],
@@ -2573,7 +2573,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "ALU_B_SRC",
-          "line": 496
+          "line": 493
         }
       }
     },
@@ -2584,7 +2584,7 @@
       "control_word_role": "encoded",
       "default_value": "0",
       "explicit_value_required": "Conditionally",
-      "value_required_when": "Any micro-operation listed below is selected",
+      "value_required_when": "(IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1",
       "attributes": {
         "mnemonic": "ALU_OP",
         "display_name": "ALU Operation",
@@ -2597,7 +2597,7 @@
           "meaning": "ADD",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 557
+            "line": 554
           }
         },
         {
@@ -2605,7 +2605,7 @@
           "meaning": "AND",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 558
+            "line": 555
           }
         },
         {
@@ -2613,7 +2613,7 @@
           "meaning": "OR",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 559
+            "line": 556
           }
         },
         {
@@ -2621,7 +2621,7 @@
           "meaning": "NOT",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 560
+            "line": 557
           }
         },
         {
@@ -2629,7 +2629,7 @@
           "meaning": "INC",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 561
+            "line": 558
           }
         },
         {
@@ -2637,7 +2637,7 @@
           "meaning": "ROR",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 562
+            "line": 559
           }
         },
         {
@@ -2645,7 +2645,7 @@
           "meaning": "ROL",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 563
+            "line": 560
           }
         },
         {
@@ -2653,7 +2653,7 @@
           "meaning": "RTR",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 564
+            "line": 561
           }
         },
         {
@@ -2661,7 +2661,7 @@
           "meaning": "RTL",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 565
+            "line": 562
           }
         },
         {
@@ -2669,7 +2669,7 @@
           "meaning": "BSW",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 566
+            "line": 563
           }
         },
         {
@@ -2677,7 +2677,7 @@
           "meaning": "CLEAR",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 567
+            "line": 564
           }
         },
         {
@@ -2685,7 +2685,7 @@
           "meaning": "reserved",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 568
+            "line": 565
           }
         },
         {
@@ -2693,7 +2693,7 @@
           "meaning": "reserved",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 569
+            "line": 566
           }
         },
         {
@@ -2701,7 +2701,7 @@
           "meaning": "reserved",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 570
+            "line": 567
           }
         },
         {
@@ -2709,7 +2709,7 @@
           "meaning": "reserved",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 571
+            "line": 568
           }
         },
         {
@@ -2717,7 +2717,7 @@
           "meaning": "reserved",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 572
+            "line": 569
           }
         }
       ],
@@ -2726,7 +2726,7 @@
           "text": "Result valid only if captured by a load signal",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 576
+            "line": 573
           }
         }
       ],
@@ -2736,7 +2736,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 579
+            "line": 576
           }
         },
         {
@@ -2744,7 +2744,7 @@
           "value": "11",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 580
+            "line": 577
           }
         },
         {
@@ -2752,7 +2752,7 @@
           "value": "12",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 581
+            "line": 578
           }
         },
         {
@@ -2760,7 +2760,7 @@
           "value": "3",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 582
+            "line": 579
           }
         },
         {
@@ -2768,7 +2768,7 @@
           "value": "4",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 583
+            "line": 580
           }
         },
         {
@@ -2776,7 +2776,7 @@
           "value": "2",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 584
+            "line": 581
           }
         },
         {
@@ -2784,7 +2784,7 @@
           "value": "2",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 585
+            "line": 582
           }
         },
         {
@@ -2792,7 +2792,7 @@
           "value": "6",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 586
+            "line": 583
           }
         },
         {
@@ -2800,7 +2800,7 @@
           "value": "5",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 587
+            "line": 584
           }
         },
         {
@@ -2808,7 +2808,7 @@
           "value": "10",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 588
+            "line": 585
           }
         },
         {
@@ -2816,7 +2816,7 @@
           "value": "7",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 589
+            "line": 586
           }
         },
         {
@@ -2824,7 +2824,7 @@
           "value": "12",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 590
+            "line": 587
           }
         },
         {
@@ -2832,7 +2832,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 591
+            "line": 588
           }
         },
         {
@@ -2840,7 +2840,7 @@
           "value": "4",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 592
+            "line": 589
           }
         },
         {
@@ -2848,7 +2848,7 @@
           "value": "12",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 593
+            "line": 590
           }
         },
         {
@@ -2856,7 +2856,7 @@
           "value": "4",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 594
+            "line": 591
           }
         }
       ],
@@ -2868,7 +2868,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "ALU_OP",
-          "line": 543
+          "line": 540
         }
       }
     },
@@ -2892,7 +2892,7 @@
           "meaning": "Control",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 722
+            "line": 719
           }
         },
         {
@@ -2900,7 +2900,7 @@
           "meaning": "IB",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 723
+            "line": 720
           }
         },
         {
@@ -2908,7 +2908,7 @@
           "meaning": "FP_DF",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 724
+            "line": 721
           }
         },
         {
@@ -2916,7 +2916,7 @@
           "meaning": "AC[2:0]",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 725
+            "line": 722
           }
         }
       ],
@@ -2927,7 +2927,7 @@
           "value": "3",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 729
+            "line": 726
           }
         },
         {
@@ -2935,7 +2935,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 730
+            "line": 727
           }
         },
         {
@@ -2943,7 +2943,7 @@
           "value": "2",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 731
+            "line": 728
           }
         },
         {
@@ -2951,7 +2951,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 732
+            "line": 729
           }
         },
         {
@@ -2959,7 +2959,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 733
+            "line": 730
           }
         }
       ],
@@ -2971,7 +2971,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "DF_SRC",
-          "line": 708
+          "line": 705
         }
       }
     },
@@ -2995,7 +2995,7 @@
           "meaning": "IB",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 806
+            "line": 803
           }
         },
         {
@@ -3003,7 +3003,7 @@
           "meaning": "Control",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 807
+            "line": 804
           }
         },
         {
@@ -3011,7 +3011,7 @@
           "meaning": "FP_IF",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 808
+            "line": 805
           }
         },
         {
@@ -3019,7 +3019,7 @@
           "meaning": "AC[5:3]",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 809
+            "line": 806
           }
         }
       ],
@@ -3030,7 +3030,7 @@
           "value": "3",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 813
+            "line": 810
           }
         },
         {
@@ -3038,7 +3038,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 814
+            "line": 811
           }
         },
         {
@@ -3046,7 +3046,7 @@
           "value": "2",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 815
+            "line": 812
           }
         },
         {
@@ -3054,7 +3054,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 816
+            "line": 813
           }
         },
         {
@@ -3062,7 +3062,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 817
+            "line": 814
           }
         }
       ],
@@ -3074,7 +3074,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "DIF_SRC",
-          "line": 792
+          "line": 789
         }
       }
     },
@@ -3098,7 +3098,7 @@
           "meaning": "IDB",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 887
+            "line": 884
           }
         },
         {
@@ -3106,7 +3106,7 @@
           "meaning": "IR address formation unit",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 888
+            "line": 885
           }
         }
       ],
@@ -3115,7 +3115,7 @@
           "text": "IDB path requires IDB_DRIVE asserted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 892
+            "line": 889
           }
         }
       ],
@@ -3125,7 +3125,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 895
+            "line": 892
           }
         },
         {
@@ -3133,7 +3133,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 896
+            "line": 893
           }
         },
         {
@@ -3141,7 +3141,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 897
+            "line": 894
           }
         }
       ],
@@ -3153,7 +3153,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "EA_ADDR_SRC",
-          "line": 873
+          "line": 870
         }
       }
     },
@@ -3174,10 +3174,10 @@
       "values": [
         {
           "encoding": "0",
-          "meaning": "Control",
+          "meaning": "Zero (hardwired 000)",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1196
+            "line": 1193
           }
         },
         {
@@ -3185,7 +3185,7 @@
           "meaning": "DIF",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1197
+            "line": 1194
           }
         },
         {
@@ -3193,7 +3193,7 @@
           "meaning": "FP_IF",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1198
+            "line": 1195
           }
         },
         {
@@ -3201,11 +3201,19 @@
           "meaning": "reserved",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1199
+            "line": 1196
           }
         }
       ],
-      "constraints": [],
+      "constraints": [
+        {
+          "text": "Source 0 is a hardwired constant; no control-word value field supplies it.",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
+            "line": 1200
+          }
+        }
+      ],
       "used_by_micro_operations": [
         {
           "micro_operation": "DIF_TO_IF",
@@ -3240,7 +3248,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "IF_SRC",
-          "line": 1182
+          "line": 1179
         }
       }
     },
@@ -3264,7 +3272,7 @@
           "meaning": "AC",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1033
+            "line": 1030
           }
         },
         {
@@ -3272,7 +3280,7 @@
           "meaning": "PC",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1034
+            "line": 1031
           }
         },
         {
@@ -3280,7 +3288,7 @@
           "meaning": "MB",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1035
+            "line": 1032
           }
         },
         {
@@ -3288,7 +3296,7 @@
           "meaning": "MQ",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1036
+            "line": 1033
           }
         },
         {
@@ -3296,7 +3304,7 @@
           "meaning": "FP_SR",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1037
+            "line": 1034
           }
         },
         {
@@ -3304,7 +3312,7 @@
           "meaning": "EA_ADDR",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1038
+            "line": 1035
           }
         },
         {
@@ -3312,7 +3320,7 @@
           "meaning": "IR",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1039
+            "line": 1036
           }
         },
         {
@@ -3320,7 +3328,7 @@
           "meaning": "ALU",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1040
+            "line": 1037
           }
         }
       ],
@@ -3329,21 +3337,21 @@
           "text": "Requires IDB_DRIVE = 1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1044
+            "line": 1041
           }
         },
         {
           "text": "Exactly one source selected per cycle",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1045
+            "line": 1042
           }
         },
         {
           "text": "Reserved values must not be used",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1046
+            "line": 1043
           }
         }
       ],
@@ -3353,7 +3361,7 @@
           "value": "7",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1049
+            "line": 1046
           }
         },
         {
@@ -3361,7 +3369,7 @@
           "value": "7",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1050
+            "line": 1047
           }
         },
         {
@@ -3369,7 +3377,7 @@
           "value": "7",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1051
+            "line": 1048
           }
         },
         {
@@ -3377,7 +3385,7 @@
           "value": "7",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1052
+            "line": 1049
           }
         },
         {
@@ -3385,7 +3393,7 @@
           "value": "7",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1053
+            "line": 1050
           }
         },
         {
@@ -3393,7 +3401,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1054
+            "line": 1051
           }
         },
         {
@@ -3401,7 +3409,7 @@
           "value": "7",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1055
+            "line": 1052
           }
         },
         {
@@ -3409,7 +3417,7 @@
           "value": "7",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1056
+            "line": 1053
           }
         },
         {
@@ -3417,7 +3425,7 @@
           "value": "7",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1057
+            "line": 1054
           }
         },
         {
@@ -3425,7 +3433,7 @@
           "value": "7",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1058
+            "line": 1055
           }
         },
         {
@@ -3433,7 +3441,7 @@
           "value": "7",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1059
+            "line": 1056
           }
         },
         {
@@ -3441,7 +3449,7 @@
           "value": "7",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1060
+            "line": 1057
           }
         },
         {
@@ -3449,7 +3457,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1061
+            "line": 1058
           }
         },
         {
@@ -3457,7 +3465,7 @@
           "value": "7",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1062
+            "line": 1059
           }
         },
         {
@@ -3465,7 +3473,7 @@
           "value": "7",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1063
+            "line": 1060
           }
         },
         {
@@ -3473,7 +3481,7 @@
           "value": "4",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1064
+            "line": 1061
           }
         },
         {
@@ -3481,7 +3489,7 @@
           "value": "7",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1065
+            "line": 1062
           }
         },
         {
@@ -3489,7 +3497,7 @@
           "value": "2",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1066
+            "line": 1063
           }
         },
         {
@@ -3497,7 +3505,7 @@
           "value": "7",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1067
+            "line": 1064
           }
         },
         {
@@ -3505,7 +3513,7 @@
           "value": "5",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1068
+            "line": 1065
           }
         },
         {
@@ -3513,7 +3521,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1069
+            "line": 1066
           }
         },
         {
@@ -3521,7 +3529,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1070
+            "line": 1067
           }
         }
       ],
@@ -3533,7 +3541,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "IDB_SRC",
-          "line": 1019
+          "line": 1016
         }
       }
     },
@@ -3557,7 +3565,7 @@
           "meaning": "CLEAR",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1433
+            "line": 1408
           }
         },
         {
@@ -3565,7 +3573,7 @@
           "meaning": "COMP",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1434
+            "line": 1409
           }
         },
         {
@@ -3573,7 +3581,7 @@
           "meaning": "ALU_CARRY",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1435
+            "line": 1410
           }
         },
         {
@@ -3581,7 +3589,7 @@
           "meaning": "AC[11]",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1436
+            "line": 1411
           }
         }
       ],
@@ -3590,14 +3598,14 @@
           "text": "ALU_CARRY only valid during ALU operations producing carry",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1440
+            "line": 1415
           }
         },
         {
           "text": "AC[11] loads the pre-TP value of AC[11] into L without modifying AC.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1441
+            "line": 1416
           }
         }
       ],
@@ -3607,7 +3615,7 @@
           "value": "2",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1444
+            "line": 1419
           }
         },
         {
@@ -3615,7 +3623,7 @@
           "value": "2",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1445
+            "line": 1420
           }
         },
         {
@@ -3623,7 +3631,7 @@
           "value": "2",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1446
+            "line": 1421
           }
         },
         {
@@ -3631,7 +3639,7 @@
           "value": "2",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1447
+            "line": 1422
           }
         },
         {
@@ -3639,7 +3647,7 @@
           "value": "2",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1448
+            "line": 1423
           }
         },
         {
@@ -3647,7 +3655,7 @@
           "value": "3",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1449
+            "line": 1424
           }
         },
         {
@@ -3655,7 +3663,7 @@
           "value": "2",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1450
+            "line": 1425
           }
         },
         {
@@ -3663,7 +3671,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1451
+            "line": 1426
           }
         },
         {
@@ -3671,7 +3679,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1452
+            "line": 1427
           }
         }
       ],
@@ -3683,7 +3691,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "L_OP",
-          "line": 1419
+          "line": 1394
         }
       }
     },
@@ -3707,7 +3715,7 @@
           "meaning": "PC",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1498
+            "line": 1473
           }
         },
         {
@@ -3715,15 +3723,15 @@
           "meaning": "EA_ADDR",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1499
+            "line": 1474
           }
         },
         {
           "encoding": "2",
-          "meaning": "Control",
+          "meaning": "Zero (hardwired 0000)",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1500
+            "line": 1475
           }
         },
         {
@@ -3731,7 +3739,7 @@
           "meaning": "reserved",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1501
+            "line": 1476
           }
         }
       ],
@@ -3742,7 +3750,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1507
+            "line": 1482
           }
         },
         {
@@ -3750,7 +3758,7 @@
           "value": "2",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1508
+            "line": 1483
           }
         },
         {
@@ -3758,7 +3766,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1509
+            "line": 1484
           }
         }
       ],
@@ -3770,7 +3778,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "MA_SRC",
-          "line": 1484
+          "line": 1459
         }
       }
     },
@@ -3794,7 +3802,7 @@
           "meaning": "IDB",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1582
+            "line": 1532
           }
         },
         {
@@ -3802,7 +3810,7 @@
           "meaning": "MDB",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1583
+            "line": 1533
           }
         },
         {
@@ -3810,7 +3818,7 @@
           "meaning": "FP_SR",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1584
+            "line": 1534
           }
         },
         {
@@ -3818,7 +3826,7 @@
           "meaning": "reserved",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1585
+            "line": 1535
           }
         }
       ],
@@ -3827,14 +3835,14 @@
           "text": "IDB path requires IDB_DRIVE asserted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1589
+            "line": 1539
           }
         },
         {
           "text": "MDB path used for memory reads",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1590
+            "line": 1540
           }
         }
       ],
@@ -3844,7 +3852,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1593
+            "line": 1543
           }
         },
         {
@@ -3852,7 +3860,7 @@
           "value": "2",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1594
+            "line": 1544
           }
         },
         {
@@ -3860,7 +3868,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1595
+            "line": 1545
           }
         },
         {
@@ -3868,7 +3876,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1596
+            "line": 1546
           }
         },
         {
@@ -3876,7 +3884,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1597
+            "line": 1547
           }
         }
       ],
@@ -3888,7 +3896,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "MB_SRC",
-          "line": 1568
+          "line": 1518
         }
       }
     },
@@ -3912,7 +3920,7 @@
           "meaning": "Memory",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1641
+            "line": 1591
           }
         },
         {
@@ -3920,7 +3928,7 @@
           "meaning": "MB",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1642
+            "line": 1592
           }
         },
         {
@@ -3928,7 +3936,7 @@
           "meaning": "FP_SR",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1643
+            "line": 1593
           }
         },
         {
@@ -3936,7 +3944,7 @@
           "meaning": "DMA",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1644
+            "line": 1594
           }
         }
       ],
@@ -3945,7 +3953,7 @@
           "text": "Must contain a valid encoding in every control word",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1648
+            "line": 1598
           }
         }
       ],
@@ -3955,7 +3963,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1651
+            "line": 1601
           }
         },
         {
@@ -3963,7 +3971,7 @@
           "value": "2",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1652
+            "line": 1602
           }
         },
         {
@@ -3971,7 +3979,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1653
+            "line": 1603
           }
         }
       ],
@@ -3983,7 +3991,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "MDB_SRC",
-          "line": 1627
+          "line": 1577
         }
       }
     },
@@ -4007,7 +4015,7 @@
           "meaning": "IF",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1671
+            "line": 1621
           }
         },
         {
@@ -4015,7 +4023,7 @@
           "meaning": "DF",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1672
+            "line": 1622
           }
         }
       ],
@@ -4024,28 +4032,28 @@
           "text": "Selects the MFB driver during CPU-initiated memory operations",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1676
+            "line": 1626
           }
         },
         {
           "text": "Governs the address field only; must not be conflated with data-side selects (MDB_SRC)",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1677
+            "line": 1627
           }
         },
         {
           "text": "Console EXAM/DEP use MFB_SRC = IF",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1678
+            "line": 1628
           }
         },
         {
           "text": "During MS = DMA, the CPU does not drive MFB; MFB_SRC has no effect",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1679
+            "line": 1629
           }
         }
       ],
@@ -4058,7 +4066,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "MFB_SRC",
-          "line": 1657
+          "line": 1607
         }
       }
     },
@@ -4082,7 +4090,7 @@
           "meaning": "IDB",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1725
+            "line": 1675
           }
         },
         {
@@ -4090,7 +4098,7 @@
           "meaning": "AC",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1726
+            "line": 1676
           }
         }
       ],
@@ -4101,7 +4109,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1732
+            "line": 1682
           }
         },
         {
@@ -4109,7 +4117,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1733
+            "line": 1683
           }
         },
         {
@@ -4117,7 +4125,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1734
+            "line": 1684
           }
         }
       ],
@@ -4129,7 +4137,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "MQ_SRC",
-          "line": 1711
+          "line": 1661
         }
       }
     },
@@ -4153,15 +4161,15 @@
           "meaning": "IDB",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1810
+            "line": 1760
           }
         },
         {
           "encoding": "1",
-          "meaning": "Control",
+          "meaning": "Constant 0001 (hardwired)",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1811
+            "line": 1761
           }
         }
       ],
@@ -4170,14 +4178,14 @@
           "text": "When PC_LOAD = 1:",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1815
+            "line": 1765
           }
         },
         {
           "text": "selected source must be fully driven and valid",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1816
+            "line": 1766
           }
         }
       ],
@@ -4187,7 +4195,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1819
+            "line": 1769
           }
         },
         {
@@ -4195,7 +4203,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1820
+            "line": 1770
           }
         },
         {
@@ -4203,7 +4211,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1821
+            "line": 1771
           }
         }
       ],
@@ -4215,7 +4223,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "PC_SRC",
-          "line": 1796
+          "line": 1746
         }
       }
     },
@@ -4239,7 +4247,7 @@
           "meaning": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 639
+            "line": 636
           }
         },
         {
@@ -4247,7 +4255,7 @@
           "meaning": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 640
+            "line": 637
           }
         }
       ],
@@ -4256,7 +4264,7 @@
           "text": "Uses direct load path (no ALU or IDB involvement)",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 644
+            "line": 641
           }
         }
       ],
@@ -4266,7 +4274,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 647
+            "line": 644
           }
         },
         {
@@ -4274,7 +4282,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 648
+            "line": 645
           }
         }
       ],
@@ -4286,7 +4294,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "CIFP_VAL",
-          "line": 625
+          "line": 622
         }
       }
     },
@@ -4310,14 +4318,14 @@
           "text": "Must be stable when sampled",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 671
+            "line": 668
           }
         },
         {
           "text": "No effect unless explicitly consumed",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 672
+            "line": 669
           }
         }
       ],
@@ -4330,7 +4338,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "DB_INPUT",
-          "line": 652
+          "line": 649
         }
       }
     },
@@ -4354,7 +4362,7 @@
           "text": "Only used when DF_SRC = Control",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 755
+            "line": 752
           }
         }
       ],
@@ -4364,7 +4372,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 758
+            "line": 755
           }
         }
       ],
@@ -4376,7 +4384,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "DF_VAL",
-          "line": 737
+          "line": 734
         }
       }
     },
@@ -4400,7 +4408,7 @@
           "text": "Only used when DIF_SRC = Control",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 839
+            "line": 836
           }
         }
       ],
@@ -4413,7 +4421,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "DIF_VAL",
-          "line": 821
+          "line": 818
         }
       }
     },
@@ -4437,42 +4445,42 @@
           "text": "GTF_FLAGS is a combinational datapath value and is not stored state.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 934
+            "line": 931
           }
         },
         {
           "text": "/INT_REQ must be synchronized and stable when GTF_FLAGS is consumed.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 935
+            "line": 932
           }
         },
         {
           "text": "GTF_FLAGS has no effect unless AC_SRC selects GTF_FLAGS and AC_LOAD is asserted.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 936
+            "line": 933
           }
         },
         {
           "text": "GTF_FLAGS is ORed into AC.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 937
+            "line": 934
           }
         },
         {
           "text": "AC must have been cleared at the preceding TP when GTF_FLAGS is consumed by GTF.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 938
+            "line": 935
           }
         },
         {
           "text": "Observing /INT_REQ does not acknowledge, clear, or consume any controller interrupt condition.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 939
+            "line": 936
           }
         }
       ],
@@ -4485,7 +4493,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "GTF_FLAGS",
-          "line": 901
+          "line": 898
         }
       }
     },
@@ -4509,7 +4517,7 @@
           "meaning": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1117
+            "line": 1114
           }
         },
         {
@@ -4517,7 +4525,7 @@
           "meaning": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1118
+            "line": 1115
           }
         }
       ],
@@ -4526,7 +4534,7 @@
           "text": "Uses direct load path (no ALU or IDB involvement)",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1122
+            "line": 1119
           }
         }
       ],
@@ -4536,7 +4544,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1125
+            "line": 1122
           }
         },
         {
@@ -4544,7 +4552,7 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1126
+            "line": 1123
           }
         }
       ],
@@ -4556,7 +4564,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "IE_VAL",
-          "line": 1103
+          "line": 1100
         }
       }
     },
@@ -4585,53 +4593,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "IF_DF_COMBINED",
-          "line": 1130
-        }
-      }
-    },
-    {
-      "name": "IF_VAL",
-      "category": "Data Value Signals",
-      "width": 3,
-      "control_word_role": "encoded",
-      "default_value": "0",
-      "explicit_value_required": "Conditionally",
-      "value_required_when": "IF_LOAD=1 AND IF_SRC=0",
-      "attributes": {
-        "mnemonic": "IF_VAL",
-        "display_name": "IF Value Input",
-        "signal_class": "Data Value",
-        "purpose": "Represents the value loaded into IF"
-      },
-      "values": [],
-      "constraints": [
-        {
-          "text": "Only used when IF_SRC = Control",
-          "source": {
-            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1227
-          }
-        }
-      ],
-      "used_by_micro_operations": [
-        {
-          "micro_operation": "IF_CLEAR",
-          "value": "0",
-          "source": {
-            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1230
-          }
-        }
-      ],
-      "sources": {
-        "index": {
-          "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 88
-        },
-        "definition": {
-          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-          "section": "IF_VAL",
-          "line": 1209
+          "line": 1127
         }
       }
     },
@@ -4655,7 +4617,7 @@
           "meaning": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1275
+            "line": 1250
           }
         },
         {
@@ -4663,7 +4625,7 @@
           "meaning": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1276
+            "line": 1251
           }
         }
       ],
@@ -4672,7 +4634,7 @@
           "text": "Uses direct load path (no ALU or IDB involvement)",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1280
+            "line": 1255
           }
         }
       ],
@@ -4682,7 +4644,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1283
+            "line": 1258
           }
         },
         {
@@ -4690,19 +4652,19 @@
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1284
+            "line": 1259
           }
         }
       ],
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 89
+          "line": 88
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "II_VAL",
-          "line": 1261
+          "line": 1236
         }
       }
     },
@@ -4726,7 +4688,7 @@
           "meaning": "NONE",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1338
+            "line": 1313
           }
         },
         {
@@ -4734,7 +4696,7 @@
           "meaning": "READ",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1339
+            "line": 1314
           }
         },
         {
@@ -4742,7 +4704,7 @@
           "meaning": "WRITE",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1340
+            "line": 1315
           }
         },
         {
@@ -4750,7 +4712,7 @@
           "meaning": "invalid",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1341
+            "line": 1316
           }
         }
       ],
@@ -4759,42 +4721,42 @@
           "text": "READ is selected when IO_READ_REQ is accepted.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1346
+            "line": 1321
           }
         },
         {
           "text": "WRITE is selected when IO_WRITE_REQ is accepted.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1347
+            "line": 1322
           }
         },
         {
           "text": "NONE is selected when a completed transfer is cleared without replacement.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1348
+            "line": 1323
           }
         },
         {
           "text": "If completion and request acceptance occur at the same TP, the newly accepted direction is selected instead of NONE.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1349
+            "line": 1324
           }
         },
         {
           "text": "Encoding 3 must never be selected.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1350
+            "line": 1325
           }
         },
         {
           "text": "The value has no effect unless IOT_TRANSFER_LOAD is asserted.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1351
+            "line": 1326
           }
         }
       ],
@@ -4804,65 +4766,19 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1355
+            "line": 1330
           }
         }
       ],
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 90
+          "line": 89
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "IOT_TRANSFER_VAL",
-          "line": 1323
-        }
-      }
-    },
-    {
-      "name": "MA_VAL",
-      "category": "Data Value Signals",
-      "width": 12,
-      "control_word_role": "encoded",
-      "default_value": "0",
-      "explicit_value_required": "Conditionally",
-      "value_required_when": "MA_LOAD=1 AND MA_SRC=2",
-      "attributes": {
-        "mnemonic": "MA_VAL",
-        "display_name": "Memory Address Value",
-        "signal_class": "Data Value",
-        "purpose": "Specifies the value to load into the MA register"
-      },
-      "values": [],
-      "constraints": [
-        {
-          "text": "Only valid when MA_SRC == Control",
-          "source": {
-            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1531
-          }
-        }
-      ],
-      "used_by_micro_operations": [
-        {
-          "micro_operation": "MA_CLEAR",
-          "value": "0",
-          "source": {
-            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1534
-          }
-        }
-      ],
-      "sources": {
-        "index": {
-          "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 91
-        },
-        "definition": {
-          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-          "section": "MA_VAL",
-          "line": 1513
+          "line": 1298
         }
       }
     },
@@ -4886,21 +4802,21 @@
           "text": "Must be valid when sampled",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1619
+            "line": 1569
           }
         },
         {
           "text": "Only used during memory read operations",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1620
+            "line": 1570
           }
         },
         {
           "text": "Not interchangeable with IDB or DB sources",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1621
+            "line": 1571
           }
         }
       ],
@@ -4908,58 +4824,12 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 92
+          "line": 90
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
           "section": "MDB_INPUT",
-          "line": 1601
-        }
-      }
-    },
-    {
-      "name": "PC_VAL",
-      "category": "Data Value Signals",
-      "width": 12,
-      "control_word_role": "encoded",
-      "default_value": "0",
-      "explicit_value_required": "Conditionally",
-      "value_required_when": "PC_LOAD=1 AND PC_SRC=1",
-      "attributes": {
-        "mnemonic": "PC_VAL",
-        "display_name": "Program Counter Value",
-        "signal_class": "Data Value",
-        "purpose": "Specifies the value to load into the PC register"
-      },
-      "values": [],
-      "constraints": [
-        {
-          "text": "Only valid when PC_SRC == Control",
-          "source": {
-            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1842
-          }
-        }
-      ],
-      "used_by_micro_operations": [
-        {
-          "micro_operation": "PC_SET_1",
-          "value": "1",
-          "source": {
-            "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-            "line": 1845
-          }
-        }
-      ],
-      "sources": {
-        "index": {
-          "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 93
-        },
-        "definition": {
-          "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
-          "section": "PC_VAL",
-          "line": 1824
+          "line": 1551
         }
       }
     },
@@ -5053,7 +4923,7 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 107
+          "line": 104
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
@@ -5146,7 +5016,7 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 108
+          "line": 105
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
@@ -5226,7 +5096,7 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 109
+          "line": 106
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
@@ -5310,7 +5180,7 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 115
+          "line": 112
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
@@ -5394,7 +5264,7 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 116
+          "line": 113
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
@@ -5488,7 +5358,7 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 117
+          "line": 114
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
@@ -5547,7 +5417,7 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 118
+          "line": 115
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
@@ -5613,7 +5483,7 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 119
+          "line": 116
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
@@ -5665,7 +5535,7 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 120
+          "line": 117
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
@@ -5758,7 +5628,7 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 133
+          "line": 130
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
@@ -5834,7 +5704,7 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 134
+          "line": 131
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
@@ -5910,7 +5780,7 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 135
+          "line": 132
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
@@ -5972,7 +5842,7 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 136
+          "line": 133
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",

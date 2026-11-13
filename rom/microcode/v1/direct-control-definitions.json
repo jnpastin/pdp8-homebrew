@@ -1716,7 +1716,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1983
+        "line": 1982
       },
       "applicable_context": [
         "IR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_READ_REQ = 1"
@@ -1762,7 +1762,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 2012
+        "line": 2011
       },
       "applicable_context": [
         "IR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_WRITE_REQ = 1"
@@ -1808,7 +1808,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 2041
+        "line": 2040
       },
       "applicable_context": [
         "(\n    IOT_READ_PENDING = 1\n    OR IOT_WRITE_PENDING = 1\n)\nIR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_READ_REQ = 0\nIO_WRITE_REQ = 0"
@@ -1854,7 +1854,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 2078
+        "line": 2077
       },
       "applicable_context": [
         "(\n    IOT_READ_PENDING = 1\n    OR IOT_WRITE_PENDING = 1\n)\nIR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_READ_REQ = 1"
@@ -1901,7 +1901,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 2115
+        "line": 2114
       },
       "applicable_context": [
         "(\n    IOT_READ_PENDING = 1\n    OR IOT_WRITE_PENDING = 1\n)\nIR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_WRITE_REQ = 1"

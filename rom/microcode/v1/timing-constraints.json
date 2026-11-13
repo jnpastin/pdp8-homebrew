@@ -8,12 +8,48 @@
   ],
   "constraints": [
     {
+      "id": "timing:5.2.1.1",
+      "context": "MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1 AND TS = 1 AND (TS = 1)",
+      "requirement": "IO_READ_REQ != 1 AND IO_WRITE_REQ != 1",
+      "source": {
+        "path": "docs/09-timing/03-major-state-timing.md",
+        "line": 106
+      }
+    },
+    {
+      "id": "timing:5.2.1.2",
+      "context": "MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1 AND TS = 1 AND (TS = 1)",
+      "requirement": "IO_CLEAR_AC_REQ != 1 AND IO_SKIP_REQ != 1",
+      "source": {
+        "path": "docs/09-timing/03-major-state-timing.md",
+        "line": 107
+      }
+    },
+    {
+      "id": "timing:5.2.3.1",
+      "context": "MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1 AND TS = 2 AND (TS = 2)",
+      "requirement": "IO_SKIP_REQ != 1",
+      "source": {
+        "path": "docs/09-timing/03-major-state-timing.md",
+        "line": 119
+      }
+    },
+    {
       "id": "timing:5.2.5.1",
       "context": "MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1 AND TS = 3 AND (IOT_READ_PENDING = 1 OR IOT_WRITE_PENDING = 1)",
       "requirement": "IO_CLEAR_AC_REQ != 1",
       "source": {
         "path": "docs/09-timing/03-major-state-timing.md",
-        "line": 132
+        "line": 137
+      }
+    },
+    {
+      "id": "timing:5.2.5.2",
+      "context": "MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1 AND TS = 3 AND (TS = 3)",
+      "requirement": "IO_SKIP_REQ != 1",
+      "source": {
+        "path": "docs/09-timing/03-major-state-timing.md",
+        "line": 140
       }
     },
     {
@@ -22,7 +58,43 @@
       "requirement": "IO_CLEAR_AC_REQ != 1",
       "source": {
         "path": "docs/09-timing/03-major-state-timing.md",
-        "line": 153
+        "line": 160
+      }
+    },
+    {
+      "id": "timing:5.2.7.2",
+      "context": "MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1 AND TS = 4 AND (TS = 4)",
+      "requirement": "IO_READ_REQ != 1 AND IO_WRITE_REQ != 1",
+      "source": {
+        "path": "docs/09-timing/03-major-state-timing.md",
+        "line": 163
+      }
+    },
+    {
+      "id": "invariant:9.1.1",
+      "context": "(MS = DEFER)",
+      "requirement": "IR_INDIRECT = 1",
+      "source": {
+        "path": "docs/09-timing/03-major-state-timing.md",
+        "line": 358
+      }
+    },
+    {
+      "id": "invariant:9.2.1",
+      "context": "(NOT (MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1 AND (TS = 3 OR TS = 4)))",
+      "requirement": "IOT_READ_PENDING = 0 AND IOT_WRITE_PENDING = 0",
+      "source": {
+        "path": "docs/09-timing/03-major-state-timing.md",
+        "line": 364
+      }
+    },
+    {
+      "id": "invariant:9.2.2",
+      "context": "(IOT_READ_PENDING = 1)",
+      "requirement": "IOT_WRITE_PENDING = 0",
+      "source": {
+        "path": "docs/09-timing/03-major-state-timing.md",
+        "line": 368
       }
     }
   ],

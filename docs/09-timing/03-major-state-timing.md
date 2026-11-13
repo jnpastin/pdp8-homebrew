@@ -102,6 +102,9 @@ IR_IS_EXTERNAL_IOT = 1
 - Controllers evaluate address match.
 - The selected controller decodes IOP.
 - `/IO_WAIT` may hold an eligible non-TP setup TSTEP.
+- TS1 is selection and decode only; the selected controller requests no transfer, AC clear, or skip:
+  - `IO_READ_REQ != 1 AND IO_WRITE_REQ != 1 IF TS = 1`
+  - `IO_CLEAR_AC_REQ != 1 AND IO_SKIP_REQ != 1 IF TS = 1`
 
 #### 5.2.2 TP1
 
@@ -112,6 +115,8 @@ IR_IS_EXTERNAL_IOT = 1
 - The selected controller may assert `IO_READ_REQ` or `IO_WRITE_REQ` for a transfer during TS3.
 - The selected controller may assert `IO_CLEAR_AC_REQ` for an operation assigned to TP2.
 - The selected controller may assert `/IO_WAIT` during an eligible non-TP setup TSTEP.
+- `IO_SKIP_REQ` is valid only during TS4:
+  - `IO_SKIP_REQ != 1 IF TS = 2`
 
 #### 5.2.4 TP2
 
@@ -131,6 +136,8 @@ Acceptance of `IO_READ_REQ` or `IO_WRITE_REQ` at TP2 does not transfer DB data a
 - The selected controller may assert `IO_CLEAR_AC_REQ` only when neither a read nor write transfer is pending:
   - `IO_CLEAR_AC_REQ != 1 IF IOT_READ_PENDING = 1 OR IOT_WRITE_PENDING = 1`
 - The selected controller may assert `/IO_WAIT` during an eligible non-TP setup TSTEP.
+- `IO_SKIP_REQ` is valid only during TS4:
+  - `IO_SKIP_REQ != 1 IF TS = 3`
 
 #### 5.2.6 TP3
 
@@ -152,6 +159,8 @@ Acceptance of a new request at TP3 does not affect the transfer committing at TP
 - The selected controller may assert `IO_CLEAR_AC_REQ` only when no read transfer or `IO_SKIP_REQ` is pending:
   - `IO_CLEAR_AC_REQ != 1 IF IOT_READ_PENDING = 1 OR IO_SKIP_REQ = 1`
 - The selected controller may assert `IO_SKIP_REQ` from stable registered controller state.
+- No read or write request is made during TS4, because its transfer would fall outside the major state; `IOT_TRANSFER` clears to `NONE` at TP4:
+  - `IO_READ_REQ != 1 AND IO_WRITE_REQ != 1 IF TS = 4`
 - `/IO_WAIT` may hold an eligible non-TP setup TSTEP.
 - TP4 device actions and CPU sequencing decisions use pre-TP4 inputs.
 
@@ -333,3 +342,27 @@ Properties:
 - The console transaction timer never runs while `RUN = 1`.
 
 Command acceptance is defined in [External Inputs §4.1](../04-control/10-control-input-definitions/04-external-inputs.md#41-console-command-acceptance).
+
+---
+
+## 9. State Invariants
+
+These conditions hold in every reachable state, because of how the sequencing above commits state. Control need not define behavior for a state that violates one. The ROM-generation tools use them to exclude unreachable states; they are not requirements on any input.
+
+Each invariant is written `REQUIREMENT IF CONDITION`: whenever the condition holds, so does the requirement.
+
+### 9.1 DEFER Follows an Indirect MRI
+
+DEFER is entered only from FETCH TP4 when `IR_INDIRECT = 1`, and IR is loaded only at FETCH TP3. IR therefore stays indirect throughout DEFER, including while halted in DEFER by Single Step:
+
+- `IR_INDIRECT = 1 IF MS = DEFER`
+
+### 9.2 Pending External-IOT Transfer
+
+`IOT_TRANSFER` leaves `NONE` only by a request accepted at external-IOT TP2 or TP3 (sections 5.2.3 and 5.2.5), and returns to `NONE` no later than TP4 (section 5.2.8). A transfer is therefore pending only during external-IOT TS3 or TS4:
+
+- `IOT_READ_PENDING = 0 AND IOT_WRITE_PENDING = 0 IF NOT (MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1 AND (TS = 3 OR TS = 4))`
+
+`IOT_TRANSFER` records one direction, so at most one pending flag is set:
+
+- `IOT_WRITE_PENDING = 0 IF IOT_READ_PENDING = 1`

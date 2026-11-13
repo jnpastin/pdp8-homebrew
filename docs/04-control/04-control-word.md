@@ -184,6 +184,18 @@ Implication:
 
 ---
 
+### 5.6 Physical Bit Sharing
+
+A field whose **Value Required When** condition is false in a control word has no effect in that word.
+
+Constraint:
+- Physical packing may assign the same ROM bits to two or more fields only if no reachable control word requires a value for more than one of them.
+- Each field keeps its logical definition; sharing is a property of the physical packing, not of the field.
+- A field that does not require a value in a given control word may hold any encoding there, including a reserved one.
+- The physical packing must be verified to produce, for every reachable control word, the required value of every field whose condition is true.
+
+---
+
 ## 6. Structural Requirements
 
 ### 6.1 Completeness
@@ -339,10 +351,8 @@ Constraint:
 ### 8.5 Inactive Behavior
 
 Constraint:
-- All control signals must be assigned a defined value in every CONTROL_WORD.
-- Signals that are not active in a given cycle must:
-  - be set to a valid encoding
-  - have no effect on system behavior
+- Every signal whose Value Required When condition holds must be assigned a defined, valid value.
+- A signal whose condition does not hold must have no effect on system behavior, whatever its encoding (section 5.6).
 
 ---
 
@@ -351,6 +361,7 @@ Constraint:
 Constraint:
 - Interpretation of CONTROL_WORD must be fully deterministic.
 - No signal may have context-dependent or implicit meaning outside the rules defined above.
+- A physical bit shared under section 5.6 carries exactly one field's meaning in any control word: the field whose condition holds.
 
 ---
 
