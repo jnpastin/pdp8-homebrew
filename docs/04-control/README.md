@@ -40,6 +40,7 @@ Excludes:
 - [05-datapath-mapping.md](./05-datapath-mapping.md)
 - [06-invalid-conditions.md](./06-invalid-conditions.md)
 - [07-direct-control-model.md](./07-direct-control-model.md)
+- [08-control-store-organization.md](./08-control-store-organization.md)
 - Control input definitions:
   - [00-index.md](./10-control-input-definitions/00-index.md)
   - [01-flags.md](./10-control-input-definitions/01-flags.md)
