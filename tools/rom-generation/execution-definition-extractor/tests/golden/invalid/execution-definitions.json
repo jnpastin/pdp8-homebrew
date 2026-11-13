@@ -368,6 +368,22 @@
     {
       "severity": "ERROR",
       "code": "MISSING_PHASE_BINDING",
+      "message": "Expected binding not found: '- IOT_READ_PENDING selects /DB_READ and DB_READ_TO_AC during the transfer TS.'",
+      "source_path": "docs/03-microarchitecture/06-iot-execution.md",
+      "line": 1,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_PHASE_BINDING",
+      "message": "Expected binding not found: '- IOT_WRITE_PENDING selects /DB_WRITE and DB_WRITE_FROM_AC during the transfer TS.'",
+      "source_path": "docs/03-microarchitecture/06-iot-execution.md",
+      "line": 1,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_PHASE_BINDING",
       "message": "Expected binding not found: '- IO_CLEAR_AC_REQ selects AC_CLEAR during the TS in which the request is asserted.'",
       "source_path": "docs/03-microarchitecture/06-iot-execution.md",
       "line": 1,
@@ -378,6 +394,22 @@
       "code": "MISSING_SECTION",
       "message": "No 'DEFER Execution' section found.",
       "source_path": "docs/03-microarchitecture/04-fetch-defer.md",
+      "line": null,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_SECTION",
+      "message": "No instruction heading 'IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 100' found for its decoded context.",
+      "source_path": "docs/03-microarchitecture/06-iot-execution.md",
+      "line": null,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_SECTION",
+      "message": "No instruction heading 'IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 101' found for its decoded context.",
+      "source_path": "docs/03-microarchitecture/06-iot-execution.md",
       "line": null,
       "case_id": null
     },

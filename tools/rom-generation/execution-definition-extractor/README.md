@@ -61,7 +61,7 @@ Heading terms are rewritten as control inputs:
 
 Device addresses are written in octal, so `IOA = <nn>` takes a two-digit octal address and converts it to the 6-bit binary form of `IR_IOA`, which is `IR[8:3]`; for example, `IOA = 27` becomes `IR_IOA = 010111`. Any other `IOA = ` term is an `UNTRANSLATED_CONTEXT_TERM` error unless its heading is in the table below.
 
-Some IOT headings select on IR bits that have a decoded control input instead. The extractor holds a table of these headings, keyed by the full heading title, giving each one's context. It has two entries: the CAF heading `IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 111` becomes `IR_IS_CAF = 1`, the same decode the CAF `/INITIALIZE` assignment is keyed on; and the memory extension heading `IR[11:9] = 110 AND IR[8:6] = 010` (devices 20–27) becomes `IR_IS_MEMEXT_IOT = 1`. That section's micro-operations are all conditional on the memory-management flags (`IR_WRITES_DF`, `IR_READS_IB`, and so on), written in its `Conditional μops:` block.
+Some IOT headings select on IR bits that have a decoded control input instead. The extractor holds a table of these headings, keyed by the full heading title, giving each one's context. Its entries: the GTF, RTF and CAF headings (`IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 100`, `101`, `111`) become `IR_IS_GTF = 1`, `IR_IS_RTF = 1` and `IR_IS_CAF = 1`, the processor IOT decodes; and the memory extension heading `IR[11:9] = 110 AND IR[8:6] = 010` (devices 20–27) becomes `IR_IS_MEMEXT_IOT = 1`. That section's micro-operations are all conditional on the memory-management flags (`IR_WRITES_DF`, `IR_READS_IB`, and so on), written in its `Conditional μops:` block.
 
 Every case's context starts with `MS = EXECUTE`; MRI cases then add `IR_IS_MRI = 1`.
 
@@ -74,7 +74,7 @@ The `## n. External IOT Phase Binding` section is prose. The extractor requires 
 - IO_SKIP_REQ selects PC_INC during TS4.
 ```
 
-From them it builds four cases, `iot:external:ts1` to `ts4`, with context `MS = EXECUTE` and `IR_IS_EXTERNAL_IOT = 1`. Every case has the conditional `IO_CLEAR_AC_REQ = 1 -> AC_CLEAR`; TS4 also has `IO_SKIP_REQ = 1 -> PC_INC`. If the section's wording changes, the extractor's table of bindings must be updated with it.
+From them it builds four cases, `iot:external:ts1` to `ts4`, with context `MS = EXECUTE` and `IR_IS_EXTERNAL_IOT = 1`. Every case has the conditional `IO_CLEAR_AC_REQ = 1 -> AC_CLEAR`; TS4 also has `IO_SKIP_REQ = 1 -> PC_INC`; TS3 and TS4, the possible transfer timing states, also have `IOT_READ_PENDING = 1 -> DB_READ_TO_AC` and `IOT_WRITE_PENDING = 1 -> DB_WRITE_FROM_AC`. If the section's wording changes, the extractor's table of bindings must be updated with it.
 
 ### 3.5 INTERRUPT
 

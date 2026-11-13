@@ -169,7 +169,11 @@ IOT = (
     "## 7. External IOT Phase Binding\n\n"
     "- `IO_CLEAR_AC_REQ` selects `AC_CLEAR` during the TS in which the "
     "request is asserted.\n"
-    "- `IO_SKIP_REQ` selects `PC_INC` during TS4.\n\n"
+    "- `IO_SKIP_REQ` selects `PC_INC` during TS4.\n"
+    "- `IOT_READ_PENDING` selects `/DB_READ` and `DB_READ_TO_AC` during the "
+    "transfer TS.\n"
+    "- `IOT_WRITE_PENDING` selects `/DB_WRITE` and `DB_WRITE_FROM_AC` during "
+    "the transfer TS.\n\n"
     "## 9. Instruction Definitions (CPU Control - Device 0)\n\n"
     + instruction(
         "9.3",
@@ -256,6 +260,8 @@ KNOWN_MICRO_OPERATIONS = [
     "AC_MQ_SWAP",
     "AC_RAR",
     "CIFP_CLEAR",
+    "DB_READ_TO_AC",
+    "DB_WRITE_FROM_AC",
     "DIF_TO_IF",
     "EA_ADDR_TO_MA",
     "FP_SR_TO_PC",
@@ -515,7 +521,7 @@ class InstructionTests(unittest.TestCase):
         cases, diagnostics = parse(parse_instructions, IOT, "iot")
 
         self.assertEqual(diagnostics, [])
-        self.assertEqual(len(cases), 12)
+        self.assertEqual(len(cases), 20)
         skon = cases[1]
         self.assertEqual(skon["id"], "iot:9.3:ts2")
         self.assertEqual(
@@ -697,6 +703,20 @@ class PhaseBindingTests(unittest.TestCase):
             "micro_operation": "AC_CLEAR",
         }
         skip = {"predicate": "IO_SKIP_REQ = 1", "micro_operation": "PC_INC"}
+        read = {
+            "predicate": "IOT_READ_PENDING = 1",
+            "micro_operation": "DB_READ_TO_AC",
+        }
+        write = {
+            "predicate": "IOT_WRITE_PENDING = 1",
+            "micro_operation": "DB_WRITE_FROM_AC",
+        }
+        conditionals = {
+            1: [clear],
+            2: [clear],
+            3: [clear, read, write],
+            4: [clear, skip, read, write],
+        }
         self.assertEqual(
             cases,
             [
@@ -706,7 +726,7 @@ class PhaseBindingTests(unittest.TestCase):
                     3,
                     ["MS = EXECUTE", "IR_IS_EXTERNAL_IOT = 1"],
                     n,
-                    conditional=[clear, skip] if n == 4 else [clear],
+                    conditional=conditionals[n],
                 )
                 for n in range(1, 5)
             ],
@@ -1113,7 +1133,7 @@ class EndToEndTests(unittest.TestCase):
         exit_code, stdout = self.run_main()
 
         self.assertEqual(exit_code, 0)
-        self.assertIn("Cases: 53", stdout)
+        self.assertIn("Cases: 61", stdout)
         self.assert_outputs_match_golden("valid")
 
     def test_invalid_outputs_match_golden(self) -> None:

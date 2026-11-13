@@ -2730,7 +2730,9 @@
       "name": "IR_OPR_MQA",
       "category": "OPR Bit Flags",
       "width": 1,
-      "control_uses": [],
+      "control_uses": [
+        "predicate"
+      ],
       "attributes": {
         "mnemonic": "IR_OPR_MQA",
         "display_name": "MQ OR into AC",
@@ -2796,7 +2798,9 @@
       "name": "IR_OPR_MQL",
       "category": "OPR Bit Flags",
       "width": 1,
-      "control_uses": [],
+      "control_uses": [
+        "predicate"
+      ],
       "attributes": {
         "mnemonic": "IR_OPR_MQL",
         "display_name": "AC load to MQ",
@@ -6498,22 +6502,5 @@
       }
     }
   ],
-  "diagnostics": [
-    {
-      "severity": "WARNING",
-      "code": "CONTROL_USES_UNRESOLVED",
-      "message": "Input has no reviewed control-use classification.",
-      "input_name": "IR_OPR_MQA",
-      "source_path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-      "source_line": 936
-    },
-    {
-      "severity": "WARNING",
-      "code": "CONTROL_USES_UNRESOLVED",
-      "message": "Input has no reviewed control-use classification.",
-      "input_name": "IR_OPR_MQL",
-      "source_path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-      "source_line": 961
-    }
-  ]
+  "diagnostics": []
 }

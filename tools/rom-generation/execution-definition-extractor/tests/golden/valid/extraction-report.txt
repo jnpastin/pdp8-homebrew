@@ -1,7 +1,7 @@
 Execution-Definition Extraction Report
 ======================================
 
-Cases extracted: 53
+Cases extracted: 61
 Information diagnostics: 0
 Warnings: 0
 Errors: 0

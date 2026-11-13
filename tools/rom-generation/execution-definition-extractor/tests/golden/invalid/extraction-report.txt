@@ -4,7 +4,7 @@ Execution-Definition Extraction Report
 Cases extracted: 18
 Information diagnostics: 0
 Warnings: 0
-Errors: 26
+Errors: 30
 Fatal errors: 0
 
 Diagnostics
@@ -16,8 +16,12 @@ ERROR MALFORMED_MICRO_OPERATION [mri:3.1:ts1] docs/03-microarchitecture/05-mri-e
 ERROR MISSING_CONTEXT docs/03-microarchitecture/07-opr/02-group2-execution.md: 'Applies when:' with a text code block is required.
 ERROR MISSING_CONTEXT docs/03-microarchitecture/07-opr/03-group3-execution.md: 'Applies when:' with a text code block is required.
 ERROR MISSING_CONTEXT [console:6] docs/03-microarchitecture/09-console-execution.md:1: 'Applicable context:' with a text code block is required.
+ERROR MISSING_PHASE_BINDING docs/03-microarchitecture/06-iot-execution.md:1: Expected binding not found: '- IOT_READ_PENDING selects /DB_READ and DB_READ_TO_AC during the transfer TS.'
+ERROR MISSING_PHASE_BINDING docs/03-microarchitecture/06-iot-execution.md:1: Expected binding not found: '- IOT_WRITE_PENDING selects /DB_WRITE and DB_WRITE_FROM_AC during the transfer TS.'
 ERROR MISSING_PHASE_BINDING docs/03-microarchitecture/06-iot-execution.md:1: Expected binding not found: '- IO_CLEAR_AC_REQ selects AC_CLEAR during the TS in which the request is asserted.'
 ERROR MISSING_SECTION docs/03-microarchitecture/04-fetch-defer.md: No 'DEFER Execution' section found.
+ERROR MISSING_SECTION docs/03-microarchitecture/06-iot-execution.md: No instruction heading 'IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 100' found for its decoded context.
+ERROR MISSING_SECTION docs/03-microarchitecture/06-iot-execution.md: No instruction heading 'IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 101' found for its decoded context.
 ERROR MISSING_SECTION docs/03-microarchitecture/06-iot-execution.md: No instruction heading 'IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 111' found for its decoded context.
 ERROR MISSING_SECTION docs/03-microarchitecture/06-iot-execution.md: No instruction heading 'IR[11:9] = 110 AND IR[8:6] = 010' found for its decoded context.
 ERROR MISSING_SECTION docs/03-microarchitecture/07-opr/03-group3-execution.md: No 'Instruction Definition' section found.

@@ -7982,6 +7982,12 @@
             "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
             "origin": "conditional micro-operation mapping",
             "source": "AC_CLEAR"
+          },
+          {
+            "value": "1",
+            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1) AND IOT_READ_PENDING = 1)",
+            "origin": "conditional micro-operation mapping",
+            "source": "DB_READ_TO_AC"
           }
         ],
         "CIFP_LOAD": [],
@@ -8046,6 +8052,12 @@
             "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
             "origin": "conditional micro-operation mapping",
             "source": "AC_CLEAR"
+          },
+          {
+            "value": "1",
+            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1) AND IOT_READ_PENDING = 1)",
+            "origin": "conditional micro-operation mapping",
+            "source": "DB_READ_TO_AC"
           }
         ],
         "ALU_A_SRC": [
@@ -8141,8 +8153,22 @@
             "source": "02:5.3"
           }
         ],
-        "/DB_READ": [],
-        "/DB_WRITE": [],
+        "/DB_READ": [
+          {
+            "value": "0",
+            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1) AND IOT_READ_PENDING = 1)",
+            "origin": "conditional micro-operation mapping",
+            "source": "DB_READ_TO_AC"
+          }
+        ],
+        "/DB_WRITE": [
+          {
+            "value": "0",
+            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1) AND IOT_WRITE_PENDING = 1)",
+            "origin": "conditional micro-operation mapping",
+            "source": "DB_WRITE_FROM_AC"
+          }
+        ],
         "/INITIALIZE": [
           {
             "value": "1",
@@ -8191,7 +8217,9 @@
         "MS_LOAD": []
       },
       "selected_micro_operations": {
-        "AC_CLEAR": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)"
+        "AC_CLEAR": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
+        "DB_READ_TO_AC": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1) AND IOT_READ_PENDING = 1)",
+        "DB_WRITE_FROM_AC": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1) AND IOT_WRITE_PENDING = 1)"
       },
       "applicable_direct_control_definitions": [
         "01:3.3.2",
@@ -8206,6 +8234,8 @@
         "02:4.5",
         "02:5.3",
         "02:6.1",
+        "02:6.2",
+        "02:6.3",
         "02:7.2",
         "02:8.4"
       ]
@@ -8281,6 +8311,12 @@
             "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
             "origin": "conditional micro-operation mapping",
             "source": "AC_CLEAR"
+          },
+          {
+            "value": "1",
+            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND IOT_READ_PENDING = 1)",
+            "origin": "conditional micro-operation mapping",
+            "source": "DB_READ_TO_AC"
           }
         ],
         "CIFP_LOAD": [],
@@ -8352,6 +8388,12 @@
             "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
             "origin": "conditional micro-operation mapping",
             "source": "AC_CLEAR"
+          },
+          {
+            "value": "1",
+            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND IOT_READ_PENDING = 1)",
+            "origin": "conditional micro-operation mapping",
+            "source": "DB_READ_TO_AC"
           }
         ],
         "ALU_A_SRC": [
@@ -8465,8 +8507,22 @@
             "source": "02:5.3"
           }
         ],
-        "/DB_READ": [],
-        "/DB_WRITE": [],
+        "/DB_READ": [
+          {
+            "value": "0",
+            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND IOT_READ_PENDING = 1)",
+            "origin": "conditional micro-operation mapping",
+            "source": "DB_READ_TO_AC"
+          }
+        ],
+        "/DB_WRITE": [
+          {
+            "value": "0",
+            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND IOT_WRITE_PENDING = 1)",
+            "origin": "conditional micro-operation mapping",
+            "source": "DB_WRITE_FROM_AC"
+          }
+        ],
         "/INITIALIZE": [
           {
             "value": "1",
@@ -8566,6 +8622,8 @@
       },
       "selected_micro_operations": {
         "AC_CLEAR": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
+        "DB_READ_TO_AC": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND IOT_READ_PENDING = 1)",
+        "DB_WRITE_FROM_AC": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND IOT_WRITE_PENDING = 1)",
         "PC_INC": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND IO_SKIP_REQ = 1)"
       },
       "applicable_direct_control_definitions": [
@@ -8587,6 +8645,8 @@
         "02:4.5",
         "02:5.3",
         "02:6.1",
+        "02:6.2",
+        "02:6.3",
         "02:7.2",
         "02:8.4"
       ]
@@ -11839,7 +11899,7 @@
         "path": "docs/03-microarchitecture/06-iot-execution.md",
         "line": 275
       },
-      "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 1) AND RUN = 1)",
+      "base_context": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1)",
       "defaults": {
         "AC_LOAD": "0",
         "CIFP_LOAD": "0",
@@ -11901,7 +11961,7 @@
         "AC_LOAD": [
           {
             "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 1) AND RUN = 1)",
+            "when": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_CLEAR"
           }
@@ -11914,7 +11974,7 @@
         "IDB_DRIVE": [
           {
             "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 1) AND RUN = 1)",
+            "when": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_CLEAR"
           }
@@ -11934,7 +11994,7 @@
         "AC_SRC": [
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 1) AND RUN = 1)",
+            "when": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_CLEAR"
           }
@@ -11942,7 +12002,7 @@
         "ALU_A_SRC": [
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 1) AND RUN = 1)",
+            "when": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_CLEAR"
           }
@@ -11950,7 +12010,7 @@
         "ALU_B_SRC": [
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 1) AND RUN = 1)",
+            "when": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_CLEAR"
           }
@@ -11958,7 +12018,7 @@
         "ALU_OP": [
           {
             "value": "12",
-            "when": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 1) AND RUN = 1)",
+            "when": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_CLEAR"
           }
@@ -11970,7 +12030,7 @@
         "IDB_SRC": [
           {
             "value": "7",
-            "when": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 1) AND RUN = 1)",
+            "when": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_CLEAR"
           }
@@ -11996,7 +12056,7 @@
         "/DMA_GRANT": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
             "origin": "direct-control definition",
             "source": "02:5.3"
           }
@@ -12006,7 +12066,7 @@
         "/INITIALIZE": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
           }
@@ -12014,7 +12074,7 @@
         "IOT_ACTIVE": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
             "origin": "direct-control definition",
             "source": "02:7.3"
           }
@@ -12023,7 +12083,7 @@
         "RUN_NEXT": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 1) AND RUN = 1) AND (((RUN = 1 AND NOT (((HLT_REQ = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT (((FP_SINGLE_INSTRUCTION = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT ((FP_SINGLE_STEP = 1 AND TS = 4))))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1) AND (((RUN = 1 AND NOT (((HLT_REQ = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT (((FP_SINGLE_INSTRUCTION = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT ((FP_SINGLE_STEP = 1 AND TS = 4))))",
             "origin": "direct-control definition",
             "source": "01:3.3.2"
           }
@@ -12031,19 +12091,19 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 1) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 1) AND RUN = 1) AND ((RUN = 1 AND FP_STOP = 1) AND NOT ((MS = EXECUTE AND TS = 4))))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1) AND ((RUN = 1 AND FP_STOP = 1) AND NOT ((MS = EXECUTE AND TS = 4))))",
             "origin": "direct-control definition",
             "source": "01:3.4.3"
           },
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 1) AND RUN = 1) AND (HLT_REQ = 1 AND NOT (((RUN = 1 AND MS = EXECUTE) AND TS = 4))))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1) AND (HLT_REQ = 1 AND NOT (((RUN = 1 AND MS = EXECUTE) AND TS = 4))))",
             "origin": "direct-control definition",
             "source": "01:3.4.5"
           }
@@ -12051,7 +12111,7 @@
         "MS_LOAD": []
       },
       "selected_micro_operations": {
-        "AC_CLEAR": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 1) AND RUN = 1)"
+        "AC_CLEAR": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1)"
       },
       "applicable_direct_control_definitions": [
         "01:3.3.2",
@@ -12071,7 +12131,7 @@
         "path": "docs/03-microarchitecture/06-iot-execution.md",
         "line": 275
       },
-      "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 2) AND RUN = 1)",
+      "base_context": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 2) AND RUN = 1)",
       "defaults": {
         "AC_LOAD": "0",
         "CIFP_LOAD": "0",
@@ -12133,7 +12193,7 @@
         "AC_LOAD": [
           {
             "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 2) AND RUN = 1)",
+            "when": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 2) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "GTF_FLAGS_TO_AC"
           }
@@ -12159,7 +12219,7 @@
         "AC_SRC": [
           {
             "value": "6",
-            "when": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 2) AND RUN = 1)",
+            "when": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 2) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "GTF_FLAGS_TO_AC"
           }
@@ -12193,7 +12253,7 @@
         "/DMA_GRANT": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
             "origin": "direct-control definition",
             "source": "02:5.3"
           }
@@ -12203,7 +12263,7 @@
         "/INITIALIZE": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
           }
@@ -12211,7 +12271,7 @@
         "IOT_ACTIVE": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
             "origin": "direct-control definition",
             "source": "02:7.3"
           }
@@ -12220,7 +12280,7 @@
         "RUN_NEXT": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 2) AND RUN = 1) AND (((RUN = 1 AND NOT (((HLT_REQ = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT (((FP_SINGLE_INSTRUCTION = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT ((FP_SINGLE_STEP = 1 AND TS = 4))))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 2) AND RUN = 1) AND (((RUN = 1 AND NOT (((HLT_REQ = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT (((FP_SINGLE_INSTRUCTION = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT ((FP_SINGLE_STEP = 1 AND TS = 4))))",
             "origin": "direct-control definition",
             "source": "01:3.3.2"
           }
@@ -12228,19 +12288,19 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 2) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 2) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 2) AND RUN = 1) AND ((RUN = 1 AND FP_STOP = 1) AND NOT ((MS = EXECUTE AND TS = 4))))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 2) AND RUN = 1) AND ((RUN = 1 AND FP_STOP = 1) AND NOT ((MS = EXECUTE AND TS = 4))))",
             "origin": "direct-control definition",
             "source": "01:3.4.3"
           },
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 2) AND RUN = 1) AND (HLT_REQ = 1 AND NOT (((RUN = 1 AND MS = EXECUTE) AND TS = 4))))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 2) AND RUN = 1) AND (HLT_REQ = 1 AND NOT (((RUN = 1 AND MS = EXECUTE) AND TS = 4))))",
             "origin": "direct-control definition",
             "source": "01:3.4.5"
           }
@@ -12248,7 +12308,7 @@
         "MS_LOAD": []
       },
       "selected_micro_operations": {
-        "GTF_FLAGS_TO_AC": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 2) AND RUN = 1)"
+        "GTF_FLAGS_TO_AC": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 2) AND RUN = 1)"
       },
       "applicable_direct_control_definitions": [
         "01:3.3.2",
@@ -12268,7 +12328,7 @@
         "path": "docs/03-microarchitecture/06-iot-execution.md",
         "line": 275
       },
-      "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 3) AND RUN = 1)",
+      "base_context": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 3) AND RUN = 1)",
       "defaults": {
         "AC_LOAD": "0",
         "CIFP_LOAD": "0",
@@ -12376,7 +12436,7 @@
         "/DMA_GRANT": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
             "origin": "direct-control definition",
             "source": "02:5.3"
           }
@@ -12386,7 +12446,7 @@
         "/INITIALIZE": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
           }
@@ -12394,7 +12454,7 @@
         "IOT_ACTIVE": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
             "origin": "direct-control definition",
             "source": "02:7.3"
           }
@@ -12403,7 +12463,7 @@
         "RUN_NEXT": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 3) AND RUN = 1) AND (((RUN = 1 AND NOT (((HLT_REQ = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT (((FP_SINGLE_INSTRUCTION = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT ((FP_SINGLE_STEP = 1 AND TS = 4))))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 3) AND RUN = 1) AND (((RUN = 1 AND NOT (((HLT_REQ = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT (((FP_SINGLE_INSTRUCTION = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT ((FP_SINGLE_STEP = 1 AND TS = 4))))",
             "origin": "direct-control definition",
             "source": "01:3.3.2"
           }
@@ -12411,19 +12471,19 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 3) AND RUN = 1) AND ((RUN = 1 AND FP_STOP = 1) AND NOT ((MS = EXECUTE AND TS = 4))))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 3) AND RUN = 1) AND ((RUN = 1 AND FP_STOP = 1) AND NOT ((MS = EXECUTE AND TS = 4))))",
             "origin": "direct-control definition",
             "source": "01:3.4.3"
           },
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 3) AND RUN = 1) AND (HLT_REQ = 1 AND NOT (((RUN = 1 AND MS = EXECUTE) AND TS = 4))))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 3) AND RUN = 1) AND (HLT_REQ = 1 AND NOT (((RUN = 1 AND MS = EXECUTE) AND TS = 4))))",
             "origin": "direct-control definition",
             "source": "01:3.4.5"
           }
@@ -12449,7 +12509,7 @@
         "path": "docs/03-microarchitecture/06-iot-execution.md",
         "line": 275
       },
-      "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 4) AND RUN = 1)",
+      "base_context": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1)",
       "defaults": {
         "AC_LOAD": "0",
         "CIFP_LOAD": "0",
@@ -12557,7 +12617,7 @@
         "/DMA_GRANT": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
             "origin": "direct-control definition",
             "source": "02:5.3"
           }
@@ -12567,7 +12627,7 @@
         "/INITIALIZE": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
           }
@@ -12575,7 +12635,7 @@
         "IOT_ACTIVE": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
             "origin": "direct-control definition",
             "source": "02:7.3"
           }
@@ -12583,19 +12643,19 @@
         "MS_NEXT": [
           {
             "value": "3",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1))",
             "origin": "direct-control definition",
             "source": "01:3.2.5"
           },
           {
             "value": "4",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 0))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.6"
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 1))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 1))",
             "origin": "direct-control definition",
             "source": "01:3.2.7"
           }
@@ -12603,31 +12663,31 @@
         "RUN_NEXT": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND NOT (((HLT_REQ = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT (((FP_SINGLE_INSTRUCTION = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT ((FP_SINGLE_STEP = 1 AND TS = 4))))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND NOT (((HLT_REQ = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT (((FP_SINGLE_INSTRUCTION = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT ((FP_SINGLE_STEP = 1 AND TS = 4))))",
             "origin": "direct-control definition",
             "source": "01:3.3.2"
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
             "origin": "direct-control definition",
             "source": "01:3.3.6"
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND FP_SINGLE_INSTRUCTION = 1) AND MS = EXECUTE) AND TS = 4))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND FP_SINGLE_INSTRUCTION = 1) AND MS = EXECUTE) AND TS = 4))",
             "origin": "direct-control definition",
             "source": "01:3.3.7"
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 4) AND RUN = 1) AND ((RUN = 1 AND FP_SINGLE_STEP = 1) AND TS = 4))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND ((RUN = 1 AND FP_SINGLE_STEP = 1) AND TS = 4))",
             "origin": "direct-control definition",
             "source": "01:3.3.8"
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
             "origin": "direct-control definition",
             "source": "01:3.4.6"
           }
@@ -12635,19 +12695,19 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
             "origin": "direct-control definition",
             "source": "01:3.3.6"
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
             "origin": "direct-control definition",
             "source": "01:3.4.6"
           }
@@ -12655,7 +12715,7 @@
         "MS_LOAD": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 100) AND TS = 4) AND RUN = 1) AND (RUN = 1 AND TS = 4))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND (RUN = 1 AND TS = 4))",
             "origin": "direct-control definition",
             "source": "01:3.2.11"
           }
@@ -12686,7 +12746,7 @@
         "path": "docs/03-microarchitecture/06-iot-execution.md",
         "line": 298
       },
-      "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 1) AND RUN = 1)",
+      "base_context": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 1) AND RUN = 1)",
       "defaults": {
         "AC_LOAD": "0",
         "CIFP_LOAD": "0",
@@ -12794,7 +12854,7 @@
         "/DMA_GRANT": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
             "origin": "direct-control definition",
             "source": "02:5.3"
           }
@@ -12804,7 +12864,7 @@
         "/INITIALIZE": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
           }
@@ -12812,7 +12872,7 @@
         "IOT_ACTIVE": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
             "origin": "direct-control definition",
             "source": "02:7.3"
           }
@@ -12821,7 +12881,7 @@
         "RUN_NEXT": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 1) AND RUN = 1) AND (((RUN = 1 AND NOT (((HLT_REQ = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT (((FP_SINGLE_INSTRUCTION = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT ((FP_SINGLE_STEP = 1 AND TS = 4))))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 1) AND RUN = 1) AND (((RUN = 1 AND NOT (((HLT_REQ = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT (((FP_SINGLE_INSTRUCTION = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT ((FP_SINGLE_STEP = 1 AND TS = 4))))",
             "origin": "direct-control definition",
             "source": "01:3.3.2"
           }
@@ -12829,19 +12889,19 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 1) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 1) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 1) AND RUN = 1) AND ((RUN = 1 AND FP_STOP = 1) AND NOT ((MS = EXECUTE AND TS = 4))))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 1) AND RUN = 1) AND ((RUN = 1 AND FP_STOP = 1) AND NOT ((MS = EXECUTE AND TS = 4))))",
             "origin": "direct-control definition",
             "source": "01:3.4.3"
           },
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 1) AND RUN = 1) AND (HLT_REQ = 1 AND NOT (((RUN = 1 AND MS = EXECUTE) AND TS = 4))))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 1) AND RUN = 1) AND (HLT_REQ = 1 AND NOT (((RUN = 1 AND MS = EXECUTE) AND TS = 4))))",
             "origin": "direct-control definition",
             "source": "01:3.4.5"
           }
@@ -12867,7 +12927,7 @@
         "path": "docs/03-microarchitecture/06-iot-execution.md",
         "line": 298
       },
-      "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1)",
+      "base_context": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1)",
       "defaults": {
         "AC_LOAD": "0",
         "CIFP_LOAD": "0",
@@ -12930,7 +12990,7 @@
         "CIFP_LOAD": [
           {
             "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1)",
+            "when": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "CIFP_SET"
           }
@@ -12938,7 +12998,7 @@
         "DF_LOAD": [
           {
             "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1)",
+            "when": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_TO_DF"
           }
@@ -12946,7 +13006,7 @@
         "DIF_LOAD": [
           {
             "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1)",
+            "when": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_TO_DIF"
           }
@@ -12957,7 +13017,7 @@
         "IE_LOAD": [
           {
             "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1)",
+            "when": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "IE_SET"
           }
@@ -12966,7 +13026,7 @@
         "II_LOAD": [
           {
             "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1)",
+            "when": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "II_SET"
           }
@@ -12976,7 +13036,7 @@
         "L_LOAD": [
           {
             "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1)",
+            "when": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_TO_L"
           }
@@ -12994,7 +13054,7 @@
         "DF_SRC": [
           {
             "value": "3",
-            "when": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1)",
+            "when": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_TO_DF"
           }
@@ -13002,7 +13062,7 @@
         "DIF_SRC": [
           {
             "value": "3",
-            "when": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1)",
+            "when": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_TO_DIF"
           }
@@ -13013,7 +13073,7 @@
         "L_OP": [
           {
             "value": "3",
-            "when": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1)",
+            "when": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_TO_L"
           }
@@ -13027,7 +13087,7 @@
         "CIFP_VAL": [
           {
             "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1)",
+            "when": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "CIFP_SET"
           }
@@ -13037,7 +13097,7 @@
         "IE_VAL": [
           {
             "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1)",
+            "when": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "IE_SET"
           }
@@ -13046,7 +13106,7 @@
         "II_VAL": [
           {
             "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1)",
+            "when": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "II_SET"
           }
@@ -13059,7 +13119,7 @@
         "/DMA_GRANT": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
             "origin": "direct-control definition",
             "source": "02:5.3"
           }
@@ -13069,7 +13129,7 @@
         "/INITIALIZE": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
           }
@@ -13077,7 +13137,7 @@
         "IOT_ACTIVE": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
             "origin": "direct-control definition",
             "source": "02:7.3"
           }
@@ -13086,7 +13146,7 @@
         "RUN_NEXT": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1) AND (((RUN = 1 AND NOT (((HLT_REQ = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT (((FP_SINGLE_INSTRUCTION = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT ((FP_SINGLE_STEP = 1 AND TS = 4))))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1) AND (((RUN = 1 AND NOT (((HLT_REQ = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT (((FP_SINGLE_INSTRUCTION = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT ((FP_SINGLE_STEP = 1 AND TS = 4))))",
             "origin": "direct-control definition",
             "source": "01:3.3.2"
           }
@@ -13094,19 +13154,19 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1) AND ((RUN = 1 AND FP_STOP = 1) AND NOT ((MS = EXECUTE AND TS = 4))))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1) AND ((RUN = 1 AND FP_STOP = 1) AND NOT ((MS = EXECUTE AND TS = 4))))",
             "origin": "direct-control definition",
             "source": "01:3.4.3"
           },
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1) AND (HLT_REQ = 1 AND NOT (((RUN = 1 AND MS = EXECUTE) AND TS = 4))))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1) AND (HLT_REQ = 1 AND NOT (((RUN = 1 AND MS = EXECUTE) AND TS = 4))))",
             "origin": "direct-control definition",
             "source": "01:3.4.5"
           }
@@ -13114,12 +13174,12 @@
         "MS_LOAD": []
       },
       "selected_micro_operations": {
-        "AC_TO_DF": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1)",
-        "AC_TO_DIF": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1)",
-        "AC_TO_L": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1)",
-        "CIFP_SET": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1)",
-        "IE_SET": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1)",
-        "II_SET": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 2) AND RUN = 1)"
+        "AC_TO_DF": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1)",
+        "AC_TO_DIF": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1)",
+        "AC_TO_L": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1)",
+        "CIFP_SET": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1)",
+        "IE_SET": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1)",
+        "II_SET": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1)"
       },
       "applicable_direct_control_definitions": [
         "01:3.3.2",
@@ -13139,7 +13199,7 @@
         "path": "docs/03-microarchitecture/06-iot-execution.md",
         "line": 298
       },
-      "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 3) AND RUN = 1)",
+      "base_context": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 3) AND RUN = 1)",
       "defaults": {
         "AC_LOAD": "0",
         "CIFP_LOAD": "0",
@@ -13247,7 +13307,7 @@
         "/DMA_GRANT": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
             "origin": "direct-control definition",
             "source": "02:5.3"
           }
@@ -13257,7 +13317,7 @@
         "/INITIALIZE": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
           }
@@ -13265,7 +13325,7 @@
         "IOT_ACTIVE": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
             "origin": "direct-control definition",
             "source": "02:7.3"
           }
@@ -13274,7 +13334,7 @@
         "RUN_NEXT": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 3) AND RUN = 1) AND (((RUN = 1 AND NOT (((HLT_REQ = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT (((FP_SINGLE_INSTRUCTION = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT ((FP_SINGLE_STEP = 1 AND TS = 4))))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 3) AND RUN = 1) AND (((RUN = 1 AND NOT (((HLT_REQ = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT (((FP_SINGLE_INSTRUCTION = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT ((FP_SINGLE_STEP = 1 AND TS = 4))))",
             "origin": "direct-control definition",
             "source": "01:3.3.2"
           }
@@ -13282,19 +13342,19 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 3) AND RUN = 1) AND ((RUN = 1 AND FP_STOP = 1) AND NOT ((MS = EXECUTE AND TS = 4))))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 3) AND RUN = 1) AND ((RUN = 1 AND FP_STOP = 1) AND NOT ((MS = EXECUTE AND TS = 4))))",
             "origin": "direct-control definition",
             "source": "01:3.4.3"
           },
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 3) AND RUN = 1) AND (HLT_REQ = 1 AND NOT (((RUN = 1 AND MS = EXECUTE) AND TS = 4))))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 3) AND RUN = 1) AND (HLT_REQ = 1 AND NOT (((RUN = 1 AND MS = EXECUTE) AND TS = 4))))",
             "origin": "direct-control definition",
             "source": "01:3.4.5"
           }
@@ -13320,7 +13380,7 @@
         "path": "docs/03-microarchitecture/06-iot-execution.md",
         "line": 298
       },
-      "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 4) AND RUN = 1)",
+      "base_context": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1)",
       "defaults": {
         "AC_LOAD": "0",
         "CIFP_LOAD": "0",
@@ -13428,7 +13488,7 @@
         "/DMA_GRANT": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
             "origin": "direct-control definition",
             "source": "02:5.3"
           }
@@ -13438,7 +13498,7 @@
         "/INITIALIZE": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
           }
@@ -13446,7 +13506,7 @@
         "IOT_ACTIVE": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
             "origin": "direct-control definition",
             "source": "02:7.3"
           }
@@ -13454,19 +13514,19 @@
         "MS_NEXT": [
           {
             "value": "3",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1))",
             "origin": "direct-control definition",
             "source": "01:3.2.5"
           },
           {
             "value": "4",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 0))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.6"
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 1))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 1))",
             "origin": "direct-control definition",
             "source": "01:3.2.7"
           }
@@ -13474,31 +13534,31 @@
         "RUN_NEXT": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND NOT (((HLT_REQ = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT (((FP_SINGLE_INSTRUCTION = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT ((FP_SINGLE_STEP = 1 AND TS = 4))))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND NOT (((HLT_REQ = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT (((FP_SINGLE_INSTRUCTION = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT ((FP_SINGLE_STEP = 1 AND TS = 4))))",
             "origin": "direct-control definition",
             "source": "01:3.3.2"
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
             "origin": "direct-control definition",
             "source": "01:3.3.6"
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND FP_SINGLE_INSTRUCTION = 1) AND MS = EXECUTE) AND TS = 4))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND FP_SINGLE_INSTRUCTION = 1) AND MS = EXECUTE) AND TS = 4))",
             "origin": "direct-control definition",
             "source": "01:3.3.7"
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 4) AND RUN = 1) AND ((RUN = 1 AND FP_SINGLE_STEP = 1) AND TS = 4))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND ((RUN = 1 AND FP_SINGLE_STEP = 1) AND TS = 4))",
             "origin": "direct-control definition",
             "source": "01:3.3.8"
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
             "origin": "direct-control definition",
             "source": "01:3.4.6"
           }
@@ -13506,19 +13566,19 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
             "origin": "direct-control definition",
             "source": "01:3.3.6"
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
             "origin": "direct-control definition",
             "source": "01:3.4.6"
           }
@@ -13526,7 +13586,7 @@
         "MS_LOAD": [
           {
             "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 101) AND TS = 4) AND RUN = 1) AND (RUN = 1 AND TS = 4))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND (RUN = 1 AND TS = 4))",
             "origin": "direct-control definition",
             "source": "01:3.2.11"
           }

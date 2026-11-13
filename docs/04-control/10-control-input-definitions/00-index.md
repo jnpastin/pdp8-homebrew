@@ -178,3 +178,22 @@ Defined in: [External Inputs](./04-external-inputs.md)
 - [IO_SKIP_REQ](./04-external-inputs.md#io_skip_req)
 - [IO_CLEAR_AC_REQ](./04-external-inputs.md#io_clear_ac_req)
 - [/IO_WAIT](./04-external-inputs.md#io_wait)
+
+---
+
+## 7. Inputs Outside the Control-Word Selection
+
+The following control inputs are defined here but are not read by any execution case, conditional micro-operation, or direct-control context. They do not select the control word, so they are not candidate control-ROM address inputs. Each reaches control or the datapath by another path.
+
+| Input | Path | Used through |
+|---|---|---|
+| `ACN`, `ACZ`, `LZ` | derived-flag logic | `SKIP_TAKEN` |
+| `IR_OPR_SKIP_MODE`, `IR_OPR_SMA`, `IR_OPR_SNL`, `IR_OPR_SZA` | derived-flag logic | `SKIP_TAKEN` |
+| `EAI` | derived-flag logic | `AUTO_INDEX_REQUIRED` |
+| `II` | derived-flag logic | `INTERRUPT_REQUEST_VALID` |
+| `MBZ` | derived-flag logic | `ISZ_SKIP_REQUIRED` |
+| `IR_ADDR`, `IR_ZERO_PAGE` | datapath | EA formation by `IR_ADDR_TO_EA_ADDR` |
+| `FP_IF`, `FP_DF` | datapath | values loaded by `FP_IF_TO_IF`, `FP_IF_TO_DIF`, `FP_DF_TO_DF` |
+| `/IO_WAIT` | timing hardware | TSTEP progression |
+
+The control-word equivalence analyzer reports these as `unreferenced`. An input that appears there and is not listed in this table is a specification gap.

@@ -121,6 +121,8 @@ IOT_OPCODE = "110"
 # Keyed by the full heading title, so a changed heading is reported instead
 # of silently matched.
 DECODED_IOT_CONTEXTS = {
+    "IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 100": ("IR_IS_GTF = 1",),
+    "IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 101": ("IR_IS_RTF = 1",),
     "IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 111": ("IR_IS_CAF = 1",),
     "IR[11:9] = 110 AND IR[8:6] = 010": ("IR_IS_MEMEXT_IOT = 1",),
 }
@@ -143,6 +145,23 @@ PHASE_BINDINGS = (
         "- IO_SKIP_REQ selects PC_INC during TS4.",
         (4,),
         {"predicate": "IO_SKIP_REQ = 1", "micro_operation": "PC_INC"},
+    ),
+    # The transfer TS follows acceptance at TP2 or TP3 (IOT Execution
+    # section 5), so it is TS3 or TS4.
+    (
+        "- IOT_READ_PENDING selects /DB_READ and DB_READ_TO_AC during the "
+        "transfer TS.",
+        (3, 4),
+        {"predicate": "IOT_READ_PENDING = 1", "micro_operation": "DB_READ_TO_AC"},
+    ),
+    (
+        "- IOT_WRITE_PENDING selects /DB_WRITE and DB_WRITE_FROM_AC during "
+        "the transfer TS.",
+        (3, 4),
+        {
+            "predicate": "IOT_WRITE_PENDING = 1",
+            "micro_operation": "DB_WRITE_FROM_AC",
+        },
     ),
 )
 

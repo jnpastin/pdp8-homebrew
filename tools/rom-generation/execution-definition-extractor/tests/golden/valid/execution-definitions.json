@@ -330,6 +330,14 @@
         {
           "predicate": "IO_CLEAR_AC_REQ = 1",
           "micro_operation": "AC_CLEAR"
+        },
+        {
+          "predicate": "IOT_READ_PENDING = 1",
+          "micro_operation": "DB_READ_TO_AC"
+        },
+        {
+          "predicate": "IOT_WRITE_PENDING = 1",
+          "micro_operation": "DB_WRITE_FROM_AC"
         }
       ]
     },
@@ -354,6 +362,14 @@
         {
           "predicate": "IO_SKIP_REQ = 1",
           "micro_operation": "PC_INC"
+        },
+        {
+          "predicate": "IOT_READ_PENDING = 1",
+          "micro_operation": "DB_READ_TO_AC"
+        },
+        {
+          "predicate": "IOT_WRITE_PENDING = 1",
+          "micro_operation": "DB_WRITE_FROM_AC"
         }
       ]
     },
@@ -361,7 +377,7 @@
       "id": "iot:9.3:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 10
+        "line": 12
       },
       "execution_model": "major-state",
       "context": [
@@ -378,7 +394,7 @@
       "id": "iot:9.3:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 10
+        "line": 12
       },
       "execution_model": "major-state",
       "context": [
@@ -402,7 +418,7 @@
       "id": "iot:9.3:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 10
+        "line": 12
       },
       "execution_model": "major-state",
       "context": [
@@ -419,7 +435,7 @@
       "id": "iot:9.3:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 10
+        "line": 12
       },
       "execution_model": "major-state",
       "context": [
@@ -436,7 +452,127 @@
       "id": "iot:10.1:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 37
+        "line": 39
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_GTF = 1"
+      ],
+      "timing_state": 1,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:10.1:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 39
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_GTF = 1"
+      ],
+      "timing_state": 2,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:10.1:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 39
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_GTF = 1"
+      ],
+      "timing_state": 3,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:10.1:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 39
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_GTF = 1"
+      ],
+      "timing_state": 4,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:10.2:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 56
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_RTF = 1"
+      ],
+      "timing_state": 1,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:10.2:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 56
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_RTF = 1"
+      ],
+      "timing_state": 2,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:10.2:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 56
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_RTF = 1"
+      ],
+      "timing_state": 3,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:10.2:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 56
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_RTF = 1"
+      ],
+      "timing_state": 4,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:10.3:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 73
       },
       "execution_model": "major-state",
       "context": [
@@ -448,10 +584,10 @@
       "conditional_micro_operations": []
     },
     {
-      "id": "iot:10.1:ts2",
+      "id": "iot:10.3:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 37
+        "line": 73
       },
       "execution_model": "major-state",
       "context": [
@@ -463,10 +599,10 @@
       "conditional_micro_operations": []
     },
     {
-      "id": "iot:10.1:ts3",
+      "id": "iot:10.3:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 37
+        "line": 73
       },
       "execution_model": "major-state",
       "context": [
@@ -478,10 +614,10 @@
       "conditional_micro_operations": []
     },
     {
-      "id": "iot:10.1:ts4",
+      "id": "iot:10.3:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 37
+        "line": 73
       },
       "execution_model": "major-state",
       "context": [
@@ -493,10 +629,10 @@
       "conditional_micro_operations": []
     },
     {
-      "id": "iot:10.2:ts1",
+      "id": "iot:10.4:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 54
+        "line": 90
       },
       "execution_model": "major-state",
       "context": [
@@ -508,10 +644,10 @@
       "conditional_micro_operations": []
     },
     {
-      "id": "iot:10.2:ts2",
+      "id": "iot:10.4:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 54
+        "line": 90
       },
       "execution_model": "major-state",
       "context": [
@@ -523,10 +659,10 @@
       "conditional_micro_operations": []
     },
     {
-      "id": "iot:10.2:ts3",
+      "id": "iot:10.4:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 54
+        "line": 90
       },
       "execution_model": "major-state",
       "context": [
@@ -538,10 +674,10 @@
       "conditional_micro_operations": []
     },
     {
-      "id": "iot:10.2:ts4",
+      "id": "iot:10.4:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 54
+        "line": 90
       },
       "execution_model": "major-state",
       "context": [
