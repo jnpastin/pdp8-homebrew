@@ -101,7 +101,7 @@ Each case, abbreviated here to two fields and two definitions:
 | Property | Meaning |
 |---|---|
 | `execution_case_id`, `source` | the execution case's `id` and `source` |
-| `base_context` | the case's context lines and `TS = n` (when the case has a timing state), joined by `AND`; `always` when there are none |
+| `base_context` | the case's context lines and `TS = n` (when the case has a timing state), joined by `AND`, plus `RUN = 1` when they do not compare `RUN` (section 8.2) |
 | `defaults` | the encoded default of every encoded control-word field, in schema order |
 | `field_assignments` | for every encoded field, in schema order, its assignments in the order made (section 8) |
 | `selected_micro_operations` | each micro-operation the case selects, sorted by name, with the condition selecting it |
@@ -181,6 +181,8 @@ Every expression and assignment in every input is checked, whether or not a case
 | `MALFORMED_ASSIGNMENT` | a direct assignment or control-supplied value line is not `FIELD = VALUE` |
 | `UNKNOWN_CONTROL_FIELD` | a mapping, direct assignment or control-supplied value assigns something other than an encoded control-word field |
 | `INVALID_FIELD_VALUE` | a default, mapping, direct assignment or control-supplied value is not a valid value of its field (section 5) |
+| `RUN_INPUT_MISSING` | the control-input schema does not define `RUN`, so the run-mode context default (section 8.2) cannot be applied |
+| `IR_DERIVATION_UNUSABLE` | an IR-derived input's documented derivation cannot be evaluated (section 8.1) |
 
 Each diagnostic names the entry and, for expressions, the property holding it; for assignments, the field.
 
@@ -198,10 +200,23 @@ Two conditions can hold together when some state satisfies both and is reachable
 
 - it sets both inputs of an exclusive pair to `1`; pairs come from input constraints reading `Mutually exclusive with X.` and from `exactly_one` and `at_most_one` global constraints
 - it violates a timing constraint, meaning its context holds and its requirement does not
+- it gives the IR-derived inputs values that no single IR value produces; for example, `IR_WRITES_DF = 1` with `IR_RESTORES_IB = 1`, or `IR_IS_MRI = 1` with `IR_IS_CAF = 1`
+
+The IR-derived values come from evaluating each input's documented derivation ([IR-Derived Flags §1.1](../../../docs/04-control/10-control-input-definitions/02-ir-derived-fields.md#11-derivation-notation)) for all 4,096 IR values, using the shared `ir_derivation_table`. An input of the IR-Derived Signals domain whose derivation cannot be evaluated is an `IR_DERIVATION_UNUSABLE` error.
 
 Each name ranges over every value it is compared with, in the conditions or in any timing constraint, plus one other value. The search does not use a name's full domain, so a state may give a name a value it cannot really take; for example, a one-bit input that is neither 0 nor 1. The check can therefore report a conflict that cannot occur, but never misses one.
 
-### 8.2 Conflicts
+### 8.2 Run-Mode Context Default
+
+[Execution Model §2.3](../../../docs/03-microarchitecture/01-execution-model.md#23-run-mode-context-default) makes every context that does not compare `RUN` apply only while running. The generator applies it before generation:
+
+- **Case base context:** the context lines and `TS = n`; when the result compares `RUN` nowhere, `AND RUN = 1` is added. An empty context becomes `RUN = 1`.
+- **Conditional predicate:** when the case base already has `RUN = 1` as a top-level `AND` term, the predicate is used as written, since the base supplies the default. Otherwise a predicate that compares `RUN` nowhere gets `AND RUN = 1`.
+- **Direct-control context:** each `applicable_context` alternative that compares `RUN` nowhere and contains no selection test gets `AND RUN = 1`. An alternative with a selection test takes its run mode from the case that selects the micro-operation.
+
+A comparison of `RUN` anywhere, including inside `NOT (...)`, counts. The default appears explicitly in the generated `base_context` and `when` conditions.
+
+### 8.3 Conflicts
 
 `CONFLICTING_ASSIGNMENTS` is reported, naming the case and field, when two assignments to a field have different values, or take different inputs, or one takes an input and the other a fixed value, and their conditions can hold together. The message gives both assignments' values, origins, sources and conditions. Only the first conflict found for each field of a case is reported. Any conflict stops the candidate.
 
@@ -295,7 +310,7 @@ The implementation must:
 - report malformed input without inventing replacements
 - remain proportional to the bounded task
 
-The implementation is one Python source file, `src/generate_symbolic_control_words.py`, organized in pipeline order: expressions, reading inputs, structural validation, reference validation, reachability, generation, review, candidate construction, output, and the command line.
+The implementation is one Python source file, `src/generate_symbolic_control_words.py`, organized in pipeline order: assignment blocks, reading inputs, structural validation, reference validation, generation, review, candidate construction, output, and the command line. The expression grammar (section 5), value domains, exclusive input pairs and the reachability check live in the shared module `tools/rom-generation/common/predicates.py`, so that every tool reads a predicate the same way.
 
 ## 14. Workflow
 
@@ -309,4 +324,4 @@ The generator never promotes its candidate.
 
 ## 15. Relationship to Later Stages
 
-The control-input significance analyzer reads the maintained artifact to find which control inputs affect control behavior. Control-address packing and ROM image generation will consume it once they exist.
+The control-word equivalence analyzer (`tools/rom-generation/control-word-equivalence-analyzer/`) reads the maintained artifact to find equivalent and aliased control words, unreachable assignments and regions, and which control inputs affect control behavior. Control-address packing and ROM image generation will consume it once they exist.

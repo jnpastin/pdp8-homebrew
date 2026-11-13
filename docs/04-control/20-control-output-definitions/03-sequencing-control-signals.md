@@ -32,6 +32,7 @@ They select:
 - MS_NEXT
 - RUN_NEXT
 - HLT_REQ_NEXT
+- MS_LOAD
 
 They do NOT:
 
@@ -127,14 +128,14 @@ Defined in:
 
 **Behavior**
 
-- evaluated during TS4
-- committed at TP4
+- evaluated during TS4, or during a console transaction
+- committed at a TP only when `MS_LOAD = 1`
 - becomes the new MS
 
 **Constraints**
 
 - must be defined for all states at TS4
-- must not change outside TS4
+- does not modify MS when `MS_LOAD = 0`
 - must not be modified by μops
 
 ---
@@ -215,6 +216,41 @@ Defined in:
 - HLT instruction behavior from [IR_OPR_HLT](../10-control-input-definitions/02-ir-derived-fields.md#ir_opr_hlt)
 - halt-request preservation
 - halt-request clearing after consumption
+
+---
+
+### 4.4 Major State Load (MS_LOAD)
+
+**Mnemonic:** MS_LOAD  
+**Name:** Major State Load  
+**Type:** Single-bit load-enable field  
+**Domain:** Sequencing  
+**Width** 1 bit  
+
+**Default Value:** 0  
+**Explicit Value Required:** No  
+**Value Required When:** Always  
+
+**Description:** Enables loading MS from `MS_NEXT` at the TP that commits the control word.
+
+**Behavior**
+- evaluated as part of the control word
+- when 1, MS ← `MS_NEXT` at TP
+- when 0, MS is held
+
+**Value Encoding:**
+```text
+0 → MS held
+1 → MS loaded from MS_NEXT
+```
+
+**Constraints**
+- must not be computed outside the control store
+- must not be modified by μops
+
+**Used for**
+- every major-state transition at TP4 while running
+- front-panel START
 
 ---
 
@@ -350,6 +386,7 @@ They select:
 - MS_NEXT
 - RUN_NEXT
 - HLT_REQ_NEXT
+- MS_LOAD
 
 They do not:
 

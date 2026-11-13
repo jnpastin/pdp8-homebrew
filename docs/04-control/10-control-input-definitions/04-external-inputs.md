@@ -58,6 +58,34 @@ During normal execution, front-panel command inputs are ignored except for `FP_S
 
 During halted execution, front-panel command inputs may select a single console operation.
 
+### 4.1 Console Command Acceptance
+
+The console commands are `FP_START`, `FP_CLEAR`, `FP_CONTINUE`, `FP_LOAD_ADDRESS`, `FP_EXAMINE`, and `FP_DEPOSIT`.
+
+Each console command input is synchronized and debounced before acceptance.
+
+A console command is accepted when:
+
+- its synchronized input becomes asserted
+- `RUN = 0`
+- the input is armed
+- no console transaction is in progress
+
+Acceptance:
+
+- latches the accepted command and starts a console transaction ([Major State Timing §8](../../09-timing/03-major-state-timing.md#8-halted-state-and-console-transactions))
+- disarms the input until its synchronized input is released
+
+The first command accepted wins. A command asserted while a transaction is in progress is ignored and is not queued. Simultaneous acceptance cannot occur.
+
+The console command inputs seen by control are the latched accepted commands:
+
+- at most one is asserted
+  - `AT_MOST_ONE(FP_START, FP_CLEAR, FP_CONTINUE, FP_LOAD_ADDRESS, FP_EXAMINE, FP_DEPOSIT)`
+- all are 0 while `RUN = 1`
+
+`FP_STOP` is not a console command. It is captured while running by halt-request sequencing.
+
 ### FP_START
 
 **Name:** Front Panel Start Command  
@@ -106,18 +134,12 @@ During halted execution, front-panel command inputs may select a single console 
 
 **Accepted Event:**
 
-FP_CLEAR_ACCEPTED is asserted for one TSTEP when:
-- the synchronized and debounced FP_CLEAR input becomes asserted
-- RUN = 0
-- the input is armed
+FP_CLEAR is accepted as a console command ([§4.1](#41-console-command-acceptance)). One accepted press produces one console transaction, during which `/INITIALIZE` is asserted for the whole transaction.
 
-The input becomes disarmed when FP_CLEAR_ACCEPTED is asserted and is re-armed only after the synchronized FP_CLEAR input is released.
-
-FP_CLEAR_ACCEPTED:
-- is a one-TSTEP event
+The accepted FP_CLEAR command:
 - includes the RUN = 0 acceptance qualification
 - is not a pending request
-- is not generated when RUN = 1
+- is not accepted when RUN = 1
 - does not directly modify processor or controller state
 
 ### FP_CONTINUE

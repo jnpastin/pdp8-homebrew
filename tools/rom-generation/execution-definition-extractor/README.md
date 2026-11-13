@@ -19,6 +19,7 @@ The extractor does not:
 | `docs/03-microarchitecture/06-iot-execution.md` | external-IOT phase binding and CPU-handled IOT instructions |
 | `docs/03-microarchitecture/08-interrupt-execution.md` | INTERRUPT timing states |
 | `docs/03-microarchitecture/09-console-execution.md` | console operations |
+| `docs/03-microarchitecture/10-dma-execution.md` | DMA timing states |
 | `docs/03-microarchitecture/07-opr/01-group1-execution.md` | OPR Group 1 |
 | `docs/03-microarchitecture/07-opr/02-group2-execution.md` | OPR Group 2 |
 | `docs/03-microarchitecture/07-opr/03-group3-execution.md` | OPR Group 3 |
@@ -43,6 +44,8 @@ Labels and text the parsers don't use, such as `Description:`, `Control Decision
 
 The `## n. FETCH Execution` and `## n. DEFER Execution` sections each have `### n.m TSk` headings for TS1 to TS4. Each heading gives one case, `fetch-defer:<number>`, with context `MS = FETCH` or `MS = DEFER`, its `μops:` list, and its `Conditional μops:`.
 
+The DMA document's `## n. DMA Execution` section has the same layout and gives the cases `dma:<number>`, with context `MS = DMA`. Every DMA timing state has `- (no μops)`; the CPU does no datapath work during DMA.
+
 ### 3.3 MRI and IOT Instructions
 
 Each numbered level-3 heading whose title contains `IR[` is an instruction, and its title, an `AND`-joined condition, is its context. The heading's body has `TSn:` markers for TS1 to TS4; each marker gives one case, `mri:<number>:ts<n>` or `iot:<number>:ts<n>`, with the bullets after the marker and any `Conditional μops:` before the next marker.
@@ -58,7 +61,7 @@ Heading terms are rewritten as control inputs:
 
 Device addresses are written in octal, so `IOA = <nn>` takes a two-digit octal address and converts it to the 6-bit binary form of `IR_IOA`, which is `IR[8:3]`; for example, `IOA = 27` becomes `IR_IOA = 010111`. Any other `IOA = ` term is an `UNTRANSLATED_CONTEXT_TERM` error unless its heading is in the table below.
 
-The memory-extension IOT headings select on IR bits that have decoded control inputs instead. The extractor holds a table of these headings, keyed by the full heading title, giving each one's context; for example, the CDF heading `IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2] = 0 AND IR[0] = 1` becomes `IR_IS_IOT = 1` and `IR_WRITES_DF = 1`.
+Some IOT headings select on IR bits that have a decoded control input instead. The extractor holds a table of these headings, keyed by the full heading title, giving each one's context. It has two entries: the CAF heading `IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 111` becomes `IR_IS_CAF = 1`, the same decode the CAF `/INITIALIZE` assignment is keyed on; and the memory extension heading `IR[11:9] = 110 AND IR[8:6] = 010` (devices 20–27) becomes `IR_IS_MEMEXT_IOT = 1`. That section's micro-operations are all conditional on the memory-management flags (`IR_WRITES_DF`, `IR_READS_IB`, and so on), written in its `Conditional μops:` block.
 
 Every case's context starts with `MS = EXECUTE`; MRI cases then add `IR_IS_MRI = 1`.
 
@@ -71,7 +74,7 @@ The `## n. External IOT Phase Binding` section is prose. The extractor requires 
 - IO_SKIP_REQ selects PC_INC during TS4.
 ```
 
-From them it builds four cases, `iot:external:ts1` to `ts4`, with context `MS = EXECUTE` and `IOT_ACTIVE = 1`. Every case has the conditional `IO_CLEAR_AC_REQ = 1 -> AC_CLEAR`; TS4 also has `IO_SKIP_REQ = 1 -> PC_INC`. If the section's wording changes, the extractor's table of bindings must be updated with it.
+From them it builds four cases, `iot:external:ts1` to `ts4`, with context `MS = EXECUTE` and `IR_IS_EXTERNAL_IOT = 1`. Every case has the conditional `IO_CLEAR_AC_REQ = 1 -> AC_CLEAR`; TS4 also has `IO_SKIP_REQ = 1 -> PC_INC`. If the section's wording changes, the extractor's table of bindings must be updated with it.
 
 ### 3.5 INTERRUPT
 
@@ -101,7 +104,7 @@ Within the `## n. Instruction Definition` section, a timing state starts at a `T
 
 A `Conditional μops:` block within a timing state adds more conditional μops. Predicates must name IR-derived control inputs, such as `IR_OPR_CLA = 1`, never IR bits.
 
-Only timing states with at least one conditional μop produce a case, `opr<group>:ts<n>`. A case's line is the timing state's first line.
+Every documented timing state produces a case, `opr<group>:ts<n>`, including one whose only bullet is a placeholder: that case selects no μops, so the control word for that group and TS is still defined. A case's line is the timing state's first line.
 
 ### 3.8 Micro-Operation Catalog
 
@@ -136,7 +139,7 @@ Every level-3 heading in `02-micro-operations.md` whose title is a name, such as
 | `micro_operations` | the unconditional micro-operations, in document order |
 | `conditional_micro_operations` | each `predicate` and the `micro_operation` it selects, in document order |
 
-Cases are in document order, with documents in this order: FETCH/DEFER, MRI, IOT phase binding, IOT instructions, INTERRUPT, console, OPR Groups 1 to 3.
+Cases are in document order, with documents in this order: FETCH/DEFER, MRI, IOT phase binding, IOT instructions, INTERRUPT, DMA, console, OPR Groups 1 to 3.
 
 ## 5. Validation
 
@@ -144,7 +147,7 @@ Cases are in document order, with documents in this order: FETCH/DEFER, MRI, IOT
 
 | Code | Condition | Location |
 |---|---|---|
-| `MISSING_SECTION` | an expected section is absent: FETCH or DEFER, phase binding, OPR Instruction Definition, or a heading in the decoded-IOT table | document |
+| `MISSING_SECTION` | an expected section is absent: FETCH, DEFER, or DMA, phase binding, OPR Instruction Definition, or a heading in the decoded-IOT table | document |
 | `MISSING_TIMING_STATE` | a state, instruction, INTERRUPT, or OPR group lacks one of TS1 to TS4 | section heading |
 | `DUPLICATE_TIMING_STATE` | one of TS1 to TS4 appears more than once | section heading |
 | `MISSING_CODE_BLOCK` | a `Conditional μops:` label has no code block after it | label |

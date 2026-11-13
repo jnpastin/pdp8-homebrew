@@ -117,7 +117,14 @@ Defined in:
 
 ---
 
-### 4.7 Field Extraction Signals
+### 4.7 IOT Device Classes
+
+- [IR_IS_EXTERNAL_IOT](./02-ir-derived-fields.md#ir_is_external_iot)  
+- [IR_IS_MEMEXT_IOT](./02-ir-derived-fields.md#ir_is_memext_iot)  
+
+---
+
+### 4.8 Field Extraction Signals
 
 - [IR_ADDR](./02-ir-derived-fields.md#ir_addr)  
 - [IR_DF](./02-ir-derived-fields.md#ir_df)  

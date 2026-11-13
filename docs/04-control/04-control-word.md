@@ -306,6 +306,7 @@ Examples:
 - MS_NEXT
 - RUN_NEXT
 - HLT_REQ_NEXT
+- MS_LOAD
 
 Behavior:
 - must be explicitly defined for every CONTROL_WORD
@@ -360,6 +361,7 @@ Constraint:
   - MS_NEXT
   - RUN_NEXT
   - HLT_REQ_NEXT
+  - MS_LOAD
   
 - Control flow must be determined entirely by CONTROL_WORD.
 

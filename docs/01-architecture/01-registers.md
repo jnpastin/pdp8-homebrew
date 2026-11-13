@@ -489,11 +489,12 @@ Invariants:
 
 Constraints:
 - Changes only at cycle boundaries
+- Loaded from MS_NEXT at a TP only when MS_LOAD = 1; held otherwise, including while halted
 - Not directly influenced by datapath combinational logic
 - Initially only 0-4 are valid values 5-7 are reserved
 
 Writers:
-- Control state machine
+- Control state machine (MS_NEXT, enabled by MS_LOAD)
 
 ---
 

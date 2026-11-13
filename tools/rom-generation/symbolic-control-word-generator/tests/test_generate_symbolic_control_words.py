@@ -214,6 +214,7 @@ def make_documents(
                 make_input("R", "W"),
                 make_input("W", "R"),
                 make_input("V"),
+                make_input("RUN"),
             ],
             constraints=global_constraints or [],
         ),
@@ -707,6 +708,7 @@ class ReferenceTests(unittest.TestCase):
             make_input("B"),
             make_input("N", width=3, values=(), ranges=(("001", "110"),)),
             make_input("P", width=2, values=()),
+            make_input("RUN"),
         ]
         valid = (
             "A = 3 AND B != 0 AND N = 110 AND P = 11 AND F = 1 AND D = 10 "
@@ -902,12 +904,12 @@ class GenerationTests(unittest.TestCase):
 
         self.assertEqual(case["defaults"], {"F": "0", "D": "00"})
         self.assertEqual(case["field_assignments"], {"F": [], "D": []})
-        self.assertEqual(case["base_context"], "(A = 0 AND TS = 1)")
+        self.assertEqual(case["base_context"], "((A = 0 AND TS = 1) AND RUN = 1)")
 
     def test_console_case_has_no_timing_state(self) -> None:
         case = first_case(cases=[make_case(timing_state=None, context=[])])
 
-        self.assertEqual(case["base_context"], "always")
+        self.assertEqual(case["base_context"], "RUN = 1")
 
     def test_micro_operations(self) -> None:
         case = first_case(
@@ -925,7 +927,7 @@ class GenerationTests(unittest.TestCase):
                 "F": [
                     {
                         "value": "1",
-                        "when": "((A = 0 AND TS = 1) AND B = 1)",
+                        "when": "(((A = 0 AND TS = 1) AND RUN = 1) AND B = 1)",
                         "origin": "conditional micro-operation mapping",
                         "source": "U",
                     }
@@ -933,7 +935,7 @@ class GenerationTests(unittest.TestCase):
                 "D": [
                     {
                         "value": "01",
-                        "when": "(A = 0 AND TS = 1)",
+                        "when": "((A = 0 AND TS = 1) AND RUN = 1)",
                         "origin": "micro-operation mapping",
                         "source": "Z",
                     }
@@ -943,8 +945,8 @@ class GenerationTests(unittest.TestCase):
         self.assertEqual(
             case["selected_micro_operations"],
             {
-                "U": "((A = 0 AND TS = 1) AND B = 1)",
-                "Z": "(A = 0 AND TS = 1)",
+                "U": "(((A = 0 AND TS = 1) AND RUN = 1) AND B = 1)",
+                "Z": "((A = 0 AND TS = 1) AND RUN = 1)",
             },
         )
         self.assertEqual(list(case["selected_micro_operations"]), ["U", "Z"])
@@ -960,7 +962,10 @@ class GenerationTests(unittest.TestCase):
             ]
         )
 
-        when = "((A = 0 AND TS = 1) AND (A = 1 OR (A = 0 AND B = 1)))"
+        when = (
+            "(((A = 0 AND TS = 1) AND RUN = 1) AND ((A = 1 AND RUN = 1) OR "
+            "((A = 0 AND B = 1) AND RUN = 1)))"
+        )
         self.assertEqual(case["applicable_direct_control_definitions"], ["d"])
         self.assertEqual(
             case["field_assignments"]["F"],
@@ -984,7 +989,7 @@ class GenerationTests(unittest.TestCase):
             [
                 {
                     "value_from_input": "V",
-                    "when": "((A = 0 AND TS = 1) AND A = 0)",
+                    "when": "(((A = 0 AND TS = 1) AND RUN = 1) AND (A = 0 AND RUN = 1))",
                     "origin": "control-supplied value",
                     "source": "v",
                 }
@@ -1014,8 +1019,8 @@ class GenerationTests(unittest.TestCase):
         self.assertEqual(
             [item["when"] for item in case["field_assignments"]["F"]],
             [
-                "((A = 0 AND TS = 1) AND ((A = 0 AND TS = 1) AND B = 1))",
-                "((A = 0 AND TS = 1) AND true)",
+                "(((A = 0 AND TS = 1) AND RUN = 1) AND (((A = 0 AND TS = 1) AND RUN = 1) AND B = 1))",
+                "(((A = 0 AND TS = 1) AND RUN = 1) AND true)",
             ],
         )
 
@@ -1085,9 +1090,9 @@ class ConflictTests(unittest.TestCase):
         )
         self.assertEqual(
             diagnostics[0].message,
-            "1 from micro-operation mapping U when (A = 0 AND TS = 1) "
+            "1 from micro-operation mapping U when ((A = 0 AND TS = 1) AND RUN = 1) "
             "conflicts with 0 from micro-operation mapping X when "
-            "(A = 0 AND TS = 1).",
+            "((A = 0 AND TS = 1) AND RUN = 1).",
         )
 
     def test_unconditional_guards_conflict(self) -> None:
@@ -1099,8 +1104,8 @@ class ConflictTests(unittest.TestCase):
         self.assertIsNone(candidate)
         self.assertEqual(
             diagnostics[0].message,
-            "1 from micro-operation mapping U when always conflicts with "
-            "0 from micro-operation mapping X when always.",
+            "1 from micro-operation mapping U when RUN = 1 conflicts with "
+            "0 from micro-operation mapping X when RUN = 1.",
         )
 
     def test_same_value_does_not_conflict(self) -> None:
@@ -1132,7 +1137,8 @@ class ConflictTests(unittest.TestCase):
         self.assertEqual(self.conflicts(direct=direct), [])
         self.assertEqual(
             self.conflicts(
-                inputs=[make_input(name) for name in "ABRWV"], direct=direct
+                inputs=[make_input(name) for name in ("A", "B", "R", "W", "V", "RUN")],
+                direct=direct,
             ),
             [("CONFLICTING_ASSIGNMENTS", "c", "F")],
         )
@@ -1157,6 +1163,49 @@ class ConflictTests(unittest.TestCase):
             direct=[make_direct("d", ["V = 1"], ["F = 1"])],
         )
         self.assertEqual(case["applicable_direct_control_definitions"], ["d"])
+
+    def test_ir_derivations_exclude_states(self) -> None:
+        def decode(name: str, text: str) -> dict:
+            field = make_input(name)
+            field["domain"] = "IR-Derived Signals"
+            field["derivation"] = {"text": f"{name} = {text}"}
+            return field
+
+        inputs = [
+            decode("WRITES", "IR[11:6] == 110010 AND IR[2] == 0"),
+            decode("RESTORES", "IR[11:6] == 110010 AND IR[2:0] == 100"),
+            decode("BOTH", "WRITES AND IR[0]"),
+            make_input("A"),
+            make_input("RUN"),
+        ]
+
+        def run(first: str, second: str) -> list[tuple]:
+            return self.conflicts(
+                inputs=inputs,
+                cases=[
+                    make_case(
+                        conditional_micro_operations=[
+                            conditional(first, "U"),
+                            conditional(second, "X"),
+                        ]
+                    )
+                ],
+            )
+
+        conflict = [("CONFLICTING_ASSIGNMENTS", "c", "F")]
+        self.assertEqual(run("WRITES = 1", "RESTORES = 1"), [])
+        self.assertEqual(run("BOTH = 1", "WRITES = 0"), [])
+        self.assertEqual(run("BOTH = 1", "WRITES = 1"), conflict)
+        self.assertEqual(run("RESTORES = 0", "WRITES = 0"), conflict)
+
+    def test_unusable_ir_derivation_is_an_error(self) -> None:
+        field = make_input("BAD")
+        field["domain"] = "IR-Derived Signals"
+        field["derivation"] = {"text": "BAD = IR[0] (octal 1)"}
+        self.assertEqual(
+            errors(inputs=[field, make_input("A"), make_input("RUN")]),
+            [("IR_DERIVATION_UNUSABLE", "BAD", "derivation")],
+        )
 
     def test_timing_constraints(self) -> None:
         def run(timing_context: str) -> list[tuple]:
@@ -1216,6 +1265,91 @@ class ConflictTests(unittest.TestCase):
 # ---------------------------------------------------------------------------
 # Review and candidate
 # ---------------------------------------------------------------------------
+
+
+class RunModeDefaultTests(unittest.TestCase):
+    """Execution Model §2.3: contexts that do not compare RUN apply only
+    while running."""
+
+    HALTED = make_case("h", context=["RUN = 0", "A = 1"], timing_state=None)
+
+    def test_case_context_that_compares_run_is_unchanged(self) -> None:
+        case = first_case(cases=[self.HALTED])
+        self.assertEqual(case["base_context"], "(RUN = 0 AND A = 1)")
+
+        case = first_case(cases=[make_case(context=["NOT (RUN = 0 AND A = 1)"])])
+        self.assertEqual(
+            case["base_context"], "(NOT ((RUN = 0 AND A = 1)) AND TS = 1)"
+        )
+
+    def test_direct_context_without_run_applies_only_while_running(self) -> None:
+        direct = [
+            make_direct("running", ["A = 1"], ["F = 1"]),
+            make_direct("halted", ["RUN = 0\nA = 1"], ["F = 0"]),
+            make_direct("either", ["NOT (RUN = 1 AND B = 1)"], ["D = 10"]),
+        ]
+        case = first_case(cases=[self.HALTED], direct=direct)
+        self.assertEqual(
+            case["applicable_direct_control_definitions"], ["halted", "either"]
+        )
+
+        case = first_case(cases=[make_case(context=["A = 1"])], direct=direct)
+        self.assertEqual(
+            case["applicable_direct_control_definitions"], ["running", "either"]
+        )
+
+    def test_each_direct_context_alternative_gets_the_default(self) -> None:
+        direct = [make_direct("d", ["RUN = 0\nB = 1", "A = 1"], ["F = 1"])]
+        case = first_case(cases=[self.HALTED], direct=direct)
+        self.assertEqual(
+            case["field_assignments"]["F"][0]["when"],
+            "((RUN = 0 AND A = 1) AND ((RUN = 0 AND B = 1) OR "
+            "(A = 1 AND RUN = 1)))",
+        )
+
+    def test_selection_context_takes_run_mode_from_the_case(self) -> None:
+        halted = make_case(
+            "h", context=["RUN = 0"], timing_state=None, micro_operations=["Z"]
+        )
+        case = first_case(
+            cases=[halted], direct=[make_direct("m", ["Z is selected"], ["F = 1"])]
+        )
+        self.assertEqual(case["applicable_direct_control_definitions"], ["m"])
+        self.assertEqual(
+            case["field_assignments"]["F"][0]["when"], "(RUN = 0 AND RUN = 0)"
+        )
+
+    def test_conditional_predicates(self) -> None:
+        # Within a running case the base already holds RUN = 1.
+        case = first_case(
+            cases=[make_case(conditional_micro_operations=[conditional("B = 1", "U")])]
+        )
+        self.assertEqual(
+            case["selected_micro_operations"]["U"],
+            "(((A = 0 AND TS = 1) AND RUN = 1) AND B = 1)",
+        )
+        # Within a halted case the predicate gets the default itself.
+        halted = make_case(
+            "h",
+            context=["RUN = 0"],
+            timing_state=None,
+            conditional_micro_operations=[
+                conditional("B = 1", "U"),
+                conditional("RUN = 0 AND B = 2", "Z"),
+            ],
+        )
+        case = first_case(cases=[halted])
+        self.assertEqual(
+            case["selected_micro_operations"],
+            {"U": "(RUN = 0 AND (B = 1 AND RUN = 1))",
+             "Z": "(RUN = 0 AND (RUN = 0 AND B = 2))"},
+        )
+
+    def test_run_must_be_a_control_input(self) -> None:
+        self.assertIn(
+            ("RUN_INPUT_MISSING", "control-input-schema.json", "RUN"),
+            errors(inputs=[make_input("A", values=("0", "1", "2", "3"), width=2)]),
+        )
 
 
 class ReviewTests(unittest.TestCase):

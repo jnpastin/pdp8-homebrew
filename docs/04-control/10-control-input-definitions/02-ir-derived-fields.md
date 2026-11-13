@@ -26,6 +26,23 @@ Related:
 - [Control Model](../01-control-model.md)
 - [Micro-Operations](../../03-microarchitecture/02-micro-operations.md)
 
+### 1.1 Derivation Notation
+
+Each `**Derivation:**` block defines its signal as a combinational function of IR, in this notation:
+
+| Form | Meaning |
+|---|---|
+| `IR[n]` | IR bit `n`; bit 11 is the most significant |
+| `IR[h:l]` | IR bits `h` down to `l`, as a binary value |
+| `NAME` | another IR-derived signal defined in this document |
+| `x == b`, `x = b` | `x` equals the binary literal `b`, which has the width of `x` |
+| `IR[n]`, `NAME` used as a condition | the value is 1 |
+| `AND`, `OR`, `NOT`, `( )` | logic; `NOT` binds tightest, then `AND`, then `OR` |
+| `NAME = expression` | defines `NAME`; a field-extraction signal is defined as `IR[h:l]` |
+| `//` | begins a comment; the rest of the line is ignored |
+
+Derivations are machine-read by the ROM-generation tools. Anything that is not part of the function, such as an octal instruction code, must be written as a comment.
+
 ---
 
 ## 2. Signal Classes
@@ -124,7 +141,23 @@ Matches:
 
 ---
 
-### 2.7 Field Extraction Signals
+### 2.7 IOT Device Classes
+
+Divide IOT instructions by device address:
+
+- IR_IS_MEMEXT_IOT → devices 20–27, memory extension control (internal)
+- IR_IS_EXTERNAL_IOT → every device other than 00 and 20–27 (external controller)
+
+Device 00 (processor control) has no class flag of its own; it is `IR_IS_IOT AND (IR_IOA == 000000)`.
+
+Properties:
+
+- mutually exclusive
+  - `AT_MOST_ONE(IR_IS_MEMEXT_IOT, IR_IS_EXTERNAL_IOT)`
+
+---
+
+### 2.8 Field Extraction Signals
 
 Expose raw IR fields:
 
@@ -185,6 +218,10 @@ Expose raw IR fields:
 - [IR_IS_GTF](#ir_is_gtf)
 - [IR_IS_RTF](#ir_is_rtf)
 - [IR_IS_CAF](#ir_is_caf)
+
+### IOT Device Classes
+- [IR_IS_EXTERNAL_IOT](#ir_is_external_iot)
+- [IR_IS_MEMEXT_IOT](#ir_is_memext_iot)
 
 ### Fields
 - [IR_ADDR](#ir_addr)
@@ -375,6 +412,35 @@ AND (IR[2:0] == 111)
 
 ---
 
+### IR_IS_EXTERNAL_IOT
+
+**Mnemonic:** IR_IS_EXTERNAL_IOT  
+**Name:** External-Device IOT Flag  
+**Type:** IOT Device Class  
+**Bit Width:** 1  
+
+**Purpose:** Indicates that the current instruction is an IOT addressed to an external controller: any device other than 00 (processor control) and 20–27 (memory extension control).
+
+**Derivation:**
+```text
+IR_IS_EXTERNAL_IOT =
+    IR_IS_IOT
+AND NOT (IR_IOA == 000000)    // device 00: processor control
+AND NOT IR_IS_MEMEXT_IOT      // devices 20-27: memory extension control
+```
+
+**Value Encoding:**
+
+- 0 → not an external-device IOT  
+- 1 → external-device IOT  
+
+**Consumed By:**
+
+- [External-Device IOT](../30-direct-control-definitions/02-interface-and-ownership-control.md#72-external-device-iot)
+- [EXECUTE: External IOT](../../09-timing/03-major-state-timing.md#52-execute-external-iot)
+
+---
+
 ### IR_IS_GTF
   
 **Mnemonic:** IR_IS_GTF  
@@ -422,6 +488,32 @@ IR_IS_IOT = (IR[11:9] == 110)
 - 1 → IOT  
 
 **Consumed By:**
+
+---
+
+### IR_IS_MEMEXT_IOT
+
+**Mnemonic:** IR_IS_MEMEXT_IOT  
+**Name:** Memory Extension IOT Flag  
+**Type:** IOT Device Class  
+**Bit Width:** 1  
+
+**Purpose:** Indicates that the current instruction is a memory extension control IOT (devices 20–27). These IOTs execute internally and do not qualify external controllers.
+
+**Derivation:**
+```text
+IR_IS_MEMEXT_IOT = IR_IS_IOT AND (IR[8:6] == 010)   // devices 20-27
+```
+
+**Value Encoding:**
+
+- 0 → not a memory extension IOT  
+- 1 → memory extension IOT  
+
+**Consumed By:**
+
+- [IR_IS_EXTERNAL_IOT](#ir_is_external_iot)
+- [Memory Extension Control](../../03-microarchitecture/06-iot-execution.md#10-instruction-definitions-memory-extension-control---devices-20-27)
 
 ---
 
@@ -1080,7 +1172,7 @@ IR_OPR_SZA = IR_OPR_GROUP2 AND IR[5]
 
 **Derivation:**
 ```text
-IR_READS_DF = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==001) (octal 6214)
+IR_READS_DF = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==001) // octal 6214
 ```
 
 **Value Encoding:**
@@ -1104,7 +1196,7 @@ IR_READS_DF = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==001) (octal 6214
 
 **Derivation:**
 ```text
-IR_READS_IB = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==011) (octal 6234)
+IR_READS_IB = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==011) // octal 6234
 ```
 
 **Value Encoding:**
@@ -1128,7 +1220,7 @@ IR_READS_IB = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==011) (octal 6234
 
 **Derivation:**
 ```text
-IR_READS_IF = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==010) (octal 6224)
+IR_READS_IF = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==010) // octal 6224
 ```
 
 **Value Encoding:**
@@ -1152,7 +1244,7 @@ IR_READS_IF = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==010) (octal 6224
 
 **Derivation:**
 ```text
-IR_RESTORES_IB = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==100) (octal 6244)
+IR_RESTORES_IB = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==100) // octal 6244
 ```
 
 **Value Encoding:**

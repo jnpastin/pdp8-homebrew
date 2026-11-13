@@ -316,6 +316,29 @@ When a controller selection terminates:
 
 CPU and DMA ownership must not overlap.
 
+### 13.1 Halt Between DMA Cycles
+
+Single Step can halt the CPU at DMA TP4 while a burst continues, leaving `MS = DMA` ([DMA Execution §4](../03-microarchitecture/10-dma-execution.md#4-halting-between-dma-cycles)).
+
+While the CPU is halted:
+
+- no main-sequence TP occurs, so arbiter state does not change
+- the arbiter holds `DMA_GRANT_ID`, retained burst-enabled state, and the active burst count
+- `/DMA_GRANT` is deasserted, so the selected controller must not drive DMA-owned interfaces
+- console transaction TPs do not advance arbiter state, except for system initialization (section 13.2)
+
+When CONTINUE resumes at DMA TS1, the held selection continues the burst as though no halt had occurred. When START resumes at FETCH TS1, the held selection continues at the next DMA entry.
+
+### 13.2 System Initialization
+
+When `/INITIALIZE` is asserted, at the TP ending the asserted TSTEP (EXECUTE TP4 for CAF, TPC for CLEAR), the arbiter:
+
+- sets `DMA_GRANT_ID` to `15`
+- clears retained burst-enabled state
+- clears the active burst count
+
+Controllers deassert their `/DMA_REQ[n]` outputs at the same TP. A DMA major state that follows without a pending request completes with no transfer ([DMA Execution §5](../03-microarchitecture/10-dma-execution.md#5-dma-major-state-without-a-selected-controller)).
+
 ---
 
 ## 14. Invariants

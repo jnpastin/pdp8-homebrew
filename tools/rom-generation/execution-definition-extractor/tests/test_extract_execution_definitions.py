@@ -17,6 +17,7 @@ from extract_execution_definitions import (
     DECODED_IOT_CONTEXTS,
     DEFAULT_JSON_OUTPUT,
     DEFAULT_REPORT_OUTPUT,
+    DMA_SOURCE,
     FETCH_DEFER_SOURCE,
     INTERRUPT_SOURCE,
     IOT_SOURCE,
@@ -37,6 +38,7 @@ from extract_execution_definitions import (
     normalize_context_term,
     parse_arguments,
     parse_console,
+    parse_dma,
     parse_fetch_defer,
     parse_headings,
     parse_instructions,
@@ -280,8 +282,17 @@ MICRO_OPERATION_CATALOG = (
     )
 )
 
+DMA = (
+    "# DMA Execution\n\n## 3. DMA Execution\n\n"
+    + timing_headings(
+        "3", {n: micro_operations("(no μops)") for n in range(1, 5)}
+    )
+    + "## 4. Halting Between DMA Cycles\n\n- prose\n"
+)
+
 VALID_DOCUMENTS = {
     FETCH_DEFER_SOURCE: FETCH_DEFER,
+    DMA_SOURCE: DMA,
     MRI_SOURCE: MRI,
     IOT_SOURCE: IOT,
     INTERRUPT_SOURCE: INTERRUPT,
@@ -304,6 +315,7 @@ INVALID_DOCUMENTS = {
     IOT_SOURCE: "## 7. External IOT Phase Binding\n\n"
     "- IO_SKIP_REQ selects PC_INC during TS4.\n",
     INTERRUPT_SOURCE: "# Nothing here\n",
+    DMA_SOURCE: DMA.replace("3. DMA Execution", "3. Other"),
     CONSOLE_SOURCE: "## 6. Load Address Operation\n\n"
     "Execution model:\n\n" + code("multi-cycle") + "\nμops:\n- PC_INC\n",
     OPR_SOURCES[1]: OPR_GROUP1.replace(
@@ -503,7 +515,7 @@ class InstructionTests(unittest.TestCase):
         cases, diagnostics = parse(parse_instructions, IOT, "iot")
 
         self.assertEqual(diagnostics, [])
-        self.assertEqual(len(cases), 28)
+        self.assertEqual(len(cases), 12)
         skon = cases[1]
         self.assertEqual(skon["id"], "iot:9.3:ts2")
         self.assertEqual(
@@ -587,9 +599,6 @@ class InstructionTests(unittest.TestCase):
         self.assertEqual(
             codes(diagnostics),
             [
-                "UNTRANSLATED_CONTEXT_TERM",
-                "UNTRANSLATED_CONTEXT_TERM",
-                "UNTRANSLATED_CONTEXT_TERM",
                 "UNTRANSLATED_CONTEXT_TERM",
                 "MISSING_SECTION",
             ],
@@ -695,7 +704,7 @@ class PhaseBindingTests(unittest.TestCase):
                     f"iot:external:ts{n}",
                     PATH,
                     3,
-                    ["MS = EXECUTE", "IOT_ACTIVE = 1"],
+                    ["MS = EXECUTE", "IR_IS_EXTERNAL_IOT = 1"],
                     n,
                     conditional=[clear, skip] if n == 4 else [clear],
                 )
@@ -799,6 +808,26 @@ class ConsoleTests(unittest.TestCase):
 # ---------------------------------------------------------------------------
 
 
+class DmaTests(unittest.TestCase):
+    def test_dma_cases(self) -> None:
+        cases, diagnostics = parse(parse_dma, DMA)
+
+        self.assertEqual(diagnostics, [])
+        self.assertEqual(
+            [
+                (c["id"], c["context"], c["timing_state"], c["micro_operations"])
+                for c in cases
+            ],
+            [(f"dma:3.{n}", ["MS = DMA"], n, []) for n in range(1, 5)],
+        )
+
+    def test_missing_dma_section_is_an_error(self) -> None:
+        cases, diagnostics = parse(parse_dma, "# DMA Execution\n")
+
+        self.assertEqual(cases, [])
+        self.assertEqual(codes(diagnostics), ["MISSING_SECTION"])
+
+
 class OprTests(unittest.TestCase):
     def test_group1_cases(self) -> None:
         cases, diagnostics = parse(parse_opr, OPR_GROUP1, 1)
@@ -806,7 +835,12 @@ class OprTests(unittest.TestCase):
         self.assertEqual(diagnostics, [])
         self.assertEqual(
             [(c["id"], c["source"]["line"]) for c in cases],
-            [("opr1:ts1", 16), ("opr1:ts3", 23), ("opr1:ts4", 26)],
+            [
+                ("opr1:ts1", 16),
+                ("opr1:ts2", 20),
+                ("opr1:ts3", 23),
+                ("opr1:ts4", 26),
+            ],
         )
         self.assertEqual(
             cases[0]["context"],
@@ -819,8 +853,9 @@ class OprTests(unittest.TestCase):
                 {"predicate": "IR_OPR_CLL = 1", "micro_operation": "L_CLEAR"},
             ],
         )
+        self.assertEqual(cases[1]["conditional_micro_operations"], [])
         self.assertEqual(
-            cases[2]["conditional_micro_operations"][0]["predicate"],
+            cases[3]["conditional_micro_operations"][0]["predicate"],
             "IR_OPR_RAR = 1 AND IR_OPR_BSW = 0",
         )
 
@@ -849,6 +884,8 @@ class OprTests(unittest.TestCase):
                         }
                     ],
                 ),
+                ("opr2:ts3", []),
+                ("opr2:ts4", []),
             ],
         )
 
@@ -862,7 +899,7 @@ class OprTests(unittest.TestCase):
         )
 
         self.assertEqual(diagnostics, [])
-        self.assertEqual(len(cases), 2)
+        self.assertEqual(len(cases), 4)
 
     def test_raw_ir_bits_are_errors(self) -> None:
         cases, diagnostics = parse(
@@ -873,7 +910,7 @@ class OprTests(unittest.TestCase):
 
         self.assertEqual(codes(diagnostics), ["RAW_IR_BIT"])
         self.assertEqual(diagnostics[0].case_id, "opr3:ts1")
-        self.assertEqual(len(cases), 2)
+        self.assertEqual(len(cases), 4)
 
     def test_unrecognized_bullet_is_an_error(self) -> None:
         _, diagnostics = parse(
@@ -973,6 +1010,7 @@ class ValidationTests(unittest.TestCase):
                 "mri",
                 "iot",
                 "interrupt",
+                "dma",
                 "console",
                 "opr1",
                 "opr2",
@@ -1075,7 +1113,7 @@ class EndToEndTests(unittest.TestCase):
         exit_code, stdout = self.run_main()
 
         self.assertEqual(exit_code, 0)
-        self.assertIn("Cases: 60", stdout)
+        self.assertIn("Cases: 53", stdout)
         self.assert_outputs_match_golden("valid")
 
     def test_invalid_outputs_match_golden(self) -> None:

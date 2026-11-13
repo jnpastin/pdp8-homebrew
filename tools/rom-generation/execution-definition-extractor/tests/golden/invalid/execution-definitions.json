@@ -184,6 +184,22 @@
       ]
     },
     {
+      "id": "opr1:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/07-opr/01-group1-execution.md",
+        "line": 20
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_OPR = 1",
+        "IR_OPR_GROUP1 = 1"
+      ],
+      "timing_state": 2,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
       "id": "opr1:ts3",
       "source": {
         "path": "docs/03-microarchitecture/07-opr/01-group1-execution.md",
@@ -262,6 +278,34 @@
           "micro_operation": "AC_CLEAR"
         }
       ]
+    },
+    {
+      "id": "opr2:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/07-opr/02-group2-execution.md",
+        "line": 34
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE"
+      ],
+      "timing_state": 3,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "opr2:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/07-opr/02-group2-execution.md",
+        "line": 39
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE"
+      ],
+      "timing_state": 4,
+      "micro_operations": [],
+      "conditional_micro_operations": []
     }
   ],
   "diagnostics": [
@@ -340,7 +384,7 @@
     {
       "severity": "ERROR",
       "code": "MISSING_SECTION",
-      "message": "No instruction heading 'IR[11:9] = 110 AND IOA = 2n AND IR[2] = 0 AND IR[1] = 1' found for its decoded context.",
+      "message": "No instruction heading 'IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 111' found for its decoded context.",
       "source_path": "docs/03-microarchitecture/06-iot-execution.md",
       "line": null,
       "case_id": null
@@ -348,39 +392,7 @@
     {
       "severity": "ERROR",
       "code": "MISSING_SECTION",
-      "message": "No instruction heading 'IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 001' found for its decoded context.",
-      "source_path": "docs/03-microarchitecture/06-iot-execution.md",
-      "line": null,
-      "case_id": null
-    },
-    {
-      "severity": "ERROR",
-      "code": "MISSING_SECTION",
-      "message": "No instruction heading 'IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 010' found for its decoded context.",
-      "source_path": "docs/03-microarchitecture/06-iot-execution.md",
-      "line": null,
-      "case_id": null
-    },
-    {
-      "severity": "ERROR",
-      "code": "MISSING_SECTION",
-      "message": "No instruction heading 'IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 011' found for its decoded context.",
-      "source_path": "docs/03-microarchitecture/06-iot-execution.md",
-      "line": null,
-      "case_id": null
-    },
-    {
-      "severity": "ERROR",
-      "code": "MISSING_SECTION",
-      "message": "No instruction heading 'IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 100' found for its decoded context.",
-      "source_path": "docs/03-microarchitecture/06-iot-execution.md",
-      "line": null,
-      "case_id": null
-    },
-    {
-      "severity": "ERROR",
-      "code": "MISSING_SECTION",
-      "message": "No instruction heading 'IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2] = 0 AND IR[0] = 1' found for its decoded context.",
+      "message": "No instruction heading 'IR[11:9] = 110 AND IR[8:6] = 010' found for its decoded context.",
       "source_path": "docs/03-microarchitecture/06-iot-execution.md",
       "line": null,
       "case_id": null
@@ -390,6 +402,14 @@
       "code": "MISSING_SECTION",
       "message": "No 'Instruction Definition' section found.",
       "source_path": "docs/03-microarchitecture/07-opr/03-group3-execution.md",
+      "line": null,
+      "case_id": null
+    },
+    {
+      "severity": "ERROR",
+      "code": "MISSING_SECTION",
+      "message": "No 'DMA Execution' section found.",
+      "source_path": "docs/03-microarchitecture/10-dma-execution.md",
       "line": null,
       "case_id": null
     },

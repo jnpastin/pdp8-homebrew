@@ -433,12 +433,15 @@ Sources:
 
 ---
 
-### 5.3 Non-DMA Major States
+### 5.3 Non-DMA Major States and Halted Operation
 
 Applicable context:
 
 ```text
-MS != DMA
+NOT (
+    RUN = 1
+    AND MS = DMA
+)
 ```
 
 Assignment:
@@ -456,6 +459,7 @@ CPU /DMA_GRANT driver = DRIVE_HIGH
 Constraints:
 
 - `/DMA_GRANT` must not be asserted during normal instruction execution.
+- `/DMA_GRANT` is deasserted while halted, including while `MS = DMA` holds a suspended burst ([DMA Execution §4](../../03-microarchitecture/10-dma-execution.md#4-halting-between-dma-cycles)).
 - External DMA controllers must not drive DMA-owned interfaces.
 - `DMA_GRANT_ID` does not authorize ownership while `/DMA_GRANT` is deasserted.
 - Pending `/DMA_REQ[n]` inputs do not themselves transfer ownership.
@@ -669,8 +673,7 @@ Applicable context:
 
 ```text
 MS = EXECUTE
-IR_IS_IOT = 1
-IR_IOA != 000000
+IR_IS_EXTERNAL_IOT = 1
 ```
 
 Assignment:
@@ -709,8 +712,7 @@ Applicable context:
 ```text
 NOT (
     MS = EXECUTE
-    AND IR_IS_IOT = 1
-    AND IR_IOA != 000000
+    AND IR_IS_EXTERNAL_IOT = 1
 )
 ```
 
@@ -722,7 +724,7 @@ IOT_ACTIVE = 0
 
 Constraints:
 
-- Processor IOT execution must not qualify external controllers unless explicitly documented as an external-device IOT.
+- Processor IOT execution (device 00) and memory extension IOT execution (devices 20–27) must not qualify external controllers.
 - An `IOA` value alone does not make a controller response valid.
 - External response inputs must not affect control while `IOT_ACTIVE = 0`.
 

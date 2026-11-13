@@ -28,6 +28,7 @@ The governing model is defined in the [Direct-Control Model](../07-direct-contro
 - `MS_NEXT`
 - `RUN_NEXT`
 - `HLT_REQ_NEXT`
+- `MS_LOAD`
 - `AB_SRC`
 - `MFB_SRC`
 - control-provided `DF_VAL`
@@ -70,6 +71,7 @@ Those outputs remain assigned by their applicable micro-operation mappings.
 | `MS_NEXT` | [Next Major State](./01-sequencing-and-internal-control.md#32-next-major-state) |
 | `RUN_NEXT` | [Run-State Sequencing](./01-sequencing-and-internal-control.md#33-run-state-sequencing) |
 | `HLT_REQ_NEXT` | [Halt-Request Sequencing](./01-sequencing-and-internal-control.md#34-halt-request-sequencing) |
+| `MS_LOAD` | [Major-State Load While Running](./01-sequencing-and-internal-control.md#3211-major-state-load-while-running), [Start](./01-sequencing-and-internal-control.md#333-start) |
 
 ---
 

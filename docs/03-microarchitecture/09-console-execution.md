@@ -100,6 +100,10 @@ START
 CONTINUE
 ```
 
+Each console operation executes as one console transaction ([Major State Timing §8](../09-timing/03-major-state-timing.md#8-halted-state-and-console-transactions)). The main timing sequence is held while halted and is not modified by console operations, so a halted Single Step or Single Instruction resumes exactly where it stopped.
+
+Only one console command is accepted at a time; the first accepted wins ([External Inputs §4.1](../04-control/10-control-input-definitions/04-external-inputs.md#41-console-command-acceptance)).
+
 ---
 
 ## 4. Halt Requests
@@ -279,6 +283,25 @@ The processor remains halted.
   
 Front-panel CLEAR requests system initialization while the processor is halted.
 
+Applicable context:
+
+```text
+RUN = 0
+FP_CLEAR = 1
+```
+
+Execution model:
+
+```text
+single TS-equivalent console transaction
+```
+
+μops:
+
+- (no μops)
+
+Initialization is performed by `/INITIALIZE`, not by μops.
+
 Acceptance:
 - FP_CLEAR is accepted only when RUN = 0.
 - FP_CLEAR is ignored when RUN = 1.
@@ -287,7 +310,7 @@ Acceptance:
 - FP_CLEAR is re-armed only after the synchronized input is released.
 
 Execution:
-- An accepted FP_CLEAR assertion causes /INITIALIZE to be asserted for one synchronized TSTEP.
+- An accepted FP_CLEAR assertion causes /INITIALIZE to be asserted for the whole console transaction.
 - The processor remains halted.
 - Normal instruction sequencing does not begin.
 - The operation does not use the normal instruction execution path.
@@ -353,6 +376,23 @@ The processor enters the Running state.
 ## 11. Continue Operation
 
 Continue resumes execution from the preserved processor state.
+
+Applicable context:
+
+```text
+RUN = 0
+FP_CONTINUE = 1
+```
+
+Execution model:
+
+```text
+single TS-equivalent console transaction
+```
+
+μops:
+
+- (no μops)
 
 No architectural μops are executed.
 
@@ -453,7 +493,13 @@ EXECUTE
 INTERRUPT
 ```
 
+```text
+DMA
+```
+
 each execute individually.
+
+A DMA major state is a step of its own, matching DEC's SING STEP, which halts at the end of every memory cycle, including data break cycles. When the halt leaves `MS = DMA` with the burst still selected, the burst is suspended: `/DMA_GRANT` is deasserted while halted, the controller and arbiter hold their state, and CONTINUE resumes the burst at DMA TS1. See [DMA Execution §4](./10-dma-execution.md#4-halting-between-dma-cycles).
 
 Resumption requires:
 
@@ -493,3 +539,40 @@ Instruction completion
 ```
 
 Execution never halts in the middle of a major state.
+
+---
+
+## 15. Halted Idle Operation
+
+Halted idle is the processor state while halted with no console transaction in progress.
+
+Applicable context:
+
+```text
+RUN = 0
+FP_START = 0
+FP_CLEAR = 0
+FP_CONTINUE = 0
+FP_LOAD_ADDRESS = 0
+FP_EXAMINE = 0
+FP_DEPOSIT = 0
+```
+
+Execution model:
+
+```text
+single TS-equivalent console transaction
+```
+
+μops:
+
+- (no μops)
+
+While halted idle:
+
+- no main-sequence TP and no console TP occurs, so no control-word result commits
+- the control word is nevertheless presented continuously, so every output must hold its inactive or preserving value
+- memory, I/O, and bus drive outputs remain deasserted
+- the processor remains halted until a console command is accepted
+
+The execution model is listed for uniformity with the console operations; halted idle is the control word presented between console transactions ([Major State Timing §8](../09-timing/03-major-state-timing.md#8-halted-state-and-console-transactions)).

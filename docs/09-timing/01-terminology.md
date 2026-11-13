@@ -65,7 +65,25 @@ TSTEP0 → TSTEP1 → … → TSTEPN → repeat
 
 TSEQ is the fundamental timebase of the system.
 
-Note: TSEQ wrap and reset behavior (end-of-sequence handling, power-on state) is not yet defined.
+While `RUN = 1`, TSEQ wraps from the final TSTEP of TS4 to the first TSTEP of TS1.
+
+While `RUN = 0`, TSEQ is held at the first TSTEP of TS1 and does not advance. Halted-state timing is defined in [Major State Timing §8](./03-major-state-timing.md#8-halted-state-and-console-transactions).
+
+Note: TSEQ power-on state is not yet defined.
+
+---
+
+### 3.3 Console Transaction Timer
+
+A timer, separate from TSEQ, that times one console transaction while the processor is halted.
+
+Properties:
+
+- Runs only while `RUN = 0`.
+- Starts when a console command is accepted.
+- Advances on TCLK rising edges.
+- Ends with exactly one console timing pulse (TPC).
+- Does not advance, hold, or modify TSEQ.
 
 ---
 

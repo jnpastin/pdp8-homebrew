@@ -40,6 +40,7 @@ MRI_SOURCE = MICROARCHITECTURE / "05-mri-execution.md"
 IOT_SOURCE = MICROARCHITECTURE / "06-iot-execution.md"
 INTERRUPT_SOURCE = MICROARCHITECTURE / "08-interrupt-execution.md"
 CONSOLE_SOURCE = MICROARCHITECTURE / "09-console-execution.md"
+DMA_SOURCE = MICROARCHITECTURE / "10-dma-execution.md"
 OPR_SOURCES = {
     1: MICROARCHITECTURE / "07-opr/01-group1-execution.md",
     2: MICROARCHITECTURE / "07-opr/02-group2-execution.md",
@@ -53,6 +54,7 @@ SOURCE_PATHS = (
     IOT_SOURCE,
     INTERRUPT_SOURCE,
     CONSOLE_SOURCE,
+    DMA_SOURCE,
     *OPR_SOURCES.values(),
     MICRO_OPERATION_SOURCE,
 )
@@ -103,52 +105,31 @@ SCOPE_LABEL = "Applies when:"
 # Bullets that stand for "nothing here" rather than a micro-operation.
 PLACEHOLDERS = frozenset({"(no μops)", "(no unconditional μops)"})
 
-# FETCH/DEFER: level-2 section title -> major state.
+# Major-state documents: level-2 section title -> major state.
 FETCH_DEFER_SECTIONS = {
     "FETCH Execution": "FETCH",
     "DEFER Execution": "DEFER",
 }
+DMA_SECTIONS = {"DMA Execution": "DMA"}
 
 # MRI/IOT instruction headings are ``IR[...] = ... AND ...`` conditions.
 # These rewrite heading terms as control inputs.
 MRI_OPCODES = frozenset({"000", "001", "010", "011", "100", "101"})
 IOT_OPCODE = "110"
 
-# Memory-extension IOT headings select on raw IR bits that have decoded
-# control inputs. Keyed by the full heading title, so a changed heading is
-# reported instead of silently matched.
+# IOT headings that select on raw IR bits with a decoded control input.
+# Keyed by the full heading title, so a changed heading is reported instead
+# of silently matched.
 DECODED_IOT_CONTEXTS = {
-    "IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2] = 0 AND IR[0] = 1": (
-        "IR_IS_IOT = 1",
-        "IR_WRITES_DF = 1",
-    ),
-    "IR[11:9] = 110 AND IOA = 2n AND IR[2] = 0 AND IR[1] = 1": (
-        "IR_IS_IOT = 1",
-        "IR_WRITES_IF = 1",
-    ),
-    "IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 001": (
-        "IR_IS_IOT = 1",
-        "IR_READS_DF = 1",
-    ),
-    "IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 010": (
-        "IR_IS_IOT = 1",
-        "IR_READS_IF = 1",
-    ),
-    "IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 011": (
-        "IR_IS_IOT = 1",
-        "IR_READS_IB = 1",
-    ),
-    "IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 100": (
-        "IR_IS_IOT = 1",
-        "IR_RESTORES_IB = 1",
-    ),
+    "IR[11:9] = 110 AND IOA = 00 AND IR[2:0] = 111": ("IR_IS_CAF = 1",),
+    "IR[11:9] = 110 AND IR[8:6] = 010": ("IR_IS_MEMEXT_IOT = 1",),
 }
 
 # External-IOT phase binding: the section title, the context of its cases,
 # and the two documented bindings, each with the timing states it applies
 # to and the conditional micro-operation it selects.
 PHASE_BINDING_SECTION = "External IOT Phase Binding"
-PHASE_BINDING_CONTEXT = ("MS = EXECUTE", "IOT_ACTIVE = 1")
+PHASE_BINDING_CONTEXT = ("MS = EXECUTE", "IR_IS_EXTERNAL_IOT = 1")
 PHASE_BINDINGS = (
     (
         (
@@ -508,18 +489,38 @@ def missing_section(findings: Findings, title: str) -> None:
 
 
 # ---------------------------------------------------------------------------
-# FETCH and DEFER
+# Major-state documents: FETCH, DEFER, and DMA
 # ---------------------------------------------------------------------------
 
 
 def parse_fetch_defer(document: Document, findings: Findings) -> list[dict]:
-    """One case per timing-state heading in the FETCH and DEFER sections.
+    """The FETCH and DEFER cases; see ``parse_major_states``."""
 
-    Each case's μops and conditional μops follow their labels.
+    return parse_major_states(
+        document, "fetch-defer", FETCH_DEFER_SECTIONS, findings
+    )
+
+
+def parse_dma(document: Document, findings: Findings) -> list[dict]:
+    """The DMA cases; see ``parse_major_states``."""
+
+    return parse_major_states(document, "dma", DMA_SECTIONS, findings)
+
+
+def parse_major_states(
+    document: Document,
+    prefix: str,
+    sections: dict[str, str],
+    findings: Findings,
+) -> list[dict]:
+    """One case per timing-state heading in each major-state section.
+
+    ``sections`` maps each level-2 section title to its major state. Each
+    case's μops and conditional μops follow their labels.
     """
 
     cases = []
-    for title, state in FETCH_DEFER_SECTIONS.items():
+    for title, state in sections.items():
         section = document.section(2, title)
         if section is None:
             missing_section(findings, title)
@@ -532,7 +533,7 @@ def parse_fetch_defer(document: Document, findings: Findings) -> list[dict]:
                 continue
             timing_state = int(match.group(1))
             found.append(timing_state)
-            case_id = f"fetch-defer:{heading.number}"
+            case_id = f"{prefix}:{heading.number}"
             body = document.body(heading)
             cases.append(
                 make_case(
@@ -909,7 +910,7 @@ def parse_opr(
             conditional=selections[timing_state],
         )
         for timing_state in TIMING_STATES
-        if selections.get(timing_state)
+        if timing_state in first_line
     ]
 
 
@@ -1003,6 +1004,7 @@ def extract_execution_definitions(
         (IOT_SOURCE, parse_phase_binding),
         (IOT_SOURCE, lambda d, f: parse_instructions(d, "iot", f)),
         (INTERRUPT_SOURCE, parse_interrupt),
+        (DMA_SOURCE, parse_dma),
         (CONSOLE_SOURCE, parse_console),
         *(
             (path, lambda d, f, g=group: parse_opr(d, g, f))

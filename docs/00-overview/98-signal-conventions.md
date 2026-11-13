@@ -156,10 +156,8 @@ Aggregate `/DMA_REQ` is a single-driver signal. It is not a wired-OR or wired-AN
 Properties:
 - The CPU is the sole driver.
 - The signal is distributed to all I/O controllers.
-- CAF asserts /INITIALIZE during the EXECUTE TP4 TSTEP.
-- An accepted front-panel CLEAR operation asserts /INITIALIZE for one synchronized TSTEP while RUN = 0.
-- Each assertion lasts exactly one TSTEP.
-- The signal is deasserted before the following TSTEP begins.
+- CAF asserts /INITIALIZE for exactly one TSTEP, the EXECUTE TP4 TSTEP, and deasserts it before the following TSTEP begins.
+- An accepted front-panel CLEAR operation asserts /INITIALIZE for its whole console transaction while RUN = 0, and deasserts it when the transaction ends.
 - A pull-up establishes the deasserted HIGH state.
 
 When asserted:

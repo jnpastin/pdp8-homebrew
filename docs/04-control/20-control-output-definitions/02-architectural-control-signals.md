@@ -442,13 +442,14 @@ INITIALIZE_ASSERTED =
     )
     OR
     (
-        FP_CLEAR_ACCEPTED
+        RUN = 0
+        AND FP_CLEAR
     )
 ```
 
 `/INITIALIZE` is asserted when `INITIALIZE_ASSERTED = 1` and deasserted otherwise.
 
-`FP_CLEAR_ACCEPTED` represents one synchronized, debounced, and re-armed acceptance event derived from FP_CLEAR. It is not stored as a pending request.
+While halted, `FP_CLEAR` is the latched accepted console command ([External Inputs §4.1](../10-control-input-definitions/04-external-inputs.md#41-console-command-acceptance)). It is held for one console transaction and is not stored as a pending request.
 
 **Behavior:**
 - clears AC
@@ -465,11 +466,8 @@ INITIALIZE_ASSERTED =
 - IB
 
 **Timing:**
-- asserted for exactly one TSTEP
-- CAF asserts /INITIALIZE during the EXECUTE TP4 TSTEP
-- an accepted front-panel CLEAR operation asserts /INITIALIZE for one synchronized TSTEP while the processor is halted
-- all resulting state changes commit at the TP ending the asserted TSTEP
-- /INITIALIZE is deasserted before the next TSTEP begins
+- CAF asserts /INITIALIZE for exactly one TSTEP, the EXECUTE TP4 TSTEP; resulting state changes commit at that TP4, and /INITIALIZE is deasserted before the next TSTEP begins
+- an accepted front-panel CLEAR operation asserts /INITIALIZE for its whole console transaction while the processor is halted ([Major State Timing §8](../../09-timing/03-major-state-timing.md#8-halted-state-and-console-transactions)); resulting state changes commit at the console TP (TPC), and /INITIALIZE is deasserted when the transaction ends
 
 **Priority:**
 - when asserted, /INITIALIZE overrides all controller commands, transfers, flag updates, interrupt requests, DMA activity, and other controller-local actions sampled during the same TSTEP

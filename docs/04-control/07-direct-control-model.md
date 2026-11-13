@@ -391,6 +391,7 @@ They include:
 - `MS_NEXT`
 - `RUN_NEXT`
 - `HLT_REQ_NEXT`
+- `MS_LOAD`
 
 Sequencing outputs are not micro-operations.
 
@@ -474,7 +475,7 @@ Each direct-control definition must identify, as applicable:
 
 - name
 - purpose
-- input conditions
+- input conditions, subject to the run-mode context default in [Execution Model §2.3](../03-microarchitecture/01-execution-model.md#23-run-mode-context-default)
 - fixed assignments
 - input-value bindings
 - output-drive states

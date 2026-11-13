@@ -187,6 +187,7 @@ Constraint:
   - MS_NEXT
   - RUN_NEXT
   - HLT_REQ_NEXT
+  - MS_LOAD
   
 Constraint:
 - No control behavior may exist outside CONTROL_WORD.

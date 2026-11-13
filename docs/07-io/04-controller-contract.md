@@ -232,6 +232,8 @@ A DMA-capable controller additionally must:
 - deassert its request after the current transfer when it cannot immediately complete another transfer
 - tolerate selection termination at the configured arbiter burst boundary
 - resume through normal re-arbitration
+- release DMA-owned interfaces whenever `/DMA_GRANT` is deasserted, even while still selected
+- tolerate an indefinite pause between DMA words while the CPU is halted, holding its request and prepared transfer until the burst resumes or `/INITIALIZE` is asserted
 
 ---
 

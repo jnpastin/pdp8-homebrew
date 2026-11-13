@@ -9,7 +9,7 @@
   "constraints": [
     {
       "id": "timing:5.2.5.1",
-      "context": "MS = EXECUTE AND IOT_ACTIVE = 1 AND TS = 3 AND (IOT_READ_PENDING = 1 OR IOT_WRITE_PENDING = 1)",
+      "context": "MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1 AND TS = 3 AND (IOT_READ_PENDING = 1 OR IOT_WRITE_PENDING = 1)",
       "requirement": "IO_CLEAR_AC_REQ != 1",
       "source": {
         "path": "docs/09-timing/03-major-state-timing.md",
@@ -18,7 +18,7 @@
     },
     {
       "id": "timing:5.2.7.1",
-      "context": "MS = EXECUTE AND IOT_ACTIVE = 1 AND TS = 4 AND (IOT_READ_PENDING = 1 OR IO_SKIP_REQ = 1)",
+      "context": "MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1 AND TS = 4 AND (IOT_READ_PENDING = 1 OR IO_SKIP_REQ = 1)",
       "requirement": "IO_CLEAR_AC_REQ != 1",
       "source": {
         "path": "docs/09-timing/03-major-state-timing.md",

@@ -43,6 +43,27 @@ Constraints:
 
 ---
 
+### 2.3 Run-Mode Context Default
+
+Normal instruction sequencing occurs only while the processor is running.
+
+Every applicable context, condition, or predicate that does not compare `RUN` applies only when:
+
+    RUN = 1
+
+This default applies to:
+- execution-case contexts
+- conditional micro-operation predicates
+- direct-control applicable contexts
+
+A context that compares `RUN` anywhere, including within `NOT (...)`, is not modified by this default.
+
+Console operations, which occur while halted, must state `RUN = 0` explicitly. `FP_STOP` is recognized while running and is not a console operation.
+
+A context that tests whether a micro-operation is selected applies wherever that micro-operation is selected; the run mode is taken from the selecting execution case, and this default is not added.
+
+---
+
 ## 3. Micro-Operation Definition
 
 A micro-operation (μop) is a single, atomic state update:

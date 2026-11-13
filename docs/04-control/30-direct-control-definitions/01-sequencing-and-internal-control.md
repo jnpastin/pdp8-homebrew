@@ -70,6 +70,7 @@ The sequencing outputs are:
 - `MS_NEXT`
 - `RUN_NEXT`
 - `HLT_REQ_NEXT`
+- `MS_LOAD`
 
 These outputs:
 
@@ -78,6 +79,7 @@ These outputs:
 - are not micro-operations
 - are not modified by micro-operations
 - commit only at their documented TP boundaries
+- commit at a console TP (TPC) when evaluated during a console transaction ([Major State Timing §8](../../09-timing/03-major-state-timing.md#8-halted-state-and-console-transactions))
 - must not be computed or modified outside the control store
 
 Current state and next-state value remain distinct:
@@ -117,11 +119,11 @@ INTERRUPT = 3
 DMA       = 4
 ```
 
-`MS_NEXT` is evaluated during TS4 and committed at TP4.
+`MS_NEXT` is evaluated during TS4 and committed to `MS` at TP4 when `MS_LOAD = 1`.
 
 It must be explicitly defined for every major state at TS4.
 
-Outside TS4, `MS_NEXT` does not modify `MS`.
+When `MS_LOAD = 0`, `MS` is held.
 
 Source:
 
@@ -417,6 +419,40 @@ Sources:
 
 ---
 
+#### 3.2.11 Major-State Load While Running
+
+Applicable context:
+
+```text
+RUN = 1
+TS = 4
+```
+
+Assignment:
+
+```text
+MS_LOAD = 1
+```
+
+Commit:
+
+```text
+MS <- MS_NEXT at TP4
+```
+
+Constraints:
+
+- Every major-state transition while running loads `MS` at TP4.
+- This includes the TP4 at which the processor halts, so the halted `MS` is the state in which execution resumes.
+- While halted, `MS` is held except when START loads it.
+
+Sources:
+
+- [Sequencing Control Signals](../20-control-output-definitions/03-sequencing-control-signals.md#44-major-state-load-ms_load)
+- [Major State Timing](../../09-timing/03-major-state-timing.md#8-halted-state-and-console-transactions)
+
+---
+
 ### 3.3 Run-State Sequencing
 
 #### 3.3.1 Result
@@ -514,12 +550,14 @@ Assignments:
 ```text
 RUN_NEXT = 1
 MS_NEXT  = FETCH
+MS_LOAD  = 1
 ```
 
 Commit:
 
 ```text
-RUN <- 1 at TP
+RUN <- 1 at TPC
+MS  <- FETCH at TPC
 ```
 
 START also establishes the documented processor execution state and begins execution in FETCH at the first timing state.
@@ -552,7 +590,7 @@ RUN_NEXT = 1
 Commit:
 
 ```text
-RUN <- 1 at TP
+RUN <- 1 at TPC
 ```
 
 CONTINUE resumes execution from the preserved machine state without executing architectural micro-operations or modifying the documented preserved state.
@@ -568,24 +606,9 @@ Sources:
 
 START and CONTINUE are meaningful only while the processor is halted.
 
-If both commands are accepted in the same control case:
+START and CONTINUE cannot be accepted together: only one console command is accepted per console transaction, and the first accepted wins ([External Inputs §4.1](../10-control-input-definitions/04-external-inputs.md#41-console-command-acceptance)).
 
-```text
-START takes priority over CONTINUE.
-```
-
-The complete START behavior is selected:
-
-```text
-RUN_NEXT = 1
-MS_NEXT  = FETCH
-```
-
-The START micro-operations are selected, and CONTINUE behavior is not selected.
-
-This priority prevents simultaneous commands from partially preserving and partially reinitializing processor state.
-
-This is a defined project behavior.
+No priority between console commands is required.
 
 Sources:
 
@@ -743,7 +766,7 @@ The `RUN_NEXT` results are:
 Condition                                                     RUN_NEXT
 ------------------------------------------------------------  --------
 Accepted START while halted                                   1
-Accepted CONTINUE while halted and START is not accepted      1
+Accepted CONTINUE while halted                                1
 Running with no applicable halt condition                     1
 Halted with no accepted START or CONTINUE                     0
 Pending halt consumed at instruction completion               0
@@ -751,11 +774,7 @@ Single Instruction reaches instruction completion             0
 Single Step reaches completion of the current major state     0
 ```
 
-When START and CONTINUE are accepted together:
-
-```text
-START takes priority.
-```
+START and CONTINUE are never accepted together.
 
 When multiple halt conditions apply at the same TP, they agree on:
 
@@ -764,6 +783,43 @@ RUN_NEXT = 0
 ```
 
 The applicable `HLT_REQ_NEXT` result is defined separately by halt-request sequencing.
+
+The halted row is defined by [Halted Without START or CONTINUE](#3310-halted-without-start-or-continue).
+
+---
+
+#### 3.3.10 Halted Without START or CONTINUE
+
+Applicable context:
+
+```text
+RUN = 0
+FP_START = 0
+FP_CONTINUE = 0
+```
+
+Assignment:
+
+```text
+RUN_NEXT = 0
+```
+
+Commit:
+
+```text
+RUN <- 0 at TPC
+```
+
+Constraints:
+
+- Preservation of the halted state is explicit.
+- `RUN_NEXT = 0` must not be inferred from the field default.
+- Console operations other than START and CONTINUE leave the processor halted.
+
+Sources:
+
+- [Console Execution](../../03-microarchitecture/09-console-execution.md)
+- [Major State Timing](../../09-timing/03-major-state-timing.md#8-halted-state-and-console-transactions)
 
 ---
 
@@ -803,8 +859,13 @@ Applicable context:
 
 ```text
 HLT_REQ = 0
-IR_OPR_HLT = 0
-FP_STOP = 0
+NOT (
+    RUN = 1
+    AND (
+        IR_OPR_HLT = 1
+        OR FP_STOP = 1
+    )
+)
 ```
 
 Assignment:
@@ -819,9 +880,11 @@ Commit:
 HLT_REQ <- 0 at TP
 ```
 
-Constraint:
+Constraints:
 
 - Preservation of the clear state is explicit.
+- While running, the clear state is preserved only when neither a HLT instruction nor STOP is present.
+- While halted, the clear state is preserved at every console TP; STOP and HLT requests are not captured while halted.
 
 ---
 
@@ -911,7 +974,8 @@ Applicable context:
 ```text
 HLT_REQ = 1
 NOT (
-    MS = EXECUTE
+    RUN = 1
+    AND MS = EXECUTE
     AND TS = 4
 )
 ```
@@ -934,6 +998,7 @@ Constraints:
 - The request must not be cleared during an intermediate TS or major-state boundary.
 - Preservation of the pending state is explicit.
 - A Single Step halt at a boundary that is not instruction completion does not consume the pending request.
+- A pending halt request is preserved while the processor is halted, including at every console TP.
 
 Sources:
 
@@ -1920,7 +1985,7 @@ WRITE = 2
 Applicable context:
 
 ```text
-IR_IS_IOT = 1
+IR_IS_EXTERNAL_IOT = 1
 MS = EXECUTE
 IO_READ_REQ = 1
 ```
@@ -1949,7 +2014,7 @@ Sources:
 Applicable context:
 
 ```text
-IR_IS_IOT = 1
+IR_IS_EXTERNAL_IOT = 1
 MS = EXECUTE
 IO_WRITE_REQ = 1
 ```
@@ -1985,7 +2050,7 @@ Applicable context:
     IOT_READ_PENDING = 1
     OR IOT_WRITE_PENDING = 1
 )
-IR_IS_IOT = 1
+IR_IS_EXTERNAL_IOT = 1
 MS = EXECUTE
 IO_READ_REQ = 0
 IO_WRITE_REQ = 0
@@ -2022,7 +2087,7 @@ Applicable context:
     IOT_READ_PENDING = 1
     OR IOT_WRITE_PENDING = 1
 )
-IR_IS_IOT = 1
+IR_IS_EXTERNAL_IOT = 1
 MS = EXECUTE
 IO_READ_REQ = 1
 ```
@@ -2059,7 +2124,7 @@ Applicable context:
     IOT_READ_PENDING = 1
     OR IOT_WRITE_PENDING = 1
 )
-IR_IS_IOT = 1
+IR_IS_EXTERNAL_IOT = 1
 MS = EXECUTE
 IO_WRITE_REQ = 1
 ```

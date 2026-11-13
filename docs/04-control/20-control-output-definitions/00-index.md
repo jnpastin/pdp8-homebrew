@@ -133,4 +133,5 @@ Defined in:
 - [MS_NEXT](./03-sequencing-control-signals.md#41-next-major-state-ms_next)  
 - [RUN_NEXT](./03-sequencing-control-signals.md#42-run-state-next-value-run_next)  
 - [HLT_REQ_NEXT](./03-sequencing-control-signals.md#43-halt-request-next-value-hlt_req_next)  
+- [MS_LOAD](./03-sequencing-control-signals.md#44-major-state-load-ms_load)  
 

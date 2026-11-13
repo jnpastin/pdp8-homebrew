@@ -27,6 +27,8 @@ IR[11:9] = 110
 
 ## 3. External IOT Execution Model
 
+External IOT execution applies when `IR_IS_EXTERNAL_IOT = 1`: an IOT addressed to any device other than 00 (processor control, section 9) and 20–27 (memory extension control, section 10). Those devices execute internally and never assert `IOT_ACTIVE`.
+
 External IOT execution uses:
 
 - `IOT_ACTIVE` to identify an external-IOT EXECUTE cycle
@@ -379,20 +381,38 @@ Description:
 
 ## 10. Instruction Definitions (Memory Extension Control - Devices 20-27)
 
+Memory extension IOTs execute internally. They never assert `IOT_ACTIVE` and do not qualify external controllers.
+
+One case covers every device 20–27 IOT. The instruction is selected by the memory-management decode flags in [IR-Derived Flags](../04-control/10-control-input-definitions/02-ir-derived-fields.md#25-memory-management), and each micro-operation is conditional on its flag. A combined instruction such as CDF CIF (`62n3`) sets both `IR_WRITES_DF` and `IR_WRITES_IF` and performs both actions in the same TS. A device 20–27 IOT that matches no flag performs no micro-operations.
+
 ---
 
-### 10.1 IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2] = 0 AND IR[0] = 1
+### 10.1 IR[11:9] = 110 AND IR[8:6] = 010
 
-**Mnemonic (non-normative):** CDF
+**Mnemonics (non-normative):** CDF, CIF, CDF CIF, RDF, RIF, RIB, RMF
 
 Where:
-- n = target field number (IOA[2:0] = IR[5:3])  
+- n = target field number (IOA[2:0] = IR[5:3])
 
 TS1:
 - (no μops)
 
 TS2:
-- IR_DF_TO_DF
+- (no unconditional μops)
+
+Conditional μops:
+
+```text
+IR_WRITES_DF = 1 -> IR_DF_TO_DF
+IR_WRITES_IF = 1 -> IR_IF_TO_DIF
+IR_WRITES_IF = 1 OR IR_RESTORES_IB = 1 -> II_SET
+IR_WRITES_IF = 1 OR IR_RESTORES_IB = 1 -> CIFP_SET
+IR_READS_DF = 1 -> DF_TO_AC
+IR_READS_IF = 1 -> IF_TO_AC
+IR_READS_IB = 1 -> IB_TO_AC
+IR_RESTORES_IB = 1 -> IB_TO_DF
+IR_RESTORES_IB = 1 -> IB_TO_DIF
+```
 
 TS3:
 - (no μops)
@@ -401,124 +421,16 @@ TS4:
 - (no μops)
 
 Description:
-- Loads DF with the target field n from IR (immediate)
 
-
----
-
-### 10.2 IR[11:9] = 110 AND IOA = 2n AND IR[2] = 0 AND IR[1] = 1
-  
-**Mnemonic (non-normative):** CIF  
-
-Where:
-- n = target field number (IOA[2:0] = IR[5:3])  
-
-TS1:
-- (no μops)  
-
-TS2:
-- IR_IF_TO_DIF
-- II_SET
-- CIFP_SET  
-
-TS3:
-- (no μops)  
-
-TS4:
-- (no μops)
-
-Description:
-- Loads DIF with the target field n from IR (deferred; applied to IF at the next JMP/JMS)
-- Sets II and CIFP to inhibit interrupts across the CIF-to-branch window
-
----
-
-### 10.3 IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 001
-
-**Mnemonic (non-normative):** RDF
-
-TS1:
-- (no μops)
-
-TS2:
-- DF_TO_AC
-
-TS3:
-- (no μops)
-
-TS4:
-- (no μops)
-
-Description:
-- Reads DF into AC[5:3] (OR'd into AC; other AC bits unaffected)
-
----
-
-### 10.4 IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 010
-
-**Mnemonic (non-normative):** RIF
-
-TS1:
-- (no μops)
-
-TS2:
-- IF_TO_AC
-
-TS3:
-- (no μops)
-
-TS4:
-- (no μops)
-
-Description:
-- Reads IF into AC[5:3] (OR'd into AC; other AC bits unaffected)
-
----
-
-### 10.5 IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 011
-
-**Mnemonic (non-normative):** RIB
-
-TS1:
-- (no μops)
-
-TS2:
-- IB_TO_AC
-
-TS3:
-- (no μops)
-
-TS4:
-- (no μops)
-
-Description:
-- Reads the interrupt-saved fields into AC: AC[5:3] <- saved IF, AC[2:0] <- saved DF (OR'd into AC)
-
----
-
-### 10.6 IR[11:9] = 110 AND IR[8:6] = 010 AND IR[2:0] = 100 AND IR[5:3] = 100
-
-**Mnemonic (non-normative):** RMF
-
-TS1:
-- (no μops)
-
-TS2:
-- `IB_TO_DF`
-- `IB_TO_DIF`
-- `II_SET`
-- `CIFP_SET`
-
-TS3:
-- (no μops)
-
-TS4:
-- (no μops)
-
-Description:
-- Restores `DF` from the saved `DF` value in `IB`
-- Stages the saved `IF` value from `IB` in `DIF`
-- Sets `II` and `CIFP` to inhibit interrupt recognition until the deferred instruction-field value is applied by the next JMP or JMS
+| Instruction | Octal | Flag | TS2 behavior |
+|---|---|---|---|
+| CDF n | `62n1` | `IR_WRITES_DF` | Loads DF with field n from IR (immediate) |
+| CIF n | `62n2` | `IR_WRITES_IF` | Loads DIF with field n from IR (deferred; applied to IF at the next JMP/JMS); sets II and CIFP to inhibit interrupts across the CIF-to-branch window |
+| CDF CIF n | `62n3` | both | Both of the above |
+| RDF | `6214` | `IR_READS_DF` | Reads DF into AC[5:3] (OR'd into AC; other AC bits unaffected) |
+| RIF | `6224` | `IR_READS_IF` | Reads IF into AC[5:3] (OR'd into AC; other AC bits unaffected) |
+| RIB | `6234` | `IR_READS_IB` | Reads the interrupt-saved fields into AC: AC[5:3] <- saved IF, AC[2:0] <- saved DF (OR'd into AC) |
+| RMF | `6244` | `IR_RESTORES_IB` | Restores DF from the saved DF value in IB; stages the saved IF value from IB in DIF; sets II and CIFP to inhibit interrupt recognition until the deferred instruction-field value is applied by the next JMP or JMS |
 
 ---
 

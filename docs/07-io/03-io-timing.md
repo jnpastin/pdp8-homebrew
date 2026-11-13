@@ -16,19 +16,17 @@ All controller-local state changes caused by an IOT occur only at TP events.
 
 ### 2.1 Initialization Timing
 
-/INITIALIZE is asserted for exactly one TSTEP.
-
 For CAF:
-- /INITIALIZE is asserted during the EXECUTE TP4 TSTEP.
+- /INITIALIZE is asserted for exactly one TSTEP, the EXECUTE TP4 TSTEP.
 - All processor and controller initialization effects commit at TP4.
 - No CAF initialization effect occurs before TP4.
 - /INITIALIZE is deasserted before the following FETCH TSTEP begins.
 
 For an accepted front-panel CLEAR operation:
 - the processor is halted
-- /INITIALIZE is asserted for one synchronized TSTEP
-- all processor and controller initialization effects commit at the TP ending that TSTEP
-- /INITIALIZE is deasserted before the following TSTEP begins
+- /INITIALIZE is asserted for the whole console transaction ([Major State Timing §8](../09-timing/03-major-state-timing.md#8-halted-state-and-console-transactions))
+- all processor and controller initialization effects commit at the console TP (TPC) ending that transaction; TPC is presented to controllers as a TP event
+- /INITIALIZE is deasserted when the transaction ends
 
 /INITIALIZE:
 - is not extended by /IO_WAIT

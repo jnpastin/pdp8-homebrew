@@ -92,7 +92,7 @@ Applicable context:
 
 ```text
 MS = EXECUTE
-IOT_ACTIVE = 1
+IR_IS_EXTERNAL_IOT = 1
 ```
 
 #### 5.2.1 TS1
@@ -263,3 +263,73 @@ During EXECUTE TS4:
 At EXECUTE TP4, CPU control samples aggregate `/DMA_REQ` for the major-state transition decision.
 
 The transition decision uses the aggregate value established during TS4. No value committed at TP4 affects that same TP4 decision.
+
+### 7.9 Halt Between DMA Cycles
+
+Single Step may commit `RUN ← 0` at DMA TP4. When the burst continues, `MS` holds `DMA` while halted (section 8.1):
+
+- `/DMA_GRANT` is deasserted while `RUN = 0`
+- the selected controller holds its request and prepared transfer
+- the arbiter holds `DMA_GRANT_ID`, burst-enabled state, and burst count
+- no DMA transfer occurs while halted
+- CONTINUE resumes at DMA TS1 with the same selection
+
+See [DMA Execution §4](../03-microarchitecture/10-dma-execution.md#4-halting-between-dma-cycles).
+
+---
+
+## 8. Halted State and Console Transactions
+
+### 8.1 Main Timing While Halted
+
+A transition to the halted state commits only at TP4.
+
+When TP4 commits `RUN ← 0`:
+
+- TSEQ completes that TP4
+- TSEQ stops at the first TSTEP of TS1
+- MS holds the value committed at that TP4
+
+While `RUN = 0`:
+
+- TSEQ does not advance
+- no main-sequence TP occurs
+- MS and TS are held
+- front-panel interaction does not modify TSEQ, MS, or TS except through START
+
+When a console TP commits `RUN ← 1`, TSEQ resumes at the first TSTEP of TS1:
+
+```text
+START     → FETCH TS1
+CONTINUE  → TS1 of the held MS
+```
+
+### 8.2 Console Transaction
+
+A console transaction executes one accepted console command while `RUN = 0`.
+
+Sequence:
+
+```text
+accepted command latched
+    →
+console transaction timer runs for the TS2 duration
+    →
+TPC
+    →
+latched command cleared
+```
+
+Properties:
+
+- The console transaction is the single TS-equivalent evaluation window for the command.
+- The latched command is stable from the start of the transaction through TPC.
+- The control word is evaluated from the latched command for the whole transaction.
+- The transaction duration equals the TS2 duration, so a console memory access meets the same timing as a main-sequence memory access.
+- A console memory read drives AB and MFB for the whole transaction, and MB captures MDB at TPC, matching TS2 and TP2.
+- A console memory write commits at TPC, matching TP2.
+- TPC commits every control-word result that a main-sequence TP commits, including `RUN_NEXT`, `HLT_REQ_NEXT`, and, when `MS_LOAD = 1`, `MS_NEXT`.
+- Only one console transaction is in progress at a time.
+- The console transaction timer never runs while `RUN = 1`.
+
+Command acceptance is defined in [External Inputs §4.1](../04-control/10-control-input-definitions/04-external-inputs.md#41-console-command-acceptance).
