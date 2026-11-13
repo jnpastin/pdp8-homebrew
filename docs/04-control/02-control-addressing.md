@@ -57,20 +57,20 @@ Constraint:
 - Each CTRL_ADDR_n is formed by the rules of this document from the same input domains.
 - A slice's address need only encode the decisions that affect that slice's fields.
 
-**First-level control stage.** The control store may contain a first-level ROM that maps IR and TS to a variant code, which then forms part of CTRL_ADDR:
+**Mapping stage.** The control store may contain a mapping ROM that maps IR and TS to a variant code, which then forms part of CTRL_ADDR:
 
 ```
-VARIANT = FIRST_LEVEL[IR, TS, ...]
+VARIANT = MAPPING_ROM[IR, TS, ...]
 CTRL_ADDR = PACK(MS, TS, VARIANT, conditions)
 ```
 
 Properties:
-- the first-level stage is part of the control store, not predecode (section 3.1)
+- the mapping stage is part of the control store, not predecode (section 3.1)
 - it may read raw IR, because it realizes the instruction-dependent part of the control function
 - its output identifies which instruction-dependent behavior applies in the current TS; it is not an outcome and drives no datapath or sequencing signal
 
 Constraint:
-- The first-level stage is a ROM lookup; it contains no gates that evaluate conditions.
+- The mapping stage is a ROM lookup; it contains no gates that evaluate conditions.
 - Two IR values may share a variant code only if they produce the same control words for every condition value in that TS.
 
 ---
@@ -125,7 +125,7 @@ Constraint:
 - Predecode must not encode control behavior.
 - Predecode must not include timing or sequencing semantics.
 
-A first-level control stage (section 2.1) may depend on TS, because it is part of the control store rather than predecode.
+A mapping stage (section 2.1) may depend on TS, because it is part of the control store rather than predecode.
 
 Constraint:
 - All instruction-dependent information used in CTRL_ADDR must be expressed through IR_FIELDS.
@@ -371,7 +371,7 @@ Properties:
 - stable for the duration of an instruction
 
 Constraint:
-- Only IR_FIELDS or a first-level variant code (section 2.1) may carry instruction-dependent information into CTRL_ADDR.
+- Only IR_FIELDS or a mapping-stage variant code (section 2.1) may carry instruction-dependent information into CTRL_ADDR.
 - Raw IR bits must not be included in CTRL_ADDR, except as an IR_FIELDS signal that is itself an IR bit, such as an OPR micro-operation bit, presented through an address overlay (section 6.3).
 - IR_FIELDS must represent decisions, not encoded instruction state.
 
@@ -440,7 +440,7 @@ The following must not be encoded in CTRL_ADDR:
 - transient combinational outputs
 
 Constraint:
-- All information must be reduced to IR_FIELDS, FLAGS, MS, TS, EXT, or a first-level variant code (section 2.1).
+- All information must be reduced to IR_FIELDS, FLAGS, MS, TS, EXT, or a mapping-stage variant code (section 2.1).
 
 ---
 
@@ -455,7 +455,7 @@ Constraint:
 **Address overlay.** An address field may carry different condition inputs in different control contexts. A multiplexer selects which inputs drive the field.
 
 Constraint:
-- The overlay selection is a function only of MS, TS, and the first-level variant code; it never depends on a condition input.
+- The overlay selection is a function only of MS, TS, and the mapping-stage variant code; it never depends on a condition input.
 - For each selection, the mapping from address bits to inputs is fixed and documented.
 - Every input that can change the control word in a given context must be presented on the address in that context.
 - An address bit not driven by a meaningful input in a context must not change the control word in that context.
