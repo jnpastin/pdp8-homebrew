@@ -225,16 +225,17 @@ AC
 State Manipulation
 
 **Description:**  
-Increments the accumulator by one, propagating any carry into the Link register.
+Increments the accumulator by one. A carry out of the most significant bit complements the Link register.
 
 **Target:**  
 AC, L
 
 **Expression:**  
-(AC, L) ← AC + 1
+AC ← (AC + 1) mod 4096  
+L ← L XOR carry
 
 **Sources:**  
-AC
+AC, L
 
 ---
 
@@ -474,16 +475,17 @@ AC
 Arithmetic / Logical
 
 **Description:**  
-Adds the value in MB to the accumulator and stores the result in AC, with overflow propagated into the Link register.
+Adds the value in MB to the accumulator and stores the result in AC. A carry out of the most significant bit complements the Link register.
 
 **Target:**  
 AC, L
 
 **Expression:**  
-(AC, L) ← AC + MB
+AC ← (AC + MB) mod 4096  
+L ← L XOR carry
 
 **Sources:**  
-AC, MB
+AC, MB, L
 
 ---
 

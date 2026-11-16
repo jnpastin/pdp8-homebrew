@@ -400,16 +400,15 @@ Invariants:
 Constraints:
 - Modified only during EXECUTE
 - May be updated by:
-  - ALU carry/borrow
-  - Shift/rotate operations
+  - ALU carry (a carry out of the most significant AC bit complements L)
+  - Rotate operations
   - Explicit OPR instructions (CLL, CML, STL)
   - RTF processor-state restoration
   - System initialization (/INITIALIZE)
 - Multiple updates must follow defined micro-op ordering
 
 Writers:
-- ALU carry-out path
-- Shift/rotate network
+- ALU link output (ADD, INC, and rotates; [ALU Evaluation](../04-control/20-control-output-definitions/01-microarchitectural-control-signals.md#731-alu-evaluation))
 - OPR control logic
 - IOT execution (RTF; AC_TO_L)
 - System initialization (/INITIALIZE)
@@ -542,7 +541,7 @@ Constraints:
 - Update must complete before next FETCH TS1
 
 Writers:
-- PC + 1 increment path
+- PC + 1 increment path (ALU_RESULT loaded directly when PC_INC = 1; [PC_INC](../04-control/20-control-output-definitions/01-microarchitectural-control-signals.md#pc_inc))
 - Control flow load path (JMP/JMS)
 
 ---

@@ -461,12 +461,13 @@ All numeric encodings in this section are octal unless otherwise noted.
 0 → AC
 1 → MB
 2 → PC
-3 → L
+3 → reserved
 ```
 
 **Constraints:**
 - Must be valid every cycle
 - Required for all ALU operations
+- L is not an operand; the ALU reads L on its dedicated link input ([§7.3.1](#731-alu-evaluation))
 
 **Used by μops:**
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 0
@@ -508,12 +509,13 @@ All numeric encodings in this section are octal unless otherwise noted.
 3 → MQ
 4 → FP_SR
 5 → PC
-6 → L
+6 → reserved
 7 → reserved
 ```
 
 **Constraints:**
 - NONE required for unary operations
+- L is not an operand; the ALU reads L on its dedicated link input ([§7.3.1](#731-alu-evaluation))
 
 **Used by μops:**
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 2
@@ -523,10 +525,10 @@ All numeric encodings in this section are octal unless otherwise noted.
 - [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc) = 0
 - [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr) = 4
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 3
-- [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral) = 6
-- [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar) = 6
-- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl) = 6
-- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr) = 6
+- [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral) = 0
+- [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar) = 0
+- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl) = 0
+- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr) = 0
 - [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 0
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 2
 - [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc) = 0
@@ -1370,12 +1372,12 @@ IF_DF_COMBINED[5:3]=IF
 ```
 0 → CLEAR
 1 → COMP
-2 → ALU_CARRY
+2 → ALU_LINK
 3 → AC[11]
 ```
 
 **Constraints:**
-- ALU_CARRY only valid during ALU operations producing carry  
+- ALU_LINK loads the ALU link output ([§7.3.1](#731-alu-evaluation)) into L  
 - AC[11] loads the pre-TP value of AC[11] into L without modifying AC.
 
 **Used by μops:**
@@ -1670,6 +1672,7 @@ memory bus value
 - Requires ALU to be configured with:
   - ALU_OP = INC  
   - ALU_A_SRC = PC  
+- Loads PC with ALU_RESULT at TP through a dedicated increment path, not through the IDB; PC_SRC does not apply  
 - Must not be asserted simultaneously with PC_LOAD  
 
 **Used by μops:**
@@ -2030,14 +2033,40 @@ This includes:
 #### 7.3.1 ALU Evaluation
 
 ```
-ALU_RESULT = f(ALU_OP, ALU_A_SRC, ALU_B_SRC)
+(ALU_RESULT, ALU_LINK) = f(ALU_OP, A, B, LIN)
 ```
+
+Terms:
+
+- **A**, **B**: the 12-bit operands selected by ALU_A_SRC and ALU_B_SRC. B is ignored by unary operations.
+- **LIN** (link input): the current value of L. It is wired to the ALU directly and is not selected by ALU_A_SRC or ALU_B_SRC.
+- **ALU_RESULT**: the 12-bit result.
+- **ALU_LINK** (link output): the 1-bit value L takes when L_LOAD = 1 and L_OP = ALU_LINK.
+- **CARRY**: the carry out of bit 11 of a 12-bit addition.
+
+Bit 11 is the most significant bit (DEC bit 0). `X·Y` concatenates bit fields, most significant first.
+
+| ALU_OP | ALU_RESULT | ALU_LINK |
+|---|---|---|
+| ADD | (A + B) mod 4096 | LIN XOR CARRY |
+| AND | A AND B | LIN |
+| OR | A OR B | LIN |
+| NOT | NOT A | LIN |
+| INC | (A + 1) mod 4096 | LIN XOR CARRY |
+| ROR | LIN·A[11:1] | A[0] |
+| ROL | A[10:0]·LIN | A[11] |
+| RTR | A[0]·LIN·A[11:2] | A[1] |
+| RTL | A[9:0]·LIN·A[11] | A[10] |
+| BSW | A[5:0]·A[11:6] | LIN |
+| CLEAR | 0 | LIN |
+
+The link output treats LIN and A as one 13-bit value: a carry out of the most significant bit complements the link, and the rotates move LIN·A as a 13-bit ring. This matches the PDP-8/e, where a carry out of AC bit 0 complements L and the rotates operate on L and AC together.
 
 Properties:
 
 - ALU is always active  
-- ALU_RESULT is always defined  
-- ALU_RESULT may be unused  
+- ALU_RESULT and ALU_LINK are always defined  
+- ALU_RESULT and ALU_LINK may be unused  
 
 ---
 
@@ -2528,7 +2557,7 @@ ALU_B_SRC = NONE
 Additional constraints:
 
 - Operation is applied to ALU_A_SRC  
-- Rotate operations may internally use L as a state element  
+- Rotate operations use L through the ALU link input, not as a selected operand ([§7.3.1](#731-alu-evaluation))  
 - No independently selected second operand is consumed  
 
 **Used by μops:**
@@ -2577,17 +2606,21 @@ If L_LOAD = 1:
 ```
 
 ```
-If ALU operation produces carry and it is required:
-    L_OP = ALU_CARRY
+If a μop updates L from the ALU:
+    L_OP = ALU_LINK
 ```
 
 ```
-L_OP = NOP produces no state change
+L_LOAD = 0 leaves L unchanged
 ```
 
 **Used by μops:**
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb)
 - [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
+- [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar)
+- [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral)
+- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr)
+- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl)
 - [L_CLEAR](../../03-microarchitecture/02-micro-operations.md#l_clear)
 - [L_COMP](../../03-microarchitecture/02-micro-operations.md#l_comp)
 

@@ -19270,25 +19270,25 @@
         ],
         "ALU_B_SRC": [
           {
-            "value": "6",
+            "value": "0",
             "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP1 = 1) AND TS = 4) AND RUN = 1) AND ((IR_OPR_RAR = 1 AND IR_OPR_RAL = 0) AND IR_OPR_BSW = 0))",
             "origin": "conditional micro-operation mapping",
             "source": "AC_RAR"
           },
           {
-            "value": "6",
+            "value": "0",
             "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP1 = 1) AND TS = 4) AND RUN = 1) AND ((IR_OPR_RAL = 1 AND IR_OPR_RAR = 0) AND IR_OPR_BSW = 0))",
             "origin": "conditional micro-operation mapping",
             "source": "AC_RAL"
           },
           {
-            "value": "6",
+            "value": "0",
             "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP1 = 1) AND TS = 4) AND RUN = 1) AND ((IR_OPR_RAR = 1 AND IR_OPR_RAL = 0) AND IR_OPR_BSW = 1))",
             "origin": "conditional micro-operation mapping",
             "source": "AC_RTR"
           },
           {
-            "value": "6",
+            "value": "0",
             "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP1 = 1) AND TS = 4) AND RUN = 1) AND ((IR_OPR_RAL = 1 AND IR_OPR_RAR = 0) AND IR_OPR_BSW = 1))",
             "origin": "conditional micro-operation mapping",
             "source": "AC_RTL"
