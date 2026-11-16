@@ -55,13 +55,15 @@ Two datapath fields conflict when some reachable word requires both. Fields are 
 
 ## 4. Verification
 
-For every IR value and every reachable combination of every context, the packer forms the addresses as the hardware does:
+For every reachable combination of every context, the packer forms the addresses as the hardware does:
 
-- the mapping ROM image at `IR`, `TS`, `E` gives `VARIANT`, `DP_OVL_SEL`, and `IR_SEQ`
+- the mapping ROM image at `IR`, `TS`, `E` gives `VARIANT`, `DP_OVL_SEL`, and `IR_SEQ`; IR values with the same mapping entry address the slices identically, so each distinct entry is checked once
 - the selected overlay group gives `DP_OVL`
 - `SEQ_OVL` follows `RUN`
 
-It then reads the datapath and sequencer images, unpacks every field whose condition holds, and compares it with the required value. Any difference is a `VERIFICATION_MISMATCH` error.
+An input on the address that the combination does not compare can take any value in hardware, such as `/DMA_REQ` in a timing state that ignores DMA requests. Every value of it is checked, so the images must hold the word at all of them. The image writer fills those addresses the same way.
+
+The packer then reads the datapath and sequencer images, unpacks every field whose condition holds, and compares it with the required value. Any difference is a `VERIFICATION_MISMATCH` error.
 
 ## 5. Outputs
 
@@ -105,7 +107,7 @@ python tools/rom-generation/control-store-packer/src/pack_control_store.py --rep
 | `--report-output` | `build/.../control-store-packer/packing-report.txt` |
 | `--images-output` | `build/.../control-store-packer/images` |
 
-Exit status is 0 on success and 1 on any error. A run over the current specifications takes about half a minute.
+Exit status is 0 on success and 1 on any error. A run over the current specifications takes under ten seconds.
 
 ## 8. Testing
 
@@ -113,4 +115,4 @@ Exit status is 0 on success and 1 on any error. A run over the current specifica
 python -m unittest discover -s tools/rom-generation/control-store-packer/tests -p "test_*.py"
 ```
 
-Tests build a small machine inline and do not read the real specifications. They cover encodings, care conditions, dependence, overlay packing, bit allocation, address maps, end-to-end packing and verification, detection of a corrupted image, and every structural error.
+Tests build a small machine inline and do not read the real specifications. They cover encodings, care conditions, dependence, overlay packing, bit allocation, address maps, end-to-end packing and verification, images that hold a word at every value of an input it ignores, detection of a corrupted image (including at such a value), and every structural error.

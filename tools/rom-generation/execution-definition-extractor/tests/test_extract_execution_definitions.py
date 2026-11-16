@@ -712,7 +712,7 @@ class PhaseBindingTests(unittest.TestCase):
             "micro_operation": "DB_WRITE_FROM_AC",
         }
         conditionals = {
-            1: [clear],
+            1: [],
             2: [clear],
             3: [clear, read, write],
             4: [clear, skip, read, write],

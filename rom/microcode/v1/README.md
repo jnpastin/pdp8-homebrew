@@ -6,15 +6,16 @@ This directory contains the reviewed, version-controlled machine-readable specif
 
 These specifications translate documented control behavior into maintained inputs suitable for automated processing. They do not replace the authoritative architecture and control documentation.
 
-The initial scope is limited to:
+The current scope covers:
 
-- defining the symbolic control-word schema
+- the control-input and control-word schemas
 - mapping documented micro-operations to symbolic control assignments
+- direct-control definitions, execution definitions, and timing constraints
 - generating and validating symbolic control words
 
-Control-input mapping and logical control-address packing will be added after symbolic control-word generation has been validated.
+Logical control-store packing is performed by the control-store packer from these specifications ([Control Store Organization](../../../docs/04-control/08-control-store-organization.md)). Its packing and logical images are build outputs and are not maintained here.
 
-Physical ROM packing and ROM image generation are outside the current scope.
+Physical ROM image formats are outside the current scope.
 
 ## 2. Authority
 
@@ -37,10 +38,19 @@ If a maintained specification conflicts with the documentation, the documentatio
 
 ## 3. Maintained Specifications
 
-The initial maintained specifications are:
+The maintained specifications are:
 
-- `control-word-schema.json`
-- `micro-operation-mapping.json`
+| File | Contents |
+|---|---|
+| `control-input-schema.json` | control inputs, their domains, IR derivations, and input constraints |
+| `control-word-schema.json` | control fields, legal values, inactive values, and Value Required When conditions (section 3.1) |
+| `micro-operation-mapping.json` | control assignments for each micro-operation (section 3.2) |
+| `direct-control-definitions.json` | direct control assignments, such as next major state and run control, in each context |
+| `execution-definitions.json` | the micro-operations selected in each execution case and timing state |
+| `timing-constraints.json` | timing constraints and state invariants on input combinations |
+| `symbolic-control-words.json` | the complete symbolic control word of every execution case |
+
+Each is a promoted generator output, reviewed before it replaces the previous version. The tools that produce them are listed in the [ROM-generation README](../../../tools/rom-generation/README.md#19-current-status).
 
 ### 3.1 Control-Word Schema
 
@@ -172,15 +182,6 @@ Generated outputs:
 
 ## 10. Scope Boundaries
 
-This directory will eventually contain additional maintained specifications for:
+A physical ROM layout specification must be introduced only when its generation stage is implemented.
 
-- execution-selection rules
-- sequencing rules
-- logical control-address layout
-- physical ROM layout
-
-Those specifications must be introduced only when their corresponding generation stages are implemented.
-
-The current work must not determine control-address packing before symbolic control behavior and control-input distinctions have been validated.
-
-The current work must not generate binary or hexadecimal ROM images.
+Logical device images are written to `build/` for verification only. Physical ROM images, the files used to program devices, must not be generated until their format is defined and the logical images have been validated against the datapath.

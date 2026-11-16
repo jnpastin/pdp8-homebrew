@@ -232,6 +232,37 @@ class PackTests(unittest.TestCase):
         P.verify(packing, dp, seq, diagnostics)
         self.assertIn("VERIFICATION_MISMATCH", {d.code for d in diagnostics})
 
+    def hlt_capture_address(self, dma_req):
+        # EXECUTE TS3 with IR_OPR_HLT on IR_SEQ; the word compares no
+        # sequencer input, so the hardware may present any of them.
+        values = {"HLT_REQ": "0", "FP_STOP": "0", "/DMA_REQ": dma_req,
+                  "FP_SINGLE_INSTRUCTION": "0", "FP_SINGLE_STEP": "0",
+                  "INTERRUPT_REQUEST_VALID": "0"}
+        return P.sequencer_address(2, 3, values, False, "1")
+
+    def test_ignored_inputs_hold_the_word_at_every_value(self):
+        model, _ = build()
+        packing, _ = P.pack(model)
+        sequencer = packing.images["sequencer"]
+        for bits in range(64):
+            values = {n: str((bits >> i) & 1) for i, n in
+                      enumerate((*P.SEQ_ALWAYS, *P.SEQ_RUNNING))}
+            address = P.sequencer_address(2, 3, values, False, "1")
+            self.assertEqual(P._seq_unpack(model, sequencer[address], "HLT_REQ_NEXT"), 1,
+                             values)
+
+    def test_corruption_at_an_ignored_input_value_is_detected(self):
+        model, _ = build()
+        packing, _ = P.pack(model)
+        dp = P.behaviors(model, model.datapath_fields, [])
+        seq = P.behaviors(model, model.sequencer_fields, [])
+        offset = sum(model.widths[n] for n in model.sequencer_fields[
+            :model.sequencer_fields.index("HLT_REQ_NEXT")])
+        packing.images["sequencer"][self.hlt_capture_address("1")] ^= 1 << offset
+        diagnostics = []
+        P.verify(packing, dp, seq, diagnostics)
+        self.assertIn("VERIFICATION_MISMATCH", {d.code for d in diagnostics})
+
     def test_input_supplied_value_is_an_error(self):
         guards = {"G": [{"value_from_input": "X", "when": "MS = EXECUTE"}]}
         _, diagnostics = build(execute_guards=guards)

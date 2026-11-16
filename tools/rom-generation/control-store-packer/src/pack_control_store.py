@@ -35,7 +35,7 @@ import json
 import re
 import sys
 from collections import defaultdict
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -484,6 +484,27 @@ def signal_value(signal: str, values: dict[str, str]) -> str:
     return values.get(signal, OTHER)
 
 
+def concrete_values(signal: str, values: dict[str, str]) -> list[str]:
+    """Every value the hardware can present for ``signal`` that agrees with
+    ``values``. An input the record does not compare can take any value, so
+    an image must hold the record's word at all of them."""
+
+    if signal == FP_CMD:
+        codes = []
+        for code in range(len(FP_COMMANDS) + 1):
+            implied = {n: "1" if i + 1 == code else "0" for i, n in enumerate(FP_COMMANDS)}
+            if all(values.get(n, implied[n]) in (implied[n], OTHER) for n in FP_COMMANDS):
+                codes.append(str(code))
+        return codes
+    value = values.get(signal, OTHER)
+    return ["0", "1"] if value == OTHER else [value]
+
+
+def concrete_combinations(signals: Sequence[str], values: dict[str, str]
+                          ) -> Iterator[tuple[str, ...]]:
+    return itertools.product(*(concrete_values(s, values) for s in signals))
+
+
 def projection(records: Sequence[Record], signals: Sequence[str]
                ) -> dict[tuple, dict[str, int]] | None:
     """Map each signal-value key to the required field values, or None
@@ -724,11 +745,13 @@ def pack(model: Model) -> tuple[Packing | None, list[Diagnostic]]:
                   f"The sequencer word depends on {', '.join(hidden)}, which its address "
                   "does not carry.", b.context.name)
             continue
+        # Keys are concrete address values: an input the record does not
+        # compare is expanded to every value, so that equal addresses with
+        # different required words are found as conflicts below.
         for record in b.records:
             for ir_group in _split_by_irseq(model, b.irs):
-                key = (b.context.name, ir_group,
-                       tuple(signal_value(s, record.values) for s in visible))
-                seq_records[key].append(record)
+                for concrete in concrete_combinations(visible, record.values):
+                    seq_records[(b.context.name, ir_group, concrete)].append(record)
     for key, records in seq_records.items():
         if projection(records, []) is None:
             error("SEQUENCER_IR_DEPENDENCE",
@@ -935,7 +958,12 @@ def _seq_unpack(model: Model, value: int, name: str) -> int:
 def verify(packing: Packing, dp: Sequence[Behavior], seq: Sequence[Behavior],
            diagnostics: list[Diagnostic]) -> None:
     """Form every address as the hardware does and compare the images with
-    every required field value."""
+    every required field value.
+
+    For each IR value the mapping ROM image gives the entry the slices see;
+    IR values with the same entry address the slices identically, so each
+    distinct entry is checked once. An input a record does not compare can
+    take any value in hardware, so every value of it is checked."""
 
     model = packing.model
     mapping = packing.images["mapping"]
@@ -944,44 +972,55 @@ def verify(packing: Packing, dp: Sequence[Behavior], seq: Sequence[Behavior],
     mismatches: list[str] = []
     checked = 0
 
+    def entries(b: Behavior, ts: int) -> dict[int, int]:
+        e = 1 if b.context.execute else 0
+        found: dict[int, int] = {}
+        for ir in b.irs:
+            found.setdefault(mapping[mapping_address(ir, ts, e)], ir)
+        return found
+
     for b in dp:
         context = b.context
+        ms_a = HALTED_CODE if context.halted else context.ms_code
         for ts in ((context.ts,) if context.ts else (1, 2, 3, 4)):
-            e = 1 if context.execute else 0
-            ms_a = HALTED_CODE if context.halted else context.ms_code
-            for ir in b.irs:
-                entry = mapping[mapping_address(ir, ts, e)]
+            for entry, ir in entries(b, ts).items():
                 variant = entry & ((1 << VARIANT_WIDTH) - 1)
                 group = packing.groups[(entry >> VARIANT_WIDTH) & ((1 << DP_OVL_SEL_WIDTH) - 1)]
+                signals = list(group.bits)
                 for record in b.records:
-                    ovl = 0
-                    for s, bit in group.bits.items():
-                        v = signal_value(s, record.values)
-                        if v == OTHER:
-                            continue
-                        ovl |= int(v) << bit
-                    word = datapath[datapath_address(ms_a, ts, variant, ovl)]
-                    checked += 1
-                    for f in record.care:
-                        if unpack(packing, word, f) != record.word[f]:
-                            mismatches.append(f"{context.name} IR={ir:04o} {f}")
-                            break
+                    for concrete in concrete_combinations(signals, record.values):
+                        ovl = 0
+                        for s, v in zip(signals, concrete):
+                            ovl |= int(v) << group.bits[s]
+                        word = datapath[datapath_address(ms_a, ts, variant, ovl)]
+                        checked += 1
+                        for f in record.care:
+                            if unpack(packing, word, f) != record.word[f]:
+                                mismatches.append(f"{context.name} TS{ts} IR={ir:04o} {f}")
+                                break
 
     for b in seq:
         context = b.context
+        ms_a = HALTED_CODE if context.halted else context.ms_code
+        visible = list(SEQ_ALWAYS) + ([FP_CMD] if context.halted else list(SEQ_RUNNING))
         for ts in ((context.ts,) if context.ts else (1, 2, 3, 4)):
-            ms_a = HALTED_CODE if context.halted else context.ms_code
-            for ir in b.irs:
-                entry = mapping[mapping_address(ir, ts, 1 if context.execute else 0)]
+            for entry, ir in entries(b, ts).items():
                 irseq = str((entry >> IR_SEQ_BIT) & 1)
                 for record in b.records:
-                    word = sequencer[sequencer_address(ms_a, ts, record.values,
-                                                       context.halted, irseq)]
-                    checked += 1
-                    for f in record.care:
-                        if _seq_unpack(model, word, f) != record.word[f]:
-                            mismatches.append(f"{context.name} IR={ir:04o} {f}")
-                            break
+                    for concrete in concrete_combinations(visible, record.values):
+                        values = dict(zip(visible, concrete))
+                        if context.halted:
+                            code = int(values.pop(FP_CMD))
+                            values.update({n: "1" if i + 1 == code else "0"
+                                           for i, n in enumerate(FP_COMMANDS)})
+                        word = sequencer[sequencer_address(ms_a, ts, values,
+                                                           context.halted, irseq)]
+                        checked += 1
+                        for f in record.care:
+                            if _seq_unpack(model, word, f) != record.word[f]:
+                                mismatches.append(f"{context.name} TS{ts} IR={ir:04o} "
+                                                  f"{f} at {values}")
+                                break
 
     packing.checked = checked
     for m in mismatches[:20]:
@@ -1013,7 +1052,7 @@ def packing_json(packing: Packing, diagnostics: Sequence[Diagnostic]) -> dict[st
             "overlay_groups": len(packing.groups),
             "overlay_select_bits_needed": max(1, (len(packing.groups) - 1).bit_length()),
             "ir_seq_single_bit_feasible": single_bit,
-            "verified_states": packing.checked,
+            "verified_addresses": packing.checked,
         },
         "address_maps": {
             "mapping_rom": "A14..A3 = IR[11:0], A2..A1 = TS-1, A0 = E",
@@ -1081,7 +1120,7 @@ def build_report(packing: Packing | None, diagnostics: Sequence[Diagnostic]) -> 
             f"Overlay groups: {s['overlay_groups']} "
             f"(select bits needed: {s['overlay_select_bits_needed']})",
             f"IR_SEQ as a single bit: {'feasible' if s['ir_seq_single_bit_feasible'] else 'not feasible'}",
-            f"Verified input states: {s['verified_states']}",
+            f"Verified address checks: {s['verified_addresses']}",
             "",
             "Overlay groups", "--------------",
         ]

@@ -1,0 +1,237 @@
+"""Tests for the ROM-generation pipeline runner.
+
+The tests use small fake tools in a temporary repository; they do not run
+the real ROM-generation tools.
+"""
+
+from __future__ import annotations
+
+import io
+import subprocess
+import sys
+import tempfile
+import unittest
+from contextlib import redirect_stdout
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+import run_pipeline as P  # noqa: E402
+
+REPO = Path(__file__).resolve().parents[4]
+
+GENERATION_REPORT = """\
+Example Generation Report
+=========================
+
+Candidate written: yes
+Warnings: 1
+
+Diagnostics
+-----------
+WARNING CHANGED_CASE [a]: Generated case differs from the maintained artifact.
+"""
+
+MULTILINE_REPORT = """\
+Extraction Report
+=================
+
+Diagnostics: 2
+
+Inputs by Domain
+----------------
+External: 3
+
+Diagnostic Details
+------------------
+ERROR MISSING_DEFINITION [X]
+  Source: docs/a.md:12
+  X has no definition.
+
+INFO NOTE [Y]
+  Source: docs/a.md:20
+  Y is fine.
+"""
+
+
+def fake_tool(report: str, candidate: str | None = None, exit_code: int = 0) -> str:
+    """Source of a fake tool that writes ``report`` and ``candidate``."""
+    return (
+        "import sys\nfrom pathlib import Path\n"
+        "root = Path(sys.argv[sys.argv.index('--repo-root') + 1])\n"
+        "here = Path(__file__).resolve().parent\n"
+        f"(here / 'report.txt').write_text({report!r}, encoding='utf-8')\n"
+        + (f"(here / 'out.candidate.json').write_text({candidate!r}, encoding='utf-8')\n"
+           if candidate is not None else "")
+        + f"sys.exit({exit_code})\n"
+    )
+
+
+class Repo:
+    """A temporary repository with fake tools."""
+
+    def __init__(self) -> None:
+        self._dir = tempfile.TemporaryDirectory()
+        self.root = Path(self._dir.name)
+
+    def close(self) -> None:
+        self._dir.cleanup()
+
+    def stage(self, name: str, report: str, candidate: str | None = None,
+              maintained: str | None = None, exit_code: int = 0) -> P.Stage:
+        directory = self.root / name
+        directory.mkdir(parents=True)
+        (directory / "tool.py").write_text(fake_tool(report, candidate, exit_code),
+                                           encoding="utf-8")
+        target = None
+        if candidate is not None:
+            target = Path("maintained") / f"{name}.json"
+            if maintained is not None:
+                (self.root / target).parent.mkdir(exist_ok=True)
+                (self.root / target).write_bytes(maintained.encode("utf-8"))
+        return P.Stage(name, Path(name) / "tool.py", Path(name) / "report.txt",
+                       Path(name) / "out.candidate.json" if candidate is not None else None,
+                       target)
+
+
+def run(repo: Repo, stages, answers=(), dry_run=False):
+    lines: list[str] = []
+    replies = list(answers)
+
+    def ask(prompt: str) -> str:
+        lines.append(prompt)
+        if not replies:
+            raise EOFError
+        return replies.pop(0)
+
+    code, outcomes = P.run_pipeline(repo.root, stages, dry_run=dry_run, ask=ask,
+                                    out=lines.append)
+    return code, outcomes, "\n".join(lines)
+
+
+class ReportTests(unittest.TestCase):
+    def test_single_line_diagnostics(self) -> None:
+        section = P.diagnostics_section(GENERATION_REPORT)
+        self.assertEqual(section, ["WARNING CHANGED_CASE [a]: Generated case differs "
+                                   "from the maintained artifact."])
+        self.assertEqual(P.severity_counts(section), {"WARNING": 1})
+
+    def test_multiline_diagnostics_and_detail_heading(self) -> None:
+        section = P.diagnostics_section(MULTILINE_REPORT)
+        self.assertEqual(section[0], "ERROR MISSING_DEFINITION [X]")
+        self.assertEqual(section[-1], "  Y is fine.")
+        self.assertEqual(P.severity_counts(section), {"ERROR": 1, "INFO": 1})
+
+    def test_section_ends_at_the_next_heading(self) -> None:
+        report = "Diagnostics\n-----------\nINFO A: one\n\nLater\n-----\nINFO B: not a diagnostic\n"
+        self.assertEqual(P.diagnostics_section(report), ["INFO A: one"])
+
+    def test_no_diagnostics(self) -> None:
+        for body in ("No diagnostics.", "None.", "None"):
+            self.assertEqual(P.diagnostics_section(f"Diagnostics\n-----------\n{body}\n"), [])
+        self.assertEqual(P.diagnostics_section("Diagnostics: 0\n"), [])
+
+
+class PipelineTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.repo = Repo()
+
+    def tearDown(self) -> None:
+        self.repo.close()
+
+    def test_accepted_promotion_copies_the_candidate(self) -> None:
+        stage = self.repo.stage("gen", GENERATION_REPORT, '{"v": 2}\n', '{"v": 1}\n')
+        code, outcomes, text = run(self.repo, [stage], ["y"])
+        self.assertEqual(code, P.EXIT_OK)
+        self.assertEqual((self.repo.root / stage.maintained).read_text(encoding="utf-8"),
+                         '{"v": 2}\n')
+        self.assertEqual(outcomes[0].status, "promoted")
+        self.assertIn("WARNING CHANGED_CASE", text)
+        self.assertIn("1 line(s) added, 1 removed", text)
+
+    def test_declined_promotion_stops_the_pipeline(self) -> None:
+        first = self.repo.stage("gen", GENERATION_REPORT, '{"v": 2}\n', '{"v": 1}\n')
+        second = self.repo.stage("later", GENERATION_REPORT)
+        code, outcomes, _ = run(self.repo, [first, second], ["n"])
+        self.assertEqual(code, P.EXIT_DECLINED)
+        self.assertEqual([o.status for o in outcomes], ["declined"])
+        self.assertEqual((self.repo.root / first.maintained).read_text(encoding="utf-8"),
+                         '{"v": 1}\n')
+
+    def test_end_of_input_declines(self) -> None:
+        stage = self.repo.stage("gen", GENERATION_REPORT, '{"v": 2}\n', '{"v": 1}\n')
+        code, _, _ = run(self.repo, [stage], [])
+        self.assertEqual(code, P.EXIT_DECLINED)
+
+    def test_diff_is_shown_before_answering(self) -> None:
+        stage = self.repo.stage("gen", GENERATION_REPORT, '{"v": 2}\n', '{"v": 1}\n')
+        code, _, text = run(self.repo, [stage], ["d", "maybe", "y"])
+        self.assertEqual(code, P.EXIT_OK)
+        self.assertIn('-{"v": 1}', text)
+        self.assertIn('+{"v": 2}', text)
+        self.assertIn("Answer y, n, or d.", text)
+
+    def test_unchanged_candidate_needs_no_promotion(self) -> None:
+        stage = self.repo.stage("gen", GENERATION_REPORT, '{"v": 1}\n', '{"v": 1}\r\n')
+        code, outcomes, text = run(self.repo, [stage])
+        self.assertEqual(code, P.EXIT_OK)
+        self.assertEqual(outcomes[0].status, "unchanged")
+        self.assertNotIn("Promote", text)
+        self.assertIn("WARNING CHANGED_CASE", text)
+
+    def test_new_artifact_is_offered(self) -> None:
+        stage = self.repo.stage("gen", GENERATION_REPORT, '{"v": 1}\n')
+        code, _, text = run(self.repo, [stage], ["y"])
+        self.assertEqual(code, P.EXIT_OK)
+        self.assertIn("new artifact", text)
+        self.assertTrue((self.repo.root / stage.maintained).exists())
+
+    def test_failing_tool_stops_the_pipeline(self) -> None:
+        first = self.repo.stage("bad", MULTILINE_REPORT, exit_code=1)
+        second = self.repo.stage("later", GENERATION_REPORT)
+        code, outcomes, text = run(self.repo, [first, second])
+        self.assertEqual(code, P.EXIT_TOOL_FAILED)
+        self.assertEqual([o.status for o in outcomes], ["failed"])
+        self.assertIn("ERROR MISSING_DEFINITION [X]", text)
+        self.assertIn("exited with status 1", text)
+
+    def test_dry_run_never_asks_or_promotes(self) -> None:
+        stage = self.repo.stage("gen", GENERATION_REPORT, '{"v": 2}\n', '{"v": 1}\n')
+        code, outcomes, text = run(self.repo, [stage], dry_run=True)
+        self.assertEqual(code, P.EXIT_OK)
+        self.assertEqual(outcomes[0].status, "pending")
+        self.assertNotIn("Promote", text)
+        self.assertEqual((self.repo.root / stage.maintained).read_text(encoding="utf-8"),
+                         '{"v": 1}\n')
+
+
+class StageTableTests(unittest.TestCase):
+    def test_every_script_exists(self) -> None:
+        for stage in P.STAGES:
+            self.assertTrue((REPO / stage.script).is_file(), stage.script)
+
+    def test_every_maintained_artifact_exists(self) -> None:
+        maintained = [s.maintained for s in P.STAGES if s.maintained]
+        self.assertEqual(len(maintained), 7)
+        for path in maintained:
+            self.assertTrue((REPO / path).is_file(), path)
+
+    def test_stage_selection(self) -> None:
+        stages = P.select_stages("timing-constraint-extractor", "symbolic-control-word-generator")
+        self.assertEqual([s.name for s in stages], ["timing-constraint-extractor",
+                                                    "timing-constraint-generator",
+                                                    "symbolic-control-word-generator"])
+        with self.assertRaises(SystemExit):
+            P.select_stages("no-such-stage", None)
+        with self.assertRaises(SystemExit):
+            P.select_stages("control-store-packer", "control-input-extractor")
+
+    def test_list(self) -> None:
+        with redirect_stdout(io.StringIO()) as out:
+            self.assertEqual(P.main(["--list"]), P.EXIT_OK)
+        self.assertIn("13. symbolic-control-word-generator  -> rom/microcode/v1/"
+                      "symbolic-control-words.json", out.getvalue())
+
+
+if __name__ == "__main__":
+    unittest.main()

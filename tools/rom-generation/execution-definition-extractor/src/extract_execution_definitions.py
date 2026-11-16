@@ -133,12 +133,15 @@ DECODED_IOT_CONTEXTS = {
 PHASE_BINDING_SECTION = "External IOT Phase Binding"
 PHASE_BINDING_CONTEXT = ("MS = EXECUTE", "IR_IS_EXTERNAL_IOT = 1")
 PHASE_BINDINGS = (
+    # A controller may assert IO_CLEAR_AC_REQ only in TS2 to TS4 (Major
+    # State Timing sections 5.2.1 and 5.2.3), so those are the TSs in which
+    # the request can be asserted.
     (
         (
             "- IO_CLEAR_AC_REQ selects AC_CLEAR during the TS in which the "
             "request is asserted."
         ),
-        TIMING_STATES,
+        (2, 3, 4),
         {"predicate": "IO_CLEAR_AC_REQ = 1", "micro_operation": "AC_CLEAR"},
     ),
     (

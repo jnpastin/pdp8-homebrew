@@ -537,17 +537,31 @@ No file should be copied between these locations solely for convenience. Each fi
 
 ## 19. Current Status
 
-The ROM-generation directory structure has been established.
+The pipeline through logical control-store packing is implemented. Each tool is a Python 3 program using only the standard library, with its own README and tests. Shared predicate parsing is in `common/`.
 
-Current contents:
+Stages, in run order:
+
+| Stage | Tool | Promoted artifact (`rom/microcode/v1/`) |
+|---|---|---|
+| Control inputs | `control-input-extractor`, `control-input-schema-generator` | `control-input-schema.json` |
+| Control outputs | `control-output-extractor`, `control-word-schema-generator` | `control-word-schema.json` |
+| Micro-operations | `micro-operation-extractor`, `micro-operation-mapping-generator` | `micro-operation-mapping.json` |
+| Direct control | `direct-control-extractor`, `direct-control-generator` | `direct-control-definitions.json` |
+| Execution definitions | `execution-definition-extractor`, `execution-definition-generator` | `execution-definitions.json` |
+| Timing constraints | `timing-constraint-extractor`, `timing-constraint-generator` | `timing-constraints.json` |
+| Symbolic control words | `symbolic-control-word-generator` | `symbolic-control-words.json` |
+| Equivalence analysis | `control-word-equivalence-analyzer` | none; report in `build/` |
+| Logical packing | `control-store-packer` | none; logical images in `build/` |
+
+Each extractor writes candidate definitions and a report to `build/`; each generator writes a candidate artifact that is promoted by copying it into `rom/microcode/v1/` after review.
+
+The [pipeline runner](./pipeline/README.md) runs all of these stages in order. It presents each tool's diagnostics and asks the user to accept each promotion:
 
 ```text
-tools/
-└── rom-generation/
-    ├── README.md
-    └── common/
+python tools/rom-generation/pipeline/src/run_pipeline.py
 ```
 
-No control-address layout, control-word bit layout, shared schema, implementation language, or physical ROM format is fixed by this README.
+Not yet defined:
 
-The first planned tool is a documentation extractor that produces candidate structured definitions and an exception report without modifying the source documentation.
+- the physical image format and the promotion of images to `build/rom_images/` (section 13)
+- simulation of the packed control store against the datapath

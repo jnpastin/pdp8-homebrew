@@ -31,18 +31,22 @@ The primary goal is to achieve software compatibility sufficient to run OS/8 and
 ---
 
 ## Current Status
-Active design phase:
-- Architecture and register model defined
-- Timing architecture defined (TS/TP/TCLK model)
-- Major state model defined (FETCH, DEFER, EXECUTE, INTERRUPT)
-- Documentation structure in place
-- Control signal definition in progress
-- Interrupt and skip models in progress
+Active design phase.
+
+Defined:
+- Architecture, register model, and ISA (`docs/01`, `docs/02`)
+- Microarchitecture: major states, micro-operations, and execution of every instruction class, interrupts, front-panel operations, and DMA (`docs/03`)
+- Control: control inputs and outputs, control word, control addressing, and control store organization (`docs/04`)
+- Buses and signals, memory, I/O and DMA interfaces, interrupts and skip, and timing (`docs/05` to `docs/09`)
+
+Implemented:
+- ROM-generation toolchain: extracts the control specifications from the documentation, generates and validates symbolic control words, and packs them into verified logical control-store images (`tools/rom-generation`, `rom/microcode/v1`)
 
 Not yet started:
-- Microarchitecture specification
-- I/O behavioral model
-- Hardware design
+- Simulation against the packed control store (`sim/`)
+- Physical ROM image format
+- Front panel, backplane and physical design, verification plan, and implementation plan (`docs/10` to `docs/13`)
+- Hardware design (`hardware/`)
 
 ---
 

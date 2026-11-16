@@ -7053,27 +7053,13 @@
         "MS_LOAD": "0"
       },
       "field_assignments": {
-        "AC_LOAD": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 1) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "AC_LOAD": [],
         "CIFP_LOAD": [],
         "DF_LOAD": [],
         "DIF_LOAD": [],
         "EA_ADDR_LOAD": [],
         "IB_LOAD": [],
-        "IDB_DRIVE": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 1) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "IDB_DRIVE": [],
         "IE_LOAD": [],
         "IF_LOAD": [],
         "II_LOAD": [],
@@ -7086,50 +7072,15 @@
         "PC_INC": [],
         "PC_LOAD": [],
         "AB_SRC": [],
-        "AC_SRC": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 1) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
-        "ALU_A_SRC": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 1) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
-        "ALU_B_SRC": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 1) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
-        "ALU_OP": [
-          {
-            "value": "12",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 1) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "AC_SRC": [],
+        "ALU_A_SRC": [],
+        "ALU_B_SRC": [],
+        "ALU_OP": [],
         "DF_SRC": [],
         "DIF_SRC": [],
         "EA_ADDR_SRC": [],
         "IF_SRC": [],
-        "IDB_SRC": [
-          {
-            "value": "7",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 1) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "IDB_SRC": [],
         "L_OP": [],
         "MA_SRC": [],
         "MB_SRC": [],
@@ -7200,9 +7151,7 @@
         ],
         "MS_LOAD": []
       },
-      "selected_micro_operations": {
-        "AC_CLEAR": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 1) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)"
-      },
+      "selected_micro_operations": {},
       "applicable_direct_control_definitions": [
         "01:3.3.2",
         "01:3.4.2",

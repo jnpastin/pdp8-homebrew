@@ -605,12 +605,7 @@
       ],
       "timing_state": 1,
       "micro_operations": [],
-      "conditional_micro_operations": [
-        {
-          "predicate": "IO_CLEAR_AC_REQ = 1",
-          "micro_operation": "AC_CLEAR"
-        }
-      ]
+      "conditional_micro_operations": []
     },
     {
       "id": "iot:external:ts2",
