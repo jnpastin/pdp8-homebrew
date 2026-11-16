@@ -776,10 +776,6 @@
         {
           "field": "DF_SRC",
           "value": "0"
-        },
-        {
-          "field": "DF_VAL",
-          "value": "0"
         }
       ],
       "source": {
@@ -1237,7 +1233,7 @@
         },
         {
           "field": "DF_SRC",
-          "value": "0"
+          "value": "4"
         }
       ],
       "source": {
@@ -1258,7 +1254,7 @@
         },
         {
           "field": "DIF_SRC",
-          "value": "1"
+          "value": "4"
         }
       ],
       "source": {
@@ -1667,29 +1663,29 @@
     {
       "severity": "WARNING",
       "code": "MAINTAINED_ASSIGNMENT_REMOVED",
-      "message": "Maintained assignment IF_VAL='0' is no longer produced by the Used-by lists.",
-      "micro_operation": "IF_CLEAR",
-      "field_name": "IF_VAL",
+      "message": "Maintained assignment DF_VAL='0' is no longer produced by the Used-by lists.",
+      "micro_operation": "DF_CLEAR",
+      "field_name": "DF_VAL",
       "source_path": "docs/03-microarchitecture/02-micro-operations.md",
-      "source_line": 904
+      "source_line": 581
     },
     {
       "severity": "WARNING",
-      "code": "MAINTAINED_ASSIGNMENT_REMOVED",
-      "message": "Maintained assignment MA_VAL='0' is no longer produced by the Used-by lists.",
-      "micro_operation": "MA_CLEAR",
-      "field_name": "MA_VAL",
+      "code": "MAINTAINED_ASSIGNMENT_CHANGED",
+      "message": "Assignment DF_SRC changes from '0' to '4'.",
+      "micro_operation": "IR_DF_TO_DF",
+      "field_name": "DF_SRC",
       "source_path": "docs/03-microarchitecture/02-micro-operations.md",
-      "source_line": 1160
+      "source_line": 1084
     },
     {
       "severity": "WARNING",
-      "code": "MAINTAINED_ASSIGNMENT_REMOVED",
-      "message": "Maintained assignment PC_VAL='1' is no longer produced by the Used-by lists.",
-      "micro_operation": "PC_SET_1",
-      "field_name": "PC_VAL",
+      "code": "MAINTAINED_ASSIGNMENT_CHANGED",
+      "message": "Assignment DIF_SRC changes from '1' to '4'.",
+      "micro_operation": "IR_IF_TO_DIF",
+      "field_name": "DIF_SRC",
       "source_path": "docs/03-microarchitecture/02-micro-operations.md",
-      "source_line": 1378
+      "source_line": 1103
     }
   ]
 }

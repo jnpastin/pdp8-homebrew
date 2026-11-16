@@ -1569,154 +1569,12 @@
       "derived_values": []
     },
     {
-      "id": "01:5.1",
-      "title": "5.1 Data Field From Instruction",
-      "group": "5 Control-Provided Internal Values",
-      "source": {
-        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1814
-      },
-      "applicable_context": [
-        "IR_WRITES_DF = 1\nIR_DF_TO_DF is selected"
-      ],
-      "direct_assignments": [],
-      "control_supplied_values": [
-        "DF_VAL = IR_DF"
-      ],
-      "micro_operation_assignments": [
-        "DF_LOAD = 1\nDF_SRC  = Control"
-      ],
-      "state_commits": [],
-      "value_relationships": [
-        "IR_DF  = IR[5:3]\nDF_VAL = IR_DF"
-      ],
-      "widths": [
-        "IR_DF = 3 bits\nDF_VAL = 3 bits"
-      ],
-      "constraints": [
-        "`DF_VAL` is required when `DF_LOAD = 1` and `DF_SRC = Control`.",
-        "`IR_DF_TO_DF` binds the control input `IR_DF` directly to the control output `DF_VAL`.",
-        "No transformation is applied."
-      ],
-      "sources": [
-        {
-          "label": "IR Derived Fields",
-          "target": "../10-control-input-definitions/02-ir-derived-fields.md#ir_df"
-        },
-        {
-          "label": "Micro-Operations",
-          "target": "../../03-microarchitecture/02-micro-operations.md#ir_df_to_df"
-        },
-        {
-          "label": "Microarchitectural Control Signals",
-          "target": "../20-control-output-definitions/01-microarchitectural-control-signals.md"
-        }
-      ],
-      "drive_states": [],
-      "external_ownership": [],
-      "memory_behavior": [],
-      "derived_values": []
-    },
-    {
-      "id": "01:5.2",
-      "title": "5.2 Deferred Instruction Field From Instruction",
-      "group": "5 Control-Provided Internal Values",
-      "source": {
-        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1864
-      },
-      "applicable_context": [
-        "IR_WRITES_IF = 1\nIR_IF_TO_DIF is selected"
-      ],
-      "direct_assignments": [],
-      "control_supplied_values": [
-        "DIF_VAL = IR_IF"
-      ],
-      "micro_operation_assignments": [
-        "DIF_LOAD = 1\nDIF_SRC  = Control"
-      ],
-      "state_commits": [],
-      "value_relationships": [
-        "IR_IF  = IR[5:3]\nDIF_VAL = IR_IF"
-      ],
-      "widths": [
-        "IR_IF   = 3 bits\nDIF_VAL = 3 bits"
-      ],
-      "constraints": [
-        "`DIF_VAL` is required when `DIF_LOAD = 1` and `DIF_SRC = Control`.",
-        "`IR_IF_TO_DIF` binds the control input `IR_IF` directly to the control output `DIF_VAL`.",
-        "`DIF_CLEAR` uses the same `DIF_SRC = Control` path but assigns `DIF_VAL = 0`.",
-        "`DIF_SRC` does not distinguish between `IR_IF` and zero; the selected control case determines `DIF_VAL`.",
-        "`IR_IF_TO_DIF` and `DIF_CLEAR` must not be selected concurrently.",
-        "No dedicated `DIF_SRC = IR` encoding or direct IR-to-DIF datapath is used.",
-        "No transformation is applied."
-      ],
-      "sources": [
-        {
-          "label": "IR Derived Fields",
-          "target": "../10-control-input-definitions/02-ir-derived-fields.md#ir_if"
-        },
-        {
-          "label": "Micro-Operations",
-          "target": "../../03-microarchitecture/02-micro-operations.md#ir_if_to_dif"
-        },
-        {
-          "label": "Microarchitectural Control Signals",
-          "target": "../20-control-output-definitions/01-microarchitectural-control-signals.md"
-        }
-      ],
-      "drive_states": [],
-      "external_ownership": [],
-      "memory_behavior": [],
-      "derived_values": []
-    },
-    {
-      "id": "01:5.3",
-      "title": "5.3 Deferred Instruction Field Clear Value",
-      "group": "5 Control-Provided Internal Values",
-      "source": {
-        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1920
-      },
-      "applicable_context": [
-        "DIF_CLEAR is selected"
-      ],
-      "direct_assignments": [],
-      "control_supplied_values": [
-        "DIF_VAL = 0"
-      ],
-      "micro_operation_assignments": [
-        "DIF_LOAD = 1\nDIF_SRC  = Control"
-      ],
-      "state_commits": [],
-      "value_relationships": [],
-      "widths": [],
-      "constraints": [
-        "`DIF_VAL` is required because `DIF_LOAD = 1` and `DIF_SRC = Control`.",
-        "`DIF_CLEAR` and `IR_IF_TO_DIF` must not be selected concurrently."
-      ],
-      "sources": [
-        {
-          "label": "Micro-operations",
-          "target": "../../03-microarchitecture/02-micro-operations.md#dif_clear"
-        },
-        {
-          "label": "Microarchitectural Control Signals",
-          "target": "../20-control-output-definitions/01-microarchitectural-control-signals.md"
-        }
-      ],
-      "drive_states": [],
-      "external_ownership": [],
-      "memory_behavior": [],
-      "derived_values": []
-    },
-    {
       "id": "01:5.5.1",
       "title": "5.5.1 Read Request Acceptance",
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1982
+        "line": 1864
       },
       "applicable_context": [
         "IR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_READ_REQ = 1"
@@ -1762,7 +1620,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 2011
+        "line": 1893
       },
       "applicable_context": [
         "IR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_WRITE_REQ = 1"
@@ -1808,7 +1666,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 2040
+        "line": 1922
       },
       "applicable_context": [
         "(\n    IOT_READ_PENDING = 1\n    OR IOT_WRITE_PENDING = 1\n)\nIR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_READ_REQ = 0\nIO_WRITE_REQ = 0"
@@ -1854,7 +1712,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 2077
+        "line": 1959
       },
       "applicable_context": [
         "(\n    IOT_READ_PENDING = 1\n    OR IOT_WRITE_PENDING = 1\n)\nIR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_READ_REQ = 1"
@@ -1901,7 +1759,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 2114
+        "line": 1996
       },
       "applicable_context": [
         "(\n    IOT_READ_PENDING = 1\n    OR IOT_WRITE_PENDING = 1\n)\nIR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_WRITE_REQ = 1"

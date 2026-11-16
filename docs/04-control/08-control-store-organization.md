@@ -29,10 +29,10 @@ The logical control word, the control inputs, and the behavior they select are d
 | overlay | an address field that carries different condition inputs in different contexts ([Control Addressing §6.3](./02-control-addressing.md#63-domain-separation)) |
 | `DP_OVL[4:0]` | the datapath slice's 5-bit overlay field |
 | overlay group | one fixed assignment of condition inputs to `DP_OVL[4:0]` |
-| `DP_OVL_SEL` | a 3-bit mapping ROM output selecting which overlay group drives `DP_OVL[4:0]` (section 6) |
+| `DP_OVL_SEL` | a 2-bit mapping ROM output selecting which overlay group drives `DP_OVL[4:0]` (section 6) |
 | `FP_CMD[2:0]` | the encoded front-panel command (section 5.2) |
 | `SEQ_OVL[2:0]` | the sequencer slice's 3-bit overlay field: the running-only sequencer inputs while running, `FP_CMD[2:0]` while halted (section 5.5) |
-| `IR_SEQ` | the 3-bit mapping ROM output carrying the instruction decodes the sequencer slice needs: `IR_INDIRECT`, `IR_OPR_HLT`, `IR_IS_CAF` |
+| `IR_SEQ` | the 1-bit mapping ROM output carrying the one instruction decode the sequencer slice needs in the current TS (section 5.3) |
 | 28C256 | a parallel EEPROM with 15 address bits and 8 data bits (32K × 8) |
 
 Status: the slice structure, device technology, and packing rules are design decisions. The specific address-bit assignments, variant counts, and overlay groups are the current proposal, measured from the maintained specifications; the packing tool will finalize and verify them.
@@ -134,7 +134,7 @@ Console commands are accepted at most one at a time ([External Inputs §4.1](./1
 
 The mapping ROM ([Control Addressing §2.1](./02-control-addressing.md#21-partitioned-and-two-level-control-stores)) maps the instruction to the address information each slice needs.
 
-Address (both devices, in parallel):
+Address:
 
 ```
 A14..A3 = IR[11:0]
@@ -146,12 +146,22 @@ Output fields:
 
 | Field | Width | Meaning |
 |---|---|---|
-| `VARIANT` | 5 | the instruction-dependent behavior that applies in this TS of EXECUTE; a fixed value when `E = 0` |
-| `DP_OVL_SEL` | 3 | the overlay group presented to the datapath slice (section 6) |
-| `IR_SEQ` | 3 | `IR_INDIRECT`, `IR_OPR_HLT`, `IR_IS_CAF` for the sequencer slice |
-| spare | 5 | unassigned |
+| `VARIANT` | 5 (D4..D0) | the instruction-dependent behavior that applies in this TS of EXECUTE; 0 when `E = 0` |
+| `DP_OVL_SEL` | 2 (D6..D5) | the overlay group presented to the datapath slice (section 6) |
+| `IR_SEQ` | 1 (D7) | the instruction decode the sequencer slice needs in this TS |
 
-Two IR values share a variant only when they produce the same datapath words for every condition value in that TS. The current specification needs at most 26 variants in one TS (EXECUTE TS2), within the 32 that `VARIANT` allows. A single variant code shared by all four timing states would need 227 values, which is why the mapping ROM is indexed by TS.
+The mapping ROM is one device.
+
+`IR_SEQ` carries a different decode in different timing states. Because the mapping ROM is indexed by `E` and TS, it outputs whichever decode the sequencer word depends on there:
+
+| `E` | TS | `IR_SEQ` | Use |
+|---|---|---|---|
+| 0 | 4 | `IR_INDIRECT` | FETCH TS4 selects DEFER or EXECUTE |
+| 1 | 3 | `IR_OPR_HLT` | HLT capture |
+| 1 | 4 | `IR_IS_CAF` | CAF system initialization |
+| other | | 0 | the sequencer word depends on no instruction decode |
+
+Two IR values share a variant only when they produce the same datapath words for every condition value in that TS. The current specification needs 7, 26, 12, and 12 variants in EXECUTE TS1 to TS4, within the 32 that `VARIANT` allows. A single variant code shared by all four timing states would need 227 values, which is why the mapping ROM is indexed by TS.
 
 The instruction-dependent conditions that select behavior within a case, such as OPR micro-operation bits and memory-extension decodes, are absorbed into the variant. Only runtime conditions reach the address through the overlay.
 
@@ -175,8 +185,8 @@ A9       = HLT_REQ
 A8       = FP_STOP
 A7..A5   = SEQ_OVL[2:0]
 A4       = /DMA_REQ
-A3..A1   = IR_SEQ
-A0       = 0
+A3       = IR_SEQ
+A2..A0   = 0
 ```
 
 `SEQ_OVL[2:0]` is a 3-bit 2:1 multiplexer selected by `RUN`:
@@ -194,39 +204,29 @@ While halted, the running-only inputs cannot change the sequencer word and the f
 
 ![Datapath Overlay](../../diagrams/control/control-store-overlay/export/control-store-overlay.png)
 
-The five overlay bits `DP_OVL[4:0]` are driven by five 8:1 multiplexers, one per bit, all selected by `DP_OVL_SEL[2:0]`. Input *n* of every multiplexer belongs to overlay group *n*, so `DP_OVL_SEL = n` presents group *n* on `DP_OVL[4:0]`. Each group presents the runtime conditions that can change the datapath word in its contexts ([Control Addressing §6.3](./02-control-addressing.md#63-domain-separation)).
+The five overlay bits `DP_OVL[4:0]` are driven by five 4:1 multiplexers, one per bit, all selected by `DP_OVL_SEL[1:0]`. Input *n* of every multiplexer belongs to overlay group *n*, so `DP_OVL_SEL = n` presents group *n* on `DP_OVL[4:0]`. Each group presents the runtime conditions that can change the datapath word in its contexts ([Control Addressing §6.3](./02-control-addressing.md#63-domain-separation)).
 
 ### 6.1 Overlay Groups
 
 | Input / `DP_OVL_SEL` | Group | Used in |
 |---|---|---|
-| 0 | none | contexts with no runtime condition |
-| 1 | state | FETCH, DEFER, INTERRUPT, DMA, halted |
-| 2 | skip | OPR Group 2 TS1 |
-| 3 | interrupt | SKON, SRQ |
-| 4 | ISZ | ISZ TS4 |
-| 5 | field change | JMP, JMS TS4 |
-| 6 | external IOT TS1–TS3 | external-IOT EXECUTE TS1–TS3 |
-| 7 | external IOT TS4 | external-IOT EXECUTE TS4 |
+| 0 | external IOT | external-IOT EXECUTE TS1–TS3; also every EXECUTE variant with no runtime condition |
+| 1 | state | `E = 0`: FETCH, DEFER, INTERRUPT, DMA, halted |
+| 2 | external IOT TS4 | external-IOT EXECUTE TS4; SRQ |
+| 3 | instruction conditions | OPR Group 2 TS1 skip, SKON, ISZ TS4, JMP and JMS TS4 |
 
 ### 6.2 Multiplexer Inputs
 
-Current assignment; `0` is tied low:
-
 | Input (group) | `DP_OVL[4]` | `DP_OVL[3]` | `DP_OVL[2]` | `DP_OVL[1]` | `DP_OVL[0]` |
 |---|---|---|---|---|---|
-| 0 (none) | 0 | 0 | 0 | 0 | 0 |
-| 1 (state) | `AUTO_INDEX_REQUIRED` | `CIFP` | `FP_CMD[2]` | `FP_CMD[1]` | `FP_CMD[0]` |
-| 2 (skip) | 0 | 0 | 0 | 0 | `SKIP_TAKEN` |
-| 3 (interrupt) | 0 | 0 | 0 | `/INT_REQ` | `IE` |
-| 4 (ISZ) | 0 | 0 | 0 | 0 | `ISZ_SKIP_REQUIRED` |
-| 5 (field change) | 0 | 0 | 0 | `IF_CHANGE_PENDING` | `CIFP` |
-| 6 (external IOT TS1–TS3) | `IOT_WRITE_PENDING` | `IOT_READ_PENDING` | `IO_WRITE_REQ` | `IO_READ_REQ` | `IO_CLEAR_AC_REQ` |
-| 7 (external IOT TS4) | `IOT_WRITE_PENDING` | `IOT_READ_PENDING` | 0 | `IO_SKIP_REQ` | `IO_CLEAR_AC_REQ` |
+| 0 (external IOT) | `IO_WRITE_REQ` | `IO_READ_REQ` | `IO_CLEAR_AC_REQ` | `IOT_WRITE_PENDING` | `IOT_READ_PENDING` |
+| 1 (state) | `CIFP` | `AUTO_INDEX_REQUIRED` | `FP_CMD[2]` | `FP_CMD[1]` | `FP_CMD[0]` |
+| 2 (external IOT TS4) | `IO_SKIP_REQ` | `IO_CLEAR_AC_REQ` | `IOT_WRITE_PENDING` | `IOT_READ_PENDING` | `/INT_REQ` |
+| 3 (instruction conditions) | `SKIP_TAKEN` | `ISZ_SKIP_REQUIRED` | `IF_CHANGE_PENDING` | `IE` | `CIFP` |
 
-Sixteen distinct signals drive 20 of the 40 inputs: the 13 runtime conditions and the three `FP_CMD` bits. `CIFP`, `IO_CLEAR_AC_REQ`, `IOT_READ_PENDING`, and `IOT_WRITE_PENDING` each drive two inputs.
+Sixteen distinct signals drive all 20 inputs: the 13 runtime conditions and the three `FP_CMD` bits. `CIFP`, `IO_CLEAR_AC_REQ`, `IOT_READ_PENDING`, and `IOT_WRITE_PENDING` each drive two inputs.
 
-Which bit a signal occupies within its group is arbitrary; the packing tool may reassign it. Group 7 relies on the TS4 request window ([Major State Timing §5.2.7](../09-timing/03-major-state-timing.md#527-ts4)), which excludes `IO_READ_REQ` and `IO_WRITE_REQ` in TS4.
+The groups and pin assignments are produced by the control-store packer (section 9). A variant with no runtime condition may use any group, because its datapath words do not depend on `DP_OVL`. Group 2 relies on the TS4 request window ([Major State Timing §5.2.7](../09-timing/03-major-state-timing.md#527-ts4)), which excludes `IO_READ_REQ` and `IO_WRITE_REQ` in TS4.
 
 ---
 
@@ -234,7 +234,7 @@ Which bit a signal occupies within its group is arbitrary; the packing tool may 
 
 ### 7.1 Hardwired Constants
 
-Constant sources are hardwired in the datapath rather than supplied by value fields: `IF_SRC = 0` (zero), `MA_SRC = 2` (zero), `PC_SRC = 1` (0001). See [Microarchitectural Control Signals](./20-control-output-definitions/01-microarchitectural-control-signals.md).
+Constant and instruction-field sources are hardwired in the datapath rather than supplied by value fields: `IF_SRC = 0` (zero), `MA_SRC = 2` (zero), `PC_SRC = 1` (0001), `DF_SRC = 0` (zero), `DF_SRC = 4` (`IR[5:3]`), `DIF_SRC = 1` (zero), and `DIF_SRC = 4` (`IR[5:3]`). A control-store ROM cannot output a value it does not receive on its address, so no control-word field carries an input's value. See [Microarchitectural Control Signals](./20-control-output-definitions/01-microarchitectural-control-signals.md).
 
 ### 7.2 Physical Bit Sharing
 
@@ -242,15 +242,13 @@ Fields that never require a value in the same control word share device outputs 
 
 | Bits | Fields |
 |---|---|
-| 4 | `ALU_OP`, `DF_VAL` |
-| 3 | `AC_SRC`, `DIF_VAL`, `MA_SRC` |
-| 3 | `ALU_B_SRC`, `DF_SRC` |
-| 2 | `ALU_A_SRC`, `DIF_SRC` |
+| 4 | `ALU_OP`, `DF_SRC` |
+| 3 | `AC_SRC`, `DIF_SRC`, `MA_SRC` |
+| 3 | `ALU_B_SRC`, `PC_SRC` |
 | 2 | `IF_SRC`, `IOT_TRANSFER_VAL`, `L_OP`, `MB_SRC` |
 | 1 | `AB_SRC`, `CIFP_VAL`, `MQ_SRC` |
 | 1 | `EA_ADDR_SRC`, `IE_VAL` |
-| 1 | `II_VAL`, `PC_SRC` |
-| 29 | the remaining fields, one bit each |
+| 32 | the remaining 28 fields, unshared: `IDB_SRC` (3 bits), `ALU_A_SRC` and `MDB_SRC` (2 bits each), and 25 one-bit fields |
 
 Total: 46 bits in six devices, two bits spare.
 
@@ -262,30 +260,30 @@ A field shares bits only through wiring. No decoder or gate follows the control 
 
 | Function | Devices |
 |---|---|
-| Mapping ROM | 2 × 28C256 |
+| Mapping ROM | 1 × 28C256 |
 | Datapath slice | 6 × 28C256 |
 | Sequencer slice | 1 × 28C256 |
 | `MS_A` select | 3-bit 2:1 multiplexer |
 | `SEQ_OVL` select | 3-bit 2:1 multiplexer |
 | `E` | comparator for the EXECUTE code |
 | `FP_CMD` | 8-to-3 priority encoder |
-| Datapath overlay | five 8:1 multiplexers |
+| Datapath overlay | five 4:1 multiplexers |
 
-Total: 9 EEPROMs, plus the multiplexers, comparator, and encoder.
-
-The second mapping ROM device exists for `IR_SEQ` and has five spare outputs. Section 10 lists ways to remove it.
+Total: 8 EEPROMs, plus the multiplexers, comparator, and encoder.
 
 ---
 
 ## 9. Verification
 
-The ROM-generation tools produce every device image from the maintained specifications and must verify that, for every reachable input state:
+The control-store packer (`tools/rom-generation/control-store-packer`) produces every device image from the maintained specifications and verifies that, for every reachable input state:
 
 - the mapping ROM, overlays, and slices together select the symbolic control word of the applicable execution case
 - every field whose Value Required When condition holds has its required value after bit sharing is undone
 - no address bit carries an input that the address map does not assign to it in that context
 
 Reachability is defined by the input constraints, IR derivations, timing constraints, and state invariants already used by the symbolic generator and the equivalence analyzer.
+
+The packer forms each address as the hardware does: the mapping ROM image supplies `VARIANT`, `DP_OVL_SEL`, and `IR_SEQ`; the overlay groups supply `DP_OVL`; `SEQ_OVL` follows `RUN`. It then reads the slice images and compares every field whose condition holds.
 
 ---
 
@@ -294,9 +292,4 @@ Reachability is defined by the input constraints, IR derivations, timing constra
 - **Timing:** EEPROM access time plus the mapping ROM and overlay must fit within the TS evaluation window ([Control Addressing §9](./02-control-addressing.md#9-timing-model)). Whether the control word passes through a pipeline register is not yet defined.
 - **Power-on state:** the TSEQ, MS, and RUN power-on state is not yet defined ([Timing Terminology](../09-timing/01-terminology.md)); every device image must define the reset address's word once it is.
 - **Datapath diagrams:** datapath diagrams that show a control-supplied input on the IF, MA, or PC source multiplexers must show the hardwired constants instead.
-- **Group assignments:** the overlay groups and variant counts in sections 5 and 6 come from the current specification and may change when the packing tool assigns them.
-- **Second mapping ROM device:** two ways may remove it, bringing the total to 8 EEPROMs:
-  - Each timing state appears to need at most one of the three `IR_SEQ` decodes (`IR_INDIRECT` in FETCH TS4, `IR_OPR_HLT` in EXECUTE TS3, `IR_IS_CAF` in EXECUTE TS4). Because the mapping ROM is indexed by TS and `E`, it could output a single bit carrying whichever decode applies, which also frees two sequencer address bits. That bit fits in one device only if `VARIANT` and `DP_OVL_SEL` together shrink to 7 bits, for example by merging overlay groups so that `DP_OVL_SEL` needs 2 bits. Half of the overlay multiplexer inputs are tied low (section 6.2), so some merging appears possible.
-  - Generating `IR_SEQ` with discrete decoding logic instead: three IR decodes, each a comparison of a few IR bits.
-
-  The packing tool will determine whether the first option fits.
+- **Group assignments:** the overlay groups, pin assignments, variant counts, and bit sharing in sections 5 to 7 are the packer's current result. They change when the specifications do; the packer reports them on every run.

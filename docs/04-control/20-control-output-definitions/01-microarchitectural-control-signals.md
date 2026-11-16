@@ -303,8 +303,6 @@ Constraint:
 
 - [CIFP_VAL](#cifp_val)
 - [DB_INPUT](#db_input)
-- [DIF_VAL](#dif_val)
-- [DF_VAL](#df_val)
 - [GTF_FLAGS](#gtf_flags)
 - [IE_VAL](#ie_val)
 - [IF_DF_COMBINED](#if_df_combined)
@@ -707,7 +705,7 @@ external bus value
 **Mnemonic:** DF_SRC  
 **Name:** DF Source Select  
 **Class:** Select  
-**Bit Width:** 2  
+**Bit Width:** 3  
 **Default Value:** 0  
 **Explicit Value Required:** Conditionally  
 **Value Required When:** DF_LOAD=1  
@@ -716,43 +714,25 @@ external bus value
 
 **Encoding:**
 ```
-0 → Control
+0 → Zero (hardwired 000)
 1 → IB
 2 → FP_DF
 3 → AC[2:0]
+4 → IR_DF (IR[5:3])
+5 → reserved
+6 → reserved
+7 → reserved
 ```
+
+**Constraints:**
+- Sources 0 and 4 are hardwired datapath inputs; no control-word value field supplies them.
 
 **Used by μops:**
 - [AC_TO_DF](../../03-microarchitecture/02-micro-operations.md#ac_to_df) = 3
 - [DF_CLEAR](../../03-microarchitecture/02-micro-operations.md#df_clear) = 0
 - [FP_DF_TO_DF](../../03-microarchitecture/02-micro-operations.md#fp_df_to_df) = 2
 - [IB_TO_DF](../../03-microarchitecture/02-micro-operations.md#ib_to_df) = 1
-- [IR_DF_TO_DF](../../03-microarchitecture/02-micro-operations.md#ir_df_to_df) = 0
-
----
-
-### DF_VAL
-
-**Mnemonic:** DF_VAL  
-**Name:** DF Value Input  
-**Class:** Data Value  
-**Bit Width:** 3  
-**Default Value:** 0  
-**Explicit Value Required:** Conditionally  
-**Value Required When:** DF_LOAD=1 AND DF_SRC=0  
-
-**Purpose:** Represents the value loaded into DF
-
-**Encoding:**
-```
-0 - 7 (octal)
-```
-
-**Constraints:**
-- Only used when DF_SRC = Control
-
-**Used by μops:**
-- [DF_CLEAR](../../03-microarchitecture/02-micro-operations.md#df_clear) = 0
+- [IR_DF_TO_DF](../../03-microarchitecture/02-micro-operations.md#ir_df_to_df) = 4
 
 ---
 
@@ -791,7 +771,7 @@ external bus value
 **Mnemonic:** DIF_SRC  
 **Name:** DIF Source Select  
 **Class:** Select  
-**Bit Width:** 2  
+**Bit Width:** 3  
 **Default Value:** 0  
 **Explicit Value Required:** Conditionally  
 **Value Required When:** DIF_LOAD=1  
@@ -801,41 +781,24 @@ external bus value
 **Encoding:**
 ```
 0 → IB
-1 → Control
+1 → Zero (hardwired 000)
 2 → FP_IF
 3 → AC[5:3]
+4 → IR_IF (IR[5:3])
+5 → reserved
+6 → reserved
+7 → reserved
 ```
+
+**Constraints:**
+- Sources 1 and 4 are hardwired datapath inputs; no control-word value field supplies them.
 
 **Used by μops:**
 - [AC_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ac_to_dif) = 3
 - [DIF_CLEAR](../../03-microarchitecture/02-micro-operations.md#dif_clear) = 1
 - [FP_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#fp_if_to_dif) = 2
 - [IB_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ib_to_dif) = 0
-- [IR_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_dif) = 1
-
----
-
-### DIF_VAL
-
-**Mnemonic:** DIF_VAL  
-**Name:** DIF Value Input  
-**Class:** Data Value  
-**Bit Width:** 3  
-**Default Value:** 0  
-**Explicit Value Required:** Conditionally  
-**Value Required When:** DIF_LOAD=1 AND DIF_SRC=1  
-
-**Purpose:** Represents the value loaded into DIF
-
-**Encoding:**
-```
-0 - 7 (octal)
-```
-
-**Constraints:**
-- Only used when DIF_SRC = Control
-
-**Used by μops:**
+- [IR_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_dif) = 4
 
 ---
 

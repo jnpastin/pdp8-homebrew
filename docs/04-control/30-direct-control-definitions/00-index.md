@@ -31,8 +31,6 @@ The governing model is defined in the [Direct-Control Model](../07-direct-contro
 - `MS_LOAD`
 - `AB_SRC`
 - `MFB_SRC`
-- control-provided `DF_VAL`
-- control-provided `DIF_VAL`
 - `IOT_TRANSFER_VAL`
 - direct-control relationships that supplement selected micro-operations
 
@@ -88,9 +86,6 @@ Those outputs remain assigned by their applicable micro-operation mappings.
 
 | Destination | Direct-control value | Definition |
 |---|---|---|
-| `DF_VAL` | `IR_DF` | [Data Field From Instruction](./01-sequencing-and-internal-control.md#51-data-field-from-instruction) |
-| `DIF_VAL` | `IR_IF` | [Deferred Instruction Field From Instruction](./01-sequencing-and-internal-control.md#52-deferred-instruction-field-from-instruction) |
-| `DIF_VAL` | `0` | [Deferred Instruction Field Clear Value](./01-sequencing-and-internal-control.md#53-deferred-instruction-field-clear-value) |
 | `IOT_TRANSFER_VAL` | `READ`, `WRITE`, or `NONE` | [Pending External-IOT Transfer Value](./01-sequencing-and-internal-control.md#55-pending-external-iot-transfer-value) |
 
 
@@ -133,34 +128,17 @@ The direct-control definitions supplement the micro-operation mappings.
 
 They do not redefine assignments already completely supplied by a selected micro-operation.
 
-Examples:
+Example:
 
 ```text
-IR_DF_TO_DF micro-operation mapping:
-    DF_LOAD = 1
-    DF_SRC  = Control
+IOT_TRANSFER_CLEAR micro-operation mapping:
+    IOT_TRANSFER_LOAD = 1
 
-Direct-control binding:
-    DF_VAL = IR_DF
+Direct-control value:
+    IOT_TRANSFER_VAL = NONE
 ```
 
-```text
-IR_IF_TO_DIF micro-operation mapping:
-    DIF_LOAD = 1
-    DIF_SRC  = Control
-
-Direct-control binding:
-    DIF_VAL = IR_IF
-```
-
-```text
-DIF_CLEAR micro-operation mapping:
-    DIF_LOAD = 1
-    DIF_SRC  = Control
-
-Direct-control assignment:
-    DIF_VAL = 0
-```
+Instruction fields are not bound into control-word values; they reach registers through datapath sources such as `DF_SRC = IR_DF` ([Sequencing and Internal Control §5](./01-sequencing-and-internal-control.md#5-control-provided-internal-values)).
 
 ---
 

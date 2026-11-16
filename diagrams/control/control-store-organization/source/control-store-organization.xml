@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net">
   <diagram name="Page-1" id="D4PoB9rhOSYwVrVioHsn">
-    <mxGraphModel dx="1196" dy="2206" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="571" dy="1868" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -183,8 +183,8 @@
         <mxCell id="8RaYfEo0cedS7NywJsyN-56" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontStyle=1" value="MS_A" vertex="1">
           <mxGeometry height="30" width="60" x="1462" y="80" as="geometry" />
         </mxCell>
-        <mxCell id="8RaYfEo0cedS7NywJsyN-57" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontStyle=1" value="E" vertex="1">
-          <mxGeometry height="30" width="60" x="1880.01" y="-100" as="geometry" />
+        <mxCell id="8RaYfEo0cedS7NywJsyN-57" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontStyle=0;spacingBottom=7;" value="&lt;b&gt;E&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="1866.67" y="-100" as="geometry" />
         </mxCell>
         <mxCell id="8RaYfEo0cedS7NywJsyN-60" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontStyle=1" value="SEQ_OVL" vertex="1">
           <mxGeometry height="30" width="60" x="1940.01" y="330" as="geometry" />
@@ -195,7 +195,7 @@
         <mxCell id="8RaYfEo0cedS7NywJsyN-65" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="FP_CMD&lt;div&gt;[3 Bits]&lt;/div&gt;" vertex="1">
           <mxGeometry height="60" width="120" x="1630.01" y="240" as="geometry" />
         </mxCell>
-        <mxCell id="8RaYfEo0cedS7NywJsyN-66" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="DP_OVL_SEL&lt;div&gt;[3 Bits]&lt;/div&gt;" vertex="1">
+        <mxCell id="8RaYfEo0cedS7NywJsyN-66" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="DP_OVL_SEL&lt;div&gt;[2 Bits]&lt;/div&gt;" vertex="1">
           <mxGeometry height="60" width="120" x="2330" y="-110" as="geometry" />
         </mxCell>
       </root>

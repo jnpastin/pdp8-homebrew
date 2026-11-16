@@ -1813,140 +1813,23 @@ Sources:
 
 ### 5.1 Data Field From Instruction
 
-Applicable context:
+`IR_DF_TO_DF` loads `DF` from the instruction field `IR[5:3]` through the hardwired datapath source `DF_SRC = 4` (`IR_DF`). The micro-operation mapping supplies the complete assignment; no direct-control value binding is needed.
 
-```text
-IR_WRITES_DF = 1
-IR_DF_TO_DF is selected
-```
-
-Micro-operation assignments:
-
-```text
-DF_LOAD = 1
-DF_SRC  = Control
-```
-
-Control-supplied value:
-
-```text
-DF_VAL = IR_DF
-```
-
-Value relationship:
-
-```text
-IR_DF  = IR[5:3]
-DF_VAL = IR_DF
-```
-
-Widths:
-
-```text
-IR_DF = 3 bits
-DF_VAL = 3 bits
-```
-
-Constraints:
-
-- `DF_VAL` is required when `DF_LOAD = 1` and `DF_SRC = Control`.
-- `IR_DF_TO_DF` binds the control input `IR_DF` directly to the control output `DF_VAL`.
-- No transformation is applied.
-
-Sources:
-
-- [IR Derived Fields](../10-control-input-definitions/02-ir-derived-fields.md#ir_df)
-- [Micro-Operations](../../03-microarchitecture/02-micro-operations.md#ir_df_to_df)
-- [Microarchitectural Control Signals](../20-control-output-definitions/01-microarchitectural-control-signals.md)
+A control-store ROM cannot output a value it does not receive on its address, so an instruction field reaches a register through a datapath source rather than through a control-word value field ([Control Store Organization](../08-control-store-organization.md)).
 
 ---
 
 ### 5.2 Deferred Instruction Field From Instruction
 
-Applicable context:
+`IR_IF_TO_DIF` loads `DIF` from `IR[5:3]` through the hardwired datapath source `DIF_SRC = 4` (`IR_IF`). The micro-operation mapping supplies the complete assignment.
 
-```text
-IR_WRITES_IF = 1
-IR_IF_TO_DIF is selected
-```
-
-Micro-operation assignments:
-
-```text
-DIF_LOAD = 1
-DIF_SRC  = Control
-```
-
-Control-supplied value:
-
-```text
-DIF_VAL = IR_IF
-```
-
-Value relationship:
-
-```text
-IR_IF  = IR[5:3]
-DIF_VAL = IR_IF
-```
-
-Widths:
-
-```text
-IR_IF   = 3 bits
-DIF_VAL = 3 bits
-```
-
-No transformation is applied.
-
-Constraints:
-
-- `DIF_VAL` is required when `DIF_LOAD = 1` and `DIF_SRC = Control`.
-- `IR_IF_TO_DIF` binds the control input `IR_IF` directly to the control output `DIF_VAL`.
-- `DIF_CLEAR` uses the same `DIF_SRC = Control` path but assigns `DIF_VAL = 0`.
-- `DIF_SRC` does not distinguish between `IR_IF` and zero; the selected control case determines `DIF_VAL`.
-- `IR_IF_TO_DIF` and `DIF_CLEAR` must not be selected concurrently.
-- No dedicated `DIF_SRC = IR` encoding or direct IR-to-DIF datapath is used.
-- No transformation is applied.
-
-Sources:
-
-- [IR Derived Fields](../10-control-input-definitions/02-ir-derived-fields.md#ir_if)
-- [Micro-Operations](../../03-microarchitecture/02-micro-operations.md#ir_if_to_dif)
-- [Microarchitectural Control Signals](../20-control-output-definitions/01-microarchitectural-control-signals.md)
+`IR_IF_TO_DIF` and `DIF_CLEAR` must not be selected concurrently.
 
 ---
 
 ### 5.3 Deferred Instruction Field Clear Value
 
-Applicable context:
-
-```text
-DIF_CLEAR is selected
-```
-
-Micro-operation assignments:
-
-```text
-DIF_LOAD = 1
-DIF_SRC  = Control
-```
-
-Control-supplied value:
-
-```text
-DIF_VAL = 0
-```
-
-Constraints:
-
-- `DIF_VAL` is required because `DIF_LOAD = 1` and `DIF_SRC = Control`.
-- `DIF_CLEAR` and `IR_IF_TO_DIF` must not be selected concurrently.
-
-Sources:
-
-- [Micro-operations](../../03-microarchitecture/02-micro-operations.md#dif_clear)
-- [Microarchitectural Control Signals](../20-control-output-definitions/01-microarchitectural-control-signals.md)
+`DIF_CLEAR` loads zero through the hardwired datapath source `DIF_SRC = 1` (Zero). The micro-operation mapping supplies the complete assignment.
 
 ---
 
@@ -1954,12 +1837,11 @@ Sources:
 
 The following control-selected values are completely defined by their corresponding micro-operation mappings and must not be duplicated as direct-control bindings:
 
-- `DF_VAL = 0` for `DF_CLEAR`
 - `IOT_TRANSFER_VAL = NONE` for an unconditional `IOT_TRANSFER_CLEAR`
 
 The maintained micro-operation mapping remains responsible for these fixed assignments.
 
-`IF_CLEAR`, `MA_CLEAR`, and `PC_SET_1` select hardwired constant sources (`IF_SRC = 0`, `MA_SRC = 2`, `PC_SRC = 1`) and carry no value field.
+`IF_CLEAR`, `MA_CLEAR`, `PC_SET_1`, `DF_CLEAR`, and `DIF_CLEAR` select hardwired constant sources (`IF_SRC = 0`, `MA_SRC = 2`, `PC_SRC = 1`, `DF_SRC = 0`, `DIF_SRC = 1`), and `IR_DF_TO_DF` and `IR_IF_TO_DIF` select hardwired instruction-field sources (`DF_SRC = 4`, `DIF_SRC = 4`); none carries a value field.
 
 Related:
 

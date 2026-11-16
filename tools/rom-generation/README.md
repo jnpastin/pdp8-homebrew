@@ -274,6 +274,8 @@ Changing the physical ROM organization must not require changing the logical beh
 
 No physical ROM image may be generated from a symbolic control store that has failed validation.
 
+The [control-store packer](./control-store-packer/README.md) implements logical packing for the organization in [Control Store Organization](../../docs/04-control/08-control-store-organization.md): it produces and verifies logical device images in the build directory. Physical image formats are not yet defined.
+
 ## 14. Generated Artifacts
 
 Generated artifacts may include:

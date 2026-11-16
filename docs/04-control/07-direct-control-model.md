@@ -106,17 +106,16 @@ If a micro-operation mapping completely defines a control-output assignment, dir
 
 If a micro-operation mapping selects a control-owned source but does not supply the required value, direct control supplies only the missing value binding.
 
-For example, the documented `IR_DF_TO_DF` micro-operation selects the control path for `DF`:
+For example, the documented `IOT_TRANSFER_CLEAR` micro-operation loads the pending-transfer state:
 
 ```text
-DF_LOAD = 1
-DF_SRC  = Control
+IOT_TRANSFER_LOAD = 1
 ```
 
-The corresponding direct-control binding supplies the value required by that selected path:
+The corresponding direct-control assignment supplies the value it loads:
 
 ```text
-DF_VAL = IR_DF
+IOT_TRANSFER_VAL = NONE
 ```
 
 The direct-control binding supplements the micro-operation. It does not replace or redefine it.
@@ -236,11 +235,13 @@ A fixed assignment does not define the conditions that cause a control case to b
 
 An input-value binding assigns the value of a documented control input to an encoded control-output field.
 
-Example:
+Example form:
 
 ```text
-DF_VAL = IR_DF
+FIELD = INPUT
 ```
+
+A control-store ROM can output an input's value only if that input is part of the slice's address ([Control Store Organization](./08-control-store-organization.md)). A binding whose input is not on the address cannot be realized; such a value must reach its destination through a datapath source selection instead. The current design uses no input-value bindings: instruction fields reach `DF` and `DIF` through `DF_SRC = IR_DF` and `DIF_SRC = IR_IF`.
 
 A binding is valid only when the documentation explicitly establishes:
 
