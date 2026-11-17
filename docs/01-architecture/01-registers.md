@@ -36,6 +36,7 @@ All stable values in the system must reside in registers.
 - IB: [Interrupt Buffer](#ib--interrupt-buffer)
 - IOT_TRANSFER: [IOT Transfer Pending](#iot_transfer---pending-external-iot-transfer)
 - MA: [Memory Address](#ma--memory-address)
+- MAPR: [Mapping Register](#mapr--mapping-register)
 - MB: [Memory Buffer](#mb--memory-buffer)
 
 ---
@@ -216,6 +217,7 @@ Constraints:
 - Updated only from HLT_REQ_NEXT (sequencing control), committed at TP
 - Set by the STOP command and by the HLT instruction
 - Cleared when the pending halt is consumed (RUN transitions to 0)
+- Cleared by the power-on reset
 - Must not be directly modified by datapath logic or μops
 
 Writers:
@@ -350,6 +352,7 @@ Constraints:
 - It does not identify the selected controller.
 - It does not itself assert `/DB_READ` or `/DB_WRITE`.
 - It must not persist beyond the external-IOT EXECUTE major state.
+- Set to `00` by the power-on reset.
 
 Writers:
 
@@ -438,6 +441,40 @@ Writers:
 
 ---
 
+### MAPR – Mapping Register
+Width: 8 bits
+
+Role: Holds the mapping ROM entry for the current TS of EXECUTE, so that the mapping ROM is evaluated one TS ahead and lies outside the control-store timing path ([Control Store Organization §5.4](../04-control/08-control-store-organization.md#54-mapping-register-and-execute-selection))
+
+Visibility: Internal (control store)
+
+Encoding:
+
+```text
+MAPR[4:0] = variant
+MAPR[6:5] = overlay group
+MAPR[7]   = sequencer decode
+```
+
+Invariants:
+- During TS n, holds the mapping ROM entry for EXECUTE TS n of the current IR
+- Holds the TS1 entry of the held instruction while halted
+- Used only while MS_EFF_IS_EXECUTE = 1
+
+Constraints:
+- Loaded at every main-sequence TP (TP1 to TP4)
+- Not loaded at TPC
+- Not loaded by any micro-operation; it is not a control-word target
+- Power-on value undefined; not used before the first EXECUTE, which follows a FETCH TP4 because the power-on reset leaves the processor halted in FETCH
+
+Writers:
+- Mapping ROM output, addressed by IR and the current TS
+
+Consumers:
+- EXECUTE selection forming VARIANT, DP_OVL_SEL, and IR_SEQ
+
+---
+
 ### MB – Memory Buffer
 Width: 12 bits
 
@@ -489,6 +526,7 @@ Invariants:
 Constraints:
 - Changes only at cycle boundaries
 - Loaded from MS_NEXT at a TP only when MS_LOAD = 1; held otherwise, including while halted
+- Set to FETCH by the power-on reset
 - Not directly influenced by datapath combinational logic
 - Initially only 0-4 are valid values 5-7 are reserved
 
@@ -564,6 +602,7 @@ Constraints:
 - Updated only from RUN_NEXT (sequencing control), committed at TP
 - Set to 1 by START and CONTINUE
 - Set to 0 when a pending halt is consumed at an instruction-completion boundary, and at the completion boundary defined by Single Instruction and Single Step modes
+- Set to 0 by the power-on reset ([Timing Terminology §3.4](../09-timing/01-terminology.md#34-power-on-reset))
 - Must not be directly modified by datapath logic or μops
 
 Writers:

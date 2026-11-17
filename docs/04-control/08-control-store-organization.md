@@ -20,19 +20,20 @@ The logical control word, the control inputs, and the behavior they select are d
 | Term | Meaning |
 |---|---|
 | slice | a part of the control store that produces a fixed subset of control-word fields from its own address ([Control Addressing §2.1](./02-control-addressing.md#21-partitioned-and-two-level-control-stores)) |
-| sequencer slice | the slice producing `MS_NEXT`, `MS_LOAD`, `RUN_NEXT`, `HLT_REQ_NEXT`, `/DMA_GRANT`, and `/INITIALIZE` (section 4.1) |
+| sequencer slice | the slice producing `MS_NEXT`, `MS_LOAD`, `RUN_NEXT`, `HLT_REQ_NEXT`, and `/INITIALIZE` (section 4.1) |
 | datapath slice | the slice producing every encoded field except the sequencer fields (section 4.2) |
-| `MS_A` | the 3-bit major-state code presented to the control store: `MS` while running, code 7 while halted (section 5.1); the `MS` register itself is unchanged |
-| `E` | 1 when `MS_A` is EXECUTE (code 2), else 0; equivalently, `MS = EXECUTE` and `RUN = 1` |
-| mapping ROM | ROM devices inside the control store that map IR, TS, and `E` to the instruction-dependent part of the slice addresses; the mapping stage of [Control Addressing §2.1](./02-control-addressing.md#21-partitioned-and-two-level-control-stores). The name follows the mapping PROMs of microprogrammed machines, which map an instruction to its microprogram |
-| `VARIANT` | a 5-bit mapping ROM output identifying the instruction-dependent behavior that applies in the current TS of EXECUTE |
+| `MS_EFF` | the effective major state: the 3-bit major-state code presented to the control store, `MS` while running and `HALTED` (code 7) while halted (section 5.1); the `MS` register itself is unchanged |
+| `MS_EFF_IS_EXECUTE` | a derived signal: 1 when `MS_EFF` is EXECUTE (code 2), else 0; equivalently, `MS = EXECUTE` and `RUN = 1` (section 5.1) |
+| mapping ROM | ROM devices inside the control store that map IR and TS to the instruction-dependent part of the slice addresses for the following TS of EXECUTE; the mapping stage of [Control Addressing §2.1](./02-control-addressing.md#21-partitioned-and-two-level-control-stores). The name follows the mapping PROMs of microprogrammed machines, which map an instruction to its microprogram |
+| `MAPR` | the mapping register: holds the mapping ROM output for the current TS, loaded at each main-sequence TP ([Mapping Register](../01-architecture/01-registers.md#mapr--mapping-register); section 5.4) |
+| `VARIANT` | a 5-bit slice address field identifying the instruction-dependent behavior that applies in the current TS of EXECUTE (section 5.4) |
 | overlay | an address field that carries different condition inputs in different contexts ([Control Addressing §6.3](./02-control-addressing.md#63-domain-separation)) |
 | `DP_OVL[4:0]` | the datapath slice's 5-bit overlay field |
 | overlay group | one fixed assignment of condition inputs to `DP_OVL[4:0]` |
-| `DP_OVL_SEL` | a 2-bit mapping ROM output selecting which overlay group drives `DP_OVL[4:0]` (section 6) |
+| `DP_OVL_SEL` | a 2-bit signal selecting which overlay group drives `DP_OVL[4:0]` (sections 5.4 and 6) |
 | `FP_CMD[2:0]` | the encoded front-panel command (section 5.2) |
-| `SEQ_OVL[2:0]` | the sequencer slice's 3-bit overlay field: the running-only sequencer inputs while running, `FP_CMD[2:0]` while halted (section 5.5) |
-| `IR_SEQ` | the 1-bit mapping ROM output carrying the one instruction decode the sequencer slice needs in the current TS (section 5.3) |
+| `SEQ_OVL[2:0]` | the sequencer slice's 3-bit overlay field: the running-only sequencer inputs while running, `FP_CMD[2:0]` while halted (section 5.6) |
+| `IR_SEQ` | the 1-bit sequencer address input carrying the one instruction decode the sequencer slice needs in the current TS (section 5.4) |
 | 28C256 | a parallel EEPROM with 15 address bits and 8 data bits (32K × 8) |
 
 Status: the slice structure, device technology, and packing rules are design decisions. The specific address-bit assignments, variant counts, and overlay groups are the current proposal, measured from the maintained specifications; the packing tool will finalize and verify them.
@@ -55,21 +56,24 @@ The control store is sparse: most addresses are unreachable or repeat another ad
 
 ![Control Store Organization](../../diagrams/control/control-store-organization/export/control-store-organization.png)
 
-The datapath overlay, which produces `DP_OVL[4:0]`, is drawn separately in section 6.
+The diagram shows the address inputs of the two slices. Each input is formed by logic drawn separately: `MS_EFF` and `SEQ_OVL` in section 5, `VARIANT` and `IR_SEQ` in section 5.3, and `DP_OVL` in section 6. The fields each slice produces are listed in section 4.
 
 Signal flow:
 
-- `MS` and `RUN` form `MS_A`; `MS_A` is compared with EXECUTE to form `E`.
+- `MS` and `RUN` form `MS_EFF`; `MS_EFF` is compared with EXECUTE to form `MS_EFF_IS_EXECUTE`.
 - The front-panel commands are encoded into `FP_CMD[2:0]`.
-- The mapping ROM reads `IR`, `TS`, and `E`. Its single output word holds three fields, and each field is an address input of a different part of the control store:
+- The mapping ROM reads `IR` and `TS` and produces the entry for the following TS of EXECUTE. `MAPR` captures it at each main-sequence TP, so during each TS `MAPR` holds the entry for that TS.
+- `MS_EFF_IS_EXECUTE` selects, for each of three fields, either the `MAPR` field or a fixed source (section 5.4). Each field is an address input of a different part of the control store:
   - `VARIANT` → datapath slice
   - `IR_SEQ` → sequencer slice
   - `DP_OVL_SEL` → datapath overlay
 - The datapath overlay presents the runtime conditions or `FP_CMD` selected by `DP_OVL_SEL` on `DP_OVL[4:0]` (section 6).
-- The datapath slice reads `MS_A`, `TS`, `VARIANT`, and `DP_OVL[4:0]`.
-- The sequencer slice reads `MS_A`, `TS`, the sequencer inputs, `SEQ_OVL[2:0]`, and `IR_SEQ`.
+- The datapath slice reads `MS_EFF`, `TS`, `VARIANT`, and `DP_OVL[4:0]`.
+- The sequencer slice reads `MS_EFF`, `TS`, the sequencer inputs, `SEQ_OVL[2:0]`, and `IR_SEQ`.
 
 No field of the mapping ROM's output reaches the datapath or the sequencing logic directly; every field is used only to address the slice ROMs or to select the overlay.
+
+Because the mapping ROM is evaluated one TS ahead, only one ROM access lies between a TS boundary and a settled control word (section 5.4.3).
 
 ---
 
@@ -82,39 +86,60 @@ The control store is partitioned into two slices ([Control Addressing §2.1](./0
 Fields:
 
 ```
-MS_NEXT, MS_LOAD, RUN_NEXT, HLT_REQ_NEXT, /DMA_GRANT, /INITIALIZE
+MS_NEXT, MS_LOAD, RUN_NEXT, HLT_REQ_NEXT, /INITIALIZE
 ```
 
 These fields depend on the same small set of inputs in every major state: run control, halt and front-panel inputs, the interrupt and DMA requests, and three instruction decodes. Separating them keeps those inputs out of the datapath slice address.
 
-Width: 8 bits, one device.
+Width: 7 bits, one device; one output is spare.
 
 ### 4.2 Datapath Slice
 
-Fields: every other encoded field of the control word, including the external-IOT transfer and interface fields.
+Fields: every other encoded field of the control word, grouped here by function. Widths are in bits. The fields are defined in [Microarchitectural Control Signals §5](./20-control-output-definitions/01-microarchitectural-control-signals.md#5-signal-definitions), except `/RD`, `/WR`, `/DB_READ`, and `/DB_WRITE`, which are defined in [Architectural Control Signals §4](./20-control-output-definitions/02-architectural-control-signals.md#4-signal-definitions).
 
-Width: 46 bits after packing (section 7), six devices.
+| Group | Fields (width) | Bits |
+|---|---|---|
+| Memory interface | `/RD` (1), `/WR` (1), `AB_SRC` (1), `MFB_SRC` (1), `MDB_SRC` (2), `MA_LOAD` (1), `MA_SRC` (2), `MB_LOAD` (1), `MB_SRC` (2), `EA_ADDR_LOAD` (1), `EA_ADDR_SRC` (1) | 14 |
+| Internal data bus | `IDB_DRIVE` (1), `IDB_SRC` (3) | 4 |
+| Registers and ALU | `AC_LOAD` (1), `AC_SRC` (3), `L_LOAD` (1), `L_OP` (2), `MQ_LOAD` (1), `MQ_SRC` (1), `ALU_A_SRC` (2), `ALU_B_SRC` (3), `ALU_OP` (4), `IR_LOAD` (1), `PC_LOAD` (1), `PC_INC` (1), `PC_SRC` (1) | 22 |
+| Fields and interrupts | `IF_LOAD` (1), `IF_SRC` (2), `DF_LOAD` (1), `DF_SRC` (3), `DIF_LOAD` (1), `DIF_SRC` (3), `IB_LOAD` (1), `CIFP_LOAD` (1), `CIFP_VAL` (1), `IE_LOAD` (1), `IE_VAL` (1), `II_LOAD` (1), `II_VAL` (1) | 18 |
+| External IOT | `IOT_TRANSFER_LOAD` (1), `IOT_TRANSFER_VAL` (2), `/DB_READ` (1), `/DB_WRITE` (1) | 5 |
+
+The 43 fields total 63 bits; bit sharing packs them into 45 (section 7.2). Control-word fields that are derived or supplied from outside the control store (`/DMA_GRANT`, `IOT_ACTIVE`, `IOA[5:0]`, `IOP[2:0]`, `GTF_FLAGS`, `IF_DF_COMBINED`, `DB_INPUT`, `MDB_INPUT`) are not produced by either slice.
+
+Width: 45 bits after packing (section 7), six devices.
 
 ---
 
 ## 5. Address Formation
+
+![Control Store Address Formation](../../diagrams/control/control-store-address-formation/export/control-store-address-formation.png)
+
+The diagram shows the major-state code and its decodes (section 5.1), the front-panel command code (section 5.2), and the `SEQ_OVL` multiplexer (section 5.6). The mapping stage is drawn in section 5.3.
 
 ### 5.1 Major-State Code
 
 `MS` uses five of its eight codes (`FETCH = 0`, `DEFER = 1`, `EXECUTE = 2`, `INTERRUPT = 3`, `DMA = 4`). The control store sees:
 
 ```
-MS_A = 7    if RUN = 0
-MS_A = MS   otherwise
+MS_EFF = HALTED (7)   if RUN = 0
+MS_EFF = MS           otherwise
 ```
 
-realized by a 3-bit 2:1 multiplexer selected by `RUN`. Code 7 is the halted pseudo-state; no separate `RUN` address bit is needed.
+realized by a 3-bit 2:1 multiplexer selected by `RUN`. `HALTED` is the halted pseudo-state; no separate `RUN` address bit is needed.
 
 `MS` itself is not changed while halted. It keeps the held major state, because CONTINUE resumes at TS1 of the held state ([Major State Timing §8.1](../09-timing/03-major-state-timing.md#81-main-timing-while-halted)), and because the DMA arbiter observes `MS` directly. Only the control store sees code 7.
 
-The substitution loses no information the control store needs: while halted, no control word depends on which major state is held, and while running, `MS_A = MS`. It replaces a `RUN` address bit that would not fit in the 15-bit datapath slice address.
+The substitution loses no information the control store needs: while halted, no control word depends on which major state is held, and while running, `MS_EFF = MS`. It replaces a `RUN` address bit that would not fit in the 15-bit datapath slice address.
 
-`E` is produced by comparing `MS_A` with the EXECUTE code.
+`MS_EFF_IS_EXECUTE` is produced by comparing `MS_EFF` with the EXECUTE code.
+
+Two architectural outputs are decoded from `MS_EFF` rather than stored in the control store, so that they stay clean across TS boundaries for a whole major state ([Architectural Control Signals §3.2](./20-control-output-definitions/02-architectural-control-signals.md#32-timing-model)):
+
+```
+/DMA_GRANT = NOT (MS_EFF = DMA)
+IOT_ACTIVE = MS_EFF_IS_EXECUTE AND IR_IS_EXTERNAL_IOT
+```
 
 ### 5.2 Front-Panel Command Code
 
@@ -132,54 +157,98 @@ Console commands are accepted at most one at a time ([External Inputs §4.1](./1
 
 ### 5.3 Mapping ROM
 
-The mapping ROM ([Control Addressing §2.1](./02-control-addressing.md#21-partitioned-and-two-level-control-stores)) maps the instruction to the address information each slice needs.
+![Control Store Mapping](../../diagrams/control/control-store-mapping/export/control-store-mapping.png)
+
+The diagram shows the mapping ROM (this section), `MAPR` and its clock (section 5.4.1), and the EXECUTE selection (section 5.4.2). Outside EXECUTE the multiplexers select the wired values and `IR_INDIRECT`; in EXECUTE they select `MAPR`. The 5-bit multiplexer with a wired 0 input is equivalent to the five AND gates of section 5.4.2.
+
+The mapping ROM ([Control Addressing §2.1](./02-control-addressing.md#21-partitioned-and-two-level-control-stores)) maps the instruction to the address information each slice needs in EXECUTE. It is evaluated one TS ahead: the entry at TS *n* is the entry for TS *n*+1, and the entry at TS4 is the entry for TS1.
 
 Address:
 
 ```
 A14..A3 = IR[11:0]
 A2..A1  = TS
-A0      = E
+A0      = 0 (wired)
 ```
 
-Output fields:
+Output fields, for the EXECUTE TS that follows the addressed TS:
 
 | Field | Width | Meaning |
 |---|---|---|
-| `VARIANT` | 5 (D4..D0) | the instruction-dependent behavior that applies in this TS of EXECUTE; 0 when `E = 0` |
-| `DP_OVL_SEL` | 2 (D6..D5) | the overlay group presented to the datapath slice (section 6) |
-| `IR_SEQ` | 1 (D7) | the instruction decode the sequencer slice needs in this TS |
+| variant | 5 (D4..D0) | the instruction-dependent behavior that applies in that TS of EXECUTE |
+| overlay group | 2 (D6..D5) | the overlay group presented to the datapath slice in that TS (section 6) |
+| sequencer decode | 1 (D7) | the instruction decode the sequencer slice needs in that TS |
 
-The mapping ROM is one device.
+The mapping ROM is one device. Its output is used only through `MAPR` (section 5.4).
 
-`IR_SEQ` carries a different decode in different timing states. Because the mapping ROM is indexed by `E` and TS, it outputs whichever decode the sequencer word depends on there:
+The sequencer decode carries a different decode in different timing states of EXECUTE. Because the mapping ROM is indexed by TS, it outputs whichever decode the sequencer word depends on there:
 
-| `E` | TS | `IR_SEQ` | Use |
-|---|---|---|---|
-| 0 | 4 | `IR_INDIRECT` | FETCH TS4 selects DEFER or EXECUTE |
-| 1 | 3 | `IR_OPR_HLT` | HLT capture |
-| 1 | 4 | `IR_IS_CAF` | CAF system initialization |
-| other | | 0 | the sequencer word depends on no instruction decode |
+| EXECUTE TS | Sequencer decode | Use |
+|---|---|---|
+| 3 | `IR_OPR_HLT` | HLT capture |
+| 4 | `IR_IS_CAF` | CAF system initialization |
+| other | 0 | the sequencer word depends on no instruction decode |
 
-Two IR values share a variant only when they produce the same datapath words for every condition value in that TS. The current specification needs 7, 26, 12, and 12 variants in EXECUTE TS1 to TS4, within the 32 that `VARIANT` allows. A single variant code shared by all four timing states would need 227 values, which is why the mapping ROM is indexed by TS.
+Two IR values share a variant only when they produce the same datapath words for every condition value in that TS. The current specification needs 6, 26, 12, and 12 variants in EXECUTE TS1 to TS4, within the 32 that `VARIANT` allows. A single variant code shared by all four timing states would need far more than 32 values, which is why the mapping ROM is indexed by TS.
 
 The instruction-dependent conditions that select behavior within a case, such as OPR micro-operation bits and memory-extension decodes, are absorbed into the variant. Only runtime conditions reach the address through the overlay.
 
-### 5.4 Datapath Slice Address
+### 5.4 Mapping Register and EXECUTE Selection
+
+#### 5.4.1 Mapping Register
+
+`MAPR` is an 8-bit register that captures the mapping ROM output at every main-sequence TP (TP1 to TP4). It is defined in [Registers](../01-architecture/01-registers.md#mapr--mapping-register). During TS *n*, `MAPR` holds the mapping ROM entry for EXECUTE TS *n* of the current IR:
+
+| `MAPR` bits | Field |
+|---|---|
+| `MAPR[4:0]` | variant |
+| `MAPR[6:5]` | overlay group |
+| `MAPR[7]` | sequencer decode |
+
+`MAPR` does not load at the console timing pulse (TPC).
+
+#### 5.4.2 EXECUTE Selection
+
+The slice and overlay address inputs are formed from `MAPR` in EXECUTE and from fixed sources otherwise:
+
+| Signal | `MS_EFF_IS_EXECUTE = 1` | `MS_EFF_IS_EXECUTE = 0` |
+|---|---|---|
+| `VARIANT` | `MAPR[4:0]` | 0 |
+| `DP_OVL_SEL` | `MAPR[6:5]` | 1 (the state group, section 6.1) |
+| `IR_SEQ` | `MAPR[7]` | `IR_INDIRECT` |
+
+`VARIANT` is formed by five AND gates; `DP_OVL_SEL` and `IR_SEQ` by three sections of a quad 2:1 multiplexer selected by `MS_EFF_IS_EXECUTE`. Like the `MS_EFF` and `SEQ_OVL` multiplexers, this is address formation: it selects which inputs reach the address and evaluates no condition.
+
+`IR_INDIRECT` is taken from its predecode gates on the live IR ([IR-Derived Fields](./10-control-input-definitions/02-ir-derived-fields.md#ir_indirect)), not from `MAPR`. FETCH TS4, where the sequencer selects DEFER or EXECUTE from it, is the one TS whose lookahead entry was formed before IR was loaded at FETCH TP3.
+
+All contexts with `MS_EFF_IS_EXECUTE = 0` (FETCH, DEFER, INTERRUPT, DMA, and halted) therefore share one overlay group, wired as group 1. Its signals must fit `DP_OVL[4:0]`; the current group uses all five bits.
+
+#### 5.4.3 Correctness and Timing
+
+The lookahead entry is correct whenever it is used:
+
+- IR is loaded only at FETCH TP3 ([Major State Timing §9.1](../09-timing/03-major-state-timing.md#91-defer-follows-an-indirect-mri)), and TS always advances from TS *n* to TS *n*+1, so the entry captured at TP *n*−1 is the entry for the current IR and TS. Every EXECUTE TS1 follows a TP4 whose IR is the instruction's IR, whether it was entered from FETCH, DEFER, or a held state.
+- A halt commits only at TP4, and while halted TS is held at TS1 and IR is not loaded ([Major State Timing §8.1](../09-timing/03-major-state-timing.md#81-main-timing-while-halted)). `MAPR` therefore holds the TS1 entry of the held instruction until CONTINUE resumes it. Single Step and Single Instruction halt at TP4, so they are covered by the same rule. `MAPR` must not load at TPC, because the held TS is TS1 and an entry captured there would be the TS2 entry.
+- `/IO_WAIT` holds only non-TP TSTEPs, so it never loads `MAPR`.
+- `MAPR`'s power-on value is undefined. It is not used before the first EXECUTE, which always follows a FETCH TP4, because the power-on reset leaves the processor halted in FETCH ([Timing Terminology §3.4](../09-timing/01-terminology.md#34-power-on-reset)).
+
+Timing: the mapping ROM has a whole TS to settle before the TP that loads `MAPR`. Between a TS boundary or a condition change and a settled control word lie the `MS_EFF`, `MS_EFF_IS_EXECUTE`, selection, and overlay logic and one slice-ROM access.
+
+### 5.5 Datapath Slice Address
 
 ```
-A14..A12 = MS_A
+A14..A12 = MS_EFF
 A11..A10 = TS
 A9..A5   = VARIANT
 A4..A0   = DP_OVL[4:0]
 ```
 
-### 5.5 Sequencer Slice Address
+### 5.6 Sequencer Slice Address
 
 Address, in every run mode:
 
 ```
-A14..A12 = MS_A
+A14..A12 = MS_EFF
 A11..A10 = TS
 A9       = HLT_REQ
 A8       = FP_STOP
@@ -211,7 +280,7 @@ The five overlay bits `DP_OVL[4:0]` are driven by five 4:1 multiplexers, one per
 | Input / `DP_OVL_SEL` | Group | Used in |
 |---|---|---|
 | 0 | external IOT | external-IOT EXECUTE TS1–TS3; also every EXECUTE variant with no runtime condition |
-| 1 | state | `E = 0`: FETCH, DEFER, INTERRUPT, DMA, halted |
+| 1 | state | `MS_EFF_IS_EXECUTE = 0`: FETCH, DEFER, INTERRUPT, DMA, halted; wired (section 5.4.2) |
 | 2 | external IOT TS4 | external-IOT EXECUTE TS4; SRQ |
 | 3 | instruction conditions | OPR Group 2 TS1 skip, SKON, ISZ TS4, JMP and JMS TS4 |
 
@@ -226,7 +295,7 @@ The five overlay bits `DP_OVL[4:0]` are driven by five 4:1 multiplexers, one per
 
 Sixteen distinct signals drive all 20 inputs: the 13 runtime conditions and the three `FP_CMD` bits. `CIFP`, `IO_CLEAR_AC_REQ`, `IOT_READ_PENDING`, and `IOT_WRITE_PENDING` each drive two inputs.
 
-The groups and pin assignments are produced by the control-store packer (section 9). A variant with no runtime condition may use any group, because its datapath words do not depend on `DP_OVL`. Group 2 relies on the TS4 request window ([Major State Timing §5.2.7](../09-timing/03-major-state-timing.md#527-ts4)), which excludes `IO_READ_REQ` and `IO_WRITE_REQ` in TS4.
+The groups and pin assignments are produced by the control-store packer (section 9), which always places the `MS_EFF_IS_EXECUTE = 0` group at input 1. A variant with no runtime condition may use any group, because its datapath words do not depend on `DP_OVL`. Group 2 relies on the TS4 request window ([Major State Timing §5.2.7](../09-timing/03-major-state-timing.md#527-ts4)), which excludes `IO_READ_REQ` and `IO_WRITE_REQ` in TS4.
 
 ---
 
@@ -248,9 +317,9 @@ Fields that never require a value in the same control word share device outputs 
 | 2 | `IF_SRC`, `IOT_TRANSFER_VAL`, `L_OP`, `MB_SRC` |
 | 1 | `AB_SRC`, `CIFP_VAL`, `MQ_SRC` |
 | 1 | `EA_ADDR_SRC`, `IE_VAL` |
-| 32 | the remaining 28 fields, unshared: `IDB_SRC` (3 bits), `ALU_A_SRC` and `MDB_SRC` (2 bits each), and 25 one-bit fields |
+| 31 | the remaining 27 fields, unshared: `IDB_SRC` (3 bits), `ALU_A_SRC` and `MDB_SRC` (2 bits each), and 24 one-bit fields |
 
-Total: 46 bits in six devices, two bits spare.
+Total: 45 bits in six devices, three bits spare.
 
 A field shares bits only through wiring. No decoder or gate follows the control store ([Control Addressing §2](./02-control-addressing.md#2-control-address-definition)).
 
@@ -263,13 +332,16 @@ A field shares bits only through wiring. No decoder or gate follows the control 
 | Mapping ROM | 1 × 28C256 |
 | Datapath slice | 6 × 28C256 |
 | Sequencer slice | 1 × 28C256 |
-| `MS_A` select | 3-bit 2:1 multiplexer |
+| `MS_EFF` select | 3-bit 2:1 multiplexer |
 | `SEQ_OVL` select | 3-bit 2:1 multiplexer |
-| `E` | comparator for the EXECUTE code |
+| `MS_EFF_IS_EXECUTE` | comparator for the EXECUTE code |
+| `/DMA_GRANT`, `IOT_ACTIVE` | comparator for the DMA code; one AND gate |
+| `MAPR` | 8-bit register |
+| EXECUTE selection | five AND gates for `VARIANT`; three sections of a quad 2:1 multiplexer for `DP_OVL_SEL` and `IR_SEQ` |
 | `FP_CMD` | 8-to-3 priority encoder |
 | Datapath overlay | five 4:1 multiplexers |
 
-Total: 8 EEPROMs, plus the multiplexers, comparator, and encoder.
+Total: 8 EEPROMs, plus the register, multiplexers, gates, comparator, and encoder. The `IR_INDIRECT` predecode gates belong to predecode, not to the control store.
 
 ---
 
@@ -283,14 +355,13 @@ The control-store packer (`tools/rom-generation/control-store-packer`) produces 
 
 Reachability is defined by the input constraints, IR derivations, timing constraints, and state invariants already used by the symbolic generator and the equivalence analyzer.
 
-The packer forms each address as the hardware does: the mapping ROM image supplies `VARIANT`, `DP_OVL_SEL`, and `IR_SEQ`; the overlay groups supply `DP_OVL`; `SEQ_OVL` follows `RUN`. It then reads the slice images and compares every field whose condition holds.
+The packer forms each address as the hardware does: in EXECUTE TS *n*, `MAPR` holds the mapping ROM image entry at TS *n*−1 (TS4 for TS1) and supplies `VARIANT`, `DP_OVL_SEL`, and `IR_SEQ`; outside EXECUTE, `VARIANT` is 0, `DP_OVL_SEL` is 1, and `IR_SEQ` is `IR_INDIRECT`; the overlay groups supply `DP_OVL`; `SEQ_OVL` follows `RUN`. It then reads the slice images and compares every field whose condition holds.
 
 ---
 
 ## 10. Open Items
 
-- **Timing:** EEPROM access time plus the mapping ROM and overlay must fit within the TS evaluation window ([Control Addressing §9](./02-control-addressing.md#9-timing-model)). Whether the control word passes through a pipeline register is not yet defined.
-- **Power-on state:** the TSEQ, MS, and RUN power-on state is not yet defined ([Timing Terminology](../09-timing/01-terminology.md)); every device image must define the reset address's word once it is.
+- **Timing:** one slice-ROM access plus the address-formation and overlay logic make up `T_CS`, which must fit within the TS evaluation window ([Timing Architecture §11](../09-timing/02-timing-architecture.md#11-control-word-settling)); the mapping ROM is off this path (section 5.4.3). The control word passes through no pipeline register; immediate-effect signals are windowed by `CW_VALID` and `WR_VALID`. The TSTEP counts per TS are to be set once the parts are chosen.
 - **Datapath diagrams:** datapath diagrams that show a control-supplied input on the IF, MA, or PC source multiplexers must show the hardwired constants instead.
 - **ALU_B_SRC width:** no micro-operation uses `ALU_B_SRC = AC` (1) or `ALU_B_SRC = PC` (5). Removing both would leave four values (NONE, MB, MQ, FP_SR) and reduce the field from 3 bits to 2, which changes the packing and the overlay diagrams. Deferred until the simulator has validated the control store.
 - **Group assignments:** the overlay groups, pin assignments, variant counts, and bit sharing in sections 5 to 7 are the packer's current result. They change when the specifications do; the packer reports them on every run.

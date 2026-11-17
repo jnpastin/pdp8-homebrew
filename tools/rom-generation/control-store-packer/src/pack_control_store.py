@@ -86,7 +86,7 @@ IR_SEQ_BIT = VARIANT_WIDTH + DP_OVL_SEL_WIDTH
 HALTED_CODE = 7
 EXECUTE = "EXECUTE"
 SEQUENCER_FIELDS = (
-    "MS_NEXT", "MS_LOAD", "RUN_NEXT", "HLT_REQ_NEXT", "/DMA_GRANT", "/INITIALIZE",
+    "MS_NEXT", "MS_LOAD", "RUN_NEXT", "HLT_REQ_NEXT", "/INITIALIZE",
 )
 FP_COMMANDS = (
     "FP_START", "FP_CONTINUE", "FP_CLEAR", "FP_LOAD_ADDRESS", "FP_EXAMINE",
@@ -97,6 +97,11 @@ FP_CMD_WIDTH = 3
 SEQ_ALWAYS = ("HLT_REQ", "FP_STOP", "/DMA_REQ")
 SEQ_RUNNING = ("FP_SINGLE_INSTRUCTION", "FP_SINGLE_STEP", "INTERRUPT_REQUEST_VALID")
 IR_SEQ = ("IR_INDIRECT", "IR_OPR_HLT", "IR_IS_CAF")
+# EXECUTE selection (Control Store Organization section 5.4.2): outside
+# EXECUTE (MS_EFF_IS_EXECUTE = 0) the slices see VARIANT = 0, this wired
+# overlay group, and IR_SEQ = IR_INDIRECT from predecode.
+NON_EXECUTE_GROUP = 1
+NON_EXECUTE_IR_SEQ = "IR_INDIRECT"
 STATE_NAMES = ("MS", "TS", "RUN")
 OTHER = "~other"
 
@@ -600,6 +605,32 @@ def pack_groups(needs: Sequence[frozenset[str]]) -> tuple[list[Group], dict[froz
     return groups, placement
 
 
+def place_group(groups: list[Group], placement: dict[frozenset, int], need: frozenset,
+                code: int) -> None:
+    """Renumber the groups so that the group holding ``need`` has ``code``.
+
+    Used for the wired non-EXECUTE group. Empty groups are added when fewer
+    groups exist; a need with no signals fits any group and keeps its
+    placement."""
+
+    while len(groups) <= code:
+        groups.append(Group(len(groups), []))
+    if not need:
+        return
+    current = placement[need]
+    if current == code:
+        return
+    groups[current], groups[code] = groups[code], groups[current]
+    groups[current].code, groups[code].code = current, code
+    for key, value in placement.items():
+        if not key:
+            continue
+        if value == current:
+            placement[key] = code
+        elif value == code:
+            placement[key] = current
+
+
 def overlay_values(group: Group, ovl: int) -> dict[str, str]:
     out = {}
     for signal, bit in group.bits.items():
@@ -641,12 +672,12 @@ class Packing:
     variant_of: dict[tuple[int, int], int]          # (ts, ir) -> variant
     variant_group: dict[tuple[int, int], int]       # (ts, variant) -> group
     nonexec: dict[str, Signature]                   # context name -> signature
-    e0_group: dict[int, int]                        # ts -> group
     layout: dict[str, tuple[int, int]]              # field -> (offset, width)
     slots: list[tuple[int, list[str]]]
     sequencer_table: dict[tuple, dict[str, int]]
-    ir_seq_needs: dict[tuple[int, int], list[str]]  # (E, ts) -> decodes needed
-    ir_seq_select: dict[tuple[int, int], str | None]  # (E, ts) -> decode on IR_SEQ
+    # (MS_EFF_IS_EXECUTE, ts) -> decodes needed / decode presented on IR_SEQ
+    ir_seq_needs: dict[tuple[int, int], list[str]]
+    ir_seq_select: dict[tuple[int, int], str | None]
     images: dict[str, list[int]] = field(default_factory=dict)
     checked: int = 0
 
@@ -664,7 +695,7 @@ def pack(model: Model) -> tuple[Packing | None, list[Diagnostic]]:
     nonexec_sigs: dict[str, set] = defaultdict(set)
     nonexec: dict[str, Signature] = {}
     needs: list[frozenset] = []
-    e0_needs: dict[int, set] = defaultdict(set)
+    non_execute_needs: set[str] = set()
     for b in dp:
         if not b.records:
             continue  # unreachable IR values: any address content will do
@@ -690,8 +721,7 @@ def pack(model: Model) -> tuple[Packing | None, list[Diagnostic]]:
         else:
             nonexec_sigs[b.context.name].add((sig.signals, sig.table))
             nonexec[b.context.name] = sig
-            for ts in ((b.context.ts,) if b.context.ts else (1, 2, 3, 4)):
-                e0_needs[ts] |= set(signals)
+            non_execute_needs |= set(signals)
     for name, sigs in nonexec_sigs.items():
         if len(sigs) > 1:
             error("NON_EXECUTE_IR_DEPENDENCE",
@@ -701,21 +731,25 @@ def pack(model: Model) -> tuple[Packing | None, list[Diagnostic]]:
         if len(codes) > 2 ** VARIANT_WIDTH:
             error("VARIANT_OVERFLOW", f"{len(codes)} variants exceed {2 ** VARIANT_WIDTH}.",
                   f"EXECUTE:TS{ts}")
-    all_needs = needs + [frozenset(s) for s in e0_needs.values()]
+    # Every non-EXECUTE context shares the one wired overlay group.
+    non_execute_need = frozenset(non_execute_needs)
+    all_needs = needs + [non_execute_need]
     for need in all_needs:
         if sum(map(signal_width, need)) > DP_OVL_WIDTH:
             error("OVERLAY_TOO_WIDE",
-                  f"{sorted(need)} need more than {DP_OVL_WIDTH} overlay bits.")
+                  f"{sorted(need)} need more than {DP_OVL_WIDTH} overlay bits"
+                  + (" (the non-EXECUTE contexts share one wired group)."
+                     if need == non_execute_need else "."))
     if has_failures(diagnostics):
         return None, diagnostics
     groups, placement = pack_groups(all_needs)
+    place_group(groups, placement, non_execute_need, NON_EXECUTE_GROUP)
     if len(groups) > 2 ** DP_OVL_SEL_WIDTH:
         error("OVERLAY_GROUP_OVERFLOW", f"{len(groups)} overlay groups exceed "
               f"{2 ** DP_OVL_SEL_WIDTH}.")
         return None, diagnostics
     variant_group = {(ts, v): placement[frozenset(sig.signals)]
                      for ts, codes in variants.items() for v, sig in enumerate(codes)}
-    e0_group = {ts: placement[frozenset(e0_needs[ts])] for ts in (1, 2, 3, 4)}
 
     slots = allocate_bits((r for b in dp for r in b.records), model.datapath_fields,
                           model.widths)
@@ -760,23 +794,32 @@ def pack(model: Model) -> tuple[Packing | None, list[Diagnostic]]:
         return None, diagnostics
     ir_seq_needs = _ir_seq_needs(model, seq_records)
     ir_seq_select: dict[tuple[int, int], str | None] = {}
-    for (e, ts), names in ir_seq_needs.items():
+    for ts in (1, 2, 3, 4):
+        # Outside EXECUTE, IR_SEQ is wired to IR_INDIRECT from predecode.
+        ir_seq_select[(0, ts)] = NON_EXECUTE_IR_SEQ
+    for (execute, ts), names in ir_seq_needs.items():
         if len(names) > IR_SEQ_WIDTH:
             error("IR_SEQ_TOO_WIDE",
                   f"The sequencer needs {', '.join(names)}, more than one IR_SEQ bit.",
-                  f"E{e}:TS{ts}")
-        ir_seq_select[(e, ts)] = names[0] if names else None
+                  context_label(execute, ts))
+        elif not execute and names and names != [NON_EXECUTE_IR_SEQ]:
+            error("NON_EXECUTE_IR_SEQ",
+                  f"Outside EXECUTE, IR_SEQ carries only {NON_EXECUTE_IR_SEQ}; the "
+                  f"sequencer needs {', '.join(names)}.", context_label(execute, ts))
+        if execute:
+            ir_seq_select[(execute, ts)] = names[0] if names else None
     if has_failures(diagnostics):
         return None, diagnostics
 
-    # Project onto the single IR_SEQ bit: the decode selected for (E, TS).
+    # Project onto the single IR_SEQ bit: the decode presented for
+    # (MS_EFF_IS_EXECUTE, TS).
     contexts = {c.name: c for c in model.contexts}
     seq_projected: dict[tuple, list] = defaultdict(list)
     for (ctx, irseq, visible), records in seq_records.items():
         context = contexts[ctx]
-        e = 1 if context.execute else 0
+        execute = 1 if context.execute else 0
         for ts in ((context.ts,) if context.ts else (1, 2, 3, 4)):
-            selected = ir_seq_select.get((e, ts))
+            selected = ir_seq_select.get((execute, ts))
             bit = irseq[IR_SEQ.index(selected)] if selected else "0"
             seq_projected[(ctx, ts, bit, visible)].extend(records)
     for key, records in seq_projected.items():
@@ -791,7 +834,7 @@ def pack(model: Model) -> tuple[Packing | None, list[Diagnostic]]:
         return None, diagnostics
 
     packing = Packing(model, groups, dict(variants), variant_of, variant_group, nonexec,
-                      e0_group, layout, slots, seq_table, ir_seq_needs, ir_seq_select)
+                      layout, slots, seq_table, ir_seq_needs, ir_seq_select)
     build_images(packing)
     verify(packing, dp, seq, diagnostics)
     return packing, diagnostics
@@ -801,9 +844,13 @@ def _split_by_irseq(model: Model, irs: Sequence[int]) -> list[tuple[str, ...]]:
     return sorted({tuple(model.ir_table[n][ir] for n in IR_SEQ) for ir in irs})
 
 
+def context_label(execute: int, ts: int) -> str:
+    return f"{'EXECUTE' if execute else 'NON_EXECUTE'}:TS{ts}"
+
+
 def _ir_seq_needs(model, seq_records) -> dict[tuple[int, int], list[str]]:
-    """For each (E, TS) the mapping ROM sees, the IR_SEQ decodes the
-    sequencer word depends on."""
+    """For each (MS_EFF_IS_EXECUTE, TS), the IR_SEQ decodes the sequencer
+    word depends on."""
 
     by_ctx: dict[str, dict[tuple, dict[tuple, set]]] = defaultdict(lambda: defaultdict(dict))
     for (ctx, irseq, visible), records in seq_records.items():
@@ -822,9 +869,9 @@ def _ir_seq_needs(model, seq_records) -> dict[tuple[int, int], list[str]]:
                     if key in seen and seen[key] != word:
                         used.add(name)
                     seen.setdefault(key, word)
-        e = 1 if context.execute else 0
+        execute = 1 if context.execute else 0
         for ts in ((context.ts,) if context.ts else (1, 2, 3, 4)):
-            needs[(e, ts)] |= used
+            needs[(execute, ts)] |= used
     return {k: sorted(v) for k, v in needs.items()}
 
 
@@ -847,21 +894,46 @@ def unpack(packing: Packing, value: int, name: str) -> int:
     return (value >> offset) & ((1 << width) - 1)
 
 
-def mapping_address(ir: int, ts: int, e: int) -> int:
-    return (ir << 3) | ((ts - 1) << 1) | e
+def mapping_address(ir: int, ts: int) -> int:
+    """Mapping ROM address; A0 is wired 0."""
+    return (ir << 3) | ((ts - 1) << 1)
 
 
-def datapath_address(ms_a: int, ts: int, variant: int, ovl: int) -> int:
-    return (ms_a << 12) | ((ts - 1) << 10) | (variant << 5) | ovl
+def next_ts(ts: int) -> int:
+    return ts % 4 + 1
 
 
-def sequencer_address(ms_a: int, ts: int, values: dict[str, str], halted: bool,
+def previous_ts(ts: int) -> int:
+    return (ts - 2) % 4 + 1
+
+
+def mapping_entry(variant: int, group: int, irseq: int) -> int:
+    return variant | (group << VARIANT_WIDTH) | (irseq << IR_SEQ_BIT)
+
+
+def slice_select(packing: Packing, execute: bool, ir: int, ts: int) -> int:
+    """The VARIANT, DP_OVL_SEL, and IR_SEQ the slices see, packed as a
+    mapping entry. In EXECUTE TS n, MAPR holds the mapping ROM entry
+    captured at TP n-1, which was addressed with TS n-1; outside EXECUTE
+    the selection presents fixed values and IR_INDIRECT."""
+
+    if execute:
+        return packing.images["mapping"][mapping_address(ir, previous_ts(ts))]
+    indirect = int(packing.model.ir_table[NON_EXECUTE_IR_SEQ][ir])
+    return mapping_entry(0, NON_EXECUTE_GROUP, indirect)
+
+
+def datapath_address(ms_eff: int, ts: int, variant: int, ovl: int) -> int:
+    return (ms_eff << 12) | ((ts - 1) << 10) | (variant << 5) | ovl
+
+
+def sequencer_address(ms_eff: int, ts: int, values: dict[str, str], halted: bool,
                       irseq: str) -> int:
     def bit(name):
         return 1 if values.get(name) == "1" else 0
     ovl = fp_code(values) if halted else (
         bit(SEQ_RUNNING[0]) << 2 | bit(SEQ_RUNNING[1]) << 1 | bit(SEQ_RUNNING[2]))
-    return ((ms_a << 12) | ((ts - 1) << 10) | bit("HLT_REQ") << 9 | bit("FP_STOP") << 8
+    return ((ms_eff << 12) | ((ts - 1) << 10) | bit("HLT_REQ") << 9 | bit("FP_STOP") << 8
             | ovl << 5 | bit("/DMA_REQ") << 4 | int(irseq) << 3)
 
 
@@ -870,28 +942,25 @@ def build_images(packing: Packing) -> None:
     default = pack_word(packing, model.defaults, set())
     seq_default = _seq_word(model, model.defaults)
 
+    # The entry at TS n is the EXECUTE entry for TS n+1 (TS4 holds TS1).
     mapping = [0] * (1 << ADDRESS_BITS)
     for ir in range(4096):
         for ts in (1, 2, 3, 4):
-            for e in (0, 1):
-                if e:
-                    v = packing.variant_of.get((ts, ir), 0)
-                    g = packing.variant_group.get((ts, v), 0)
-                else:
-                    v, g = 0, packing.e0_group[ts]
-                selected = packing.ir_seq_select.get((e, ts))
-                irseq = int(model.ir_table[selected][ir]) if selected else 0
-                mapping[mapping_address(ir, ts, e)] = (
-                    v | (g << VARIANT_WIDTH) | (irseq << IR_SEQ_BIT))
+            target = next_ts(ts)
+            v = packing.variant_of.get((target, ir), 0)
+            g = packing.variant_group.get((target, v), 0)
+            selected = packing.ir_seq_select.get((1, target))
+            irseq = int(model.ir_table[selected][ir]) if selected else 0
+            mapping[mapping_address(ir, ts)] = mapping_entry(v, g, irseq)
 
     datapath = [default] * (1 << ADDRESS_BITS)
     contexts = {(c.ms_code, c.ts): c for c in model.contexts if not c.halted}
-    for ms_a in range(8):
+    for ms_eff in range(8):
         for ts in (1, 2, 3, 4):
-            context = contexts.get((ms_a, ts))
+            context = contexts.get((ms_eff, ts))
             for variant in range(1 << VARIANT_WIDTH):
-                if ms_a == HALTED_CODE:
-                    sig, group = packing.nonexec["HALTED"], packing.e0_group[ts]
+                if ms_eff == HALTED_CODE:
+                    sig, group = packing.nonexec["HALTED"], NON_EXECUTE_GROUP
                 elif context is None:
                     continue
                 elif context.execute:
@@ -901,7 +970,7 @@ def build_images(packing: Packing) -> None:
                     sig = codes[variant]
                     group = packing.variant_group[(ts, variant)]
                 else:
-                    sig, group = packing.nonexec[context.name], packing.e0_group[ts]
+                    sig, group = packing.nonexec[context.name], NON_EXECUTE_GROUP
                 table = sig.lookup()
                 g = packing.groups[group]
                 for ovl in range(1 << DP_OVL_WIDTH):
@@ -911,7 +980,7 @@ def build_images(packing: Packing) -> None:
                     if required is None:
                         continue
                     word = {**model.defaults, **dict(required)}
-                    datapath[datapath_address(ms_a, ts, variant, ovl)] = pack_word(
+                    datapath[datapath_address(ms_eff, ts, variant, ovl)] = pack_word(
                         packing, word, set(dict(required)))
 
     sequencer = [seq_default] * (1 << ADDRESS_BITS)
@@ -923,8 +992,8 @@ def build_images(packing: Packing) -> None:
             code = int(values.pop(FP_CMD))
             values.update({n: "1" if i + 1 == code else "0" for i, n in enumerate(FP_COMMANDS)})
         word = _seq_word(model, {**model.defaults, **required})
-        ms_a = HALTED_CODE if context.halted else context.ms_code
-        sequencer[sequencer_address(ms_a, ts, values, context.halted, irseq)] = word
+        ms_eff = HALTED_CODE if context.halted else context.ms_code
+        sequencer[sequencer_address(ms_eff, ts, values, context.halted, irseq)] = word
 
     packing.images = {"mapping": mapping, "sequencer": sequencer}
     for device in range(DATAPATH_DEVICES):
@@ -960,28 +1029,27 @@ def verify(packing: Packing, dp: Sequence[Behavior], seq: Sequence[Behavior],
     """Form every address as the hardware does and compare the images with
     every required field value.
 
-    For each IR value the mapping ROM image gives the entry the slices see;
-    IR values with the same entry address the slices identically, so each
-    distinct entry is checked once. An input a record does not compare can
-    take any value in hardware, so every value of it is checked."""
+    For each IR value the mapping register and EXECUTE selection give the
+    entry the slices see; IR values with the same entry address the slices
+    identically, so each distinct entry is checked once. An input a record
+    does not compare can take any value in hardware, so every value of it
+    is checked."""
 
     model = packing.model
-    mapping = packing.images["mapping"]
     datapath = packing.images["_datapath_words"]
     sequencer = packing.images["sequencer"]
     mismatches: list[str] = []
     checked = 0
 
     def entries(b: Behavior, ts: int) -> dict[int, int]:
-        e = 1 if b.context.execute else 0
         found: dict[int, int] = {}
         for ir in b.irs:
-            found.setdefault(mapping[mapping_address(ir, ts, e)], ir)
+            found.setdefault(slice_select(packing, b.context.execute, ir, ts), ir)
         return found
 
     for b in dp:
         context = b.context
-        ms_a = HALTED_CODE if context.halted else context.ms_code
+        ms_eff = HALTED_CODE if context.halted else context.ms_code
         for ts in ((context.ts,) if context.ts else (1, 2, 3, 4)):
             for entry, ir in entries(b, ts).items():
                 variant = entry & ((1 << VARIANT_WIDTH) - 1)
@@ -992,7 +1060,7 @@ def verify(packing: Packing, dp: Sequence[Behavior], seq: Sequence[Behavior],
                         ovl = 0
                         for s, v in zip(signals, concrete):
                             ovl |= int(v) << group.bits[s]
-                        word = datapath[datapath_address(ms_a, ts, variant, ovl)]
+                        word = datapath[datapath_address(ms_eff, ts, variant, ovl)]
                         checked += 1
                         for f in record.care:
                             if unpack(packing, word, f) != record.word[f]:
@@ -1001,7 +1069,7 @@ def verify(packing: Packing, dp: Sequence[Behavior], seq: Sequence[Behavior],
 
     for b in seq:
         context = b.context
-        ms_a = HALTED_CODE if context.halted else context.ms_code
+        ms_eff = HALTED_CODE if context.halted else context.ms_code
         visible = list(SEQ_ALWAYS) + ([FP_CMD] if context.halted else list(SEQ_RUNNING))
         for ts in ((context.ts,) if context.ts else (1, 2, 3, 4)):
             for entry, ir in entries(b, ts).items():
@@ -1013,7 +1081,7 @@ def verify(packing: Packing, dp: Sequence[Behavior], seq: Sequence[Behavior],
                             code = int(values.pop(FP_CMD))
                             values.update({n: "1" if i + 1 == code else "0"
                                            for i, n in enumerate(FP_COMMANDS)})
-                        word = sequencer[sequencer_address(ms_a, ts, values,
+                        word = sequencer[sequencer_address(ms_eff, ts, values,
                                                            context.halted, irseq)]
                         checked += 1
                         for f in record.care:
@@ -1055,17 +1123,18 @@ def packing_json(packing: Packing, diagnostics: Sequence[Diagnostic]) -> dict[st
             "verified_addresses": packing.checked,
         },
         "address_maps": {
-            "mapping_rom": "A14..A3 = IR[11:0], A2..A1 = TS-1, A0 = E",
-            "datapath_slice": "A14..A12 = MS_A, A11..A10 = TS-1, A9..A5 = VARIANT, "
+            "mapping_rom": "A14..A3 = IR[11:0], A2..A1 = TS-1, A0 = 0; "
+                           "the entry at TS n is the EXECUTE entry for TS n+1",
+            "datapath_slice": "A14..A12 = MS_EFF, A11..A10 = TS-1, A9..A5 = VARIANT, "
                               "A4..A0 = DP_OVL",
-            "sequencer_slice": "A14..A12 = MS_A, A11..A10 = TS-1, A9 = HLT_REQ, A8 = FP_STOP, "
+            "sequencer_slice": "A14..A12 = MS_EFF, A11..A10 = TS-1, A9 = HLT_REQ, A8 = FP_STOP, "
                                "A7..A5 = SEQ_OVL, A4 = /DMA_REQ, A3 = IR_SEQ, A2..A0 = 0",
         },
         "mapping_rom": {
             "fields": {"VARIANT": [0, VARIANT_WIDTH],
                        "DP_OVL_SEL": [VARIANT_WIDTH, DP_OVL_SEL_WIDTH],
                        "IR_SEQ": [IR_SEQ_BIT, IR_SEQ_WIDTH]},
-            "ir_seq_decode": {f"E{e}:TS{ts}": name for (e, ts), name
+            "ir_seq_decode": {context_label(execute, ts): name for (execute, ts), name
                               in sorted(packing.ir_seq_select.items())},
         },
         "fp_cmd": {name: code for code, name in enumerate(FP_COMMANDS, 1)},
@@ -1075,7 +1144,7 @@ def packing_json(packing: Packing, diagnostics: Sequence[Diagnostic]) -> dict[st
                       for s, bit in sorted(g.bits.items(), key=lambda kv: kv[1])]}
             for g in packing.groups
         ],
-        "e0_overlay_group": {f"TS{ts}": g for ts, g in sorted(packing.e0_group.items())},
+        "non_execute_overlay_group": NON_EXECUTE_GROUP,
         "execute_variants": {
             f"TS{ts}": [
                 {"variant": v,
@@ -1092,8 +1161,8 @@ def packing_json(packing: Packing, diagnostics: Sequence[Diagnostic]) -> dict[st
             for width, members in packing.slots
         ],
         "sequencer_layout": _sequencer_layout(model),
-        "ir_seq_needs": {f"E{e}:TS{ts}": names
-                         for (e, ts), names in sorted(packing.ir_seq_needs.items())},
+        "ir_seq_needs": {context_label(execute, ts): names
+                         for (execute, ts), names in sorted(packing.ir_seq_needs.items())},
         "diagnostics": [d.__dict__ for d in diagnostics],
     }
 
@@ -1128,7 +1197,7 @@ def build_report(packing: Packing | None, diagnostics: Sequence[Diagnostic]) -> 
             lines.append(f"{g['code']}: " + ", ".join(
                 f"[{b['bit']}{'..' + str(b['bit'] + b['width'] - 1) if b['width'] > 1 else ''}] "
                 f"{b['signal']}" for b in g["bits"]))
-        lines.append("E=0 groups: " + ", ".join(f"{k}->{v}" for k, v in data["e0_overlay_group"].items()))
+        lines.append(f"Non-EXECUTE group (wired): {data['non_execute_overlay_group']}")
         lines += ["", "EXECUTE variants", "----------------"]
         for ts, items in data["execute_variants"].items():
             for item in items:

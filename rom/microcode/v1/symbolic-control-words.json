@@ -62,11 +62,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -142,14 +140,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((MS = FETCH AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -158,14 +148,6 @@
             "when": "(((MS = FETCH AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((MS = FETCH AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -264,11 +246,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -358,14 +338,6 @@
           }
         ],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((MS = FETCH AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -374,14 +346,6 @@
             "when": "(((MS = FETCH AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((MS = FETCH AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -481,11 +445,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -540,14 +502,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((MS = FETCH AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -556,14 +510,6 @@
             "when": "(((MS = FETCH AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((MS = FETCH AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -661,11 +607,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -755,14 +699,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((MS = FETCH AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -771,14 +707,6 @@
             "when": "(((MS = FETCH AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((MS = FETCH AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [
@@ -907,11 +835,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -973,14 +899,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((MS = DEFER AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -989,14 +907,6 @@
             "when": "(((MS = DEFER AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((MS = DEFER AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -1094,11 +1004,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -1188,14 +1096,6 @@
           }
         ],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((MS = DEFER AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -1204,14 +1104,6 @@
             "when": "(((MS = DEFER AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((MS = DEFER AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -1311,11 +1203,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -1412,14 +1302,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((MS = DEFER AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -1428,14 +1310,6 @@
             "when": "(((MS = DEFER AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((MS = DEFER AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -1533,11 +1407,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -1641,14 +1513,6 @@
             "source": "MEM_WRITE_FROM_MB"
           }
         ],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((MS = DEFER AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -1657,14 +1521,6 @@
             "when": "(((MS = DEFER AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((MS = DEFER AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [
@@ -1789,11 +1645,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -1855,14 +1709,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -1871,14 +1717,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -1976,11 +1814,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -2076,14 +1912,6 @@
           }
         ],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -2092,14 +1920,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -2200,11 +2020,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -2301,14 +2119,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -2317,14 +2127,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -2422,11 +2224,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -2474,14 +2274,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -2490,14 +2282,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [
@@ -2649,11 +2433,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -2715,14 +2497,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -2731,14 +2505,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -2836,11 +2602,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -2936,14 +2700,6 @@
           }
         ],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -2952,14 +2708,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -3060,11 +2808,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -3175,14 +2921,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -3191,14 +2929,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -3296,11 +3026,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -3348,14 +3076,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -3364,14 +3084,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [
@@ -3523,11 +3235,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -3589,14 +3299,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -3605,14 +3307,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -3710,11 +3404,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -3810,14 +3502,6 @@
           }
         ],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -3826,14 +3510,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -3934,11 +3610,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -4035,14 +3709,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -4051,14 +3717,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -4156,11 +3814,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -4270,14 +3926,6 @@
             "source": "MEM_WRITE_FROM_MB"
           }
         ],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -4286,14 +3934,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [
@@ -4451,11 +4091,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -4517,14 +4155,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -4533,14 +4163,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -4638,11 +4260,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -4718,14 +4338,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -4734,14 +4346,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -4839,11 +4443,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -4925,14 +4527,6 @@
             "source": "MEM_WRITE_FROM_MB"
           }
         ],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -4941,14 +4535,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -5049,11 +4635,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -5150,14 +4734,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -5166,14 +4742,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [
@@ -5327,11 +4895,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -5393,14 +4959,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -5409,14 +4967,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -5514,11 +5064,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -5594,14 +5142,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -5610,14 +5150,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -5715,11 +5247,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -5829,14 +5359,6 @@
             "source": "MEM_WRITE_FROM_MB"
           }
         ],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -5845,14 +5367,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -5954,11 +5468,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -6062,14 +5574,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -6078,14 +5582,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [
@@ -6241,11 +5737,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -6293,14 +5787,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -6309,14 +5795,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -6412,11 +5890,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -6464,14 +5940,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -6480,14 +5948,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -6583,11 +6043,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -6663,14 +6121,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -6679,14 +6129,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -6784,11 +6226,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -6864,14 +6304,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -6880,14 +6312,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [
@@ -7042,11 +6466,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -7094,14 +6516,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -7110,14 +6524,6 @@
             "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 1) AND RUN = 1) AND ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.2"
           }
         ],
         "MS_NEXT": [],
@@ -7213,11 +6619,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -7340,14 +6744,6 @@
         ],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -7356,14 +6752,6 @@
             "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 2) AND RUN = 1) AND ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.2"
           }
         ],
         "MS_NEXT": [],
@@ -7463,11 +6851,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -7638,14 +7024,6 @@
         ],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [
           {
             "value": "0",
@@ -7668,14 +7046,6 @@
             "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1) AND ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.2"
           }
         ],
         "MS_NEXT": [],
@@ -7782,11 +7152,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -7934,14 +7302,6 @@
         ],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [
           {
             "value": "0",
@@ -7964,14 +7324,6 @@
             "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.2"
           }
         ],
         "MS_NEXT": [
@@ -8131,11 +7483,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -8183,14 +7533,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -8199,14 +7541,6 @@
             "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -8302,11 +7636,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -8368,14 +7700,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -8384,14 +7708,6 @@
             "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -8489,11 +7805,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -8541,14 +7855,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -8557,14 +7863,6 @@
             "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -8660,11 +7958,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -8712,14 +8008,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -8728,14 +8016,6 @@
             "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [
@@ -8887,11 +8167,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -8939,14 +8217,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -8955,14 +8225,6 @@
             "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -9058,11 +8320,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -9138,14 +8398,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -9154,14 +8406,6 @@
             "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -9260,11 +8504,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -9312,14 +8554,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -9328,14 +8562,6 @@
             "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -9431,11 +8657,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -9483,14 +8707,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -9499,14 +8715,6 @@
             "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [
@@ -9658,11 +8866,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -9710,14 +8916,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -9726,14 +8924,6 @@
             "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -9829,11 +9019,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -9923,14 +9111,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -9939,14 +9119,6 @@
             "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -10045,11 +9217,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -10097,14 +9267,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -10113,14 +9275,6 @@
             "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -10216,11 +9370,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -10268,14 +9420,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -10284,14 +9428,6 @@
             "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [
@@ -10443,11 +9579,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -10495,14 +9629,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -10511,14 +9637,6 @@
             "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -10614,11 +9732,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -10694,14 +9810,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -10710,14 +9818,6 @@
             "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -10815,11 +9915,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -10867,14 +9965,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -10883,14 +9973,6 @@
             "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -10986,11 +10068,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -11038,14 +10118,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -11054,14 +10126,6 @@
             "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [
@@ -11213,11 +10277,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -11314,14 +10376,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -11330,14 +10384,6 @@
             "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -11435,11 +10481,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -11501,14 +10545,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -11517,14 +10553,6 @@
             "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -11622,11 +10650,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -11674,14 +10700,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -11690,14 +10708,6 @@
             "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -11793,11 +10803,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -11845,14 +10853,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -11861,14 +10861,6 @@
             "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [
@@ -12020,11 +11012,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -12072,14 +11062,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -12088,14 +11070,6 @@
             "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -12191,11 +11165,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -12327,14 +11299,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -12343,14 +11307,6 @@
             "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -12453,11 +11409,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -12505,14 +11459,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -12521,14 +11467,6 @@
             "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -12624,11 +11562,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -12676,14 +11612,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -12692,14 +11620,6 @@
             "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [
@@ -12851,11 +11771,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -12903,14 +11821,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -12919,14 +11829,6 @@
             "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -13022,11 +11924,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -13074,14 +11974,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -13090,14 +11982,6 @@
             "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -13193,11 +12077,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -13245,14 +12127,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -13261,14 +12135,6 @@
             "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -13364,11 +12230,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -13416,14 +12280,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -13432,14 +12288,6 @@
             "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [
@@ -13591,11 +12439,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -13643,14 +12489,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -13659,14 +12497,6 @@
             "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -13762,11 +12592,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -13814,14 +12642,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -13830,14 +12650,6 @@
             "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -13933,11 +12745,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -13985,14 +12795,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -14001,14 +12803,6 @@
             "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -14104,11 +12898,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -14156,14 +12948,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -14172,14 +12956,6 @@
             "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1) AND (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1) AND RUN = 1))",
             "origin": "direct-control definition",
             "source": "02:8.2"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [
@@ -14331,11 +13107,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -14383,14 +13157,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -14399,14 +13165,6 @@
             "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -14502,11 +13260,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -14672,14 +13428,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -14688,14 +13436,6 @@
             "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -14801,11 +13541,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -14853,14 +13591,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -14869,14 +13599,6 @@
             "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -14972,11 +13694,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -15024,14 +13744,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -15040,14 +13752,6 @@
             "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [
@@ -15199,11 +13903,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -15279,14 +13981,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((MS = INTERRUPT AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -15295,14 +13989,6 @@
             "when": "(((MS = INTERRUPT AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((MS = INTERRUPT AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -15400,11 +14086,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -15473,14 +14157,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((MS = INTERRUPT AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -15489,14 +14165,6 @@
             "when": "(((MS = INTERRUPT AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((MS = INTERRUPT AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -15595,11 +14263,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -15675,14 +14341,6 @@
             "source": "MEM_WRITE_FROM_MB"
           }
         ],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((MS = INTERRUPT AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -15691,14 +14349,6 @@
             "when": "(((MS = INTERRUPT AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((MS = INTERRUPT AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -15798,11 +14448,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -15934,14 +14582,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((MS = INTERRUPT AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -15950,14 +14590,6 @@
             "when": "(((MS = INTERRUPT AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((MS = INTERRUPT AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [
@@ -16083,11 +14715,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -16135,14 +14765,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "0",
-            "when": "(((MS = DMA AND TS = 1) AND RUN = 1) AND (MS = DMA AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:5.2"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -16151,14 +14773,6 @@
             "when": "(((MS = DMA AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((MS = DMA AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -16255,11 +14869,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -16307,14 +14919,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "0",
-            "when": "(((MS = DMA AND TS = 2) AND RUN = 1) AND (MS = DMA AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:5.2"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -16323,14 +14927,6 @@
             "when": "(((MS = DMA AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((MS = DMA AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -16427,11 +15023,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -16479,14 +15073,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "0",
-            "when": "(((MS = DMA AND TS = 3) AND RUN = 1) AND (MS = DMA AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:5.2"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -16495,14 +15081,6 @@
             "when": "(((MS = DMA AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((MS = DMA AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -16599,11 +15177,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -16651,14 +15227,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "0",
-            "when": "(((MS = DMA AND TS = 4) AND RUN = 1) AND (MS = DMA AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:5.2"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -16667,14 +15235,6 @@
             "when": "(((MS = DMA AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((MS = DMA AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [
@@ -16801,11 +15361,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -16937,14 +15495,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((RUN = 0 AND FP_LOAD_ADDRESS = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -16955,7 +15505,6 @@
             "source": "02:8.4"
           }
         ],
-        "IOT_ACTIVE": [],
         "MS_NEXT": [],
         "RUN_NEXT": [
           {
@@ -17047,11 +15596,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -17211,14 +15758,6 @@
           }
         ],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((RUN = 0 AND FP_EXAMINE = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -17229,7 +15768,6 @@
             "source": "02:8.4"
           }
         ],
-        "IOT_ACTIVE": [],
         "MS_NEXT": [],
         "RUN_NEXT": [
           {
@@ -17322,11 +15860,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -17486,14 +16022,6 @@
             "source": "MEM_WRITE_FROM_FP_SR"
           }
         ],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((RUN = 0 AND FP_DEPOSIT = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -17504,7 +16032,6 @@
             "source": "02:8.4"
           }
         ],
-        "IOT_ACTIVE": [],
         "MS_NEXT": [],
         "RUN_NEXT": [
           {
@@ -17598,11 +16125,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -17650,14 +16175,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((RUN = 0 AND FP_CLEAR = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -17668,7 +16185,6 @@
             "source": "02:8.3"
           }
         ],
-        "IOT_ACTIVE": [],
         "MS_NEXT": [],
         "RUN_NEXT": [
           {
@@ -17754,11 +16270,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -17941,14 +16455,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((RUN = 0 AND FP_START = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -17959,7 +16465,6 @@
             "source": "02:8.4"
           }
         ],
-        "IOT_ACTIVE": [],
         "MS_NEXT": [
           {
             "value": "0",
@@ -18065,11 +16570,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -18117,14 +16620,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "((RUN = 0 AND FP_CONTINUE = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -18135,7 +16630,6 @@
             "source": "02:8.4"
           }
         ],
-        "IOT_ACTIVE": [],
         "MS_NEXT": [],
         "RUN_NEXT": [
           {
@@ -18221,11 +16715,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -18273,14 +16765,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((((RUN = 0 AND FP_START = 0) AND FP_CLEAR = 0) AND FP_CONTINUE = 0) AND FP_LOAD_ADDRESS = 0) AND FP_EXAMINE = 0) AND FP_DEPOSIT = 0) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -18291,7 +16775,6 @@
             "source": "02:8.4"
           }
         ],
-        "IOT_ACTIVE": [],
         "MS_NEXT": [],
         "RUN_NEXT": [
           {
@@ -18377,11 +16860,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -18492,14 +16973,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP1 = 1) AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -18508,14 +16981,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP1 = 1) AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP1 = 1) AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -18614,11 +17079,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -18729,14 +17192,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP1 = 1) AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -18745,14 +17200,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP1 = 1) AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP1 = 1) AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -18851,11 +17298,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -18966,14 +17411,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP1 = 1) AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -18982,14 +17419,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP1 = 1) AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP1 = 1) AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -19087,11 +17516,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -19406,14 +17833,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP1 = 1) AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -19422,14 +17841,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP1 = 1) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP1 = 1) AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [
@@ -19587,11 +17998,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -19667,14 +18076,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP2 = 1) AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -19683,14 +18084,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP2 = 1) AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP2 = 1) AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -19788,11 +18181,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -19889,14 +18280,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP2 = 1) AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -19905,14 +18288,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP2 = 1) AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP2 = 1) AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -20010,11 +18385,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -20111,14 +18484,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP2 = 1) AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -20127,14 +18492,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP2 = 1) AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP2 = 1) AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -20239,11 +18596,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -20291,14 +18646,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP2 = 1) AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -20307,14 +18654,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP2 = 1) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP2 = 1) AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [
@@ -20466,11 +18805,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -20567,14 +18904,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP3 = 1) AND TS = 1) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -20583,14 +18912,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP3 = 1) AND TS = 1) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP3 = 1) AND TS = 1) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -20688,11 +19009,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -20881,14 +19200,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP3 = 1) AND TS = 2) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -20897,14 +19208,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP3 = 1) AND TS = 2) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP3 = 1) AND TS = 2) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -21004,11 +19307,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -21056,14 +19357,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP3 = 1) AND TS = 3) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -21072,14 +19365,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP3 = 1) AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP3 = 1) AND TS = 3) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [],
@@ -21175,11 +19460,9 @@
         "IOT_TRANSFER_VAL": "0",
         "/RD": "1",
         "/WR": "1",
-        "/DMA_GRANT": "1",
         "/DB_READ": "1",
         "/DB_WRITE": "1",
         "/INITIALIZE": "1",
-        "IOT_ACTIVE": "0",
         "MS_NEXT": "0",
         "RUN_NEXT": "1",
         "HLT_REQ_NEXT": "0",
@@ -21227,14 +19510,6 @@
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
-        "/DMA_GRANT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP3 = 1) AND TS = 4) AND RUN = 1) AND NOT ((RUN = 1 AND MS = DMA)))",
-            "origin": "direct-control definition",
-            "source": "02:5.3"
-          }
-        ],
         "/DB_READ": [],
         "/DB_WRITE": [],
         "/INITIALIZE": [
@@ -21243,14 +19518,6 @@
             "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP3 = 1) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
             "origin": "direct-control definition",
             "source": "02:8.4"
-          }
-        ],
-        "IOT_ACTIVE": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP3 = 1) AND TS = 4) AND RUN = 1) AND (NOT ((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1)) AND RUN = 1))",
-            "origin": "direct-control definition",
-            "source": "02:7.3"
           }
         ],
         "MS_NEXT": [

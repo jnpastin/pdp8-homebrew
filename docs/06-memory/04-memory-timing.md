@@ -44,6 +44,8 @@ During a valid write operation, while /WR is asserted:
 
 When /WR is not asserted, memory must not perform a write.
 
+Memory stores the word when /WR deasserts. The CPU and DMA controllers end /WR one TSTEP before the TP that commits the write (`WR_VALID`, [Timing Terminology §5.7](../09-timing/01-terminology.md#57-write-valid-wr_valid)), so MFB, AB, and MDB remain stable for at least one TSTEP after /WR deasserts.
+
 ---
 
 ## 5. Address Stability

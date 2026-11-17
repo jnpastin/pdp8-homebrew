@@ -81,6 +81,7 @@ Direct response timing:
 
 - `IO_CLEAR_AC_REQ` asserted during a TS requests AC clear at the following TP.
 - `IO_SKIP_REQ` is valid only during TS4 and requests PC increment at TP4.
+- A response must be stable at least `T_CS` before the TP that accepts it, because the control word must settle again after it changes ([Timing Architecture §11.4](../09-timing/02-timing-architecture.md#114-timing-budget)).
 
 DB transfer request timing:
 
@@ -121,6 +122,7 @@ Properties:
 - MCLK continues while `/IO_WAIT` is asserted.
 - TCLK continues while `/IO_WAIT` is asserted.
 - `/IO_WAIT` may inhibit TSTEP advancement only at non-TP setup TSTEPs.
+- `/IO_WAIT` is sampled only at TSTEPs where `CW_VALID` is asserted, so a controller decode that has not yet settled cannot hold TSEQ.
 - `/IO_WAIT` is ignored when the current TSTEP is a TP position.
 - A TP cannot be extended, repeated, or suppressed by `/IO_WAIT`.
 - The selected controller is contractually responsible for qualifying `/IO_WAIT` with `IOT_ACTIVE` and address match.

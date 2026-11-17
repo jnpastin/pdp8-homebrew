@@ -68,6 +68,8 @@ L    = [Link](../01-architecture/01-registers.md#l--link)
 
 MA   = [Memory Address](../01-architecture/01-registers.md#ma--memory-address)
 
+MAPR = [Mapping Register](../01-architecture/01-registers.md#mapr--mapping-register)
+
 MB   = [Memory Buffer](../01-architecture/01-registers.md#mb--memory-buffer)
 
 MS   = [Major State](../01-architecture/01-registers.md#ms--major-state)
@@ -114,6 +116,12 @@ TSEQ  = [Timing Sequence](../09-timing/01-terminology.md#32-timing-sequence-tseq
 TPn   = [Timing Pulse n](../09-timing/01-terminology.md#4-timing-pulses-tp)
 
 TSn   = [Timing State n](../09-timing/01-terminology.md#5-timing-states-ts)
+
+T_CS  = [Control-Store Settle Time](../09-timing/01-terminology.md#55-control-store-settle-time-t_cs)
+
+CW_VALID = [Control Word Valid](../09-timing/01-terminology.md#56-control-word-valid-cw_valid)
+
+WR_VALID = [Write Valid](../09-timing/01-terminology.md#57-write-valid-wr_valid)
 
 
 ---

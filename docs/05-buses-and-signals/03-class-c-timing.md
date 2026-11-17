@@ -50,6 +50,7 @@ The following signals remain within the CPU timing-generation and timing-distrib
 - TCLK
 - TSTEP
 - TSEQ
+- CW_VALID
 
 These signals:
 - must not be placed on the backplane
@@ -64,6 +65,7 @@ The following signals are distributed to external I/O controllers:
 
 - TS
 - TP
+- WR_VALID, used by DMA controllers that drive `/WR`
 
 These signals:
 - are available through the external I/O interface
@@ -106,6 +108,8 @@ Signals:
 
 - TS
 - TP
+- CW_VALID
+- WR_VALID
 
 ---
 
@@ -132,7 +136,7 @@ Authoritative definitions are maintained in:
 
 - MCLK, TCLK, TSTEP, and TSEQ are CPU-local unless another architectural interface explicitly requires them.
 - MCLK, TCLK, TSTEP, and TSEQ must not be relied upon by independent modules.
-- TS and TP are architecturally distributed timing signals.
+- TS, TP, and WR_VALID are architecturally distributed timing signals.
 - TS and TP are available to external I/O controllers.
 - External controllers may use TS and TP only according to the [I/O Timing Contract](../07-io/03-io-timing.md).
 - Class C signals define timing structure rather than system behavior.

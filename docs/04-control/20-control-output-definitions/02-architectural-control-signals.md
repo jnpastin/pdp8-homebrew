@@ -59,6 +59,21 @@ All architectural signals are level-based.
 - must be stable before TP
 - have no edge-triggered semantics
 
+The control word may take transient values for up to `T_CS` after each TS boundary ([Timing Architecture §11](../../09-timing/02-timing-architecture.md#11-control-word-settling)). Signals that act while asserted are therefore presented only within a validity window:
+
+| Signal | Presented when |
+|---|---|
+| `/RD`, `/DB_READ`, `/DB_WRITE` | the control word asserts it and `CW_VALID` is asserted |
+| CPU drive onto MDB (`MDB_SRC` = MB or FP_SR) | the control word selects it and `CW_VALID` is asserted |
+| `/WR` | the control word asserts it and `WR_VALID` is asserted |
+| `/INITIALIZE`, CAF | the control word asserts it during the EXECUTE TP4 TSTEP |
+| `/INITIALIZE`, front-panel CLEAR | the control word asserts it and `CW_VALID` is asserted |
+| `/INITIALIZE`, power-on | the power-on reset is active ([Timing Terminology §3.4](../../09-timing/01-terminology.md#34-power-on-reset)) |
+| `/DMA_GRANT`, `IOT_ACTIVE` | always; derived from registered state, so they do not glitch (sections 4.5 and 4.8) |
+| `IOA`, `IOP` | always; taken from IR |
+
+Each window is a gate on the control-store output: an OR with the inverted window for an active-low signal, an AND for an active-high one.
+
 Timing definitions:
 - [Timing Model](../../09-timing/README.md)
 
@@ -261,10 +276,18 @@ When asserted:
 **Bit Width:** 1
 
 **Default Value:** 1  
-**Explicit Value Required:** Yes  
+**Explicit Value Required:** No  
 **Value Required When:** Always  
 
 **Description:** Indicates that the CPU is in `MS = DMA` and has released normal CPU ownership of the memory interface.
+
+**Derivation:**
+
+```text
+/DMA_GRANT = NOT (MS_EFF = DMA)
+```
+
+`/DMA_GRANT` is decoded from `MS_EFF` ([Control Store Organization §5.1](../08-control-store-organization.md#51-major-state-code)) by a comparator. It is not stored in the control word, so it stays clean across TS boundaries for the whole DMA major state and is deasserted while halted.
 
 When asserted:
 
@@ -289,7 +312,7 @@ Controller selection uses the grant identity defined in [DMA Arbitration](../../
 - deasserted when control exits DMA service
 
 **Constraints**
-- must be generated only by the control word
+- must be generated only by the `MS_EFF` decode
 - must not be asserted during normal instruction execution
 - must not be asserted concurrently with CPU-initiated `/RD` or `/WR`
 - does not itself define DMA address, data, direction, or device selection
@@ -387,10 +410,18 @@ Defined in:
 **Bit Width:** 1
 
 **Default Value:** 0  
-**Explicit Value Required:** Yes  
+**Explicit Value Required:** No  
 **Value Required When:** Always  
 
 **Description:** Identifies execution of an external IOT and qualifies IOA, IOP, controller responses, and I/O wait behavior.
+
+**Derivation:**
+
+```text
+IOT_ACTIVE = MS_EFF_IS_EXECUTE AND IR_IS_EXTERNAL_IOT
+```
+
+`IOT_ACTIVE` is formed by one gate from `MS_EFF_IS_EXECUTE` and the `IR_IS_EXTERNAL_IOT` predecode. It is not stored in the control word, so it stays clean across TS boundaries for the whole external-IOT EXECUTE major state.
 
 **Timing:**
 
@@ -430,6 +461,7 @@ Defined in:
 **Sources:**
 - CAF during the EXECUTE TP4 TSTEP
 - an accepted front-panel CLEAR operation while RUN = 0
+- the power-on reset ([Timing Terminology §3.4](../../09-timing/01-terminology.md#34-power-on-reset))
 
 **Assertion Condition:**
 

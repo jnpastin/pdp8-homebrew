@@ -73,6 +73,8 @@ Constraint:
 - The mapping stage is a ROM lookup; it contains no gates that evaluate conditions.
 - Two IR values may share a variant code only if they produce the same control words for every condition value in that TS.
 
+The mapping stage may be evaluated one TS ahead and its output held in a register for the TS it describes, because its inputs, IR and TS, are known before that TS begins. Its output may be replaced by fixed values in major states that use no variant. Selecting between the register and those fixed values is address formation, not condition evaluation ([Control Store Organization §5.4](./08-control-store-organization.md#54-mapping-register-and-execute-selection)).
+
 ---
 
 ## 3. Control Address Function

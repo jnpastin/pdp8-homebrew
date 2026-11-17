@@ -263,7 +263,43 @@ DMA sequencing and datapath behavior are defined in:
 
 ---
 
-## 11. Summary
+## 11. Control Word Settling
+
+### 11.1 Settling
+
+The control word is formed combinationally from registered state, the timing state, and control inputs ([Control Store Organization](../04-control/08-control-store-organization.md)). It is not registered. After each TS boundary, and after any control input changes, it may take any value for up to `T_CS` before it is stable.
+
+### 11.2 Signal Classes
+
+Every control signal is one of:
+
+- **TP-qualified:** acts only when a TP or TPC commits a result. A transient value has no effect provided the signal is stable before the TP. Register load enables, source selects, ALU fields, value fields, and the sequencing fields are TP-qualified.
+- **Immediate-effect:** acts while it is asserted, for example by driving a bus or strobing memory. An immediate-effect signal is presented only within its validity window.
+
+The immediate-effect signals and their windows are defined in [Architectural Control Signals §3.2](../04-control/20-control-output-definitions/02-architectural-control-signals.md#32-timing-model).
+
+An immediate-effect signal must depend only on MS, RUN, TS, IR, registered state, and latched console commands, never on a control input that can change during a TS.
+
+### 11.3 Validity Windows
+
+- `CW_VALID` opens a fixed number of TSTEPs into each TS, at least `T_CS` after the TS begins, and closes after the TP TSTEP. Signals whose receiver captures them at the TP stay valid through that TP.
+- `WR_VALID` closes one TSTEP earlier. Memory stores a word when `/WR` deasserts, so `/WR` must end while address and data are still stable; ending at the TP itself would race the registers that change at that TP.
+- Both windows are produced by flip-flops clocked by TCLK, so their edges are fixed TSTEP positions.
+
+### 11.4 Timing Budget
+
+Budgets are expressed in TSTEPs. Each TS must contain enough TSTEPs for:
+
+- `T_CS`, before `CW_VALID` opens
+- the work done inside the window, such as a memory access in TS2 or the datapath evaluation before TP
+
+The number of TSTEPs in each TS is a design parameter. Adding a TSTEP to one TS lengthens the cycle by one TCLK period, which is the preferred way to gain margin.
+
+A control input that changes during a TS, such as a controller response, must be stable at least `T_CS` before the TP that accepts it.
+
+---
+
+## 12. Summary
 
 The system timing model enforces:
 

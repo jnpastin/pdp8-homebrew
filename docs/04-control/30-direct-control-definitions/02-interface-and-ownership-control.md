@@ -377,7 +377,7 @@ Encoding:
 
 `/DMA_GRANT`:
 
-- originates from the control word
+- is derived from `MS_EFF` by a comparator, not stored in the control word ([Architectural Control Signals §4.5](../20-control-output-definitions/02-architectural-control-signals.md#45-dma_grant))
 - is not a micro-operation
 - does not identify the selected controller
 - does not define DMA address, data, direction, or device selection
@@ -398,7 +398,7 @@ Applicable context:
 MS = DMA
 ```
 
-Assignment:
+Related derived values:
 
 ```text
 /DMA_GRANT = 0
@@ -444,7 +444,7 @@ NOT (
 )
 ```
 
-Assignment:
+Related derived values:
 
 ```text
 /DMA_GRANT = 1
@@ -478,7 +478,7 @@ Applicable context:
 
 ```text
 MS = DMA
-/DMA_GRANT = 0
+RUN = 1
 ```
 
 CPU output-drive states:
@@ -654,7 +654,7 @@ Sources:
 
 `IOT_ACTIVE`:
 
-- originates from the control word
+- is derived as `MS_EFF_IS_EXECUTE AND IR_IS_EXTERNAL_IOT`, not stored in the control word ([Architectural Control Signals §4.8](../20-control-output-definitions/02-architectural-control-signals.md#48-external-iot-active-iot_active))
 - is not a micro-operation
 - does not select a controller by itself
 - does not cause a DB transfer by itself
@@ -676,22 +676,17 @@ MS = EXECUTE
 IR_IS_EXTERNAL_IOT = 1
 ```
 
-Assignment:
-
-```text
-IOT_ACTIVE = 1
-```
-
 Related derived values:
 
 ```text
+IOT_ACTIVE = 1
 IOA = IR_IOA
 IOP = IR[2:0]
 ```
 
 Constraints:
 
-- `IOA` and `IOP` remain derived outputs rather than direct-control assignments.
+- `IOT_ACTIVE`, `IOA`, and `IOP` are derived outputs rather than direct-control assignments.
 - Only the address-matched controller may respond.
 - Controller response inputs are valid only while `IOT_ACTIVE = 1`.
 - `IOT_ACTIVE` does not itself determine whether a read, write, skip, clear-AC, or wait response is accepted.
@@ -716,7 +711,7 @@ NOT (
 )
 ```
 
-Assignment:
+Related derived values:
 
 ```text
 IOT_ACTIVE = 0
@@ -902,9 +897,11 @@ The following output assignments remain owned by micro-operation mappings:
 /DB_WRITE
 ```
 
-The following outputs are derived rather than direct-control assignments:
+The following outputs are derived rather than direct-control assignments; the summary above shows their values:
 
 ```text
+/DMA_GRANT
+IOT_ACTIVE
 IOA
 IOP
 ```

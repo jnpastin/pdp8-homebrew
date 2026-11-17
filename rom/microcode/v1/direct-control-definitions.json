@@ -1997,9 +1997,7 @@
       "applicable_context": [
         "MS = DMA"
       ],
-      "direct_assignments": [
-        "/DMA_GRANT = 0"
-      ],
+      "direct_assignments": [],
       "control_supplied_values": [],
       "micro_operation_assignments": [],
       "state_commits": [],
@@ -2037,7 +2035,9 @@
       ],
       "external_ownership": [],
       "memory_behavior": [],
-      "derived_values": []
+      "derived_values": [
+        "/DMA_GRANT = 0"
+      ]
     },
     {
       "id": "02:5.3",
@@ -2050,9 +2050,7 @@
       "applicable_context": [
         "NOT (\n    RUN = 1\n    AND MS = DMA\n)"
       ],
-      "direct_assignments": [
-        "/DMA_GRANT = 1"
-      ],
+      "direct_assignments": [],
       "control_supplied_values": [],
       "micro_operation_assignments": [],
       "state_commits": [],
@@ -2081,7 +2079,9 @@
       ],
       "external_ownership": [],
       "memory_behavior": [],
-      "derived_values": []
+      "derived_values": [
+        "/DMA_GRANT = 1"
+      ]
     },
     {
       "id": "02:5.4",
@@ -2092,7 +2092,7 @@
         "line": 475
       },
       "applicable_context": [
-        "MS = DMA\n/DMA_GRANT = 0"
+        "MS = DMA\nRUN = 1"
       ],
       "direct_assignments": [],
       "control_supplied_values": [],
@@ -2264,16 +2264,14 @@
       "applicable_context": [
         "MS = EXECUTE\nIR_IS_EXTERNAL_IOT = 1"
       ],
-      "direct_assignments": [
-        "IOT_ACTIVE = 1"
-      ],
+      "direct_assignments": [],
       "control_supplied_values": [],
       "micro_operation_assignments": [],
       "state_commits": [],
       "value_relationships": [],
       "widths": [],
       "constraints": [
-        "`IOA` and `IOP` remain derived outputs rather than direct-control assignments.",
+        "`IOT_ACTIVE`, `IOA`, and `IOP` are derived outputs rather than direct-control assignments.",
         "Only the address-matched controller may respond.",
         "Controller response inputs are valid only while `IOT_ACTIVE = 1`.",
         "`IOT_ACTIVE` does not itself determine whether a read, write, skip, clear-AC, or wait response is accepted.",
@@ -2297,7 +2295,7 @@
       "external_ownership": [],
       "memory_behavior": [],
       "derived_values": [
-        "IOA = IR_IOA\nIOP = IR[2:0]"
+        "IOT_ACTIVE = 1\nIOA = IR_IOA\nIOP = IR[2:0]"
       ]
     },
     {
@@ -2306,14 +2304,12 @@
       "group": "7 External-IOT Qualification",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 708
+        "line": 703
       },
       "applicable_context": [
         "NOT (\n    MS = EXECUTE\n    AND IR_IS_EXTERNAL_IOT = 1\n)"
       ],
-      "direct_assignments": [
-        "IOT_ACTIVE = 0"
-      ],
+      "direct_assignments": [],
       "control_supplied_values": [],
       "micro_operation_assignments": [],
       "state_commits": [],
@@ -2337,7 +2333,9 @@
       "drive_states": [],
       "external_ownership": [],
       "memory_behavior": [],
-      "derived_values": []
+      "derived_values": [
+        "IOT_ACTIVE = 0"
+      ]
     },
     {
       "id": "02:8.2",
@@ -2345,7 +2343,7 @@
       "group": "8 System Initialization",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 764
+        "line": 759
       },
       "applicable_context": [
         "MS = EXECUTE\nTS = 4\nIR_IS_CAF = 1"
@@ -2392,7 +2390,7 @@
       "group": "8 System Initialization",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 802
+        "line": 797
       },
       "applicable_context": [
         "RUN = 0\nFP_CLEAR = 1"
@@ -2438,7 +2436,7 @@
       "group": "8 System Initialization",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 838
+        "line": 833
       },
       "applicable_context": [
         "NOT (\n    MS = EXECUTE\n    AND TS = 4\n    AND IR_IS_CAF = 1\n)\nNOT (\n    RUN = 0\n    AND FP_CLEAR = 1\n)"

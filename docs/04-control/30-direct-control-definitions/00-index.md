@@ -40,9 +40,8 @@ The governing model is defined in the [Direct-Control Model](../07-direct-contro
 
 [Interface and Ownership Direct Control](./02-interface-and-ownership-control.md) defines:
 
-- `/DMA_GRANT`
-- `IOT_ACTIVE`
 - `/INITIALIZE`
+- the derived `/DMA_GRANT` and `IOT_ACTIVE` values in each context
 - CPU memory-interface ownership
 - DMA memory-interface ownership
 - system data bus ownership

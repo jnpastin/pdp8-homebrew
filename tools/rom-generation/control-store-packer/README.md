@@ -30,7 +30,7 @@ A symbolic assignment that takes its value from an input (`value_from_input`) is
 
 ### 3.1 Contexts
 
-A context is what the control store sees apart from the instruction and the runtime inputs: each running major state and timing state (`MS_A` = the `MS` code, `RUN = 1`), and the halted pseudo-state (`MS_A = 7`, `RUN = 0`). While halted, `MS` and `TS` are not on the address, so the packer enumerates them and requires that no word depends on them.
+A context is what the control store sees apart from the instruction and the runtime inputs: each running major state and timing state (`MS_EFF` = the `MS` code, `RUN = 1`), and the halted pseudo-state (`MS_EFF = 7`, `RUN = 0`). While halted, `MS` and `TS` are not on the address, so the packer enumerates them and requires that no word depends on them.
 
 ### 3.2 Behaviors
 
@@ -42,14 +42,18 @@ For each group it enumerates the runtime inputs the undecided guards and base co
 
 The packer greedily drops each input whose removal leaves the required words consistent: two combinations that agree on the remaining inputs must require the same value for every field both require. The six front-panel commands count as one signal, `FP_CMD`.
 
-- **Datapath:** in EXECUTE, IR groups with identical required words over identical inputs share a variant. Outside EXECUTE the word must not depend on IR, because the mapping ROM supplies no variant there.
-- **Sequencer:** the inputs must be among `HLT_REQ`, `FP_STOP`, `/DMA_REQ`, and `SEQ_OVL` (the running-only inputs while running, `FP_CMD` while halted). Its IR dependence must reduce to one of `IR_INDIRECT`, `IR_OPR_HLT`, `IR_IS_CAF` per `E` and timing state; that decode becomes the `IR_SEQ` bit.
+- **Datapath:** in EXECUTE, IR groups with identical required words over identical inputs share a variant. Outside EXECUTE the word must not depend on IR, because the EXECUTE selection presents `VARIANT = 0` there.
+- **Sequencer:** the inputs must be among `HLT_REQ`, `FP_STOP`, `/DMA_REQ`, and `SEQ_OVL` (the running-only inputs while running, `FP_CMD` while halted). In EXECUTE, its IR dependence must reduce to one of `IR_INDIRECT`, `IR_OPR_HLT`, `IR_IS_CAF` per timing state; that decode becomes the mapping entry's `IR_SEQ` bit. Outside EXECUTE, `IR_SEQ` is wired to `IR_INDIRECT`, so the word may depend on no other decode (`NON_EXECUTE_IR_SEQ`).
 
-### 3.4 Overlay Groups
+### 3.4 Mapping ROM
 
-Each EXECUTE variant and each timing state with `E = 0` needs a set of overlay signals of at most 5 bits (`FP_CMD` takes 3). The sets are packed first-fit, largest first, into at most four groups. `FP_CMD`, when present, occupies bits 0–2; other signals follow in name order.
+The mapping ROM is addressed by `IR` and the current timing state (A0 wired 0) and is evaluated one timing state ahead: the entry at TS *n* holds the EXECUTE `VARIANT`, overlay group, and `IR_SEQ` decode for TS *n*+1, and the entry at TS4 holds TS1's. The mapping register `MAPR` captures it at each main-sequence TP. Outside EXECUTE (`MS_EFF_IS_EXECUTE = 0`), the slices see `VARIANT = 0`, overlay group 1, and `IR_SEQ = IR_INDIRECT` instead ([Control Store Organization §5.4](../../../docs/04-control/08-control-store-organization.md#54-mapping-register-and-execute-selection)).
 
-### 3.5 Bit Allocation
+### 3.5 Overlay Groups
+
+Each EXECUTE variant needs a set of overlay signals of at most 5 bits (`FP_CMD` takes 3). All contexts outside EXECUTE share one set, because they share the one wired group; it must also fit in 5 bits. The sets are packed first-fit, largest first, into at most four groups, and the groups are then renumbered so that the non-EXECUTE group is group 1. `FP_CMD`, when present, occupies bits 0–2; other signals follow in name order.
+
+### 3.6 Bit Allocation
 
 Two datapath fields conflict when some reachable word requires both. Fields are placed, widest first, into the first shared slot that is wide enough and holds no conflicting field. Slots are laid out from bit 0.
 
@@ -57,7 +61,7 @@ Two datapath fields conflict when some reachable word requires both. Fields are 
 
 For every reachable combination of every context, the packer forms the addresses as the hardware does:
 
-- the mapping ROM image at `IR`, `TS`, `E` gives `VARIANT`, `DP_OVL_SEL`, and `IR_SEQ`; IR values with the same mapping entry address the slices identically, so each distinct entry is checked once
+- in EXECUTE TS *n*, the mapping ROM image entry at `IR` and TS *n*−1 (TS4 for TS1), as `MAPR` holds it, gives `VARIANT`, `DP_OVL_SEL`, and `IR_SEQ`; outside EXECUTE, the fixed values and `IR_INDIRECT` do. IR values with the same entry address the slices identically, so each distinct entry is checked once
 - the selected overlay group gives `DP_OVL`
 - `SEQ_OVL` follows `RUN`
 
@@ -91,6 +95,7 @@ Earlier outputs are removed first. The packing and images are written only when 
 | `INVISIBLE_DEPENDENCY` | a word depends on an input its address does not carry |
 | `NON_EXECUTE_IR_DEPENDENCE` | the datapath word depends on IR outside EXECUTE |
 | `SEQUENCER_IR_DEPENDENCE`, `IR_SEQ_TOO_WIDE` | the sequencer word needs IR information beyond one decode per timing state |
+| `NON_EXECUTE_IR_SEQ` | outside EXECUTE, the sequencer word needs a decode other than `IR_INDIRECT` |
 | `VARIANT_OVERFLOW`, `OVERLAY_TOO_WIDE`, `OVERLAY_GROUP_OVERFLOW`, `DATAPATH_TOO_WIDE` | the organization's field widths are exceeded |
 | `VERIFICATION_MISMATCH` | an image disagrees with a required value |
 

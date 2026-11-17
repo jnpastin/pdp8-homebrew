@@ -1659,42 +1659,5 @@
       "notes": []
     }
   ],
-  "diagnostics": [
-    {
-      "severity": "WARNING",
-      "code": "MAINTAINED_ASSIGNMENT_CHANGED",
-      "message": "Assignment ALU_B_SRC changes from '6' to '0'.",
-      "micro_operation": "AC_RAR",
-      "field_name": "ALU_B_SRC",
-      "source_path": "docs/03-microarchitecture/02-micro-operations.md",
-      "source_line": 300
-    },
-    {
-      "severity": "WARNING",
-      "code": "MAINTAINED_ASSIGNMENT_CHANGED",
-      "message": "Assignment ALU_B_SRC changes from '6' to '0'.",
-      "micro_operation": "AC_RAL",
-      "field_name": "ALU_B_SRC",
-      "source_path": "docs/03-microarchitecture/02-micro-operations.md",
-      "source_line": 319
-    },
-    {
-      "severity": "WARNING",
-      "code": "MAINTAINED_ASSIGNMENT_CHANGED",
-      "message": "Assignment ALU_B_SRC changes from '6' to '0'.",
-      "micro_operation": "AC_RTR",
-      "field_name": "ALU_B_SRC",
-      "source_path": "docs/03-microarchitecture/02-micro-operations.md",
-      "source_line": 338
-    },
-    {
-      "severity": "WARNING",
-      "code": "MAINTAINED_ASSIGNMENT_CHANGED",
-      "message": "Assignment ALU_B_SRC changes from '6' to '0'.",
-      "micro_operation": "AC_RTL",
-      "field_name": "ALU_B_SRC",
-      "source_path": "docs/03-microarchitecture/02-micro-operations.md",
-      "source_line": 357
-    }
-  ]
+  "diagnostics": []
 }

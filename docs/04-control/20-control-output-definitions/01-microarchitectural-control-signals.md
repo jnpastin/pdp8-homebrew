@@ -2961,19 +2961,21 @@ Properties:
 
 ### 11.2 Signal Stability Within TS
 
-All signals must remain stable throughout the active Timing State.
+The control word settles within `T_CS` after each TS boundary or control-input change ([Timing Architecture §11](../../09-timing/02-timing-architecture.md#11-control-word-settling)).
 
 Constraint:
 
 ```
-During a TS:
-    all control signals are constant
+From T_CS after the last change of its inputs until TP:
+    every control signal is constant
 ```
 
 Implications:
 
-- No signal may change between TS entry and TP  
-- No mid-cycle control transitions are permitted  
+- A control signal may take transient values before it settles  
+- Every signal defined in this document is TP-qualified: a transient value has no effect, because results commit only at TP  
+- IDB must be realized so that transient `IDB_DRIVE` and `IDB_SRC` values cannot cause driver contention, for example as a multiplexer  
+- Immediate-effect signals are architectural and are windowed as defined in [Architectural Control Signals §3.2](./02-architectural-control-signals.md#32-timing-model)  
 
 ---
 

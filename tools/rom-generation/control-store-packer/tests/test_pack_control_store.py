@@ -63,7 +63,7 @@ def documents(execute_guards=None, extra_cases=(), timing=()):
         make_field("G", 2, care="F=1"),
         make_field("MS_NEXT", 3, MS_VALUES),
         make_field("MS_LOAD"), make_field("RUN_NEXT", default="1"),
-        make_field("HLT_REQ_NEXT"), make_field("/DMA_GRANT", default="1"),
+        make_field("HLT_REQ_NEXT"),
         make_field("/INITIALIZE", default="1"),
     ]
     cases = []
@@ -170,6 +170,21 @@ class GroupTests(unittest.TestCase):
         for need, code in placement.items():
             self.assertTrue(need <= set(groups[code].signals))
 
+    def test_place_group_renumbers(self):
+        needs = [frozenset({"C", "D"}), frozenset({"E"}), frozenset()]
+        groups, placement = P.pack_groups(needs)
+        self.assertEqual(len(groups), 1)
+        P.place_group(groups, placement, frozenset({"E"}), 1)
+        # Both needs fit one group, which moves to code 1; an empty group
+        # fills code 0. Placements follow their group, except the empty
+        # need, which fits any group and stays at 0.
+        self.assertEqual([g.code for g in groups], [0, 1])
+        self.assertEqual(placement[frozenset({"E"})], 1)
+        self.assertEqual(placement[frozenset({"C", "D"})], 1)
+        self.assertEqual(groups[1].signals, ["C", "D", "E"])
+        self.assertEqual(groups[0].signals, [])
+        self.assertEqual(placement[frozenset()], 0)
+
     def test_overlay_values(self):
         group = P.Group(0, [P.FP_CMD, "C"], {P.FP_CMD: 0, "C": 3})
         self.assertEqual(P.overlay_values(group, 0b01101), {P.FP_CMD: "5", "C": "1"})
@@ -186,7 +201,9 @@ class AllocationTests(unittest.TestCase):
 
 class AddressTests(unittest.TestCase):
     def test_address_maps(self):
-        self.assertEqual(P.mapping_address(0o7777, 4, 1), (0o7777 << 3) | (3 << 1) | 1)
+        self.assertEqual(P.mapping_address(0o7777, 4), (0o7777 << 3) | (3 << 1))
+        self.assertEqual([P.next_ts(t) for t in (1, 2, 3, 4)], [2, 3, 4, 1])
+        self.assertEqual([P.previous_ts(t) for t in (1, 2, 3, 4)], [4, 1, 2, 3])
         self.assertEqual(P.datapath_address(2, 3, 5, 9), (2 << 12) | (2 << 10) | (5 << 5) | 9)
         values = {"HLT_REQ": "1", "FP_STOP": "0", "/DMA_REQ": "1",
                   "FP_SINGLE_INSTRUCTION": "1", "FP_SINGLE_STEP": "0",
@@ -214,10 +231,71 @@ class PackTests(unittest.TestCase):
                          {1: 2, 2: 2, 3: 2, 4: 2})
         self.assertEqual(packing.ir_seq_select[(1, 3)], "IR_OPR_HLT")
         self.assertIsNone(packing.ir_seq_select[(1, 1)])
+        self.assertEqual(packing.ir_seq_select[(0, 4)], "IR_INDIRECT")
         # FP commands change only RUN_NEXT, a sequencer field, so the
         # datapath overlay carries only A.
         signals = {s for g in packing.groups for s in g.signals}
         self.assertEqual(signals, {"A"})
+        self.assertGreater(len(packing.groups), P.NON_EXECUTE_GROUP)
+
+    def test_mapping_rom_holds_the_next_timing_state(self):
+        model, _ = build()
+        packing, _ = P.pack(model)
+        mapping = packing.images["mapping"]
+        for ir in (0, 1):  # X = IR[0] selects the variant
+            for ts in (1, 2, 3, 4):
+                target = P.next_ts(ts)
+                entry = mapping[P.mapping_address(ir, ts)]
+                self.assertEqual(entry & 0b11111, packing.variant_of[(target, ir)])
+                hlt = (entry >> P.IR_SEQ_BIT) & 1
+                # IR_OPR_HLT = IR[9] is presented for EXECUTE TS3 only.
+                self.assertEqual(hlt, 0)
+            hlt_ir = ir | (1 << 9)
+            entry = mapping[P.mapping_address(hlt_ir, 2)]
+            self.assertEqual((entry >> P.IR_SEQ_BIT) & 1, 1)
+            self.assertEqual((mapping[P.mapping_address(hlt_ir, 3)] >> P.IR_SEQ_BIT) & 1, 0)
+
+    def test_non_execute_selection_is_fixed(self):
+        model, _ = build()
+        packing, _ = P.pack(model)
+        indirect = 1 << 8
+        entry = P.slice_select(packing, False, indirect, 4)
+        self.assertEqual(entry & 0b11111, 0)
+        self.assertEqual((entry >> P.VARIANT_WIDTH) & 0b11, P.NON_EXECUTE_GROUP)
+        self.assertEqual((entry >> P.IR_SEQ_BIT) & 1, 1)
+        self.assertEqual(P.slice_select(packing, True, 1, 1),
+                         packing.images["mapping"][P.mapping_address(1, 4)])
+
+    def test_unshifted_mapping_image_is_detected(self):
+        model, _ = build()
+        packing, _ = P.pack(model)
+        dp = P.behaviors(model, model.datapath_fields, [])
+        seq = P.behaviors(model, model.sequencer_fields, [])
+        mapping = packing.images["mapping"]
+        # Write each TS's own entry instead of the next TS's.
+        shifted = list(mapping)
+        for ir in range(4096):
+            for ts in (1, 2, 3, 4):
+                mapping[P.mapping_address(ir, ts)] = shifted[
+                    P.mapping_address(ir, P.previous_ts(ts))]
+        diagnostics = []
+        P.verify(packing, dp, seq, diagnostics)
+        self.assertIn("VERIFICATION_MISMATCH", {d.code for d in diagnostics})
+
+    def test_non_execute_ir_seq_must_be_ir_indirect(self):
+        extra = ({
+            "execution_case_id": "fetch-hlt",
+            "base_context": "(MS = FETCH AND RUN = 1)",
+            "defaults": {},
+            "field_assignments": {"HLT_REQ_NEXT": [{"value": "1", "when":
+                                  "((MS = FETCH AND RUN = 1) AND (TS = 4 AND IR_OPR_HLT = 1))"}]},
+        },)
+        documents_ = documents(extra_cases=extra)
+        documents_["symbolic"]["cases"] = [c for c in documents_["symbolic"]["cases"]
+                                           if c["execution_case_id"] != "fetch"]
+        model, _ = P.build_model(documents_)
+        _, diagnostics = P.pack(model)
+        self.assertIn("NON_EXECUTE_IR_SEQ", {d.code for d in diagnostics})
 
     def test_corrupted_image_is_detected(self):
         model, _ = build()
