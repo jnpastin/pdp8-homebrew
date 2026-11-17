@@ -267,6 +267,22 @@ A2..A0   = 0
 
 While halted, the running-only inputs cannot change the sequencer word and the front-panel command can; while running, the reverse holds.
 
+### 5.7 Front-Panel Command Path
+
+Console commands are executed only while halted ([Major State Timing §8.2](../09-timing/03-major-state-timing.md#82-console-transaction)), and they reach both slices without passing through `MAPR`.
+
+While `RUN = 0`:
+
+- `MS_EFF = HALTED` (7), so `MS_EFF_IS_EXECUTE = 0` and the EXECUTE selection ignores `MAPR` (section 5.4.2): `VARIANT = 0`, `DP_OVL_SEL = 1`, and `IR_SEQ = IR_INDIRECT`.
+- `DP_OVL_SEL = 1` presents the state group, which carries `FP_CMD[2:0]` on `DP_OVL[2:0]` (section 6.2). The datapath slice address is therefore `MS_EFF = 7`, the held `TS`, `VARIANT = 0`, and `DP_OVL = {CIFP, AUTO_INDEX_REQUIRED, FP_CMD}`, which selects the command's datapath word.
+- `SEQ_OVL` carries `FP_CMD[2:0]` (section 5.6), which selects the command's sequencer word: `RUN_NEXT` for START and CONTINUE, `MS_NEXT` and `MS_LOAD` for START, and `/INITIALIZE` for CLEAR.
+
+No overlay selection depends on the command: being halted alone forces the state group. `MAPR` selects among the other groups only in EXECUTE.
+
+A console transaction commits at TPC, and `MAPR` does not load at TPC (section 5.4.1). `MAPR` therefore keeps the entry it held when the processor halted, across any number of console commands. No console command loads IR, so that entry remains correct for CONTINUE (section 5.4.3). START enters FETCH, which does not use `MAPR`.
+
+The front-panel inputs used while running (`FP_STOP`, `FP_SINGLE_STEP`, and `FP_SINGLE_INSTRUCTION`) reach only the sequencer slice address, `FP_STOP` directly and the other two through `SEQ_OVL` when `RUN = 1`. They do not pass through `MAPR` or the datapath overlay.
+
 ---
 
 ## 6. Datapath Overlay
