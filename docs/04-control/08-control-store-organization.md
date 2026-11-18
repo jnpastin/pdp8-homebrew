@@ -348,6 +348,8 @@ Fields that never require a value in the same control word share device outputs 
 
 Total: 45 bits in six devices, three bits spare.
 
+Fields that share bits are aligned at the low-order end of the shared bits: a field of width *w* occupies the lowest *w* of them. A field narrower than its shared bits, such as `CIFP_VAL` in the two bits it shares with `ALU_A_SRC`, does not use the higher ones.
+
 A field shares bits only through wiring. No decoder or gate follows the control store ([Control Addressing §2](./02-control-addressing.md#2-control-address-definition)).
 
 ---

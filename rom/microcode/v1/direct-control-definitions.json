@@ -2023,7 +2023,7 @@
         "line": 393
       },
       "applicable_context": [
-        "MS = DMA"
+        "RUN = 1\nMS = DMA"
       ],
       "direct_assignments": [],
       "control_supplied_values": [],
@@ -2032,7 +2032,7 @@
       "value_relationships": [],
       "widths": [],
       "constraints": [
-        "`/DMA_GRANT` remains asserted throughout `MS = DMA`.",
+        "`/DMA_GRANT` remains asserted throughout `MS = DMA` while `RUN = 1`; while halted it is deasserted (section 5.3).",
         "CPU control must not drive `MFB`, `AB`, `MDB`, `/RD`, or `/WR`.",
         "`AB_SRC`, `MFB_SRC`, and `MDB_SRC` may contain valid encoded values in the control word, but those values do not authorize CPU drivers during DMA ownership.",
         "CPU-generated `/RD` and `/WR` requests remain inactive because the CPU drivers are released.",
@@ -2073,7 +2073,7 @@
       "group": "5 DMA Authorization and Ownership",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 436
+        "line": 437
       },
       "applicable_context": [
         "NOT (\n    RUN = 1\n    AND MS = DMA\n)"
@@ -2117,7 +2117,7 @@
       "group": "5 DMA Authorization and Ownership",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 475
+        "line": 476
       },
       "applicable_context": [
         "MS = DMA\nRUN = 1"
@@ -2155,7 +2155,7 @@
       "group": "6 System Data Bus Ownership",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 542
+        "line": 543
       },
       "applicable_context": [
         "DB_WRITE_FROM_AC is not selected"
@@ -2199,7 +2199,7 @@
       "group": "6 System Data Bus Ownership",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 571
+        "line": 572
       },
       "applicable_context": [
         "DB_WRITE_FROM_AC is selected"
@@ -2242,7 +2242,7 @@
       "group": "6 System Data Bus Ownership",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 607
+        "line": 608
       },
       "applicable_context": [
         "DB_READ_TO_AC is selected"
@@ -2287,10 +2287,10 @@
       "group": "7 External-IOT Qualification",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 670
+        "line": 671
       },
       "applicable_context": [
-        "MS = EXECUTE\nIR_IS_EXTERNAL_IOT = 1"
+        "RUN = 1\nMS = EXECUTE\nIR_IS_EXTERNAL_IOT = 1"
       ],
       "direct_assignments": [],
       "control_supplied_values": [],
@@ -2332,10 +2332,10 @@
       "group": "7 External-IOT Qualification",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 703
+        "line": 705
       },
       "applicable_context": [
-        "NOT (\n    MS = EXECUTE\n    AND IR_IS_EXTERNAL_IOT = 1\n)"
+        "NOT (\n    RUN = 1\n    AND MS = EXECUTE\n    AND IR_IS_EXTERNAL_IOT = 1\n)"
       ],
       "direct_assignments": [],
       "control_supplied_values": [],
@@ -2371,7 +2371,7 @@
       "group": "8 System Initialization",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 759
+        "line": 762
       },
       "applicable_context": [
         "MS = EXECUTE\nTS = 4\nIR_IS_CAF = 1"
@@ -2418,7 +2418,7 @@
       "group": "8 System Initialization",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 797
+        "line": 800
       },
       "applicable_context": [
         "RUN = 0\nFP_CLEAR = 1"
@@ -2464,7 +2464,7 @@
       "group": "8 System Initialization",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 833
+        "line": 836
       },
       "applicable_context": [
         "NOT (\n    MS = EXECUTE\n    AND TS = 4\n    AND IR_IS_CAF = 1\n)\nNOT (\n    RUN = 0\n    AND FP_CLEAR = 1\n)"

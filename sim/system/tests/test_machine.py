@@ -1,0 +1,37 @@
+import io
+import sys
+import unittest
+from contextlib import redirect_stdout
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+import run_sim
+from pdp8_system.machine import Machine
+
+
+class MachineTests(unittest.TestCase):
+    def test_deposit_examine_block(self):
+        m = Machine()
+        m.deposit_block(0o0200, [0o1111, 0o2222, 0o3333], instruction_field=1)
+        m.load_address(0o0200, instruction_field=1)
+        self.assertEqual([m.examine() for _ in range(3)], [0o1111, 0o2222, 0o3333])
+        self.assertEqual(m.memory.write_log, [(1, 0o200, 0o1111), (1, 0o201, 0o2222), (1, 0o202, 0o3333)])
+
+    def test_run_until_halt(self):
+        m = Machine(keep_trace=True)
+        m.deposit_block(0o0200, [0o7402])
+        m.load_address(0o0200)
+        m.start()
+        self.assertEqual(m.run(max_ts=50), 8)
+        self.assertEqual(m.state["PC"], 0o0201)
+
+    def test_cli_check(self):
+        out = io.StringIO()
+        with redirect_stdout(out):
+            self.assertEqual(run_sim.main(["--check"]), 0)
+        self.assertIn("PC = 0201", out.getvalue())
+
+
+if __name__ == "__main__":
+    unittest.main()

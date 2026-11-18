@@ -395,6 +395,7 @@ Source:
 Applicable context:
 
 ```text
+RUN = 1
 MS = DMA
 ```
 
@@ -416,7 +417,7 @@ CPU /WR driver = HIGH_Z
 
 Constraints:
 
-- `/DMA_GRANT` remains asserted throughout `MS = DMA`.
+- `/DMA_GRANT` remains asserted throughout `MS = DMA` while `RUN = 1`; while halted it is deasserted (section 5.3).
 - CPU control must not drive `MFB`, `AB`, `MDB`, `/RD`, or `/WR`.
 - `AB_SRC`, `MFB_SRC`, and `MDB_SRC` may contain valid encoded values in the control word, but those values do not authorize CPU drivers during DMA ownership.
 - CPU-generated `/RD` and `/WR` requests remain inactive because the CPU drivers are released.
@@ -672,6 +673,7 @@ Source:
 Applicable context:
 
 ```text
+RUN = 1
 MS = EXECUTE
 IR_IS_EXTERNAL_IOT = 1
 ```
@@ -706,7 +708,8 @@ Applicable context:
 
 ```text
 NOT (
-    MS = EXECUTE
+    RUN = 1
+    AND MS = EXECUTE
     AND IR_IS_EXTERNAL_IOT = 1
 )
 ```
@@ -875,9 +878,9 @@ Source:
 ```text
 Control context                     Direct-control result
 ----------------------------------  -----------------------------------------
-MS = DMA                            /DMA_GRANT = 0
-MS != DMA                           /DMA_GRANT = 1
-External-device IOT execution       IOT_ACTIVE = 1
+RUN = 1 AND MS = DMA                /DMA_GRANT = 0
+Otherwise, including while halted   /DMA_GRANT = 1
+External-device IOT, RUN = 1        IOT_ACTIVE = 1
 All other control cases             IOT_ACTIVE = 0
 CAF initialization interval         /INITIALIZE = 0
 Accepted front-panel CLEAR          /INITIALIZE = 0
