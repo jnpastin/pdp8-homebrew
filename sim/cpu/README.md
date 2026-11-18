@@ -6,7 +6,7 @@ Simulates the CPU from its packed control-store images, one timing state (TS) at
 
 The simulator reads the images; it never regenerates control words from the symbolic artifacts. Every behavior it models cites the document that defines it. Where the documents are silent or inconsistent, it raises `SpecGap` instead of choosing a behavior.
 
-Status: milestones M0 (images, address formation, power-on, console transactions) and M1 (instruction execution, checked end to end by `sim/system/tests/test_instructions.py`) are complete. The instruction-level reference model and lock-step comparison follow in M2.
+Status: milestones M0 (images, address formation, power-on, console transactions), M1 (instruction execution, checked end to end by `sim/system/tests/test_instructions.py`), and M2 (lock-step comparison with the [reference model](../reference/README.md)) are complete. MAINDEC test programs follow in M3.
 
 ## 2. Inputs
 

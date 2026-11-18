@@ -28,11 +28,19 @@ python sim/system/src/run_sim.py --check
 
 Validates the images, the packing description, and the field encodings, then deposits and examines a HLT instruction and runs it from START. Exits 0 on success.
 
-## 4. Planned
+## 4. Lock-Step Comparison
 
-The instruction-level reference model and the lock-step comparer (milestone M2), and the paper-tape loader that loads test programs through DEPOSIT (milestone M3).
+`pdp8_system.lockstep.Lockstep` runs a machine beside the [reference model](../reference/README.md). After every instruction, and after every interrupt entry, both must agree on AC, L, MQ, PC, IF, DF, IE, the memory words written, whether the processor halted, and whether an interrupt was recognized at that boundary. The first difference raises `Divergence`, naming the step, the instruction (field, address, word, and mnemonic), and, for each differing register, the major state and TP at which the simulator committed it.
 
-## 5. Testing
+A boundary in the simulator is the TP4 of an EXECUTE or INTERRUPT major state. `int_req` supplies the interrupt request for each step, held constant within it. DMA, Single Step, and Single Instruction are outside the comparison.
+
+`reference_from(machine)` builds a reference model from the machine's current state, so a comparison can start at any instruction boundary.
+
+## 5. Planned
+
+The paper-tape loader that loads test programs through DEPOSIT, and the MAINDEC runs (milestone M3).
+
+## 6. Testing
 
 ```text
 python -m unittest discover -s sim/system/tests -p "test_*.py"
@@ -48,3 +56,5 @@ python -m unittest discover -s sim/system/tests -p "test_*.py"
 | Processor IOTs | ION, IOF, SKON, SRQ, GTF, RTF, SGT, CAF (no interrupt at CAF completion); external IOT with no device |
 | Interrupts | ION delay, entry from non-zero fields, CIF inhibit window, RIB, RMF and `JMP I 0` return |
 | Run control | HLT and CONTINUE, Single Step through DEFER, Single Instruction, STOP |
+
+`test_lockstep.py` is the milestone M2 suite: the M1 programs and an interrupt-service program compared after every instruction; seeded random runs over all eight fields from random processor states, with memory biased toward the processor and memory-extension IOTs, checked for coverage of interrupts, field changes, and every processor IOT; and two checks that a divergence is detected and reported with its instruction and TP.

@@ -82,6 +82,8 @@ If P = 1:
 EA_ADDR = PC[11:7] || offset
 ```
 
+PC here is the address from which the instruction was fetched, before it is incremented, so an instruction at the last word of a page addresses its own page ([Addressing Model §8](./05-addressing-model.md#8-direct-addressing-i--0)).
+
 ---
 
 ## 7. Step 2A: Direct Addressing Path (I = 0)
@@ -136,15 +138,19 @@ PTR_value = M[(IF, EA_ADDR)]
 
 ---
 
-### 8.3 Step 2B.3: Final EA Formation (DF domain)
+### 8.3 Step 2B.3: Final EA Formation
 
 ```
-EA_field = DF
+EA_field = DF                       for AND, TAD, ISZ, DCA
+EA_field = IF (after any pending    for JMP, JMS
+           field change)
 EA_ADDR  = PTR_value
 
 EA = (EA_field, EA_ADDR)
 STOP
 ```
+
+The data field applies only to the operands of AND, TAD, ISZ, and DCA. A JMP or JMS target, including the word in which JMS stores its return address, is in the instruction field, after any pending CIF, RMF, or RTF change is applied ([Addressing Model §7](./05-addressing-model.md#7-if-vs-df-correct-architectural-rule)).
 
 ---
 
@@ -154,7 +160,7 @@ STOP
 - Direct (I = 0) uses IF for final memory access  
 - Indirect (I = 1):
   - Pointer location is (IF, EA_ADDR)  
-  - Final EA is (DF, PTR_value)  
+  - Final EA is (DF, PTR_value) for AND, TAD, ISZ, and DCA, and (IF, PTR_value) for JMP and JMS, after any pending field change  
 - Auto-index:
   - Applies only when I = 1  
   - Occurs before pointer use  
@@ -166,6 +172,6 @@ STOP
 ## 10. Notes
 
 - Pointer location is always addressed in IF  
-- Pointer value is interpreted as an address in DF  
-- Indirect addressing enables cross-field access via DF  
+- Pointer value is interpreted as an address in DF for AND, TAD, ISZ, and DCA, and in IF for JMP and JMS  
+- Indirect addressing enables cross-field data access via DF  
 
