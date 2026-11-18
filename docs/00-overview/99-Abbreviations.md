@@ -102,7 +102,31 @@ RUN  = [Run state](../01-architecture/01-registers.md#run--run-state)
 
 ---
 
-## 6. Timing Signals (Class C)
+## 6. Control-Store Signals
+
+
+DP_OVL[4:0] = [Datapath Overlay](../04-control/08-control-store-organization.md#6-datapath-overlay)
+
+DP_OVL_SEL[1:0] = [Datapath Overlay Select](../04-control/08-control-store-organization.md#542-execute-selection)
+
+FP_CMD[2:0] = [Front-Panel Command Code](../04-control/08-control-store-organization.md#52-front-panel-command-code)
+
+IR_SEQ = [Sequencer Instruction Decode](../04-control/08-control-store-organization.md#542-execute-selection)
+
+MS_EFF[2:0] = [Effective Major State](../04-control/08-control-store-organization.md#51-major-state-and-timing-state-codes)
+
+MS_EFF_IS_EXECUTE = [Effective Major State Is EXECUTE](../04-control/08-control-store-organization.md#51-major-state-and-timing-state-codes)
+
+SEQ_OVL[2:0] = [Sequencer Overlay](../04-control/08-control-store-organization.md#56-sequencer-slice-address)
+
+TS_CODE[1:0] = [Timing-State Code](../04-control/08-control-store-organization.md#51-major-state-and-timing-state-codes)
+
+VARIANT[4:0] = [Execution Variant](../04-control/08-control-store-organization.md#542-execute-selection)
+
+
+---
+
+## 7. Timing Signals (Class C)
 
 
 MCLK  = [Master Clock](../09-timing/01-terminology.md#21-master-clock-mclk)
@@ -126,15 +150,19 @@ WR_VALID = [Write Valid](../09-timing/01-terminology.md#57-write-valid-wr_valid)
 
 ---
 
-## 7. I/O Signals
+## 8. I/O Signals
 
 
-IOA[5:0] = I/O Device Address Bus
+IOA[5:0] = [I/O Device Address Bus](../04-control/20-control-output-definitions/02-architectural-control-signals.md#46-io-address-bus-ioa50)
+
+IOP[2:0] = [I/O Operation Field](../04-control/20-control-output-definitions/02-architectural-control-signals.md#47-io-operation-field-iop20)
+
+IOT_ACTIVE = [External IOT Active](../04-control/20-control-output-definitions/02-architectural-control-signals.md#48-external-iot-active-iot_active)
 
 
 ---
 
-## 8. Front Panel Signals (Class D)
+## 9. Front Panel Signals (Class D)
   
 FP_START     = [Start Switch](../04-control/10-control-input-definitions/04-external-inputs.md#fp_start)
  
@@ -160,7 +188,7 @@ FP_DF        = [Data Field Switches](../04-control/10-control-input-definitions/
 
 ---
 
-## 9. Conventions
+## 10. Conventions
 
 - Bracket notation indicates bus width (e.g., AB[11:0])
 - Uppercase denotes signal-level identifiers
@@ -168,7 +196,7 @@ FP_DF        = [Data Field Switches](../04-control/10-control-input-definitions/
 
 ---
 
-## 10. Constraints
+## 11. Constraints
 
 - New abbreviations must be added here before use
 - Existing abbreviations must not be redefined
@@ -176,7 +204,7 @@ FP_DF        = [Data Field Switches](../04-control/10-control-input-definitions/
 
 ---
 
-## 11. Summary
+## 12. Summary
 
 This dictionary ensures consistency across:
 - architecture definitions

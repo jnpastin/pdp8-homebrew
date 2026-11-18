@@ -165,14 +165,16 @@ The controller enters its initialized state when /INITIALIZE is asserted.
 | Keyboard flag | Clear |
 | Teleprinter transmit register | 000 |
 | Teleprinter flag | Clear |
-| Shared interrupt enable | Clear |
+| Shared interrupt enable | Set |
 | Controller interrupt contribution | Inactive |
+
+Initialization sets the shared interrupt enable, as on the PDP-8/e, where INITIALIZE sets the KL8-E interrupt enable. Software disables the controller's interrupt contribution with KIE (`AC[0] = 0`). Both flags are clear after initialization, so no interrupt request results until a flag sets.
 
 /INITIALIZE cancels any controller operation not yet reported as complete.  
 Any characters not yet represented by a completed programmer-visible operation may be discarded.
 
 The controller responds to /INITIALIZE regardless of IOT_ACTIVE, address match, IOP, or interrupt state.  
-The initialized state commits at the TP ending the asserted /INITIALIZE TSTEP.  
+The initialized state commits at the TP ending the /INITIALIZE assertion.  
 No other controller action commits at that TP.
 
 ---

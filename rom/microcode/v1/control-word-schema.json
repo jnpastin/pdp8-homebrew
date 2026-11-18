@@ -2154,7 +2154,7 @@
       "control_word_role": "encoded",
       "default_value": "0",
       "explicit_value_required": "Conditionally",
-      "value_required_when": "(IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1",
+      "value_required_when": "(IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1 OR (L_LOAD=1 AND L_OP=2)",
       "attributes": {
         "mnemonic": "ALU_A_SRC",
         "display_name": "ALU Input A Select",
@@ -2367,7 +2367,7 @@
       "control_word_role": "encoded",
       "default_value": "0",
       "explicit_value_required": "Conditionally",
-      "value_required_when": "(IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1",
+      "value_required_when": "(IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1 OR (L_LOAD=1 AND L_OP=2)",
       "attributes": {
         "mnemonic": "ALU_B_SRC",
         "display_name": "ALU Input B Select",
@@ -2605,7 +2605,7 @@
       "control_word_role": "encoded",
       "default_value": "0",
       "explicit_value_required": "Conditionally",
-      "value_required_when": "(IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1",
+      "value_required_when": "(IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1 OR (L_LOAD=1 AND L_OP=2)",
       "attributes": {
         "mnemonic": "ALU_OP",
         "display_name": "ALU Operation",
@@ -4872,7 +4872,7 @@
           "meaning": "asserted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 110
+            "line": 109
           }
         },
         {
@@ -4880,7 +4880,7 @@
           "meaning": "deasserted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 111
+            "line": 110
           }
         }
       ],
@@ -4889,42 +4889,42 @@
           "text": "must not be asserted simultaneously with /WR",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 129
+            "line": 128
           }
         },
         {
           "text": "does not imply data transfer into any register",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 130
+            "line": 129
           }
         },
         {
           "text": "does not define MDB validity or timing behavior",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 131
+            "line": 130
           }
         },
         {
           "text": "does not select the memory address source",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 132
+            "line": 131
           }
         },
         {
           "text": "does not select the MDB data source",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 133
+            "line": 132
           }
         },
         {
           "text": "must be paired with [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb) or DMA",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 134
+            "line": 133
           }
         }
       ],
@@ -4934,7 +4934,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 137
+            "line": 136
           }
         }
       ],
@@ -4946,7 +4946,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
           "section": "Memory Read (/RD)",
-          "line": 95
+          "line": 94
         }
       }
     },
@@ -4971,7 +4971,7 @@
           "meaning": "asserted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 156
+            "line": 155
           }
         },
         {
@@ -4979,7 +4979,7 @@
           "meaning": "deasserted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 157
+            "line": 156
           }
         }
       ],
@@ -4988,28 +4988,28 @@
           "text": "must not be asserted simultaneously with /RD",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 175
+            "line": 174
           }
         },
         {
           "text": "does not select the memory address source",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 176
+            "line": 175
           }
         },
         {
           "text": "does not select the MDB data source",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 177
+            "line": 176
           }
         },
         {
           "text": "must be paired with a valid memory-write μop or DMA",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 178
+            "line": 177
           }
         }
       ],
@@ -5019,7 +5019,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 181
+            "line": 180
           }
         },
         {
@@ -5027,7 +5027,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 182
+            "line": 181
           }
         }
       ],
@@ -5039,7 +5039,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
           "section": "Memory Write (/WR)",
-          "line": 141
+          "line": 140
         }
       }
     },
@@ -5064,49 +5064,49 @@
           "text": "must be generated only by the MS_EFF decode",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 315
+            "line": 314
           }
         },
         {
           "text": "must not be asserted during normal instruction execution",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 316
+            "line": 315
           }
         },
         {
           "text": "must not be asserted concurrently with CPU-initiated /RD or /WR",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 317
+            "line": 316
           }
         },
         {
           "text": "does not itself define DMA address, data, direction, or device selection",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 318
+            "line": 317
           }
         },
         {
           "text": "does not modify CPU architectural state",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 319
+            "line": 318
           }
         },
         {
           "text": "does not modify RUN or HLT_REQ",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 320
+            "line": 319
           }
         },
         {
           "text": "external DMA ownership and multi-device arbitration are outside CPU control and must be resolved before or during DMA service",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 321
+            "line": 320
           }
         }
       ],
@@ -5119,7 +5119,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
           "section": "/DMA_GRANT",
-          "line": 269
+          "line": 268
         }
       }
     },
@@ -5143,7 +5143,7 @@
           "meaning": "asserted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 200
+            "line": 199
           }
         },
         {
@@ -5151,7 +5151,7 @@
           "meaning": "deasserted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 201
+            "line": 200
           }
         }
       ],
@@ -5160,28 +5160,28 @@
           "text": "Must not be asserted concurrently with /DB_WRITE",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 217
+            "line": 216
           }
         },
         {
           "text": "Must not be asserted without DB_READ_TO_AC",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 218
+            "line": 217
           }
         },
         {
           "text": "CPU must not drive DB while /DB_READ is asserted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 219
+            "line": 218
           }
         },
         {
           "text": "DB must be driven by at most one external device",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 220
+            "line": 219
           }
         }
       ],
@@ -5191,7 +5191,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 223
+            "line": 222
           }
         }
       ],
@@ -5203,7 +5203,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
           "section": "/DB_READ",
-          "line": 186
+          "line": 185
         }
       }
     },
@@ -5227,7 +5227,7 @@
           "meaning": "asserted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 241
+            "line": 240
           }
         },
         {
@@ -5235,7 +5235,7 @@
           "meaning": "deasserted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 242
+            "line": 241
           }
         }
       ],
@@ -5244,28 +5244,28 @@
           "text": "Must not be asserted concurrently with /DB_READ",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 258
+            "line": 257
           }
         },
         {
           "text": "Must not be asserted without DB_WRITE_FROM_AC",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 259
+            "line": 258
           }
         },
         {
           "text": "CPU is the sole driver of DB when this signal is asserted",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 260
+            "line": 259
           }
         },
         {
           "text": "External devices must not drive DB during this interval",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 261
+            "line": 260
           }
         }
       ],
@@ -5275,7 +5275,7 @@
           "value": "0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 265
+            "line": 264
           }
         }
       ],
@@ -5287,7 +5287,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
           "section": "/DB_WRITE",
-          "line": 227
+          "line": 226
         }
       }
     },
@@ -5304,7 +5304,7 @@
         "display_name": "System Initialization",
         "polarity": "Active-low",
         "domain": "Architectural",
-        "description": "System-wide reset signal asserted by CAF or an accepted front-panel CLEAR operation."
+        "description": "System-wide reset signal to the I/O controllers, asserted by CAF, an accepted front-panel CLEAR operation, or the power-on reset."
       },
       "values": [],
       "constraints": [
@@ -5312,63 +5312,63 @@
           "text": "front-panel CLEAR is accepted only when RUN = 0",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 509
+            "line": 508
           }
         },
         {
           "text": "front-panel CLEAR is ignored when RUN = 1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 509
+          }
+        },
+        {
+          "text": "one /INITIALIZE assertion is generated per distinct accepted front-panel CLEAR press",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
             "line": 510
           }
         },
         {
-          "text": "one /INITIALIZE pulse is generated per distinct accepted front-panel CLEAR press",
+          "text": "a held front-panel CLEAR input must not generate repeated /INITIALIZE assertions",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
             "line": 511
           }
         },
         {
-          "text": "a held front-panel CLEAR input must not generate repeated /INITIALIZE pulses",
+          "text": "front-panel CLEAR is re-armed only after the synchronized input is released",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
             "line": 512
           }
         },
         {
-          "text": "front-panel CLEAR is re-armed only after the synchronized input is released",
+          "text": "CAF has no effect unless execution reaches EXECUTE TP4",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
             "line": 513
           }
         },
         {
-          "text": "CAF has no effect unless execution reaches EXECUTE TP4",
+          "text": "CAF and front-panel CLEAR produce the same initialization result",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
             "line": 514
           }
         },
         {
-          "text": "CAF and front-panel CLEAR produce the same /INITIALIZE action",
+          "text": "/INITIALIZE does not modify II, CIFP, DIF, IF, DF, or IB",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
             "line": 515
           }
         },
         {
-          "text": "/INITIALIZE does not modify II, CIFP, DIF, IF, DF, or IB",
-          "source": {
-            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 516
-          }
-        },
-        {
           "text": "controller-specific initialized states are defined in the corresponding controller documents",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 517
+            "line": 516
           }
         }
       ],
@@ -5381,7 +5381,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
           "section": "System Initialization (/INITIALIZE)",
-          "line": 446
+          "line": 445
         }
       }
     },
@@ -5406,28 +5406,28 @@
           "text": "Meaningful to external controllers only while IOT_ACTIVE is asserted.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 364
+            "line": 363
           }
         },
         {
           "text": "Must not be modified by a micro-operation.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 365
+            "line": 364
           }
         },
         {
           "text": "Does not imply data transfer or direction.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 366
+            "line": 365
           }
         },
         {
           "text": "Does not define device behavior.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 367
+            "line": 366
           }
         }
       ],
@@ -5440,7 +5440,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
           "section": "I/O Address Bus (IOA[5:0])",
-          "line": 329
+          "line": 328
         }
       }
     },
@@ -5465,35 +5465,35 @@
           "text": "Does not select a controller.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 393
+            "line": 392
           }
         },
         {
           "text": "Does not directly determine DB direction.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 394
+            "line": 393
           }
         },
         {
           "text": "Does not define controller behavior.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 395
+            "line": 394
           }
         },
         {
           "text": "Must not be interpreted unless IOT_ACTIVE is asserted.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 396
+            "line": 395
           }
         },
         {
           "text": "Must not be modified by a micro-operation.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 397
+            "line": 396
           }
         }
       ],
@@ -5506,7 +5506,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
           "section": "I/O Operation Field (IOP[2:0])",
-          "line": 371
+          "line": 370
         }
       }
     },
@@ -5531,21 +5531,21 @@
           "text": "Does not itself cause data movement.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 434
+            "line": 433
           }
         },
         {
           "text": "Does not itself cause controller state change.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 435
+            "line": 434
           }
         },
         {
           "text": "Must be paired with IOA, IOP, TS, and TP according to the controller contract.",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 436
+            "line": 435
           }
         }
       ],
@@ -5558,7 +5558,7 @@
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
           "section": "External IOT Active (IOT_ACTIVE)",
-          "line": 403
+          "line": 402
         }
       }
     },

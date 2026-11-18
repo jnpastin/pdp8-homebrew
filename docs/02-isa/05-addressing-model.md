@@ -102,6 +102,9 @@ IF determines:
   - Current page formation
   - Direct memory access (I = 0)
   - The initial address calculation for all MRI instructions
+  - The target of JMP and JMS, direct or indirect, including the word in which JMS stores its return address
+
+When a CIF, RMF, or RTF change is pending, JMP and JMS apply it first, so the target lies in the new instruction field.
 
 Key property:
 
@@ -114,8 +117,7 @@ IF defines the execution context and is always used to form the base address.
 DF determines:
 
 - The field used for:
-  - Indirect pointer resolution
-  - Final operand access when indirection is used
+  - Final operand access of indirect AND, TAD, ISZ, and DCA
 
 ---
 
@@ -124,17 +126,20 @@ DF determines:
 The actual field rule is:
 
 - IF is used to compute the initial address
-- DF is used only when indirection occurs (I = 1)
+- DF is used only for the final operand of an indirect AND, TAD, ISZ, or DCA
 
 This creates a strict distinction:
 
-Operation phase              | Field used
------------------------------|-----------
-Instruction fetch           | IF        
-Current page resolution     | IF        
-Direct access (I = 0)       | IF        
-Indirect pointer fetch      | IF        
-Final indirect operand      | DF        
+Operation phase                              | Field used
+---------------------------------------------|-----------
+Instruction fetch                            | IF        
+Current page resolution                      | IF        
+Direct access (I = 0)                        | IF        
+Indirect pointer fetch                       | IF        
+Final indirect operand (AND, TAD, ISZ, DCA)  | DF        
+JMP/JMS target, direct or indirect           | IF (after any pending field change)
+
+This matches the PDP-8/e.
 
 ---
 
@@ -172,7 +177,7 @@ The resulting value becomes the final EA.
 
 Key property:
 
-Indirect addressing always starts in IF and resolves into DF.
+Indirect addressing starts in IF and resolves into DF for AND, TAD, ISZ, and DCA; JMP I and JMS I resolve into IF (section 7).
 
 ---
 
@@ -224,7 +229,7 @@ A memory location in the current (or zero) page holds a pointer to the target ad
 This pointer:
 
 - Is always located using IF
-- Is always resolved using DF
+- Is resolved using DF for AND, TAD, ISZ, and DCA, and using IF for JMP and JMS
 
 ---
 
@@ -249,7 +254,7 @@ Auto-indexing applies only when:
 2. If in range, increment value
 3. Write back incremented value
 4. Use as pointer
-5. Interpret result in DF
+5. Interpret result in DF (IF for JMP and JMS)
 
 ### 13.3 Distinction
 
@@ -262,7 +267,7 @@ Auto-indexing applies only when:
 
 - MRI-only behavior
 - IF defines instruction context and direct access
-- DF is used only after indirection begins
+- DF is used only for the final operand of an indirect AND, TAD, ISZ, or DCA
 - Indirection is a field transition mechanism
 - Auto-indexing applies only with I = 1
 - Final EA expressed as FXXXX

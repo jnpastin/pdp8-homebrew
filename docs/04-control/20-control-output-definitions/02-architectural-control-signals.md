@@ -66,8 +66,7 @@ The control word may take transient values for up to `T_CS` after each TS bounda
 | `/RD`, `/DB_READ`, `/DB_WRITE` | the control word asserts it and `CW_VALID` is asserted |
 | CPU drive onto MDB (`MDB_SRC` = MB or FP_SR) | the control word selects it and `CW_VALID` is asserted |
 | `/WR` | the control word asserts it and `WR_VALID` is asserted |
-| `/INITIALIZE`, CAF | the control word asserts it during the EXECUTE TP4 TSTEP |
-| `/INITIALIZE`, front-panel CLEAR | the control word asserts it and `CW_VALID` is asserted |
+| `/INITIALIZE`, CAF and front-panel CLEAR | the control word asserts it and `CW_VALID` is asserted |
 | `/INITIALIZE`, power-on | the power-on reset is active ([Timing Terminology §3.4](../../09-timing/01-terminology.md#34-power-on-reset)) |
 | `/DMA_GRANT`, `IOT_ACTIVE` | always; derived from registered state, so they do not glitch (sections 4.5 and 4.8) |
 | `IOA`, `IOP` | always; taken from IR |
@@ -287,7 +286,7 @@ When asserted:
 /DMA_GRANT = NOT (MS_EFF = DMA)
 ```
 
-`/DMA_GRANT` is decoded from `MS_EFF` ([Control Store Organization §5.1](../08-control-store-organization.md#51-major-state-code)) by a comparator. It is not stored in the control word, so it stays clean across TS boundaries for the whole DMA major state and is deasserted while halted.
+`/DMA_GRANT` is decoded from `MS_EFF` ([Control Store Organization §5.1](../08-control-store-organization.md#51-major-state-and-timing-state-codes)) by a comparator. It is not stored in the control word, so it stays clean across TS boundaries for the whole DMA major state and is deasserted while halted.
 
 When asserted:
 
@@ -456,11 +455,11 @@ IOT_ACTIVE = MS_EFF_IS_EXECUTE AND IR_IS_EXTERNAL_IOT
 **Explicit Value Required:** Yes  
 **Value Required When:** Always  
 
-**Description:** System-wide reset signal asserted by CAF or an accepted front-panel CLEAR operation.
+**Description:** System-wide reset signal to the I/O controllers, asserted by CAF, an accepted front-panel CLEAR operation, or the power-on reset.
 
 **Sources:**
-- CAF during the EXECUTE TP4 TSTEP
-- an accepted front-panel CLEAR operation while RUN = 0
+- CAF during EXECUTE TS4
+- an accepted front-panel CLEAR operation during its console transaction while RUN = 0
 - the power-on reset ([Timing Terminology §3.4](../../09-timing/01-terminology.md#34-power-on-reset))
 
 **Assertion Condition:**
@@ -470,7 +469,7 @@ INITIALIZE_ASSERTED =
     (
         IR_IS_CAF
         AND (MS = EXECUTE)
-        AND (TP = 4)
+        AND (TS = 4)
     )
     OR
     (
@@ -484,10 +483,9 @@ INITIALIZE_ASSERTED =
 While halted, `FP_CLEAR` is the latched accepted console command ([External Inputs §4.1](../10-control-input-definitions/04-external-inputs.md#41-console-command-acceptance)). It is held for one console transaction and is not stored as a pending request.
 
 **Behavior:**
-- clears AC
-- clears L
-- clears IE
 - causes each I/O controller to enter its documented initialized state
+
+The CPU's AC, L, and IE are cleared by the `AC_CLEAR`, `L_CLEAR`, and `IE_CLEAR` micro-operations of CAF and CLEAR in the same TS, and by the power-on reset; `/INITIALIZE` has no direct CPU-register effect.
 
 **Preserved Processor State:**
 - II
@@ -498,21 +496,22 @@ While halted, `FP_CLEAR` is the latched accepted console command ([External Inpu
 - IB
 
 **Timing:**
-- CAF asserts /INITIALIZE for exactly one TSTEP, the EXECUTE TP4 TSTEP; resulting state changes commit at that TP4, and /INITIALIZE is deasserted before the next TSTEP begins
+- CAF asserts /INITIALIZE during EXECUTE TS4; resulting state changes commit at TP4, and /INITIALIZE is deasserted when TS4 ends
 - an accepted front-panel CLEAR operation asserts /INITIALIZE for its whole console transaction while the processor is halted ([Major State Timing §8](../../09-timing/03-major-state-timing.md#8-halted-state-and-console-transactions)); resulting state changes commit at the console TP (TPC), and /INITIALIZE is deasserted when the transaction ends
+- /INITIALIZE is sampled only at that TP; controllers must not act on its level before the TP
 
 **Priority:**
-- when asserted, /INITIALIZE overrides all controller commands, transfers, flag updates, interrupt requests, DMA activity, and other controller-local actions sampled during the same TSTEP
+- when asserted, /INITIALIZE overrides all controller commands, transfers, flag updates, interrupt requests, DMA activity, and other controller-local actions that would otherwise commit at the same TP
 - only the controller's documented initialized state commits
 
 **Constraints:**
 - front-panel CLEAR is accepted only when RUN = 0
 - front-panel CLEAR is ignored when RUN = 1
-- one /INITIALIZE pulse is generated per distinct accepted front-panel CLEAR press
-- a held front-panel CLEAR input must not generate repeated /INITIALIZE pulses
+- one /INITIALIZE assertion is generated per distinct accepted front-panel CLEAR press
+- a held front-panel CLEAR input must not generate repeated /INITIALIZE assertions
 - front-panel CLEAR is re-armed only after the synchronized input is released
 - CAF has no effect unless execution reaches EXECUTE TP4
-- CAF and front-panel CLEAR produce the same /INITIALIZE action
+- CAF and front-panel CLEAR produce the same initialization result
 - /INITIALIZE does not modify II, CIFP, DIF, IF, DF, or IB
 - controller-specific initialized states are defined in the corresponding controller documents
 
@@ -542,8 +541,6 @@ They may only:
 
 - initiate external operations
 - define system-level interactions
-
-/INITIALIZE is the only defined exception. It directly establishes the documented initialized state of AC, L, IE, and each I/O controller without selecting datapath sources or invoking micro-operations.
 
 ---
 
@@ -576,7 +573,7 @@ Control must ensure:
 
 ### 5.5 Cross-Domain Binding Requirement
 
-Architectural signals participate in externally visible operations only when paired with corresponding μops, except for /INITIALIZE, whose direct processor and controller effects are defined by its signal contract.
+Architectural signals participate in externally visible operations only when paired with corresponding μops.
 
 Defined in:
 - [Cross-Domain Operation Binding Rules](../03-control-constraints.md#12-cross-domain-operation-binding-rules)

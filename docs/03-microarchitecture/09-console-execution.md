@@ -298,14 +298,16 @@ single TS-equivalent console transaction
 
 μops:
 
-- (no μops)
+- AC_CLEAR
+- L_CLEAR
+- IE_CLEAR
 
-Initialization is performed by `/INITIALIZE`, not by μops.
+The μops clear AC, L, and IE at TPC. `/INITIALIZE` initializes the I/O controllers.
 
 Acceptance:
 - FP_CLEAR is accepted only when RUN = 0.
 - FP_CLEAR is ignored when RUN = 1.
-- One accepted press generates one /INITIALIZE pulse.
+- One accepted press generates one /INITIALIZE assertion.
 - A held FP_CLEAR input does not generate repeated pulses.
 - FP_CLEAR is re-armed only after the synchronized input is released.
 

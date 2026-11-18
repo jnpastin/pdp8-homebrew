@@ -331,7 +331,7 @@ When CONTINUE resumes at DMA TS1, the held selection continues the burst as thou
 
 ### 13.2 System Initialization
 
-When `/INITIALIZE` is asserted, at the TP ending the asserted TSTEP (EXECUTE TP4 for CAF, TPC for CLEAR), the arbiter:
+When `/INITIALIZE` is asserted, at the TP ending the assertion (EXECUTE TP4 for CAF, TPC for CLEAR), the arbiter:
 
 - sets `DMA_GRANT_ID` to `15`
 - clears retained burst-enabled state

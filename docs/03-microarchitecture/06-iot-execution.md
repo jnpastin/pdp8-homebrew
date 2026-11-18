@@ -364,17 +364,20 @@ TS3:
 - (no μops)
 
 TS4:
-- (no μops)
+- AC_CLEAR
+- L_CLEAR
+- IE_CLEAR
 
 Control action:
-- /INITIALIZE is asserted during the EXECUTE TP4 TSTEP.
+- /INITIALIZE is asserted during EXECUTE TS4.
 
 Description:
-- /INITIALIZE clears AC, L, and IE at TP4.
+- AC_CLEAR, L_CLEAR, and IE_CLEAR clear AC, L, and IE at TP4.
 - /INITIALIZE causes each I/O controller to enter its documented initialized state at TP4.
 - II, CIFP, DIF, IF, DF, and IB are not modified.
 - All processor and controller effects commit atomically at TP4.
 - No CAF effect occurs unless execution reaches TP4.
+- CAF's EXECUTE TP4 never selects INTERRUPT, whatever IE, II, and /INT_REQ held before TP4 ([Interrupt Recognition and Sequencing §6](../08-interrupts-and-skip/02-interrupt-recognition-and-sequencing.md#6-next-major-state-selection)).
 - CAF does not use a CAF-specific micro-operation.
 
 ---

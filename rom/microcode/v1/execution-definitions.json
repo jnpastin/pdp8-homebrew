@@ -451,7 +451,16 @@
       "micro_operations": [
         "EA_ADDR_TO_MA"
       ],
-      "conditional_micro_operations": []
+      "conditional_micro_operations": [
+        {
+          "predicate": "IF_CHANGE_PENDING = 1",
+          "micro_operation": "DIF_TO_IF"
+        },
+        {
+          "predicate": "CIFP = 1",
+          "micro_operation": "CIFP_CLEAR"
+        }
+      ]
     },
     {
       "id": "mri:3.5:ts2",
@@ -506,6 +515,22 @@
       "micro_operations": [
         "PC_INC"
       ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.6:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 136
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 101"
+      ],
+      "timing_state": 1,
+      "micro_operations": [],
       "conditional_micro_operations": [
         {
           "predicate": "IF_CHANGE_PENDING = 1",
@@ -518,26 +543,10 @@
       ]
     },
     {
-      "id": "mri:3.6:ts1",
-      "source": {
-        "path": "docs/03-microarchitecture/05-mri-execution.md",
-        "line": 134
-      },
-      "execution_model": "major-state",
-      "context": [
-        "MS = EXECUTE",
-        "IR_IS_MRI = 1",
-        "IR_MRI_OPCODE = 101"
-      ],
-      "timing_state": 1,
-      "micro_operations": [],
-      "conditional_micro_operations": []
-    },
-    {
       "id": "mri:3.6:ts2",
       "source": {
         "path": "docs/03-microarchitecture/05-mri-execution.md",
-        "line": 134
+        "line": 136
       },
       "execution_model": "major-state",
       "context": [
@@ -553,7 +562,7 @@
       "id": "mri:3.6:ts3",
       "source": {
         "path": "docs/03-microarchitecture/05-mri-execution.md",
-        "line": 134
+        "line": 136
       },
       "execution_model": "major-state",
       "context": [
@@ -571,7 +580,7 @@
       "id": "mri:3.6:ts4",
       "source": {
         "path": "docs/03-microarchitecture/05-mri-execution.md",
-        "line": 134
+        "line": 136
       },
       "execution_model": "major-state",
       "context": [
@@ -581,16 +590,7 @@
       ],
       "timing_state": 4,
       "micro_operations": [],
-      "conditional_micro_operations": [
-        {
-          "predicate": "IF_CHANGE_PENDING = 1",
-          "micro_operation": "DIF_TO_IF"
-        },
-        {
-          "predicate": "CIFP = 1",
-          "micro_operation": "CIFP_CLEAR"
-        }
-      ]
+      "conditional_micro_operations": []
     },
     {
       "id": "iot:external:ts1",
@@ -1232,14 +1232,18 @@
         "IR_IS_CAF = 1"
       ],
       "timing_state": 4,
-      "micro_operations": [],
+      "micro_operations": [
+        "AC_CLEAR",
+        "L_CLEAR",
+        "IE_CLEAR"
+      ],
       "conditional_micro_operations": []
     },
     {
       "id": "iot:10.1:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 390
+        "line": 393
       },
       "execution_model": "major-state",
       "context": [
@@ -1254,7 +1258,7 @@
       "id": "iot:10.1:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 390
+        "line": 393
       },
       "execution_model": "major-state",
       "context": [
@@ -1306,7 +1310,7 @@
       "id": "iot:10.1:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 390
+        "line": 393
       },
       "execution_model": "major-state",
       "context": [
@@ -1321,7 +1325,7 @@
       "id": "iot:10.1:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 390
+        "line": 393
       },
       "execution_model": "major-state",
       "context": [
@@ -1344,7 +1348,8 @@
       ],
       "timing_state": 1,
       "micro_operations": [
-        "PC_TO_MB"
+        "PC_TO_MB",
+        "MA_CLEAR"
       ],
       "conditional_micro_operations": []
     },
@@ -1352,7 +1357,7 @@
       "id": "interrupt:4.2",
       "source": {
         "path": "docs/03-microarchitecture/08-interrupt-execution.md",
-        "line": 68
+        "line": 70
       },
       "execution_model": "major-state",
       "context": [
@@ -1360,8 +1365,11 @@
       ],
       "timing_state": 2,
       "micro_operations": [
-        "MA_CLEAR",
-        "IF_DF_TO_IB"
+        "IF_DF_TO_IB",
+        "IF_CLEAR",
+        "DF_CLEAR",
+        "DIF_CLEAR",
+        "CIFP_CLEAR"
       ],
       "conditional_micro_operations": []
     },
@@ -1369,7 +1377,7 @@
       "id": "interrupt:4.3",
       "source": {
         "path": "docs/03-microarchitecture/08-interrupt-execution.md",
-        "line": 79
+        "line": 87
       },
       "execution_model": "major-state",
       "context": [
@@ -1385,7 +1393,7 @@
       "id": "interrupt:4.4",
       "source": {
         "path": "docs/03-microarchitecture/08-interrupt-execution.md",
-        "line": 88
+        "line": 96
       },
       "execution_model": "major-state",
       "context": [
@@ -1394,11 +1402,7 @@
       "timing_state": 4,
       "micro_operations": [
         "PC_SET_1",
-        "IE_CLEAR",
-        "IF_CLEAR",
-        "DF_CLEAR",
-        "DIF_CLEAR",
-        "CIFP_CLEAR"
+        "IE_CLEAR"
       ],
       "conditional_micro_operations": []
     },
@@ -1532,14 +1536,18 @@
         "FP_CLEAR = 1"
       ],
       "timing_state": null,
-      "micro_operations": [],
+      "micro_operations": [
+        "AC_CLEAR",
+        "L_CLEAR",
+        "IE_CLEAR"
+      ],
       "conditional_micro_operations": []
     },
     {
       "id": "console:10",
       "source": {
         "path": "docs/03-microarchitecture/09-console-execution.md",
-        "line": 329
+        "line": 331
       },
       "execution_model": "console-transaction",
       "context": [
@@ -1560,7 +1568,7 @@
       "id": "console:11",
       "source": {
         "path": "docs/03-microarchitecture/09-console-execution.md",
-        "line": 376
+        "line": 378
       },
       "execution_model": "console-transaction",
       "context": [
@@ -1575,7 +1583,7 @@
       "id": "console:15",
       "source": {
         "path": "docs/03-microarchitecture/09-console-execution.md",
-        "line": 545
+        "line": 547
       },
       "execution_model": "console-transaction",
       "context": [

@@ -53,10 +53,10 @@ Visibility: Global
 Invariants:
 - Holds the canonical 12-bit result of the last completed operation
 - Forms a composite 13-bit value with L for arithmetic and shifts
-- Stable outside EXECUTE
+- Stable outside EXECUTE, except when cleared by the START or CLEAR console operation while halted
 
 Constraints:
-- Modified only during EXECUTE
+- Modified only during EXECUTE, or by the START or CLEAR console operation while halted
 - Must not be written during FETCH or DEFER
 - All operations affecting AC must define L behavior if carry/borrow arises
 
@@ -66,7 +66,9 @@ Writers:
 - OPR control operations (CLA, CMA, IAC)
 - MQ transfer path
 - IOT execution (GTF)
-- System Initialization (/INITIALIZE)
+- System initialization (CAF, front-panel CLEAR; AC_CLEAR micro-operation)
+- Console START (AC_CLEAR micro-operation)
+- Power-on reset
 
 ---
 
@@ -135,7 +137,7 @@ Invariants:
 Constraints:
 - Loaded by CIF from IR, RMF from IB, RTF from AC[5:3], and Load Address from FP_IF
 - Cleared at interrupt entry
-- Applied to IF only at the JMP or JMS that concludes a pending deferred field change
+- Applied to IF only at the JMP or JMS that concludes a pending deferred field change, at its EXECUTE TP1
 - Must not change during FETCH, DEFER, or EXECUTE except at the defined load, clear, and apply points  
 
 Writers:
@@ -263,14 +265,16 @@ Invariants:
 
 Constraints:
 - Set only by ION or RTF
-- Cleared by IOF, SKON, interrupt entry, or /INITIALIZE
+- Cleared by IOF, SKON, interrupt entry, system initialization (CAF, front-panel CLEAR), console START, or the power-on reset
 - Changes only at defined TP events
 
 Writers:
 - IOT execution (ION or RTF; IE_SET micro-operation)
 - IOT execution (IOF or SKON; IE_CLEAR micro-operation)
 - Interrupt entry (IE_CLEAR micro-operation)
-- System initialization (/INITIALIZE)
+- System initialization (CAF, front-panel CLEAR; IE_CLEAR micro-operation)
+- Console START (IE_CLEAR micro-operation)
+- Power-on reset
 
 ---
 
@@ -284,11 +288,11 @@ Visibility: Global
 Invariants:
 - Supplies high-order bits of instruction fetch address
 - Supplies high-order bits for direct MRI access and indirect pointer access
-- Constant for the duration of an instruction cycle
+- Constant for the duration of an instruction cycle, except that a JMP or JMS applies a pending deferred field change at its EXECUTE TP1
 
 Constraints:
 - Modified only by field control instructions
-- Must not change during FETCH, DEFER, or EXECUTE of a single instruction
+- Must not change during FETCH or DEFER, or during EXECUTE except at the EXECUTE TP1 of a JMP or JMS that applies a pending deferred field change
 
 Writers:
 - Field instruction control logic
@@ -309,12 +313,13 @@ Invariants:
 
 Constraints:
 - Set only by ION, CIF, RMF, and RTF instructions
-- Cleared during FETCH when no deferred instruction-field change is pending (CIFP = 0)
+- Cleared during FETCH when no deferred instruction-field change is pending (CIFP = 0), and by the START console operation
 - Must not be directly modified by datapath logic  
 
 Writers:
 - IOT execution (ION, CIF, RMF, or RTF; II_SET micro-operation)
 - FETCH execution (II_CLEAR micro-operation)
+- Console START (II_CLEAR micro-operation)
 
 ---
 
@@ -398,23 +403,27 @@ Visibility: Global
 Invariants:
 - Represents the 13th bit of AC:L during arithmetic
 - Always defined after any instruction that targets it
-- Stable outside EXECUTE
+- Stable outside EXECUTE, except when cleared by the START or CLEAR console operation while halted
 
 Constraints:
-- Modified only during EXECUTE
+- Modified only during EXECUTE, or by the START or CLEAR console operation while halted
 - May be updated by:
   - ALU carry (a carry out of the most significant AC bit complements L)
   - Rotate operations
   - Explicit OPR instructions (CLL, CML, STL)
   - RTF processor-state restoration
-  - System initialization (/INITIALIZE)
+  - System initialization (CAF, front-panel CLEAR; L_CLEAR micro-operation)
+  - Console START (L_CLEAR micro-operation)
+  - Power-on reset
 - Multiple updates must follow defined micro-op ordering
 
 Writers:
 - ALU link output (ADD, INC, and rotates; [ALU Evaluation](../04-control/20-control-output-definitions/01-microarchitectural-control-signals.md#731-alu-evaluation))
 - OPR control logic
 - IOT execution (RTF; AC_TO_L)
-- System initialization (/INITIALIZE)
+- System initialization (CAF, front-panel CLEAR; L_CLEAR micro-operation)
+- Console START (L_CLEAR micro-operation)
+- Power-on reset
 
 ---
 
@@ -547,12 +556,13 @@ Invariants:
 - Remains unchanged when not explicitly used
 
 Constraints:
-- Modified only by defined instructions
+- Modified only by defined instructions, or by the START console operation while halted
 - Must not be altered by general ALU operations
 
 Writers:
 - Multiply/divide microcode path
 - AC transfer path
+- Console START (MQ_CLEAR micro-operation)
 
 ---
 

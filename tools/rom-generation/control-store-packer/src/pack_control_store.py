@@ -1123,12 +1123,13 @@ def packing_json(packing: Packing, diagnostics: Sequence[Diagnostic]) -> dict[st
             "verified_addresses": packing.checked,
         },
         "address_maps": {
-            "mapping_rom": "A14..A3 = IR[11:0], A2..A1 = TS-1, A0 = 0; "
+            "mapping_rom": "A14..A3 = IR[11:0], A2..A1 = TS_CODE (TS-1), A0 = 0; "
                            "the entry at TS n is the EXECUTE entry for TS n+1",
-            "datapath_slice": "A14..A12 = MS_EFF, A11..A10 = TS-1, A9..A5 = VARIANT, "
+            "datapath_slice": "A14..A12 = MS_EFF, A11..A10 = TS_CODE (TS-1), A9..A5 = VARIANT, "
                               "A4..A0 = DP_OVL",
-            "sequencer_slice": "A14..A12 = MS_EFF, A11..A10 = TS-1, A9 = HLT_REQ, A8 = FP_STOP, "
-                               "A7..A5 = SEQ_OVL, A4 = /DMA_REQ, A3 = IR_SEQ, A2..A0 = 0",
+            "sequencer_slice": "A14..A12 = MS_EFF, A11..A10 = TS_CODE (TS-1), A9 = HLT_REQ, "
+                               "A8 = FP_STOP, A7..A5 = SEQ_OVL, A4 = /DMA_REQ, A3 = IR_SEQ, "
+                               "A2..A0 = 0",
         },
         "mapping_rom": {
             "fields": {"VARIANT": [0, VARIANT_WIDTH],

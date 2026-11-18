@@ -452,7 +452,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Bit Width:** 2  
 **Default Value:** 0  
 **Explicit Value Required:** Conditionally  
-**Value Required When:** (IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1  
+**Value Required When:** (IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1 OR (L_LOAD=1 AND L_OP=2)  
 
 **Purpose:** Select primary ALU operand.
 
@@ -497,7 +497,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Bit Width:** 3  
 **Default Value:** 0  
 **Explicit Value Required:** Conditionally  
-**Value Required When:** (IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1  
+**Value Required When:** (IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1 OR (L_LOAD=1 AND L_OP=2)  
 
 **Purpose:** Select secondary ALU operand.
 
@@ -545,7 +545,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Bit Width:** 4  
 **Default Value:** 0  
 **Explicit Value Required:** Conditionally  
-**Value Required When:** (IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1  
+**Value Required When:** (IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1 OR (L_LOAD=1 AND L_OP=2)  
 
 **Purpose:** Defines ALU computation.
 

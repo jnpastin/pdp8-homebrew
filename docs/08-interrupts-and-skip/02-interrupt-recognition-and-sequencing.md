@@ -91,14 +91,14 @@ Interrupt-entry execution is defined in [Interrupt Execution](../03-microarchite
 
 At EXECUTE TP4, the next-major-state decision follows this precedence:
 
-1. A valid interrupt request selects `INTERRUPT`.
+1. A valid interrupt request selects `INTERRUPT`, except at the EXECUTE TP4 of CAF.
 2. Otherwise, an asserted aggregate DMA request selects `DMA`.
 3. Otherwise, normal execution selects `FETCH`.
 
 Conceptually:
 
 ```text
-if INTERRUPT_REQUEST_VALID:
+if INTERRUPT_REQUEST_VALID and not IR_IS_CAF:
     MS_NEXT = INTERRUPT
 else if /DMA_REQ = 0:
     MS_NEXT = DMA
@@ -107,6 +107,8 @@ else:
 ```
 
 This expression defines the required sequencing result. Its implementation remains governed by the [Control Model](../04-control/01-control-model.md).
+
+CAF's `/INITIALIZE` clears IE and every controller interrupt request at its TP4, so an interrupt recognized there would enter the service routine with no requesting device. CAF therefore never selects INTERRUPT. This matches the PDP-8/e, where CAF asserts INITIALIZE at TP3 and it clears the interrupt-enable, delay, and request-synchronizing flip-flops before TP4.
 
 The precedence above applies only to the next-major-state decision at EXECUTE TP4.
  
@@ -173,6 +175,7 @@ The following invariants apply:
 
 - Interrupt recognition occurs only at EXECUTE TP4.
 - Interrupt recognition depends on `INTERRUPT_REQUEST_VALID`.
+- CAF's EXECUTE TP4 never selects INTERRUPT.
 - Interrupt recognition does not directly evaluate unreduced processor state.
 - A valid interrupt request selects exactly one next major state.
 - A valid interrupt request takes precedence over an asserted aggregate `/DMA_REQ`.

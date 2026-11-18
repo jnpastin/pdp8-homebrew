@@ -113,7 +113,7 @@ IOF does not:
 
 ## 8. System Initialization
 
-When /INITIALIZE is asserted:
+On system initialization (CAF, front-panel CLEAR, or power-on reset):
 - IE is cleared
 - II is unchanged
 - CIFP is unchanged
@@ -199,7 +199,7 @@ While CIFP remains set:
 
 RTF sets IE regardless of AC[7], matching the defined PDP-8/E behavior. Setting IE does not permit immediate interrupt recognition because RTF also sets II and CIFP.
 
-The instruction-level behavior is defined in [IOT Instruction Detail](../02-isa/04-iot.md#311-rtf), and defined in [IOT Execution](../03-microarchitecture/06-iot-execution.md#96-ir119--110-and-ioa--00-and-ir20--101).
+The instruction-level behavior is defined in [IOT Instruction Detail](../02-isa/04-iot.md#312-rtf), and defined in [IOT Execution](../03-microarchitecture/06-iot-execution.md#96-ir119--110-and-ioa--00-and-ir20--101).
 
 ## 12. Deferred Field Application
 
@@ -273,7 +273,7 @@ The following invariants apply:
 - CIF, RMF, and RTF set II and CIFP.
 - FETCH must not clear II while CIFP is set.
 - A pending instruction-field change established by CIF, RMF, or RTF inhibits interrupt recognition until JMP or JMS applies the deferred field.
-- Clearing CIFP and applying DIF at JMP or JMS does not permit interrupt recognition at that same TP4.
+- Clearing CIFP and applying DIF at the EXECUTE TP1 of a JMP or JMS does not permit interrupt recognition at that instruction's EXECUTE TP4; II remains set until the following FETCH clears it.
 - Interrupt recognition after a deferred field change may occur only at a later eligible EXECUTE TP4 boundary.
 - Interrupt enable and inhibit state do not control DMA eligibility.
 - All changes to IE, II, and CIFP occur only at TP events.

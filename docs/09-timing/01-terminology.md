@@ -94,7 +94,7 @@ While the power-on reset is active:
 - TSEQ is held at the first TSTEP of TS1
 - `RUN = 0`, `MS = FETCH`, `HLT_REQ = 0`, and `IOT_TRANSFER` is `NONE`
 - the console command latch holds no command
-- `/INITIALIZE` is asserted, with the same effects as an accepted front-panel CLEAR ([System Initialization](../04-control/20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize))
+- AC, L, and IE are cleared directly by the power-on reset, and `/INITIALIZE` is asserted so that each I/O controller is in its initialized state when the reset ends ([System Initialization](../04-control/20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize))
 
 When it ends, the processor is halted in FETCH and waits for a console command. Every other register is undefined, including PC, IF, DF, MQ, and `MAPR`; the operator sets the start address with LOAD ADDRESS. This matches the PDP-8/e, which comes up halted after a power-on initialization.
 

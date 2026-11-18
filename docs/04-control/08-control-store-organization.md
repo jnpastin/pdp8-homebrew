@@ -24,6 +24,7 @@ The logical control word, the control inputs, and the behavior they select are d
 | datapath slice | the slice producing every encoded field except the sequencer fields (section 4.2) |
 | `MS_EFF` | the effective major state: the 3-bit major-state code presented to the control store, `MS` while running and `HALTED` (code 7) while halted (section 5.1); the `MS` register itself is unchanged |
 | `MS_EFF_IS_EXECUTE` | a derived signal: 1 when `MS_EFF` is EXECUTE (code 2), else 0; equivalently, `MS = EXECUTE` and `RUN = 1` (section 5.1) |
+| `TS_CODE[1:0]` | the 2-bit binary code of the current TS presented to the control store: TS − 1 (TS1 = 00 … TS4 = 11), formed from the TS signals (section 5.1) |
 | mapping ROM | ROM devices inside the control store that map IR and TS to the instruction-dependent part of the slice addresses for the following TS of EXECUTE; the mapping stage of [Control Addressing §2.1](./02-control-addressing.md#21-partitioned-and-two-level-control-stores). The name follows the mapping PROMs of microprogrammed machines, which map an instruction to its microprogram |
 | `MAPR` | the mapping register: holds the mapping ROM output for the current TS, loaded at each main-sequence TP ([Mapping Register](../01-architecture/01-registers.md#mapr--mapping-register); section 5.4) |
 | `VARIANT` | a 5-bit slice address field identifying the instruction-dependent behavior that applies in the current TS of EXECUTE (section 5.4) |
@@ -117,7 +118,7 @@ Width: 45 bits after packing (section 7), six devices.
 
 The diagram shows the major-state code and its decodes (section 5.1), the front-panel command code (section 5.2), and the `SEQ_OVL` multiplexer (section 5.6). The mapping stage is drawn in section 5.3.
 
-### 5.1 Major-State Code
+### 5.1 Major-State and Timing-State Codes
 
 `MS` uses five of its eight codes (`FETCH = 0`, `DEFER = 1`, `EXECUTE = 2`, `INTERRUPT = 3`, `DMA = 4`). The control store sees:
 
@@ -140,6 +141,15 @@ Two architectural outputs are decoded from `MS_EFF` rather than stored in the co
 /DMA_GRANT = NOT (MS_EFF = DMA)
 IOT_ACTIVE = MS_EFF_IS_EXECUTE AND IR_IS_EXTERNAL_IOT
 ```
+
+TS is presented to the control store as `TS_CODE[1:0] = TS − 1`, formed from the TS signals by two OR gates:
+
+```
+TS_CODE[0] = TS2 OR TS4
+TS_CODE[1] = TS3 OR TS4
+```
+
+While halted, TS is held at TS1, so `TS_CODE = 00`.
 
 ### 5.2 Front-Panel Command Code
 
@@ -167,7 +177,7 @@ Address:
 
 ```
 A14..A3 = IR[11:0]
-A2..A1  = TS
+A2..A1  = TS_CODE
 A0      = 0 (wired)
 ```
 
@@ -189,7 +199,7 @@ The sequencer decode carries a different decode in different timing states of EX
 | 4 | `IR_IS_CAF` | CAF system initialization |
 | other | 0 | the sequencer word depends on no instruction decode |
 
-Two IR values share a variant only when they produce the same datapath words for every condition value in that TS. The current specification needs 6, 26, 12, and 12 variants in EXECUTE TS1 to TS4, within the 32 that `VARIANT` allows. A single variant code shared by all four timing states would need far more than 32 values, which is why the mapping ROM is indexed by TS.
+Two IR values share a variant only when they produce the same datapath words for every condition value in that TS. The current specification needs 8, 26, 11, and 12 variants in EXECUTE TS1 to TS4, within the 32 that `VARIANT` allows. A single variant code shared by all four timing states would need far more than 32 values, which is why the mapping ROM is indexed by TS.
 
 The instruction-dependent conditions that select behavior within a case, such as OPR micro-operation bits and memory-extension decodes, are absorbed into the variant. Only runtime conditions reach the address through the overlay.
 
@@ -238,7 +248,7 @@ Timing: the mapping ROM has a whole TS to settle before the TP that loads `MAPR`
 
 ```
 A14..A12 = MS_EFF
-A11..A10 = TS
+A11..A10 = TS_CODE
 A9..A5   = VARIANT
 A4..A0   = DP_OVL[4:0]
 ```
@@ -249,7 +259,7 @@ Address, in every run mode:
 
 ```
 A14..A12 = MS_EFF
-A11..A10 = TS
+A11..A10 = TS_CODE
 A9       = HLT_REQ
 A8       = FP_STOP
 A7..A5   = SEQ_OVL[2:0]
@@ -298,7 +308,7 @@ The five overlay bits `DP_OVL[4:0]` are driven by five 4:1 multiplexers, one per
 | 0 | external IOT | external-IOT EXECUTE TS1–TS3; also every EXECUTE variant with no runtime condition |
 | 1 | state | `MS_EFF_IS_EXECUTE = 0`: FETCH, DEFER, INTERRUPT, DMA, halted; wired (section 5.4.2) |
 | 2 | external IOT TS4 | external-IOT EXECUTE TS4; SRQ |
-| 3 | instruction conditions | OPR Group 2 TS1 skip, SKON, ISZ TS4, JMP and JMS TS4 |
+| 3 | instruction conditions | OPR Group 2 TS1 skip, SKON, ISZ TS4, JMP and JMS TS1 |
 
 ### 6.2 Multiplexer Inputs
 
@@ -329,11 +339,12 @@ Fields that never require a value in the same control word share device outputs 
 |---|---|
 | 4 | `ALU_OP`, `DF_SRC` |
 | 3 | `AC_SRC`, `DIF_SRC`, `MA_SRC` |
-| 3 | `ALU_B_SRC`, `PC_SRC` |
-| 2 | `IF_SRC`, `IOT_TRANSFER_VAL`, `L_OP`, `MB_SRC` |
-| 1 | `AB_SRC`, `CIFP_VAL`, `MQ_SRC` |
-| 1 | `EA_ADDR_SRC`, `IE_VAL` |
-| 31 | the remaining 27 fields, unshared: `IDB_SRC` (3 bits), `ALU_A_SRC` and `MDB_SRC` (2 bits each), and 24 one-bit fields |
+| 3 | `ALU_B_SRC`, `IF_SRC` |
+| 2 | `ALU_A_SRC`, `CIFP_VAL` |
+| 2 | `IOT_TRANSFER_VAL`, `L_OP`, `MB_SRC`, `PC_SRC` |
+| 1 | `AB_SRC`, `IE_VAL` |
+| 1 | `EA_ADDR_SRC`, `II_VAL` |
+| 29 | the remaining 26 fields, unshared: `IDB_SRC` (3 bits), `MDB_SRC` (2 bits), and 24 one-bit fields |
 
 Total: 45 bits in six devices, three bits spare.
 
@@ -351,13 +362,14 @@ A field shares bits only through wiring. No decoder or gate follows the control 
 | `MS_EFF` select | 3-bit 2:1 multiplexer |
 | `SEQ_OVL` select | 3-bit 2:1 multiplexer |
 | `MS_EFF_IS_EXECUTE` | comparator for the EXECUTE code |
+| `TS_CODE` | two OR gates |
 | `/DMA_GRANT`, `IOT_ACTIVE` | comparator for the DMA code; one AND gate |
 | `MAPR` | 8-bit register |
 | EXECUTE selection | five AND gates for `VARIANT`; three sections of a quad 2:1 multiplexer for `DP_OVL_SEL` and `IR_SEQ` |
 | `FP_CMD` | 8-to-3 priority encoder |
 | Datapath overlay | five 4:1 multiplexers |
 
-Total: 8 EEPROMs, plus the register, multiplexers, gates, comparator, and encoder. The `IR_INDIRECT` predecode gates belong to predecode, not to the control store.
+Total: 8 EEPROMs, plus the register, multiplexers, gates, comparators, and encoder. The `IR_INDIRECT` predecode gates belong to predecode, not to the control store.
 
 ---
 

@@ -226,6 +226,7 @@ RUN = 1
 MS = EXECUTE
 TS = 4
 INTERRUPT_REQUEST_VALID = 1
+IR_IS_CAF = 0
 ```
 
 Assignment:
@@ -239,6 +240,10 @@ Commit:
 ```text
 MS <- INTERRUPT at TP4
 ```
+
+Constraints:
+
+- CAF never selects INTERRUPT: its `/INITIALIZE` clears IE and every controller request at the same TP4, and on the PDP-8/e CAF's INITIALIZE clears the interrupt logic before TP4 (sections 3.2.6 and 3.2.7).
 
 Source:
 
@@ -256,7 +261,10 @@ Applicable context:
 RUN = 1
 MS = EXECUTE
 TS = 4
-INTERRUPT_REQUEST_VALID = 0
+AND (
+    INTERRUPT_REQUEST_VALID = 0
+    OR IR_IS_CAF = 1
+)
 /DMA_REQ = 0
 ```
 
@@ -295,7 +303,10 @@ Applicable context:
 RUN = 1
 MS = EXECUTE
 TS = 4
-INTERRUPT_REQUEST_VALID = 0
+AND (
+    INTERRUPT_REQUEST_VALID = 0
+    OR IR_IS_CAF = 1
+)
 /DMA_REQ = 1
 ```
 
@@ -1498,6 +1509,8 @@ Assignment:
 MFB_SRC = IF
 ```
 
+For JMS, `IF` holds the subroutine's field: a pending instruction-field change was applied at EXECUTE TP1 ([MRI Execution §3.5](../../03-microarchitecture/05-mri-execution.md#35-ir119--100)).
+
 ---
 
 #### 4.5.3 Indirect Pointer Read
@@ -1568,9 +1581,8 @@ This applies to the final resolved memory access performed by an indirect:
 - TAD
 - ISZ
 - DCA
-- JMS
 
-JMP performs no memory access during EXECUTE.
+JMS is excluded: it writes its return address in the instruction field whether or not it is indirect (section 4.5.5.4). This matches the PDP-8/e, where the data field applies only to AND, TAD, ISZ, and DCA operands. JMP performs no memory access during EXECUTE.
 
 Constraints:
 
@@ -1626,7 +1638,7 @@ Assignment:
 MFB_SRC = DF
 ```
 
-#### 4.5.5.3 Indirect DCA/JMS Write
+#### 4.5.5.3 Indirect DCA Write
 
 Applicable context:
 
@@ -1636,10 +1648,7 @@ MS = EXECUTE
 TS = 3
 IR_IS_MRI = 1
 IR_INDIRECT = 1
-AND (
-    IR_MRI_OPCODE = 011
-    OR IR_MRI_OPCODE = 100
-)
+IR_MRI_OPCODE = 011
 ```
 
 Assignment:
@@ -1647,6 +1656,27 @@ Assignment:
 ```text
 MFB_SRC = DF
 ```
+
+#### 4.5.5.4 Indirect JMS Write
+
+Applicable context:
+
+```text
+RUN = 1
+MS = EXECUTE
+TS = 3
+IR_IS_MRI = 1
+IR_INDIRECT = 1
+IR_MRI_OPCODE = 100
+```
+
+Assignment:
+
+```text
+MFB_SRC = IF
+```
+
+The return address is written to the resolved address in the instruction field, which holds the new field when a pending change was applied at EXECUTE TP1. The pointer was read from the old instruction field during DEFER.
 
 ---
 
@@ -1665,6 +1695,8 @@ Assignment:
 ```text
 MFB_SRC = IF
 ```
+
+IF was cleared at INTERRUPT TP2, so the return address is written to field 0, address 0000, as [Interrupt Entry and Return §4](../../08-interrupts-and-skip/04-interrupt-entry-and-return.md#4-automatically-preserved-state) requires.
 
 Source:
 
@@ -1752,7 +1784,8 @@ Instruction fetch                           IF
 Direct MRI memory access                    IF
 Indirect pointer read                       IF
 Indirect autoindex writeback                IF
-Final indirect MRI memory access            DF
+Final indirect AND, TAD, ISZ, DCA access    DF
+JMS return-address write                    IF (the new field if a change was pending)
 Interrupt return-address write              IF
 Console EXAM                                IF
 Console DEPOSIT                             IF
@@ -1768,20 +1801,10 @@ IR_INDIRECT = 0:
 IR_INDIRECT = 1:
     DEFER pointer access uses IF
     DEFER autoindex writeback uses IF
-    EXECUTE final memory access uses DF
+    EXECUTE final memory access uses DF, except JMS, which uses IF
 ```
 
-The field-selection rule is independent of the MRI operation:
-
-```text
-AND
-TAD
-ISZ
-DCA
-JMS
-```
-
-Each memory-accessing MRI selects the field according to direct or indirect addressing.
+AND, TAD, ISZ, and DCA select the field according to direct or indirect addressing. JMS always writes its return address in IF.
 
 JMP performs no memory access during EXECUTE and therefore requires no EXECUTE-stage `MFB_SRC` selection.
 

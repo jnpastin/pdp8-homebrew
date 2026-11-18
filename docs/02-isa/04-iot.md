@@ -136,7 +136,7 @@ CAF does not modify:
 - DF
 - IB
 
-CAF completes atomically at EXECUTE TP4. No CAF effect occurs before that boundary.
+CAF completes atomically at EXECUTE TP4. No CAF effect occurs before that boundary. No interrupt is recognized at the completion of CAF.
 
 If CAF is executed while an I/O device is active, /INITIALIZE overrides the controller's normal activity and the controller enters its documented initialized state. Software is responsible for confirming that affected devices are idle and observing any device-specific safety interval before executing CAF.
 
@@ -148,7 +148,7 @@ Before executing CAF, software should:
 - avoid executing CAF while a device operation remains active
 
 The processor does not enforce these checks or delays.  
-CAF executes normally and asserts /INITIALIZE at EXECUTE TP4 regardless of peripheral activity.
+CAF executes normally and asserts /INITIALIZE, and its effects commit at EXECUTE TP4 regardless of peripheral activity.
 
 ---
 
@@ -178,7 +178,7 @@ The target field n is encoded in IR[5:3], making the device address 2n. The two 
 Like Group 1 OPR, CDF and CIF are independent flags that may be combined (ORed) into a single instruction. The Field value (IR[5:3]) is shared by both flags.
 
 - CDF alone (62n1): loads DF immediately.
-- CIF alone (62n2): stages the target field and applies it to IF at the next JMP or JMS. The deferral preserves correct interrupt behavior across the field change.
+- CIF alone (62n2): stages the target field and applies it to IF at the next JMP or JMS. The deferral preserves correct interrupt behavior across the field change. A JMS that applies the change stores its return address in the new field ([Addressing Model §7](./05-addressing-model.md#7-if-vs-df-correct-architectural-rule)).
 - CDF CIF (62n3): both effects apply - DF immediately, IF deferred - using the same Field value.
 
 Where n = IR[5:3] = target field (0-7).

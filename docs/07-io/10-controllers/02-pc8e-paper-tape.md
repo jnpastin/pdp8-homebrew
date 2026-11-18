@@ -162,17 +162,19 @@ The controller enters its initialized state when /INITIALIZE is asserted.
 | Reader buffer | 000 |
 | Reader flag | Clear |
 | Punch buffer | 000 |
-| Punch flag | Set |
-| Shared interrupt enable | Clear |
+| Punch flag | Clear |
+| Shared interrupt enable | Set |
 | Controller interrupt contribution | Inactive |
 
-The punch flag is set so the punch initially appears ready to accept a character.  
+Initialization sets the shared interrupt enable, as on the PDP-8/e, where INITIALIZE sets the PC8-E interrupt enable. Software disables the controller's interrupt contribution with PCE and enables it again with RPE. Both flags are clear after initialization, so no interrupt request results until a flag sets.
+
 The reader flag remains clear until a reader operation completes.  
+The punch flag remains clear until a punch operation completes.  
 /INITIALIZE cancels any controller operation not yet reported as complete.  
 Characters not yet represented by a completed programmer-visible operation may be discarded.
 
 The controller responds to /INITIALIZE regardless of IOT_ACTIVE, address match, IOP, or interrupt state.  
-The initialized state commits at the TP ending the asserted /INITIALIZE TSTEP.  
+The initialized state commits at the TP ending the /INITIALIZE assertion.  
 No other controller action commits at that TP.
 
 ---
@@ -370,7 +372,7 @@ The punch flag is cleared by:
 
 - `PCF`
 - `PLS`
-- /INITIALIZE, which establishes the initialized set state defined above
+- /INITIALIZE
 
 ### 16.3 Punch Acceptance Contract
 

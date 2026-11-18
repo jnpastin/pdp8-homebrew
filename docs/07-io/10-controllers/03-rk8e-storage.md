@@ -1081,8 +1081,8 @@ System initialization is destructive to active operations.
 Uncommitted write data may be discarded without an additional error indication.
 
 The controller responds to /INITIALIZE regardless of IOT_ACTIVE, address match, IOP, interrupt state, DMA request state, or DMA grant state.  
-The initialized state commits at the TP ending the asserted /INITIALIZE TSTEP.  
-/INITIALIZE overrides all other controller actions sampled during that TSTEP.  
+The initialized state commits at the TP ending the /INITIALIZE assertion.  
+/INITIALIZE overrides all other controller actions that would otherwise commit at that TP.  
 No other controller action commits at that TP.
 
 ---

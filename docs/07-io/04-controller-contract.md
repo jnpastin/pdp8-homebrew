@@ -78,8 +78,9 @@ Controller-local state changes:
 Every controller must accept the active-low /INITIALIZE signal.
 
 When /INITIALIZE is asserted:
-- the controller enters its documented initialized state at the TP ending the asserted TSTEP
-- /INITIALIZE overrides all controller commands, transfers, flag updates, interrupt requests, DMA activity, and other controller-local actions sampled during the same TSTEP
+- the controller enters its documented initialized state at the TP ending the assertion (EXECUTE TP4 for CAF, TPC for CLEAR)
+- /INITIALIZE overrides all controller commands, transfers, flag updates, interrupt requests, DMA activity, and other controller-local actions that would otherwise commit at the same TP
+- the controller samples /INITIALIZE only at that TP and must not act on its level earlier
 - any active controller operation is terminated
 - controller bus-driving outputs are released
 - the controller interrupt contribution is deasserted

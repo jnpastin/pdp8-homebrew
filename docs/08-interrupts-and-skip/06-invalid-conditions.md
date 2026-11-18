@@ -8,8 +8,9 @@ This document identifies illegal interrupt and skip conditions defined by Sectio
 
 The following conditions are illegal:
 
-- `MS = EXECUTE` at TP4, `INTERRUPT_REQUEST_VALID = 1`, and `MS_NEXT != INTERRUPT`
-- `MS = EXECUTE` at TP4, `INTERRUPT_REQUEST_VALID = 1`, aggregate `/DMA_REQ = 0`, and `MS_NEXT = DMA`
+- `MS = EXECUTE` at TP4, `INTERRUPT_REQUEST_VALID = 1`, `IR_IS_CAF = 0`, and `MS_NEXT != INTERRUPT`
+- `MS = EXECUTE` at TP4, `INTERRUPT_REQUEST_VALID = 1`, `IR_IS_CAF = 0`, aggregate `/DMA_REQ = 0`, and `MS_NEXT = DMA`
+- `MS = EXECUTE` at TP4, `IR_IS_CAF = 1`, and `MS_NEXT = INTERRUPT`
 - `MS = EXECUTE` at TP4, `INTERRUPT_REQUEST_VALID = 0`, aggregate `/DMA_REQ = 0`, and `MS_NEXT != DMA`
 - `MS = EXECUTE` at TP4, `INTERRUPT_REQUEST_VALID = 0`, aggregate `/DMA_REQ = 1`, and `MS_NEXT != FETCH`
 - `MS = INTERRUPT` at TP4 and `MS_NEXT != FETCH`

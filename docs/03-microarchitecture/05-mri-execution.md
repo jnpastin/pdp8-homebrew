@@ -112,6 +112,13 @@ TS4:
 TS1:
 - EA_ADDR_TO_MA  
 
+Conditional μops:
+
+```text
+IF_CHANGE_PENDING = 1 -> DIF_TO_IF
+CIFP = 1 -> CIFP_CLEAR
+```
+
 TS2:
 - PC_TO_MB  
 
@@ -122,12 +129,7 @@ TS3:
 TS4:
 - PC_INC  
 
-Conditional μops:
-
-```text
-IF_CHANGE_PENDING = 1 -> DIF_TO_IF
-CIFP = 1 -> CIFP_CLEAR
-```
+A pending instruction-field change is applied at TP1, so the TS3 return-address write and the following FETCH both use the new instruction field, as on the PDP-8/e.
 
 ---
 
@@ -136,7 +138,12 @@ CIFP = 1 -> CIFP_CLEAR
 **Mnemonic (non-normative):** JMP  
 
 TS1:
-- (no μops)  
+Conditional μops:
+
+```text
+IF_CHANGE_PENDING = 1 -> DIF_TO_IF
+CIFP = 1 -> CIFP_CLEAR
+```
 
 TS2:
 - (no μops)  
@@ -145,12 +152,9 @@ TS3:
 - PC_LOAD_EA_ADDR  
 
 TS4:
-Conditional μops:
+- (no μops)  
 
-```text
-IF_CHANGE_PENDING = 1 -> DIF_TO_IF
-CIFP = 1 -> CIFP_CLEAR
-```
+A pending instruction-field change is applied at TP1, so the following FETCH uses the new instruction field.
 
 ---
 

@@ -748,7 +748,7 @@ Encoding:
 - originates from the control word
 - is not a micro-operation
 - is asserted for one timing state
-- initializes CPU and controller state according to the applicable initialization contracts
+- initializes controller state according to the controller contracts; the CPU-register effects are the micro-operations of the same TS
 
 Source:
 
@@ -780,7 +780,7 @@ CPU /INITIALIZE driver = DRIVE_LOW
 
 Constraints:
 
-- `/INITIALIZE` is asserted for the documented one-TSTEP interval.
+- `/INITIALIZE` is asserted during EXECUTE TS4 and its effects commit at TP4.
 - `/INITIALIZE` overrides normal controller activity.
 - Controller initialization behavior remains defined by each controller contract.
 - Software is responsible for satisfying documented device-idle and safety requirements before executing CAF.
@@ -817,7 +817,7 @@ CPU /INITIALIZE driver = DRIVE_LOW
 
 Constraints:
 
-- `/INITIALIZE` is asserted for the documented one-TSTEP interval.
+- `/INITIALIZE` is asserted for the console transaction and its effects commit at TPC.
 - The associated CPU-state changes remain represented by their selected micro-operations and sequencing results.
 - `/INITIALIZE` does not replace those internal state assignments.
 - Controller initialization behavior remains defined by each controller contract.
@@ -862,7 +862,7 @@ CPU /INITIALIZE driver = DRIVE_HIGH
 
 Constraint:
 
-- `/INITIALIZE` must not remain asserted beyond its documented one-TSTEP interval.
+- `/INITIALIZE` must not be asserted outside the TS or console transaction defined in sections 8.2 and 8.3.
 
 Source:
 

@@ -2287,19 +2287,19 @@
         "MS_NEXT": [
           {
             "value": "3",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1) AND IR_IS_CAF = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.5"
           },
           {
             "value": "4",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 0))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.6"
           },
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 1))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 1))",
             "origin": "direct-control definition",
             "source": "01:3.2.7"
           }
@@ -3089,19 +3089,19 @@
         "MS_NEXT": [
           {
             "value": "3",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1) AND IR_IS_CAF = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.5"
           },
           {
             "value": "4",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 0))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.6"
           },
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 1))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 1))",
             "origin": "direct-control definition",
             "source": "01:3.2.7"
           }
@@ -3939,19 +3939,19 @@
         "MS_NEXT": [
           {
             "value": "3",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1) AND IR_IS_CAF = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.5"
           },
           {
             "value": "4",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 0))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.6"
           },
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 1))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 1))",
             "origin": "direct-control definition",
             "source": "01:3.2.7"
           }
@@ -4507,7 +4507,7 @@
           },
           {
             "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 3) AND RUN = 1) AND (((((RUN = 1 AND MS = EXECUTE) AND TS = 3) AND IR_IS_MRI = 1) AND IR_INDIRECT = 1) AND (IR_MRI_OPCODE = 011 OR IR_MRI_OPCODE = 100)))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 3) AND RUN = 1) AND (((((RUN = 1 AND MS = EXECUTE) AND TS = 3) AND IR_IS_MRI = 1) AND IR_INDIRECT = 1) AND IR_MRI_OPCODE = 011))",
             "origin": "direct-control definition",
             "source": "01:4.5.5.3"
           }
@@ -4747,19 +4747,19 @@
         "MS_NEXT": [
           {
             "value": "3",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1) AND IR_IS_CAF = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.5"
           },
           {
             "value": "4",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 0))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.6"
           },
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 1))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 1))",
             "origin": "direct-control definition",
             "source": "01:3.2.7"
           }
@@ -4905,14 +4905,28 @@
       },
       "field_assignments": {
         "AC_LOAD": [],
-        "CIFP_LOAD": [],
+        "CIFP_LOAD": [
+          {
+            "value": "1",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 1) AND RUN = 1) AND CIFP = 1)",
+            "origin": "conditional micro-operation mapping",
+            "source": "CIFP_CLEAR"
+          }
+        ],
         "DF_LOAD": [],
         "DIF_LOAD": [],
         "EA_ADDR_LOAD": [],
         "IB_LOAD": [],
         "IDB_DRIVE": [],
         "IE_LOAD": [],
-        "IF_LOAD": [],
+        "IF_LOAD": [
+          {
+            "value": "1",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 1) AND RUN = 1) AND IF_CHANGE_PENDING = 1)",
+            "origin": "conditional micro-operation mapping",
+            "source": "DIF_TO_IF"
+          }
+        ],
         "II_LOAD": [],
         "IOT_TRANSFER_LOAD": [],
         "IR_LOAD": [],
@@ -4937,7 +4951,14 @@
         "DF_SRC": [],
         "DIF_SRC": [],
         "EA_ADDR_SRC": [],
-        "IF_SRC": [],
+        "IF_SRC": [
+          {
+            "value": "1",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 1) AND RUN = 1) AND IF_CHANGE_PENDING = 1)",
+            "origin": "conditional micro-operation mapping",
+            "source": "DIF_TO_IF"
+          }
+        ],
         "IDB_SRC": [],
         "L_OP": [],
         "MA_SRC": [
@@ -4953,7 +4974,14 @@
         "MFB_SRC": [],
         "MQ_SRC": [],
         "PC_SRC": [],
-        "CIFP_VAL": [],
+        "CIFP_VAL": [
+          {
+            "value": "0",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 1) AND RUN = 1) AND CIFP = 1)",
+            "origin": "conditional micro-operation mapping",
+            "source": "CIFP_CLEAR"
+          }
+        ],
         "IE_VAL": [],
         "II_VAL": [],
         "IOT_TRANSFER_VAL": [],
@@ -5001,6 +5029,8 @@
         "MS_LOAD": []
       },
       "selected_micro_operations": {
+        "CIFP_CLEAR": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 1) AND RUN = 1) AND CIFP = 1)",
+        "DIF_TO_IF": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 1) AND RUN = 1) AND IF_CHANGE_PENDING = 1)",
         "EA_ADDR_TO_MA": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 1) AND RUN = 1)"
       },
       "applicable_direct_control_definitions": [
@@ -5331,10 +5361,10 @@
             "source": "01:4.5.2.3"
           },
           {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 3) AND RUN = 1) AND (((((RUN = 1 AND MS = EXECUTE) AND TS = 3) AND IR_IS_MRI = 1) AND IR_INDIRECT = 1) AND (IR_MRI_OPCODE = 011 OR IR_MRI_OPCODE = 100)))",
+            "value": "0",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 3) AND RUN = 1) AND (((((RUN = 1 AND MS = EXECUTE) AND TS = 3) AND IR_IS_MRI = 1) AND IR_INDIRECT = 1) AND IR_MRI_OPCODE = 100))",
             "origin": "direct-control definition",
-            "source": "01:4.5.5.3"
+            "source": "01:4.5.5.4"
           }
         ],
         "MQ_SRC": [],
@@ -5411,7 +5441,7 @@
         "01:3.4.5",
         "01:4.3.6",
         "01:4.5.2.3",
-        "01:4.5.5.3",
+        "01:4.5.5.4",
         "02:4.3",
         "02:5.3",
         "02:6.1",
@@ -5426,275 +5456,6 @@
         "line": 108
       },
       "base_context": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1)",
-      "defaults": {
-        "AC_LOAD": "0",
-        "CIFP_LOAD": "0",
-        "DF_LOAD": "0",
-        "DIF_LOAD": "0",
-        "EA_ADDR_LOAD": "0",
-        "IB_LOAD": "0",
-        "IDB_DRIVE": "0",
-        "IE_LOAD": "0",
-        "IF_LOAD": "0",
-        "II_LOAD": "0",
-        "IOT_TRANSFER_LOAD": "0",
-        "IR_LOAD": "0",
-        "L_LOAD": "0",
-        "MA_LOAD": "0",
-        "MB_LOAD": "0",
-        "MQ_LOAD": "0",
-        "PC_INC": "0",
-        "PC_LOAD": "0",
-        "AB_SRC": "0",
-        "AC_SRC": "0",
-        "ALU_A_SRC": "0",
-        "ALU_B_SRC": "0",
-        "ALU_OP": "0",
-        "DF_SRC": "0",
-        "DIF_SRC": "0",
-        "EA_ADDR_SRC": "0",
-        "IF_SRC": "0",
-        "IDB_SRC": "0",
-        "L_OP": "0",
-        "MA_SRC": "0",
-        "MB_SRC": "0",
-        "MDB_SRC": "0",
-        "MFB_SRC": "0",
-        "MQ_SRC": "0",
-        "PC_SRC": "0",
-        "CIFP_VAL": "0",
-        "IE_VAL": "0",
-        "II_VAL": "0",
-        "IOT_TRANSFER_VAL": "0",
-        "/RD": "1",
-        "/WR": "1",
-        "/DB_READ": "1",
-        "/DB_WRITE": "1",
-        "/INITIALIZE": "1",
-        "MS_NEXT": "0",
-        "RUN_NEXT": "1",
-        "HLT_REQ_NEXT": "0",
-        "MS_LOAD": "0"
-      },
-      "field_assignments": {
-        "AC_LOAD": [],
-        "CIFP_LOAD": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND CIFP = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "CIFP_CLEAR"
-          }
-        ],
-        "DF_LOAD": [],
-        "DIF_LOAD": [],
-        "EA_ADDR_LOAD": [],
-        "IB_LOAD": [],
-        "IDB_DRIVE": [],
-        "IE_LOAD": [],
-        "IF_LOAD": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND IF_CHANGE_PENDING = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "DIF_TO_IF"
-          }
-        ],
-        "II_LOAD": [],
-        "IOT_TRANSFER_LOAD": [],
-        "IR_LOAD": [],
-        "L_LOAD": [],
-        "MA_LOAD": [],
-        "MB_LOAD": [],
-        "MQ_LOAD": [],
-        "PC_INC": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "PC_INC"
-          }
-        ],
-        "PC_LOAD": [],
-        "AB_SRC": [],
-        "AC_SRC": [],
-        "ALU_A_SRC": [
-          {
-            "value": "2",
-            "when": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "PC_INC"
-          }
-        ],
-        "ALU_B_SRC": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "PC_INC"
-          }
-        ],
-        "ALU_OP": [
-          {
-            "value": "4",
-            "when": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "PC_INC"
-          }
-        ],
-        "DF_SRC": [],
-        "DIF_SRC": [],
-        "EA_ADDR_SRC": [],
-        "IF_SRC": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND IF_CHANGE_PENDING = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "DIF_TO_IF"
-          }
-        ],
-        "IDB_SRC": [],
-        "L_OP": [],
-        "MA_SRC": [],
-        "MB_SRC": [],
-        "MDB_SRC": [],
-        "MFB_SRC": [],
-        "MQ_SRC": [],
-        "PC_SRC": [],
-        "CIFP_VAL": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND CIFP = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "CIFP_CLEAR"
-          }
-        ],
-        "IE_VAL": [],
-        "II_VAL": [],
-        "IOT_TRANSFER_VAL": [],
-        "/RD": [],
-        "/WR": [],
-        "/DB_READ": [],
-        "/DB_WRITE": [],
-        "/INITIALIZE": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
-            "origin": "direct-control definition",
-            "source": "02:8.4"
-          }
-        ],
-        "MS_NEXT": [
-          {
-            "value": "3",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1))",
-            "origin": "direct-control definition",
-            "source": "01:3.2.5"
-          },
-          {
-            "value": "4",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 0))",
-            "origin": "direct-control definition",
-            "source": "01:3.2.6"
-          },
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 1))",
-            "origin": "direct-control definition",
-            "source": "01:3.2.7"
-          }
-        ],
-        "RUN_NEXT": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND NOT (((HLT_REQ = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT (((FP_SINGLE_INSTRUCTION = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT ((FP_SINGLE_STEP = 1 AND TS = 4))))",
-            "origin": "direct-control definition",
-            "source": "01:3.3.2"
-          },
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
-            "origin": "direct-control definition",
-            "source": "01:3.3.6"
-          },
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND FP_SINGLE_INSTRUCTION = 1) AND MS = EXECUTE) AND TS = 4))",
-            "origin": "direct-control definition",
-            "source": "01:3.3.7"
-          },
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND ((RUN = 1 AND FP_SINGLE_STEP = 1) AND TS = 4))",
-            "origin": "direct-control definition",
-            "source": "01:3.3.8"
-          },
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
-            "origin": "direct-control definition",
-            "source": "01:3.4.6"
-          }
-        ],
-        "HLT_REQ_NEXT": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
-            "origin": "direct-control definition",
-            "source": "01:3.3.6"
-          },
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
-            "origin": "direct-control definition",
-            "source": "01:3.4.2"
-          },
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
-            "origin": "direct-control definition",
-            "source": "01:3.4.6"
-          }
-        ],
-        "MS_LOAD": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND (RUN = 1 AND TS = 4))",
-            "origin": "direct-control definition",
-            "source": "01:3.2.11"
-          }
-        ]
-      },
-      "selected_micro_operations": {
-        "CIFP_CLEAR": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND CIFP = 1)",
-        "DIF_TO_IF": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND IF_CHANGE_PENDING = 1)",
-        "PC_INC": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1)"
-      },
-      "applicable_direct_control_definitions": [
-        "01:3.2.5",
-        "01:3.2.6",
-        "01:3.2.7",
-        "01:3.2.11",
-        "01:3.3.2",
-        "01:3.3.6",
-        "01:3.3.7",
-        "01:3.3.8",
-        "01:3.4.2",
-        "01:3.4.6",
-        "02:4.5",
-        "02:5.3",
-        "02:6.1",
-        "02:7.3",
-        "02:8.4"
-      ]
-    },
-    {
-      "execution_case_id": "mri:3.6:ts1",
-      "source": {
-        "path": "docs/03-microarchitecture/05-mri-execution.md",
-        "line": 134
-      },
-      "base_context": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 1) AND RUN = 1)",
       "defaults": {
         "AC_LOAD": "0",
         "CIFP_LOAD": "0",
@@ -5762,13 +5523,41 @@
         "MA_LOAD": [],
         "MB_LOAD": [],
         "MQ_LOAD": [],
-        "PC_INC": [],
+        "PC_INC": [
+          {
+            "value": "1",
+            "when": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "PC_INC"
+          }
+        ],
         "PC_LOAD": [],
         "AB_SRC": [],
         "AC_SRC": [],
-        "ALU_A_SRC": [],
-        "ALU_B_SRC": [],
-        "ALU_OP": [],
+        "ALU_A_SRC": [
+          {
+            "value": "2",
+            "when": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "PC_INC"
+          }
+        ],
+        "ALU_B_SRC": [
+          {
+            "value": "0",
+            "when": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "PC_INC"
+          }
+        ],
+        "ALU_OP": [
+          {
+            "value": "4",
+            "when": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "PC_INC"
+          }
+        ],
         "DF_SRC": [],
         "DIF_SRC": [],
         "EA_ADDR_SRC": [],
@@ -5782,6 +5571,245 @@
         "MQ_SRC": [],
         "PC_SRC": [],
         "CIFP_VAL": [],
+        "IE_VAL": [],
+        "II_VAL": [],
+        "IOT_TRANSFER_VAL": [],
+        "/RD": [],
+        "/WR": [],
+        "/DB_READ": [],
+        "/DB_WRITE": [],
+        "/INITIALIZE": [
+          {
+            "value": "1",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
+            "origin": "direct-control definition",
+            "source": "02:8.4"
+          }
+        ],
+        "MS_NEXT": [
+          {
+            "value": "3",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1) AND IR_IS_CAF = 0))",
+            "origin": "direct-control definition",
+            "source": "01:3.2.5"
+          },
+          {
+            "value": "4",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 0))",
+            "origin": "direct-control definition",
+            "source": "01:3.2.6"
+          },
+          {
+            "value": "0",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 1))",
+            "origin": "direct-control definition",
+            "source": "01:3.2.7"
+          }
+        ],
+        "RUN_NEXT": [
+          {
+            "value": "1",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND NOT (((HLT_REQ = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT (((FP_SINGLE_INSTRUCTION = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT ((FP_SINGLE_STEP = 1 AND TS = 4))))",
+            "origin": "direct-control definition",
+            "source": "01:3.3.2"
+          },
+          {
+            "value": "0",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
+            "origin": "direct-control definition",
+            "source": "01:3.3.6"
+          },
+          {
+            "value": "0",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND FP_SINGLE_INSTRUCTION = 1) AND MS = EXECUTE) AND TS = 4))",
+            "origin": "direct-control definition",
+            "source": "01:3.3.7"
+          },
+          {
+            "value": "0",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND ((RUN = 1 AND FP_SINGLE_STEP = 1) AND TS = 4))",
+            "origin": "direct-control definition",
+            "source": "01:3.3.8"
+          },
+          {
+            "value": "0",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
+            "origin": "direct-control definition",
+            "source": "01:3.4.6"
+          }
+        ],
+        "HLT_REQ_NEXT": [
+          {
+            "value": "0",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
+            "origin": "direct-control definition",
+            "source": "01:3.3.6"
+          },
+          {
+            "value": "0",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "origin": "direct-control definition",
+            "source": "01:3.4.2"
+          },
+          {
+            "value": "0",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND HLT_REQ = 1) AND MS = EXECUTE) AND TS = 4))",
+            "origin": "direct-control definition",
+            "source": "01:3.4.6"
+          }
+        ],
+        "MS_LOAD": [
+          {
+            "value": "1",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND (RUN = 1 AND TS = 4))",
+            "origin": "direct-control definition",
+            "source": "01:3.2.11"
+          }
+        ]
+      },
+      "selected_micro_operations": {
+        "PC_INC": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1)"
+      },
+      "applicable_direct_control_definitions": [
+        "01:3.2.5",
+        "01:3.2.6",
+        "01:3.2.7",
+        "01:3.2.11",
+        "01:3.3.2",
+        "01:3.3.6",
+        "01:3.3.7",
+        "01:3.3.8",
+        "01:3.4.2",
+        "01:3.4.6",
+        "02:4.5",
+        "02:5.3",
+        "02:6.1",
+        "02:7.3",
+        "02:8.4"
+      ]
+    },
+    {
+      "execution_case_id": "mri:3.6:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 136
+      },
+      "base_context": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 1) AND RUN = 1)",
+      "defaults": {
+        "AC_LOAD": "0",
+        "CIFP_LOAD": "0",
+        "DF_LOAD": "0",
+        "DIF_LOAD": "0",
+        "EA_ADDR_LOAD": "0",
+        "IB_LOAD": "0",
+        "IDB_DRIVE": "0",
+        "IE_LOAD": "0",
+        "IF_LOAD": "0",
+        "II_LOAD": "0",
+        "IOT_TRANSFER_LOAD": "0",
+        "IR_LOAD": "0",
+        "L_LOAD": "0",
+        "MA_LOAD": "0",
+        "MB_LOAD": "0",
+        "MQ_LOAD": "0",
+        "PC_INC": "0",
+        "PC_LOAD": "0",
+        "AB_SRC": "0",
+        "AC_SRC": "0",
+        "ALU_A_SRC": "0",
+        "ALU_B_SRC": "0",
+        "ALU_OP": "0",
+        "DF_SRC": "0",
+        "DIF_SRC": "0",
+        "EA_ADDR_SRC": "0",
+        "IF_SRC": "0",
+        "IDB_SRC": "0",
+        "L_OP": "0",
+        "MA_SRC": "0",
+        "MB_SRC": "0",
+        "MDB_SRC": "0",
+        "MFB_SRC": "0",
+        "MQ_SRC": "0",
+        "PC_SRC": "0",
+        "CIFP_VAL": "0",
+        "IE_VAL": "0",
+        "II_VAL": "0",
+        "IOT_TRANSFER_VAL": "0",
+        "/RD": "1",
+        "/WR": "1",
+        "/DB_READ": "1",
+        "/DB_WRITE": "1",
+        "/INITIALIZE": "1",
+        "MS_NEXT": "0",
+        "RUN_NEXT": "1",
+        "HLT_REQ_NEXT": "0",
+        "MS_LOAD": "0"
+      },
+      "field_assignments": {
+        "AC_LOAD": [],
+        "CIFP_LOAD": [
+          {
+            "value": "1",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 1) AND RUN = 1) AND CIFP = 1)",
+            "origin": "conditional micro-operation mapping",
+            "source": "CIFP_CLEAR"
+          }
+        ],
+        "DF_LOAD": [],
+        "DIF_LOAD": [],
+        "EA_ADDR_LOAD": [],
+        "IB_LOAD": [],
+        "IDB_DRIVE": [],
+        "IE_LOAD": [],
+        "IF_LOAD": [
+          {
+            "value": "1",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 1) AND RUN = 1) AND IF_CHANGE_PENDING = 1)",
+            "origin": "conditional micro-operation mapping",
+            "source": "DIF_TO_IF"
+          }
+        ],
+        "II_LOAD": [],
+        "IOT_TRANSFER_LOAD": [],
+        "IR_LOAD": [],
+        "L_LOAD": [],
+        "MA_LOAD": [],
+        "MB_LOAD": [],
+        "MQ_LOAD": [],
+        "PC_INC": [],
+        "PC_LOAD": [],
+        "AB_SRC": [],
+        "AC_SRC": [],
+        "ALU_A_SRC": [],
+        "ALU_B_SRC": [],
+        "ALU_OP": [],
+        "DF_SRC": [],
+        "DIF_SRC": [],
+        "EA_ADDR_SRC": [],
+        "IF_SRC": [
+          {
+            "value": "1",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 1) AND RUN = 1) AND IF_CHANGE_PENDING = 1)",
+            "origin": "conditional micro-operation mapping",
+            "source": "DIF_TO_IF"
+          }
+        ],
+        "IDB_SRC": [],
+        "L_OP": [],
+        "MA_SRC": [],
+        "MB_SRC": [],
+        "MDB_SRC": [],
+        "MFB_SRC": [],
+        "MQ_SRC": [],
+        "PC_SRC": [],
+        "CIFP_VAL": [
+          {
+            "value": "0",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 1) AND RUN = 1) AND CIFP = 1)",
+            "origin": "conditional micro-operation mapping",
+            "source": "CIFP_CLEAR"
+          }
+        ],
         "IE_VAL": [],
         "II_VAL": [],
         "IOT_TRANSFER_VAL": [],
@@ -5828,7 +5856,10 @@
         ],
         "MS_LOAD": []
       },
-      "selected_micro_operations": {},
+      "selected_micro_operations": {
+        "CIFP_CLEAR": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 1) AND RUN = 1) AND CIFP = 1)",
+        "DIF_TO_IF": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 1) AND RUN = 1) AND IF_CHANGE_PENDING = 1)"
+      },
       "applicable_direct_control_definitions": [
         "01:3.3.2",
         "01:3.4.2",
@@ -5845,7 +5876,7 @@
       "execution_case_id": "mri:3.6:ts2",
       "source": {
         "path": "docs/03-microarchitecture/05-mri-execution.md",
-        "line": 134
+        "line": 136
       },
       "base_context": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -5998,7 +6029,7 @@
       "execution_case_id": "mri:3.6:ts3",
       "source": {
         "path": "docs/03-microarchitecture/05-mri-execution.md",
-        "line": 134
+        "line": 136
       },
       "base_context": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -6181,7 +6212,7 @@
       "execution_case_id": "mri:3.6:ts4",
       "source": {
         "path": "docs/03-microarchitecture/05-mri-execution.md",
-        "line": 134
+        "line": 136
       },
       "base_context": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -6236,28 +6267,14 @@
       },
       "field_assignments": {
         "AC_LOAD": [],
-        "CIFP_LOAD": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 4) AND RUN = 1) AND CIFP = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "CIFP_CLEAR"
-          }
-        ],
+        "CIFP_LOAD": [],
         "DF_LOAD": [],
         "DIF_LOAD": [],
         "EA_ADDR_LOAD": [],
         "IB_LOAD": [],
         "IDB_DRIVE": [],
         "IE_LOAD": [],
-        "IF_LOAD": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 4) AND RUN = 1) AND IF_CHANGE_PENDING = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "DIF_TO_IF"
-          }
-        ],
+        "IF_LOAD": [],
         "II_LOAD": [],
         "IOT_TRANSFER_LOAD": [],
         "IR_LOAD": [],
@@ -6275,14 +6292,7 @@
         "DF_SRC": [],
         "DIF_SRC": [],
         "EA_ADDR_SRC": [],
-        "IF_SRC": [
-          {
-            "value": "1",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 4) AND RUN = 1) AND IF_CHANGE_PENDING = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "DIF_TO_IF"
-          }
-        ],
+        "IF_SRC": [],
         "IDB_SRC": [],
         "L_OP": [],
         "MA_SRC": [],
@@ -6291,14 +6301,7 @@
         "MFB_SRC": [],
         "MQ_SRC": [],
         "PC_SRC": [],
-        "CIFP_VAL": [
-          {
-            "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 4) AND RUN = 1) AND CIFP = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "CIFP_CLEAR"
-          }
-        ],
+        "CIFP_VAL": [],
         "IE_VAL": [],
         "II_VAL": [],
         "IOT_TRANSFER_VAL": [],
@@ -6317,19 +6320,19 @@
         "MS_NEXT": [
           {
             "value": "3",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1) AND IR_IS_CAF = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.5"
           },
           {
             "value": "4",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 0))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.6"
           },
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 1))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 1))",
             "origin": "direct-control definition",
             "source": "01:3.2.7"
           }
@@ -6395,10 +6398,7 @@
           }
         ]
       },
-      "selected_micro_operations": {
-        "CIFP_CLEAR": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 4) AND RUN = 1) AND CIFP = 1)",
-        "DIF_TO_IF": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 4) AND RUN = 1) AND IF_CHANGE_PENDING = 1)"
-      },
+      "selected_micro_operations": {},
       "applicable_direct_control_definitions": [
         "01:3.2.5",
         "01:3.2.6",
@@ -7329,19 +7329,19 @@
         "MS_NEXT": [
           {
             "value": "3",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1))",
+            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1) AND IR_IS_CAF = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.5"
           },
           {
             "value": "4",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 0))",
+            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.6"
           },
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 1))",
+            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 1))",
             "origin": "direct-control definition",
             "source": "01:3.2.7"
           }
@@ -8021,19 +8021,19 @@
         "MS_NEXT": [
           {
             "value": "3",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1) AND IR_IS_CAF = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.5"
           },
           {
             "value": "4",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 0))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.6"
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 1))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 1))",
             "origin": "direct-control definition",
             "source": "01:3.2.7"
           }
@@ -8720,19 +8720,19 @@
         "MS_NEXT": [
           {
             "value": "3",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1) AND IR_IS_CAF = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.5"
           },
           {
             "value": "4",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 0))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.6"
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 1))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 1))",
             "origin": "direct-control definition",
             "source": "01:3.2.7"
           }
@@ -9433,19 +9433,19 @@
         "MS_NEXT": [
           {
             "value": "3",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1) AND IR_IS_CAF = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.5"
           },
           {
             "value": "4",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 0))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.6"
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 1))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 1))",
             "origin": "direct-control definition",
             "source": "01:3.2.7"
           }
@@ -10131,19 +10131,19 @@
         "MS_NEXT": [
           {
             "value": "3",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1) AND IR_IS_CAF = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.5"
           },
           {
             "value": "4",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 0))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.6"
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 1))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 1))",
             "origin": "direct-control definition",
             "source": "01:3.2.7"
           }
@@ -10866,19 +10866,19 @@
         "MS_NEXT": [
           {
             "value": "3",
-            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1) AND IR_IS_CAF = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.5"
           },
           {
             "value": "4",
-            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 0))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.6"
           },
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 1))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 1))",
             "origin": "direct-control definition",
             "source": "01:3.2.7"
           }
@@ -11625,19 +11625,19 @@
         "MS_NEXT": [
           {
             "value": "3",
-            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1) AND IR_IS_CAF = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.5"
           },
           {
             "value": "4",
-            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 0))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.6"
           },
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 1))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 1))",
             "origin": "direct-control definition",
             "source": "01:3.2.7"
           }
@@ -12293,19 +12293,19 @@
         "MS_NEXT": [
           {
             "value": "3",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1) AND IR_IS_CAF = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.5"
           },
           {
             "value": "4",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 0))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.6"
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 1))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 1))",
             "origin": "direct-control definition",
             "source": "01:3.2.7"
           }
@@ -12907,35 +12907,105 @@
         "MS_LOAD": "0"
       },
       "field_assignments": {
-        "AC_LOAD": [],
+        "AC_LOAD": [
+          {
+            "value": "1",
+            "when": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "AC_CLEAR"
+          }
+        ],
         "CIFP_LOAD": [],
         "DF_LOAD": [],
         "DIF_LOAD": [],
         "EA_ADDR_LOAD": [],
         "IB_LOAD": [],
-        "IDB_DRIVE": [],
-        "IE_LOAD": [],
+        "IDB_DRIVE": [
+          {
+            "value": "1",
+            "when": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "AC_CLEAR"
+          }
+        ],
+        "IE_LOAD": [
+          {
+            "value": "1",
+            "when": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "IE_CLEAR"
+          }
+        ],
         "IF_LOAD": [],
         "II_LOAD": [],
         "IOT_TRANSFER_LOAD": [],
         "IR_LOAD": [],
-        "L_LOAD": [],
+        "L_LOAD": [
+          {
+            "value": "1",
+            "when": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "L_CLEAR"
+          }
+        ],
         "MA_LOAD": [],
         "MB_LOAD": [],
         "MQ_LOAD": [],
         "PC_INC": [],
         "PC_LOAD": [],
         "AB_SRC": [],
-        "AC_SRC": [],
-        "ALU_A_SRC": [],
-        "ALU_B_SRC": [],
-        "ALU_OP": [],
+        "AC_SRC": [
+          {
+            "value": "0",
+            "when": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "AC_CLEAR"
+          }
+        ],
+        "ALU_A_SRC": [
+          {
+            "value": "0",
+            "when": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "AC_CLEAR"
+          }
+        ],
+        "ALU_B_SRC": [
+          {
+            "value": "0",
+            "when": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "AC_CLEAR"
+          }
+        ],
+        "ALU_OP": [
+          {
+            "value": "12",
+            "when": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "AC_CLEAR"
+          }
+        ],
         "DF_SRC": [],
         "DIF_SRC": [],
         "EA_ADDR_SRC": [],
         "IF_SRC": [],
-        "IDB_SRC": [],
-        "L_OP": [],
+        "IDB_SRC": [
+          {
+            "value": "7",
+            "when": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "AC_CLEAR"
+          }
+        ],
+        "L_OP": [
+          {
+            "value": "0",
+            "when": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "L_CLEAR"
+          }
+        ],
         "MA_SRC": [],
         "MB_SRC": [],
         "MDB_SRC": [],
@@ -12943,7 +13013,14 @@
         "MQ_SRC": [],
         "PC_SRC": [],
         "CIFP_VAL": [],
-        "IE_VAL": [],
+        "IE_VAL": [
+          {
+            "value": "0",
+            "when": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "IE_CLEAR"
+          }
+        ],
         "II_VAL": [],
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
@@ -12960,20 +13037,14 @@
         ],
         "MS_NEXT": [
           {
-            "value": "3",
-            "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1))",
-            "origin": "direct-control definition",
-            "source": "01:3.2.5"
-          },
-          {
             "value": "4",
-            "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 0))",
+            "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.6"
           },
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 1))",
+            "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 1))",
             "origin": "direct-control definition",
             "source": "01:3.2.7"
           }
@@ -13039,9 +13110,12 @@
           }
         ]
       },
-      "selected_micro_operations": {},
+      "selected_micro_operations": {
+        "AC_CLEAR": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1)",
+        "IE_CLEAR": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1)",
+        "L_CLEAR": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1)"
+      },
       "applicable_direct_control_definitions": [
-        "01:3.2.5",
         "01:3.2.6",
         "01:3.2.7",
         "01:3.2.11",
@@ -13062,7 +13136,7 @@
       "execution_case_id": "iot:10.1:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 390
+        "line": 393
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -13215,7 +13289,7 @@
       "execution_case_id": "iot:10.1:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 390
+        "line": 393
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -13496,7 +13570,7 @@
       "execution_case_id": "iot:10.1:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 390
+        "line": 393
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -13649,7 +13723,7 @@
       "execution_case_id": "iot:10.1:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 390
+        "line": 393
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -13757,19 +13831,19 @@
         "MS_NEXT": [
           {
             "value": "3",
-            "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1))",
+            "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1) AND IR_IS_CAF = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.5"
           },
           {
             "value": "4",
-            "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 0))",
+            "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.6"
           },
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 1))",
+            "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 1))",
             "origin": "direct-control definition",
             "source": "01:3.2.7"
           }
@@ -13932,7 +14006,14 @@
         "IOT_TRANSFER_LOAD": [],
         "IR_LOAD": [],
         "L_LOAD": [],
-        "MA_LOAD": [],
+        "MA_LOAD": [
+          {
+            "value": "1",
+            "when": "((MS = INTERRUPT AND TS = 1) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "MA_CLEAR"
+          }
+        ],
         "MB_LOAD": [
           {
             "value": "1",
@@ -13962,7 +14043,14 @@
           }
         ],
         "L_OP": [],
-        "MA_SRC": [],
+        "MA_SRC": [
+          {
+            "value": "2",
+            "when": "((MS = INTERRUPT AND TS = 1) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "MA_CLEAR"
+          }
+        ],
         "MB_SRC": [
           {
             "value": "0",
@@ -14023,6 +14111,7 @@
         "MS_LOAD": []
       },
       "selected_micro_operations": {
+        "MA_CLEAR": "((MS = INTERRUPT AND TS = 1) AND RUN = 1)",
         "PC_TO_MB": "((MS = INTERRUPT AND TS = 1) AND RUN = 1)"
       },
       "applicable_direct_control_definitions": [
@@ -14041,7 +14130,7 @@
       "execution_case_id": "interrupt:4.2",
       "source": {
         "path": "docs/03-microarchitecture/08-interrupt-execution.md",
-        "line": 68
+        "line": 70
       },
       "base_context": "((MS = INTERRUPT AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -14096,9 +14185,30 @@
       },
       "field_assignments": {
         "AC_LOAD": [],
-        "CIFP_LOAD": [],
-        "DF_LOAD": [],
-        "DIF_LOAD": [],
+        "CIFP_LOAD": [
+          {
+            "value": "1",
+            "when": "((MS = INTERRUPT AND TS = 2) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "CIFP_CLEAR"
+          }
+        ],
+        "DF_LOAD": [
+          {
+            "value": "1",
+            "when": "((MS = INTERRUPT AND TS = 2) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "DF_CLEAR"
+          }
+        ],
+        "DIF_LOAD": [
+          {
+            "value": "1",
+            "when": "((MS = INTERRUPT AND TS = 2) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "DIF_CLEAR"
+          }
+        ],
         "EA_ADDR_LOAD": [],
         "IB_LOAD": [
           {
@@ -14110,19 +14220,19 @@
         ],
         "IDB_DRIVE": [],
         "IE_LOAD": [],
-        "IF_LOAD": [],
-        "II_LOAD": [],
-        "IOT_TRANSFER_LOAD": [],
-        "IR_LOAD": [],
-        "L_LOAD": [],
-        "MA_LOAD": [
+        "IF_LOAD": [
           {
             "value": "1",
             "when": "((MS = INTERRUPT AND TS = 2) AND RUN = 1)",
             "origin": "micro-operation mapping",
-            "source": "MA_CLEAR"
+            "source": "IF_CLEAR"
           }
         ],
+        "II_LOAD": [],
+        "IOT_TRANSFER_LOAD": [],
+        "IR_LOAD": [],
+        "L_LOAD": [],
+        "MA_LOAD": [],
         "MB_LOAD": [],
         "MQ_LOAD": [],
         "PC_INC": [],
@@ -14132,26 +14242,47 @@
         "ALU_A_SRC": [],
         "ALU_B_SRC": [],
         "ALU_OP": [],
-        "DF_SRC": [],
-        "DIF_SRC": [],
-        "EA_ADDR_SRC": [],
-        "IF_SRC": [],
-        "IDB_SRC": [],
-        "L_OP": [],
-        "MA_SRC": [
+        "DF_SRC": [
           {
-            "value": "2",
+            "value": "0",
             "when": "((MS = INTERRUPT AND TS = 2) AND RUN = 1)",
             "origin": "micro-operation mapping",
-            "source": "MA_CLEAR"
+            "source": "DF_CLEAR"
           }
         ],
+        "DIF_SRC": [
+          {
+            "value": "1",
+            "when": "((MS = INTERRUPT AND TS = 2) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "DIF_CLEAR"
+          }
+        ],
+        "EA_ADDR_SRC": [],
+        "IF_SRC": [
+          {
+            "value": "0",
+            "when": "((MS = INTERRUPT AND TS = 2) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "IF_CLEAR"
+          }
+        ],
+        "IDB_SRC": [],
+        "L_OP": [],
+        "MA_SRC": [],
         "MB_SRC": [],
         "MDB_SRC": [],
         "MFB_SRC": [],
         "MQ_SRC": [],
         "PC_SRC": [],
-        "CIFP_VAL": [],
+        "CIFP_VAL": [
+          {
+            "value": "0",
+            "when": "((MS = INTERRUPT AND TS = 2) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "CIFP_CLEAR"
+          }
+        ],
         "IE_VAL": [],
         "II_VAL": [],
         "IOT_TRANSFER_VAL": [],
@@ -14199,8 +14330,11 @@
         "MS_LOAD": []
       },
       "selected_micro_operations": {
-        "IF_DF_TO_IB": "((MS = INTERRUPT AND TS = 2) AND RUN = 1)",
-        "MA_CLEAR": "((MS = INTERRUPT AND TS = 2) AND RUN = 1)"
+        "CIFP_CLEAR": "((MS = INTERRUPT AND TS = 2) AND RUN = 1)",
+        "DF_CLEAR": "((MS = INTERRUPT AND TS = 2) AND RUN = 1)",
+        "DIF_CLEAR": "((MS = INTERRUPT AND TS = 2) AND RUN = 1)",
+        "IF_CLEAR": "((MS = INTERRUPT AND TS = 2) AND RUN = 1)",
+        "IF_DF_TO_IB": "((MS = INTERRUPT AND TS = 2) AND RUN = 1)"
       },
       "applicable_direct_control_definitions": [
         "01:3.3.2",
@@ -14218,7 +14352,7 @@
       "execution_case_id": "interrupt:4.3",
       "source": {
         "path": "docs/03-microarchitecture/08-interrupt-execution.md",
-        "line": 79
+        "line": 87
       },
       "base_context": "((MS = INTERRUPT AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -14403,7 +14537,7 @@
       "execution_case_id": "interrupt:4.4",
       "source": {
         "path": "docs/03-microarchitecture/08-interrupt-execution.md",
-        "line": 88
+        "line": 96
       },
       "base_context": "((MS = INTERRUPT AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -14458,30 +14592,9 @@
       },
       "field_assignments": {
         "AC_LOAD": [],
-        "CIFP_LOAD": [
-          {
-            "value": "1",
-            "when": "((MS = INTERRUPT AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "CIFP_CLEAR"
-          }
-        ],
-        "DF_LOAD": [
-          {
-            "value": "1",
-            "when": "((MS = INTERRUPT AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "DF_CLEAR"
-          }
-        ],
-        "DIF_LOAD": [
-          {
-            "value": "1",
-            "when": "((MS = INTERRUPT AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "DIF_CLEAR"
-          }
-        ],
+        "CIFP_LOAD": [],
+        "DF_LOAD": [],
+        "DIF_LOAD": [],
         "EA_ADDR_LOAD": [],
         "IB_LOAD": [],
         "IDB_DRIVE": [],
@@ -14493,14 +14606,7 @@
             "source": "IE_CLEAR"
           }
         ],
-        "IF_LOAD": [
-          {
-            "value": "1",
-            "when": "((MS = INTERRUPT AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "IF_CLEAR"
-          }
-        ],
+        "IF_LOAD": [],
         "II_LOAD": [],
         "IOT_TRANSFER_LOAD": [],
         "IR_LOAD": [],
@@ -14522,31 +14628,10 @@
         "ALU_A_SRC": [],
         "ALU_B_SRC": [],
         "ALU_OP": [],
-        "DF_SRC": [
-          {
-            "value": "0",
-            "when": "((MS = INTERRUPT AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "DF_CLEAR"
-          }
-        ],
-        "DIF_SRC": [
-          {
-            "value": "1",
-            "when": "((MS = INTERRUPT AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "DIF_CLEAR"
-          }
-        ],
+        "DF_SRC": [],
+        "DIF_SRC": [],
         "EA_ADDR_SRC": [],
-        "IF_SRC": [
-          {
-            "value": "0",
-            "when": "((MS = INTERRUPT AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "IF_CLEAR"
-          }
-        ],
+        "IF_SRC": [],
         "IDB_SRC": [],
         "L_OP": [],
         "MA_SRC": [],
@@ -14562,14 +14647,7 @@
             "source": "PC_SET_1"
           }
         ],
-        "CIFP_VAL": [
-          {
-            "value": "0",
-            "when": "((MS = INTERRUPT AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "CIFP_CLEAR"
-          }
-        ],
+        "CIFP_VAL": [],
         "IE_VAL": [
           {
             "value": "0",
@@ -14644,11 +14722,7 @@
         ]
       },
       "selected_micro_operations": {
-        "CIFP_CLEAR": "((MS = INTERRUPT AND TS = 4) AND RUN = 1)",
-        "DF_CLEAR": "((MS = INTERRUPT AND TS = 4) AND RUN = 1)",
-        "DIF_CLEAR": "((MS = INTERRUPT AND TS = 4) AND RUN = 1)",
         "IE_CLEAR": "((MS = INTERRUPT AND TS = 4) AND RUN = 1)",
-        "IF_CLEAR": "((MS = INTERRUPT AND TS = 4) AND RUN = 1)",
         "PC_SET_1": "((MS = INTERRUPT AND TS = 4) AND RUN = 1)"
       },
       "applicable_direct_control_definitions": [
@@ -16134,35 +16208,105 @@
         "MS_LOAD": "0"
       },
       "field_assignments": {
-        "AC_LOAD": [],
+        "AC_LOAD": [
+          {
+            "value": "1",
+            "when": "(RUN = 0 AND FP_CLEAR = 1)",
+            "origin": "micro-operation mapping",
+            "source": "AC_CLEAR"
+          }
+        ],
         "CIFP_LOAD": [],
         "DF_LOAD": [],
         "DIF_LOAD": [],
         "EA_ADDR_LOAD": [],
         "IB_LOAD": [],
-        "IDB_DRIVE": [],
-        "IE_LOAD": [],
+        "IDB_DRIVE": [
+          {
+            "value": "1",
+            "when": "(RUN = 0 AND FP_CLEAR = 1)",
+            "origin": "micro-operation mapping",
+            "source": "AC_CLEAR"
+          }
+        ],
+        "IE_LOAD": [
+          {
+            "value": "1",
+            "when": "(RUN = 0 AND FP_CLEAR = 1)",
+            "origin": "micro-operation mapping",
+            "source": "IE_CLEAR"
+          }
+        ],
         "IF_LOAD": [],
         "II_LOAD": [],
         "IOT_TRANSFER_LOAD": [],
         "IR_LOAD": [],
-        "L_LOAD": [],
+        "L_LOAD": [
+          {
+            "value": "1",
+            "when": "(RUN = 0 AND FP_CLEAR = 1)",
+            "origin": "micro-operation mapping",
+            "source": "L_CLEAR"
+          }
+        ],
         "MA_LOAD": [],
         "MB_LOAD": [],
         "MQ_LOAD": [],
         "PC_INC": [],
         "PC_LOAD": [],
         "AB_SRC": [],
-        "AC_SRC": [],
-        "ALU_A_SRC": [],
-        "ALU_B_SRC": [],
-        "ALU_OP": [],
+        "AC_SRC": [
+          {
+            "value": "0",
+            "when": "(RUN = 0 AND FP_CLEAR = 1)",
+            "origin": "micro-operation mapping",
+            "source": "AC_CLEAR"
+          }
+        ],
+        "ALU_A_SRC": [
+          {
+            "value": "0",
+            "when": "(RUN = 0 AND FP_CLEAR = 1)",
+            "origin": "micro-operation mapping",
+            "source": "AC_CLEAR"
+          }
+        ],
+        "ALU_B_SRC": [
+          {
+            "value": "0",
+            "when": "(RUN = 0 AND FP_CLEAR = 1)",
+            "origin": "micro-operation mapping",
+            "source": "AC_CLEAR"
+          }
+        ],
+        "ALU_OP": [
+          {
+            "value": "12",
+            "when": "(RUN = 0 AND FP_CLEAR = 1)",
+            "origin": "micro-operation mapping",
+            "source": "AC_CLEAR"
+          }
+        ],
         "DF_SRC": [],
         "DIF_SRC": [],
         "EA_ADDR_SRC": [],
         "IF_SRC": [],
-        "IDB_SRC": [],
-        "L_OP": [],
+        "IDB_SRC": [
+          {
+            "value": "7",
+            "when": "(RUN = 0 AND FP_CLEAR = 1)",
+            "origin": "micro-operation mapping",
+            "source": "AC_CLEAR"
+          }
+        ],
+        "L_OP": [
+          {
+            "value": "0",
+            "when": "(RUN = 0 AND FP_CLEAR = 1)",
+            "origin": "micro-operation mapping",
+            "source": "L_CLEAR"
+          }
+        ],
         "MA_SRC": [],
         "MB_SRC": [],
         "MDB_SRC": [],
@@ -16170,7 +16314,14 @@
         "MQ_SRC": [],
         "PC_SRC": [],
         "CIFP_VAL": [],
-        "IE_VAL": [],
+        "IE_VAL": [
+          {
+            "value": "0",
+            "when": "(RUN = 0 AND FP_CLEAR = 1)",
+            "origin": "micro-operation mapping",
+            "source": "IE_CLEAR"
+          }
+        ],
         "II_VAL": [],
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
@@ -16210,7 +16361,11 @@
         ],
         "MS_LOAD": []
       },
-      "selected_micro_operations": {},
+      "selected_micro_operations": {
+        "AC_CLEAR": "(RUN = 0 AND FP_CLEAR = 1)",
+        "IE_CLEAR": "(RUN = 0 AND FP_CLEAR = 1)",
+        "L_CLEAR": "(RUN = 0 AND FP_CLEAR = 1)"
+      },
       "applicable_direct_control_definitions": [
         "01:3.3.10",
         "01:3.4.2",
@@ -16225,7 +16380,7 @@
       "execution_case_id": "console:10",
       "source": {
         "path": "docs/03-microarchitecture/09-console-execution.md",
-        "line": 329
+        "line": 331
       },
       "base_context": "(RUN = 0 AND FP_START = 1)",
       "defaults": {
@@ -16525,7 +16680,7 @@
       "execution_case_id": "console:11",
       "source": {
         "path": "docs/03-microarchitecture/09-console-execution.md",
-        "line": 376
+        "line": 378
       },
       "base_context": "(RUN = 0 AND FP_CONTINUE = 1)",
       "defaults": {
@@ -16670,7 +16825,7 @@
       "execution_case_id": "console:15",
       "source": {
         "path": "docs/03-microarchitecture/09-console-execution.md",
-        "line": 545
+        "line": 547
       },
       "base_context": "((((((RUN = 0 AND FP_START = 0) AND FP_CLEAR = 0) AND FP_CONTINUE = 0) AND FP_LOAD_ADDRESS = 0) AND FP_EXAMINE = 0) AND FP_DEPOSIT = 0)",
       "defaults": {
@@ -17846,19 +18001,19 @@
         "MS_NEXT": [
           {
             "value": "3",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP1 = 1) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1))",
+            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP1 = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1) AND IR_IS_CAF = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.5"
           },
           {
             "value": "4",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP1 = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 0))",
+            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP1 = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.6"
           },
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP1 = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 1))",
+            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP1 = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 1))",
             "origin": "direct-control definition",
             "source": "01:3.2.7"
           }
@@ -18659,19 +18814,19 @@
         "MS_NEXT": [
           {
             "value": "3",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP2 = 1) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1))",
+            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP2 = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1) AND IR_IS_CAF = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.5"
           },
           {
             "value": "4",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP2 = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 0))",
+            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP2 = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.6"
           },
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP2 = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 1))",
+            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP2 = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 1))",
             "origin": "direct-control definition",
             "source": "01:3.2.7"
           }
@@ -19523,19 +19678,19 @@
         "MS_NEXT": [
           {
             "value": "3",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP3 = 1) AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1))",
+            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP3 = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 1) AND IR_IS_CAF = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.5"
           },
           {
             "value": "4",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP3 = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 0))",
+            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP3 = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 0))",
             "origin": "direct-control definition",
             "source": "01:3.2.6"
           },
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP3 = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND INTERRUPT_REQUEST_VALID = 0) AND /DMA_REQ = 1))",
+            "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP3 = 1) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND (INTERRUPT_REQUEST_VALID = 0 OR IR_IS_CAF = 1)) AND /DMA_REQ = 1))",
             "origin": "direct-control definition",
             "source": "01:3.2.7"
           }
