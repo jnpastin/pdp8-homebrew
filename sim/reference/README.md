@@ -21,7 +21,7 @@ It does not check the ISA documentation against DEC. That is the role of the occ
 | Recognition at instruction completion; ION, CIF, RMF, RTF and a pending field change inhibit it; never at CAF's completion | Interrupt Recognition and Sequencing §6; Interrupt Enable and Inhibit §16; IOT §3.2 |
 | Interrupt entry | Interrupt Entry and Return §4–§6 |
 
-No device is attached: an external-device IOT selects no controller and has no effect. Reading an undefined memory word, or reading the interrupt buffer before any interrupt entry, raises `ReferenceError`.
+Controllers in `devices` respond to their external-device IOTs; an IOT that selects no controller has no effect. `pdp8_reference.KL8E` is the instruction-level counterpart of the timing-state [KL8E](../io/README.md): effects its contract commits at TP2 or TP3 are visible to the interrupt decision at that instruction's completion, effects at TP4 are not. Reading an undefined memory word, or reading the interrupt buffer before any interrupt entry, raises `ReferenceError`.
 
 `disassemble(ir)` gives a mnemonic for reports.
 

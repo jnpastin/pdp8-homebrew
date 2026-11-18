@@ -8,7 +8,7 @@ CW_VALID, WR_VALID, /IO_WAIT) is below this granularity and not modelled.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 from . import address as A
 from . import derived as D
@@ -17,9 +17,20 @@ from .console import COMMANDS, FrontPanel
 from .datapath import evaluate
 from .errors import SimError, SpecGap, SpecViolation
 from .images import ControlStore
-from .inputs import Conditions, ExternalInputs
+from .inputs import Conditions, ExternalInputs, ir_decodes
+from .logic import bits, t_and
 from .sequencer import next_ts, sequencer_loads
 from .state import CpuState
+
+
+@dataclass(frozen=True)
+class IotBus:
+    """The external-IOT interface signals presented to controllers during a TS (docs/07-io)."""
+    iot_active: int
+    ioa: int | None
+    iop: int | None
+    ts: int
+    console: bool = False
 
 
 @dataclass
@@ -43,11 +54,15 @@ class TraceRecord:
 
 class Cpu:
     def __init__(self, store: ControlStore, memory, panel: FrontPanel | None = None,
-                 ext: ExternalInputs | None = None, trace=None):
+                 ext: ExternalInputs | None = None, trace=None, devices=()):
+        """ext: test stimulus for the external inputs (for example /INT_REQ); controllers in
+        `devices` contribute their own responses each TS. A controller provides present(bus),
+        commit(bus, tp, db_write, initialize), initialize(), and optionally at_boundary()."""
         self.store = store
         self.memory = memory
         self.panel = panel or FrontPanel()
         self.ext = ext or ExternalInputs()
+        self.devices = list(devices)
         self.st = CpuState()
         self.trace = trace          # optional callable(TraceRecord)
         self.last_record: TraceRecord | None = None
@@ -55,9 +70,12 @@ class Cpu:
     # -- lifecycle ---------------------------------------------------------------------------
 
     def power_on(self):
-        """Timing Terminology §3.4. The console latch holds no command."""
+        """Timing Terminology §3.4. The console latch holds no command; /INITIALIZE is asserted,
+        so each controller is in its initialized state when the reset ends."""
         self.st.power_on()
         self.panel.latched = None
+        for device in self.devices:
+            device.initialize()
 
     @property
     def running(self) -> bool:
@@ -92,9 +110,35 @@ class Cpu:
             return self.panel.fp_cmd()
         return cond.get(name)
 
+    def _bus(self, console: bool) -> IotBus:
+        """ACS §4.6-§4.8: IOA and IOP from IR; IOT_ACTIVE = MS_EFF_IS_EXECUTE AND IR_IS_EXTERNAL_IOT."""
+        st = self.st
+        is_exec = A.ms_eff_is_execute(A.ms_eff(st["MS"], st["RUN"]))
+        active = t_and(is_exec, ir_decodes(st["IR"])["IR_IS_EXTERNAL_IOT"])
+        return IotBus(int(active == 1), bits(st["IR"], 8, 3), bits(st["IR"], 2, 0), st.ts, console)
+
+    def _external_inputs(self, bus: IotBus) -> ExternalInputs:
+        """The test stimulus combined with every controller's responses for this TS."""
+        ext = replace(self.ext)
+        for device in self.devices:
+            r = device.present(bus)
+            ext.io_read_req |= r.io_read_req
+            ext.io_write_req |= r.io_write_req
+            ext.io_skip_req |= r.io_skip_req
+            ext.io_clear_ac_req |= r.io_clear_ac_req
+            if r.db is not None:
+                if ext.db_input is not None:
+                    raise SpecViolation("two controllers drive DB", "ACS §4.3")
+                ext.db_input = r.db
+            if r.int_req:
+                ext.int_req_n = 0                 # /INT_REQ is the wired OR of the requests
+        return ext
+
     def _cycle(self, console: bool) -> TraceRecord:
         st = self.st
-        cond = Conditions(st, self.ext, self.panel)
+        bus = self._bus(console)
+        ext = self._external_inputs(bus)
+        cond = Conditions(st, ext, self.panel)
         run, ms, ts = st["RUN"], st["MS"], st.ts
         context = {"MS": E.MS_NAMES.get(ms, ms), "TS": ts, "RUN": run, "IR": st["IR"], "PC": st["PC"],
                    "command": self.panel.latched}
@@ -111,11 +155,11 @@ class Cpu:
             seq_ovl = A.seq_ovl_bits(run, self.panel.fp_cmd(), int(self.panel.single_instruction),
                                      int(self.panel.single_step), cond.get("INTERRUPT_REQUEST_VALID"))
             seq_base, seq_undef = A.sequencer_address(mseff, tsc, st["HLT_REQ"], int(self.panel.stop),
-                                                      seq_ovl, self.ext.dma_req_n, ir_seq)
+                                                      seq_ovl, ext.dma_req_n, ir_seq)
             context.update(dp_addr=dp_base, seq_addr=seq_base)
 
             dp_addrs = A.expand(dp_base, dp_undef)
-            effects, dp_fields = self._datapath_effects(dp_addrs, dp_undef, group, cond, mseff)
+            effects, dp_fields = self._datapath_effects(dp_addrs, dp_undef, group, cond, mseff, ext)
             seq_addrs = A.expand(seq_base, seq_undef)
             seq = self._sequencer_word(seq_addrs, seq_undef)
 
@@ -141,6 +185,12 @@ class Cpu:
         if not console:
             st["MAPR"] = mapr_next
             st.ts = next_ts(ts, st["RUN"])
+        initialize = seq["/INITIALIZE"] == 0       # ACS §4.9: controllers initialize at this TP
+        for device in self.devices:
+            device.commit(bus, "C" if console else ts, effects.db_write, initialize)
+        if not console and ts == 4 and ms in (E.EXECUTE, E.INTERRUPT):
+            for device in self.devices:              # an instruction boundary (see KL8E model)
+                getattr(device, "at_boundary", lambda: None)()
 
         record = TraceRecord("TPC" if console else "TS", ms, ts, run, context["IR"], context["PC"],
                              self.panel.latched, dp_addrs, seq_addrs, dp_fields, seq,
@@ -151,12 +201,12 @@ class Cpu:
             self.trace(record)
         return record
 
-    def _datapath_effects(self, addresses, undefined, group, cond, mseff):
+    def _datapath_effects(self, addresses, undefined, group, cond, mseff, ext):
         """Evaluate the word at every candidate address; their effects must agree."""
         results = []
         for addr in addresses:
             fields = self.store.decode_datapath(addr)
-            results.append((addr, fields, evaluate(fields, self.st, self.ext, self.panel,
+            results.append((addr, fields, evaluate(fields, self.st, ext, self.panel,
                                                    self.memory, cond, mseff)))
         keys = {fx.key() for _, _, fx in results}
         if len(keys) > 1:

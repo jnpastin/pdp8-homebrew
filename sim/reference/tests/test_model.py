@@ -128,7 +128,7 @@ class Disassembly(unittest.TestCase):
     def test_names(self):
         cases = {0o1620: "TAD I 020", 0o5200: "JMP 000", 0o7300: "CLA CLL", 0o7041: "CMA IAC",
                  0o7410: "SKP", 0o7721: "CLA SWP", 0o7621: "CLA MQL", 0o6212: "CIF 10", 0o6233: "CDF 30 CIF 30",
-                 0o6244: "RMF", 0o6046: "IOT 6046", 0o6007: "CAF"}
+                 0o6244: "RMF", 0o6046: "TLS", 0o6035: "KIE", 0o6053: "IOT 6053", 0o6007: "CAF"}
         for ir, text in cases.items():
             self.assertEqual(disassemble(ir), text, f"{ir:04o}")
 

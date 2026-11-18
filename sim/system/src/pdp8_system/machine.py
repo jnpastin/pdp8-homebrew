@@ -6,6 +6,8 @@ key, exactly as an operator would (docs/03-microarchitecture/09-console-executio
 
 from __future__ import annotations
 
+import random
+
 from pdp8_cpu import encodings
 from pdp8_cpu.cpu import Cpu, TraceRecord
 from pdp8_cpu.errors import ImageError, SimError
@@ -15,9 +17,10 @@ from pdp8_cpu.images import (
     DEFAULT_SCHEMA,
     ControlStore,
 )
+from pdp8_io import KL8E
 from pdp8_memory import Memory
 
-__all__ = ["Machine", "SimError", "TraceRecord", "load_store"]
+__all__ = ["KL8E", "Machine", "SimError", "TraceRecord", "load_store"]
 
 _STORE_CACHE: dict = {}
 
@@ -34,11 +37,13 @@ def load_store(image_dir=DEFAULT_IMAGE_DIR, packing=DEFAULT_PACKING, schema=DEFA
 
 
 class Machine:
-    def __init__(self, store: ControlStore | None = None, keep_trace: bool = False):
+    def __init__(self, store: ControlStore | None = None, keep_trace: bool = False, devices=()):
+        """devices: I/O controllers attached to the external-IOT interface (for example KL8E())."""
         self.memory = Memory()
         self.trace: list[TraceRecord] = []
+        self.devices = list(devices)
         self.cpu = Cpu(store or load_store(), self.memory,
-                       trace=self.trace.append if keep_trace else None)
+                       trace=self.trace.append if keep_trace else None, devices=self.devices)
         self.cpu.power_on()
 
     @property
@@ -48,6 +53,18 @@ class Machine:
     @property
     def state(self):
         return self.cpu.st
+
+    def core_residue(self, seed: int):
+        """Give every memory word an arbitrary, defined value, standing in for what core memory
+        retained from earlier use. Core keeps its contents through power-on and CLEAR, so a
+        program that does not clear memory sees whatever was left there (MAINDEC-8E-D0BB's
+        autoindex test ANDs location 7777, which it never loads, into a zero AC, for example).
+        The values come from `seed`; a program that does not depend on leftover contents gives
+        the same result for every seed. Memory of a machine created without this stays
+        UNDEFINED, so unit tests still catch accidental reads."""
+        rng = random.Random(seed)
+        for f in range(8):
+            self.memory.preload(f, 0, [rng.randrange(4096) for _ in range(4096)])
 
     # -- console helpers -------------------------------------------------------------------
 

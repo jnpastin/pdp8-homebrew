@@ -1,0 +1,1 @@
+The original documentation is not available. Set SR9-11 to the number of memory fields to check. After each successful cycle, the digit “5” is printed on the teletype. Set SR5 or SR4 to halt the test and set SR3 to avoid relocating of the program. 

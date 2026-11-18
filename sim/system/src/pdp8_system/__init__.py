@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 _SIM_ROOT = Path(__file__).resolve().parents[3]
-for _package in ("cpu", "memory", "reference"):
+for _package in ("cpu", "memory", "reference", "io"):
     _src = str(_SIM_ROOT / _package / "src")
     if _src not in sys.path:
         sys.path.insert(0, _src)

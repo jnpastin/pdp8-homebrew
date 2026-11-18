@@ -10,8 +10,8 @@ Sources (docs/):
 
 State is the programmer-visible machine: AC, L, MQ, PC, IF, DF, IE, the interrupt-saved fields
 (IB), a staged instruction field (set by CIF, RMF, or RTF and applied by the next JMP or JMS), and
-32K words of memory. No device is attached: an external-device IOT selects no controller and so
-has no effect (IOT §1, ENC §5).
+32K words of memory. Controllers in `devices` (for example the KL8E model) respond to their
+external-device IOTs; an IOT that selects no controller has no effect (IOT §1, ENC §5).
 """
 
 from __future__ import annotations
@@ -44,7 +44,9 @@ class Reference:
                                        # undefined until the first interrupt entry
         self.staged_if = None          # deferred instruction field, or None when none is pending
         self.sr = 0                    # front-panel switch register (G2 OSR)
-        self.int_req = False           # aggregate interrupt request (/INT_REQ asserted)
+        self.int_req = False           # interrupt request from outside the model (test stimulus)
+        self.devices = []              # attached controllers
+        self._late = []                # controller effects that commit at TP4
         self.memory = [[None] * WORDS for _ in range(FIELDS)]
         self.interrupt_pending = False # recognized at the last boundary; entry is the next step
         self._writes = []
@@ -60,6 +62,18 @@ class Reference:
     def write(self, f, a, value):
         self.memory[f][a & M12] = value & M12
         self._writes.append((f, a & M12, value & M12))
+
+    def interrupt_request(self) -> bool:
+        """The aggregate request: the stimulus, or any controller's contribution."""
+        return bool(self.int_req or any(d.interrupt_request() for d in self.devices))
+
+    def _finish_boundary(self):
+        """Apply controller effects that commit at TP4, then count the instruction boundary."""
+        for action in self._late:
+            action()
+        self._late = []
+        for device in self.devices:
+            device.at_boundary()
 
     # -- one step -----------------------------------------------------------------------------
 
@@ -77,8 +91,9 @@ class Reference:
         # REC §6: recognition at instruction completion; INH §16: ION, CIF, RMF, RTF and a pending
         # field change inhibit recognition at this boundary; IOT §3.2: never at CAF's completion.
         caf = ir == 0o6007
-        result.interrupt_next = bool(self.ie and self.int_req and not inhibit and not caf)
+        result.interrupt_next = bool(self.ie and self.interrupt_request() and not inhibit and not caf)
         self.interrupt_pending = result.interrupt_next
+        self._finish_boundary()
         return result
 
     def _interrupt_entry(self) -> StepResult:
@@ -92,6 +107,7 @@ class Reference:
         self.pc = 0o0001
         self.interrupt_pending = False
         result.writes = self._writes
+        self._finish_boundary()
         return result
 
     # -- instruction classes ------------------------------------------------------------------
@@ -155,7 +171,14 @@ class Reference:
             return self._processor_iot(operation)
         if (device >> 3) == 0o2:
             return self._memory_extension(ir)
-        return False                                               # no external device attached
+        for controller in self.devices:                            # external-device IOT
+            if controller.selects(device):
+                skip, late = controller.iot(self, device, operation)
+                if skip:
+                    self.pc = (self.pc + 1) & M12
+                if late:
+                    self._late.append(late)
+        return False
 
     def _processor_iot(self, operation) -> bool:
         """IOT §3."""
@@ -169,10 +192,10 @@ class Reference:
         elif operation == 2:                                       # IOF
             self.ie = 0
         elif operation == 3:                                       # SRQ
-            if self.int_req:
+            if self.interrupt_request():
                 self.pc = (self.pc + 1) & M12
         elif operation == 4:                                       # GTF (§3.1.1)
-            self.ac = ((self.l << 11) | (int(self.int_req) << 9) | (self.ie << 7)
+            self.ac = ((self.l << 11) | (int(self.interrupt_request()) << 9) | (self.ie << 7)
                        | (self.if_ << 3) | self.df)
         elif operation == 5:                                       # RTF (§3.1.2)
             self.l = self.ac >> 11
@@ -182,10 +205,11 @@ class Reference:
             return True
         elif operation == 6:                                       # SGT: defined no-op (§6.1)
             pass
-        else:                                                      # CAF (§3.2)
+        else:                                                      # CAF (§3.2): controllers at TP4
             self.ac = 0
             self.l = 0
             self.ie = 0
+            self._late.extend(d.initialize for d in self.devices)
         return False
 
     def _memory_extension(self, ir) -> bool:

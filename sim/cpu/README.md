@@ -6,7 +6,7 @@ Simulates the CPU from its packed control-store images, one timing state (TS) at
 
 The simulator reads the images; it never regenerates control words from the symbolic artifacts. Every behavior it models cites the document that defines it. Where the documents are silent or inconsistent, it raises `SpecGap` instead of choosing a behavior.
 
-Status: milestones M0 (images, address formation, power-on, console transactions), M1 (instruction execution, checked end to end by `sim/system/tests/test_instructions.py`), and M2 (lock-step comparison with the [reference model](../reference/README.md)) are complete. MAINDEC test programs follow in M3.
+Status: milestones M0 (images, address formation, power-on, console transactions), M1 (instruction execution, checked end to end by `sim/system/tests/test_instructions.py`), and M2 (lock-step comparison with the [reference model](../reference/README.md)) are complete. In M3, MAINDEC-8E-D0AB and D0BB pass in lock-step; the remaining phase-1 diagnostics follow.
 
 ## 2. Inputs
 
@@ -63,7 +63,7 @@ Each error names the major state, TS, IR, PC, both slice addresses, and the rule
 
 ### 4.4 Not Modelled
 
-TSTEP-level timing (`T_CS`, `CW_VALID`, `WR_VALID`, `/IO_WAIT`, slow cycles), DMA cycles, and I/O controllers.
+TSTEP-level timing (`T_CS`, `CW_VALID`, `WR_VALID`, `/IO_WAIT`, slow cycles) and DMA cycles. I/O controllers are separate models attached through the CPU's external-IOT interface ([sim/io](../io/README.md)).
 
 ## 5. Known Specification Gaps
 

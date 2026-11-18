@@ -14,6 +14,7 @@ int, or None when it depends on an undefined register.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import cache
 
 from .logic import bit, bits, eq, t_and, t_not, t_or
 
@@ -31,8 +32,11 @@ class ExternalInputs:
     db_input: int | None = None  # value a selected controller drives on DB, if any
 
 
+@cache
 def ir_decodes(ir) -> dict:
-    """IRD: every IR-derived signal, computed from the live IR."""
+    """IRD: every IR-derived signal, computed from the live IR.
+
+    A pure function of IR, so it is cached per IR value; callers must not modify the result."""
     op = bits(ir, 11, 9)
     is_iot = eq(op, 0o6)                                              # IRD IR_IS_IOT
     is_opr = eq(op, 0o7)                                              # IRD IR_IS_OPR

@@ -6,6 +6,10 @@ whether an interrupt was recognized at that boundary. The first difference raise
 naming the instruction and, for each differing register, the major state and TS at which the
 simulator committed it.
 
+Attached controllers are compared too: each simulator controller has an instruction-level
+counterpart in the reference model, and their programmer-visible state must agree at every
+boundary.
+
 A boundary in the simulator is the TP4 of an EXECUTE or INTERRUPT major state. DMA, Single Step,
 and Single Instruction are outside the comparison.
 """
@@ -15,6 +19,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from pdp8_cpu import encodings as E
+from pdp8_reference import KL8E as ReferenceKL8E
 from pdp8_reference import Reference, ReferenceError, disassemble
 
 from .machine import Machine
@@ -48,7 +53,14 @@ def reference_from(machine: Machine) -> Reference:
     ref.sr = machine.panel.sr
     ref.memory = [list(words) for words in machine.memory.words]
     ref.interrupt_pending = st["MS"] == E.INTERRUPT
+    ref.devices = [_reference_device(d) for d in machine.devices]
     return ref
+
+
+def _reference_device(device):
+    if type(device).__name__ == "KL8E":
+        return ReferenceKL8E.from_state(device.state())
+    raise Divergence(f"no reference model for controller {type(device).__name__}")
 
 
 class Lockstep:
@@ -115,6 +127,11 @@ class Lockstep:
                                 f" ({self._last_commit(got, name)})")
         if got.writes != expected.writes:
             problems.append(f"memory writes: simulator {_writes(got.writes)}, reference {_writes(expected.writes)}")
+        for sim_dev, ref_dev in zip(self.m.devices, ref.devices):
+            mine, theirs = sim_dev.state(), {k: getattr(ref_dev, k) for k in sim_dev.state()}
+            if mine != theirs:
+                diff = {k: (mine[k], theirs[k]) for k in mine if mine[k] != theirs[k]}
+                problems.append(f"{type(sim_dev).__name__}: simulator/reference {diff}")
         if got.halted != expected.halted:
             problems.append(f"halted: simulator {got.halted}, reference {expected.halted}")
         if got.interrupt_next != expected.interrupt_next:

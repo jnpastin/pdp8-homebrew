@@ -7,6 +7,7 @@ against the other.
 """
 
 from .disasm import disassemble
+from .kl8e import KL8E
 from .model import Reference, ReferenceError, StepResult
 
-__all__ = ["Reference", "ReferenceError", "StepResult", "disassemble"]
+__all__ = ["KL8E", "Reference", "ReferenceError", "StepResult", "disassemble"]

@@ -4,6 +4,9 @@ from __future__ import annotations
 
 MRI = ("AND", "TAD", "ISZ", "DCA", "JMS", "JMP")
 PROCESSOR_IOT = ("SKON", "ION", "IOF", "SRQ", "GTF", "RTF", "SGT", "CAF")
+# KL8E device 03 and 04 IOTs (docs/07-io/10-controllers/01-kl8e-uart.md §10, §18)
+DEVICE_IOT = {0o03: ("KCF", "KSF", "KCC", None, "KRS", "KIE", "KRB", None),
+              0o04: ("TFL", "TSF", "TCF", None, "TPC", "TSK", "TLS", None)}
 
 
 def _group1(ir):
@@ -55,7 +58,8 @@ def disassemble(ir) -> str:
                 return " ".join(parts) or f"IOT {ir:04o}"
             if operation == 0o4 and 1 <= n <= 4:
                 return ("RDF", "RIF", "RIB", "RMF")[n - 1]
-        return f"IOT {ir:04o}"
+        name = DEVICE_IOT.get(device, (None,) * 8)[operation]
+        return name or f"IOT {ir:04o}"
     if not ir & 0o400:
         return _group1(ir)
     return _group3(ir) if ir & 1 else _group2(ir)
