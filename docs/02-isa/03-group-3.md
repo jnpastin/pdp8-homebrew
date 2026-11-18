@@ -26,6 +26,8 @@ Each flag performs a single operation, these actions will occur at a defined TP 
 
 When MQA and MQL are combined, the result is the SWP instruction (7521), which exchanges AC and MQ (AC and MQ each receive the other's prior value).
 
+Bits 5, 3, 2, and 1 are the SCA and operation-code bits of the KE8-E Extended Arithmetic Element (EAE). This machine has no EAE, so they select no operation; CLA, MQA, and MQL still execute. Software should keep them `0`, as DEC advises for machines without the EAE.
+
 ---
 
 ## 2. Combining Operations

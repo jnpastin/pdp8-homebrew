@@ -100,3 +100,4 @@ All μop selection is derived directly from IR bits.
 - No memory or I/O interaction occurs
 - No control-level operations are defined in this group
 - No persistent flag state is introduced
+- IR bits 5, 3, 2, and 1 (the EAE SCA and operation-code bits) select no μop ([Group 3 ISA](../../02-isa/03-group-3.md))

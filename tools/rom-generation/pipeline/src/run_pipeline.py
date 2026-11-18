@@ -282,7 +282,19 @@ def select_stages(start: str | None, stop: str | None) -> tuple[Stage, ...]:
     return STAGES[first:last + 1]
 
 
+def tolerate_unencodable_output() -> None:
+    """Replace, rather than fail on, characters the console encoding cannot represent.
+
+    Tool reports are UTF-8 and may contain characters such as the micro sign; a cp1252 console
+    or pipe would otherwise raise UnicodeEncodeError partway through the run."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            reconfigure(errors="replace")
+
+
 def main(arguments: Sequence[str] | None = None) -> int:
+    tolerate_unencodable_output()
     options = parse_arguments(arguments)
     if options.list:
         for number, stage in enumerate(STAGES, 1):

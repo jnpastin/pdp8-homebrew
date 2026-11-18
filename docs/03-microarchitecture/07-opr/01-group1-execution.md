@@ -77,7 +77,7 @@ TS4:
 
 Constraints:
 
-- IR_OPR_RAR and IR_OPR_RAL must not both be 1  
+- IR_OPR_RAR and IR_OPR_RAL both 1 selects no TS4 μop, whatever IR_OPR_BSW holds ([Group 1 ISA](../../02-isa/01-group-1.md), note 4)  
 - TS4 must resolve to at most one μop  
 - no two μops may write the same register in the same TS  
 

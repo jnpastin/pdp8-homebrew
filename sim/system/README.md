@@ -37,3 +37,14 @@ The instruction-level reference model and the lock-step comparer (milestone M2),
 ```text
 python -m unittest discover -s sim/system/tests -p "test_*.py"
 ```
+
+`test_instructions.py` is the milestone M1 suite. Each program is placed with DEPOSIT and started with START or CONTINUE, and its expected results are derived from the ISA and interrupt documentation, citing the section each test checks:
+
+| Area | Covered |
+|---|---|
+| Operate | every instruction 7000–7777 from five starting states |
+| Memory reference | AND, TAD (carry into L), ISZ, DCA, JMS, JMP; direct, indirect, zero page, current page at a page's last word; autoindex in fields 0 and 1; PC wrap |
+| Memory extension | CDF, CIF, CDF CIF, RDF, RIF; DF for indirect AND/TAD/ISZ/DCA operands; IF for JMP and JMS targets |
+| Processor IOTs | ION, IOF, SKON, SRQ, GTF, RTF, SGT, CAF (no interrupt at CAF completion); external IOT with no device |
+| Interrupts | ION delay, entry from non-zero fields, CIF inhibit window, RIB, RMF and `JMP I 0` return |
+| Run control | HLT and CONTINUE, Single Step through DEFER, Single Instruction, STOP |

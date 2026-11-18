@@ -32,6 +32,7 @@ Each flag performs a single operation, these actions will occur at a defined TP 
 1. If `RAR` is combined with `BSW`, the effect will be to rotate right twice
 2. If `RAL` is combined with `BSW`, the effect will be to rotate left twice
 3. In order for `BSW` to actually swap, `RAR` and `RAL` must both be `0`.  Also, BSW was added in the PDP-8/E, so software that is intended to be portable to older systems should avoid using it.  Prior systems used bit 1 solely as a modifier to bits 2 and 3.
+4. If `RAR` and `RAL` are both `1`, no rotate or swap occurs, whatever `BSW` holds; the other selected operations still execute.  DEC left this combination undocumented and its effect varied between models, so this machine does not replicate any of them, and software should not use it.
 
 ---
 

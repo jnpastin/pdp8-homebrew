@@ -233,5 +233,25 @@ class StageTableTests(unittest.TestCase):
                       "symbolic-control-words.json", out.getvalue())
 
 
+class OutputEncodingTests(unittest.TestCase):
+    def test_unencodable_report_text_does_not_crash(self) -> None:
+        # A cp1252 console cannot encode the micro sign that tool reports may contain.
+        raw = io.BytesIO()
+        stream = io.TextIOWrapper(raw, encoding="cp1252", errors="strict", newline="\n")
+        saved = sys.stdout
+        sys.stdout = stream
+        try:
+            P.tolerate_unencodable_output()
+            print("ERROR UNRECOGNIZED_OPR_LINE: no μop")
+            stream.flush()
+        finally:
+            sys.stdout = saved
+        self.assertEqual(raw.getvalue(), b"ERROR UNRECOGNIZED_OPR_LINE: no ?op\n")
+
+    def test_streams_without_reconfigure_are_left_alone(self) -> None:
+        with redirect_stdout(io.StringIO()):
+            P.tolerate_unencodable_output()
+
+
 if __name__ == "__main__":
     unittest.main()
