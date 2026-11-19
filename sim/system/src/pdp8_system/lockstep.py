@@ -1,21 +1,22 @@
 """Lock-step comparison of the control-store simulator with the instruction-level reference model.
 
-The two run side by side. After every instruction, and after every interrupt entry, they must
-agree on AC, L, MQ, PC, IF, DF, IE, the memory words written, whether the processor halted, and
+The two run side by side. After every instruction, every interrupt entry, and every DMA major
+state, they must agree on AC, L, MQ, PC, IF, DF, IE, the memory words written, whether the processor halted, and
 whether an interrupt was recognized at that boundary. The first difference raises `Divergence`,
 naming the instruction and, for each differing register, the major state and TS at which the
 simulator committed it.
 
 Attached controllers are compared too: each simulator controller has an instruction-level
 counterpart in the reference model, and their programmer-visible state must agree at every
-boundary.
+boundary. With a DMA arbiter, its selected priority and burst count must agree as well.
 
-A boundary in the simulator is the TP4 of an EXECUTE or INTERRUPT major state. DMA, Single Step,
+A boundary in the simulator is the TP4 of an EXECUTE, INTERRUPT, or DMA major state. Single Step
 and Single Instruction are outside the comparison.
 """
 
 from __future__ import annotations
 
+import copy
 from dataclasses import dataclass, field
 
 from pdp8_cpu import encodings as E
@@ -35,7 +36,7 @@ class Divergence(Exception):
 
 @dataclass
 class Boundary:
-    kind: str                       # "instruction" or "interrupt"
+    kind: str                       # "instruction", "interrupt", or "dma"
     records: list = field(default_factory=list)
     writes: list = field(default_factory=list)
     halted: bool = False
@@ -54,12 +55,24 @@ def reference_from(machine: Machine) -> Reference:
     ref.memory = [list(words) for words in machine.memory.words]
     ref.interrupt_pending = st["MS"] == E.INTERRUPT
     ref.devices = [_reference_device(d) for d in machine.devices]
+    arbiter = machine.dma
+    if arbiter is not None:
+        by_identity = {id(d): r for d, r in zip(machine.devices, ref.devices)}
+        ref.dma_controllers = [by_identity[id(c)] for c in arbiter.controllers]
+        ref.burst_limits = dict(arbiter.burst_limits)
+        ref.default_burst_limit = arbiter.default_burst_limit
+        selected = arbiter.selected()
+        ref.dma_selected = None if selected is None else by_identity[id(selected)]
+        ref.dma_count = arbiter.burst_count
+        ref.dma_pending = st["MS"] == E.DMA
     return ref
 
 
 def _reference_device(device):
     if type(device).__name__ == "KL8E":
         return ReferenceKL8E.from_state(device.state())
+    if type(device).__name__ == "DmaTestMaster":       # test equipment: the same model in both
+        return copy.deepcopy(device)
     raise Divergence(f"no reference model for controller {type(device).__name__}")
 
 
@@ -80,15 +93,13 @@ class Lockstep:
             record = cpu.step_ts()
             if record is None:
                 raise Divergence("the simulator is halted mid-instruction")
-            if record.kind == "TS" and record.ts == 4 and record.ms in (E.EXECUTE, E.INTERRUPT):
-                b = Boundary("interrupt" if record.ms == E.INTERRUPT else "instruction",
-                             list(self._records))
+            if record.kind == "TS" and record.ts == 4 and record.ms in (E.EXECUTE, E.INTERRUPT, E.DMA):
+                kind = {E.EXECUTE: "instruction", E.INTERRUPT: "interrupt", E.DMA: "dma"}[record.ms]
+                b = Boundary(kind, list(self._records))
                 b.writes = [r.mem_write for r in b.records if r.mem_write]
                 b.halted = self.m.state["RUN"] == 0
                 b.interrupt_next = self.m.state["MS"] == E.INTERRUPT
                 return b
-            if record.ms == E.DMA:
-                raise Divergence("DMA is outside the lock-step comparison")
         raise Divergence(f"no instruction boundary within {max_ts} timing states")
 
     def step(self, max_ts: int = 64):
@@ -132,12 +143,19 @@ class Lockstep:
             if mine != theirs:
                 diff = {k: (mine[k], theirs[k]) for k in mine if mine[k] != theirs[k]}
                 problems.append(f"{type(sim_dev).__name__}: simulator/reference {diff}")
+        arbiter = self.m.dma
+        if arbiter is not None:
+            theirs = (15 if ref.dma_selected is None else ref.dma_selected.dma_priority, ref.dma_count)
+            mine = (arbiter.grant_id, arbiter.burst_count)
+            if mine != theirs:
+                problems.append(f"DMA selection and burst count: simulator {mine}, reference {theirs}")
         if got.halted != expected.halted:
             problems.append(f"halted: simulator {got.halted}, reference {expected.halted}")
         if got.interrupt_next != expected.interrupt_next:
             problems.append(f"interrupt recognized: simulator {got.interrupt_next}, reference {expected.interrupt_next}")
         if problems:
             what = ("interrupt entry" if expected.kind == "interrupt" else
+                    "DMA cycle" if expected.kind == "dma" else
                     f"{expected.field:o}:{expected.pc:04o} {expected.ir:04o} {disassemble(expected.ir)}")
             raise Divergence(f"step {self.steps}, {what}: " + "; ".join(problems))
 

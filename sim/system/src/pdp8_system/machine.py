@@ -17,10 +17,10 @@ from pdp8_cpu.images import (
     DEFAULT_SCHEMA,
     ControlStore,
 )
-from pdp8_io import KL8E
+from pdp8_io import KL8E, DmaArbiter, DmaTestMaster
 from pdp8_memory import Memory
 
-__all__ = ["KL8E", "Machine", "SimError", "TraceRecord", "load_store"]
+__all__ = ["KL8E", "DmaArbiter", "DmaTestMaster", "Machine", "SimError", "TraceRecord", "load_store"]
 
 _STORE_CACHE: dict = {}
 
@@ -37,13 +37,15 @@ def load_store(image_dir=DEFAULT_IMAGE_DIR, packing=DEFAULT_PACKING, schema=DEFA
 
 
 class Machine:
-    def __init__(self, store: ControlStore | None = None, keep_trace: bool = False, devices=()):
-        """devices: I/O controllers attached to the external-IOT interface (for example KL8E())."""
+    def __init__(self, store: ControlStore | None = None, keep_trace: bool = False, devices=(), dma=None):
+        """devices: I/O controllers attached to the external-IOT interface (for example KL8E()).
+        dma: a DmaArbiter for DMA-capable controllers (each also listed in `devices`)."""
         self.memory = Memory()
         self.trace: list[TraceRecord] = []
         self.devices = list(devices)
+        self.dma = dma
         self.cpu = Cpu(store or load_store(), self.memory,
-                       trace=self.trace.append if keep_trace else None, devices=self.devices)
+                       trace=self.trace.append if keep_trace else None, devices=self.devices, dma=dma)
         self.cpu.power_on()
 
     @property

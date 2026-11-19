@@ -16,7 +16,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from . import encodings as E
-from .errors import NotModelled, SpecViolation
+from .errors import SpecViolation
 from .logic import bit, bits, u
 
 MASK12 = 0o7777
@@ -148,10 +148,23 @@ class _Eval:
 
     # -- evaluation --------------------------------------------------------------------------
 
+    def dma_released(self) -> Effects:
+        """DMX §2: during DMA, CPU control performs no datapath work and holds its MFB, AB, MDB,
+        /RD, and /WR drivers released (DMA §3); the selected controller owns the memory."""
+        f = self.f
+        driven = [s for s in ("/RD", "/WR", "/DB_READ", "/DB_WRITE") if self.asserted(s)]
+        if self.cpu_mdb_drive()[0]:
+            driven.append("MDB")
+        loads = [name for name, v in f.items() if (name.endswith("_LOAD") or name == "PC_INC") and v]
+        if driven or loads:
+            raise SpecViolation(f"CPU control acts during DMA: drives {driven}, loads {loads}",
+                                "DMA Execution §2, DMA Interface §3")
+        return Effects()
+
     def run(self) -> Effects:
         f, st, fx = self.f, self.st, self.fx
         if self.mseff == E.DMA:
-            raise NotModelled("the DMA major state is outside the simulator's current scope")
+            return self.dma_released()
 
         rd, wr = self.asserted("/RD"), self.asserted("/WR")
         if rd and wr:

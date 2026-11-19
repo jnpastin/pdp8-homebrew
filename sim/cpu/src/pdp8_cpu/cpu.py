@@ -54,15 +54,21 @@ class TraceRecord:
 
 class Cpu:
     def __init__(self, store: ControlStore, memory, panel: FrontPanel | None = None,
-                 ext: ExternalInputs | None = None, trace=None, devices=()):
+                 ext: ExternalInputs | None = None, trace=None, devices=(), dma=None):
         """ext: test stimulus for the external inputs (for example /INT_REQ); controllers in
         `devices` contribute their own responses each TS. A controller provides present(bus),
-        commit(bus, tp, db_write, initialize), initialize(), and optionally at_boundary()."""
+        commit(bus, tp, db_write, initialize), initialize(), and optionally at_boundary().
+
+        dma: the DMA arbiter (docs/07-io/06-dma-arbitration.md), which supplies aggregate
+        /DMA_REQ and, while /DMA_GRANT is asserted, the selected controller's memory transfer:
+        aggregate_n(in_execute, in_dma, ts), operation(), and
+        commit(tp, in_execute, in_dma, initialize, transferred)."""
         self.store = store
         self.memory = memory
         self.panel = panel or FrontPanel()
         self.ext = ext or ExternalInputs()
         self.devices = list(devices)
+        self.dma = dma
         self.st = CpuState()
         self.trace = trace          # optional callable(TraceRecord)
         self.last_record: TraceRecord | None = None
@@ -76,6 +82,8 @@ class Cpu:
         self.panel.latched = None
         for device in self.devices:
             device.initialize()
+        if self.dma is not None:
+            self.dma.initialize()
 
     @property
     def running(self) -> bool:
@@ -121,6 +129,9 @@ class Cpu:
         """The test stimulus combined with every controller's responses for this TS."""
         ext = object.__new__(ExternalInputs)          # a copy of the test stimulus (faster than replace())
         ext.__dict__.update(self.ext.__dict__)
+        if self.dma is not None:                      # ARB §7: the arbiter's aggregate /DMA_REQ
+            st = self.st
+            ext.dma_req_n &= self.dma.aggregate_n(st["MS"] == E.EXECUTE, st["MS"] == E.DMA, st.ts)
         for device in self.devices:
             r = device.present(bus)
             ext.io_read_req |= r.io_read_req
@@ -161,6 +172,7 @@ class Cpu:
 
             dp_addrs = A.expand(dp_base, dp_undef)
             effects, dp_fields = self._datapath_effects(dp_addrs, dp_undef, group, cond, mseff, ext)
+            dma_read, dma_write, dma_value = self._dma_transfer(mseff, ts, console)
             seq_addrs = A.expand(seq_base, seq_undef)
             seq = self._sequencer_word(seq_addrs, seq_undef)
 
@@ -183,24 +195,43 @@ class Cpu:
             st[name] = value
         if effects.mem_write:
             self.memory.write(*effects.mem_write)
+        if dma_write:
+            self.memory.write(*dma_write)
         if not console:
             st["MAPR"] = mapr_next
             st.ts = next_ts(ts, st["RUN"])
         initialize = seq["/INITIALIZE"] == 0       # ACS §4.9: controllers initialize at this TP
         for device in self.devices:
             device.commit(bus, "C" if console else ts, effects.db_write, initialize)
+        if self.dma is not None:
+            self.dma.commit("C" if console else ts, ms == E.EXECUTE, ms == E.DMA, initialize, dma_value)
         if not console and ts == 4 and ms in (E.EXECUTE, E.INTERRUPT):
             for device in self.devices:              # an instruction boundary (see KL8E model)
                 getattr(device, "at_boundary", lambda: None)()
 
         record = TraceRecord("TPC" if console else "TS", ms, ts, run, context["IR"], context["PC"],
                              self.panel.latched, dp_addrs, seq_addrs, dp_fields, seq,
-                             dict(effects.loads, **seq_loads), effects.mem_read, effects.mem_write,
-                             effects.strobes)
+                             dict(effects.loads, **seq_loads), effects.mem_read or dma_read,
+                             effects.mem_write or dma_write, effects.strobes)
         self.last_record = record
         if self.trace:
             self.trace(record)
         return record
+
+    def _dma_transfer(self, mseff, ts, console):
+        """DMA §6.3, MEM §3: with /DMA_GRANT asserted (MS_EFF = DMA), the controller the arbiter
+        selected presents one memory operation during TS2, and it commits at TP2. Returns
+        (read address, write, value transferred), each None when there is none."""
+        if console or ts != 2 or mseff != E.DMA or self.dma is None:
+            return None, None, None
+        op = self.dma.operation()
+        if op is None:
+            return None, None, None                  # DMX §5: no controller selected, no transfer
+        if op[0] == "read":
+            _, f, a = op
+            return (f, a), None, self.memory.read(f, a)
+        _, f, a, value = op
+        return None, (f, a, value), value
 
     def _datapath_effects(self, addresses, undefined, group, cond, mseff, ext):
         """Evaluate the word at every candidate address; their effects must agree."""

@@ -1,4 +1,4 @@
-"""The reference model: one instruction, or one interrupt entry, per step.
+"""The reference model: one instruction, one interrupt entry, or one DMA word per step.
 
 Sources (docs/):
 
@@ -7,11 +7,18 @@ Sources (docs/):
 - EA  = 02-isa/06-ea-generation.md           - INH = 08-interrupts-and-skip/03-interrupt-enable-and-inhibit.md
 - ENT = 08-interrupts-and-skip/04-interrupt-entry-and-return.md
 - REC = 08-interrupts-and-skip/02-interrupt-recognition-and-sequencing.md
+- DMA = 07-io/05-dma-interface.md            - ARB = 07-io/06-dma-arbitration.md
 
 State is the programmer-visible machine: AC, L, MQ, PC, IF, DF, IE, the interrupt-saved fields
 (IB), a staged instruction field (set by CIF, RMF, or RTF and applied by the next JMP or JMS), and
 32K words of memory. Controllers in `devices` (for example the KL8E model) respond to their
 external-device IOTs; an IOT that selects no controller has no effect (IOT §1, ENC §5).
+
+DMA-capable controllers in `dma_controllers` (each also in `devices`) are served between
+instructions: when an instruction completes without an interrupt being recognized and a
+controller requests (REC §7, ARB §12), DMA words follow, one per step, from the lowest-numbered
+requesting priority (ARB §9) until that controller stops requesting or its burst limit is reached
+(ARB §11); at least one instruction then runs before the next burst (ARB §12).
 """
 
 from __future__ import annotations
@@ -28,7 +35,7 @@ class ReferenceError(Exception):
 
 @dataclass
 class StepResult:
-    kind: str                      # "instruction" or "interrupt"
+    kind: str                      # "instruction", "interrupt", or "dma"
     pc: int                        # address of the instruction (or the interrupted PC)
     field: int                     # its instruction field
     ir: int | None                 # the instruction word (None for an interrupt entry)
@@ -50,6 +57,12 @@ class Reference:
         self.memory = [[None] * WORDS for _ in range(FIELDS)]
         self.interrupt_pending = False # recognized at the last boundary; entry is the next step
         self._writes = []
+        self.dma_controllers = []      # DMA-capable controllers (ARB §6)
+        self.burst_limits = {}         # priority -> burst limit (ARB §11.1)
+        self.default_burst_limit = 4
+        self.dma_selected = None       # the controller selected for the current burst, or None
+        self.dma_count = 0             # words completed in the current burst
+        self.dma_pending = False       # a DMA word is the next step
 
     # -- memory -----------------------------------------------------------------------------
 
@@ -81,6 +94,8 @@ class Reference:
         self._writes = []
         if self.interrupt_pending:
             return self._interrupt_entry()
+        if self.dma_pending:
+            return self._dma_word()
         pc, f = self.pc, self.if_
         ir = self.read(f, pc)
         self.pc = (pc + 1) & M12                      # the PC advances during fetch
@@ -96,8 +111,43 @@ class Reference:
         caf = ir == 0o6007
         result.interrupt_next = bool(self.ie and self.interrupt_request() and not inhibit and not caf)
         self.interrupt_pending = result.interrupt_next
+        # REC §7: an interrupt takes precedence; ARB §12: otherwise DMA follows when requested.
+        # Sampled before this boundary's late controller effects, as /DMA_REQ is before TP4.
+        self.dma_pending = (not result.interrupt_next and not result.halted
+                            and any(c.dma_request() for c in self.dma_controllers))
         self._finish_boundary()
         return result
+
+    def _dma_word(self) -> StepResult:
+        """DMA §6, ARB §9-§12: one single-word DMA transfer, and the burst decision."""
+        result = StepResult("dma", self.pc, self.if_, None)
+        c = self.dma_selected
+        if c is None:                                  # DMA §6.2: arbitrate
+            requesting = sorted((x for x in self.dma_controllers if x.dma_request()),
+                                key=lambda x: x.dma_priority)
+            c = self.dma_selected = requesting[0] if requesting else None
+        if c is None:                                  # DMX §5: no request, no transfer, exit
+            self.dma_pending = False
+            return result
+        op = c.dma_operation()
+        if op[0] == "read":
+            value = self.read(op[1], op[2])
+        else:
+            value = op[3]
+            self.write(op[1], op[2], value)
+        c.dma_transferred(value)
+        still_requesting = c.dma_request()
+        c.dma_advance()
+        self.dma_count += 1
+        if not still_requesting or self.dma_count >= self.burst_limits.get(c.dma_priority,
+                                                                            self.default_burst_limit):
+            self.dma_selected, self.dma_count, self.dma_pending = None, 0, False
+        result.writes = self._writes
+        return result
+
+    def _dma_initialize(self):
+        """ARB §13.2: no controller selected, burst count cleared."""
+        self.dma_selected, self.dma_count = None, 0
 
     def _interrupt_entry(self) -> StepResult:
         """ENT §4-§6: M[0:0000] <- PC; IB <- IF, DF; IE, IF, DF, staged field cleared; PC <- 0001."""
@@ -214,6 +264,7 @@ class Reference:
             self.l = 0
             self.ie = 0
             self._late.extend(d.initialize for d in self.devices)
+            self._late.append(self._dma_initialize)
         return False
 
     def _memory_extension(self, ir) -> bool:
