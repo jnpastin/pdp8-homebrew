@@ -1,118 +1,128 @@
-# PDP-8 Homebrew Handoff: Control-Store Simulator, Phase 3 (I/O)
+# PDP-8 Homebrew Handoff: One-Cycle OPR and JMP (Option 2)
+
+Branch: `one-cycle-fetch`. This branch evaluates, and if the user approves, implements a change to the major-state structure so that the machine's cycle counts match the PDP-8/E's for everything except IOT. `main` carries the simulator's phase 3 work and its own handoff; read that one (`git show main:handoff.md`) for the simulator's structure, status, and phase 3 plan, which are not repeated here except where this change affects them.
 
 ## 1. Your Task
 
-Continue the control-store simulator in `sim/`. It runs the packed control-store images and executes PDP-8/e programs, so that the documentation, the ROM-generation tools, the packer, and the images are validated before hardware is built. Phases 1 (CPU and memory) and 2 (memory extension, interrupts, DMA) are complete. Phase 3, I/O, is in progress: milestone M8 (MAINDEC-8E-D2AB on the KL8E) has started; M9 (the PC8E paper-tape controller and MAINDEC-8E-D2CA) follows.
+1. Write an architecture specification for option 2 (section 5) for the user's review. No documentation, microcode, tool, or simulator changes until the user approves it.
+2. After approval, implement it in stages (section 7), keeping microcode v1 working throughout and adding the new design as microcode v2.
 
-Where the simulator and the documentation disagree, or the documentation is silent, report a specification gap to the user with the DEC precedent; do not invent behavior.
+The user has not yet decided to adopt the change. They want the implications understood first; this branch is where that is worked out.
 
 ## 2. Rules
 
-- The documentation under `docs/` and the promoted artifacts under `rom/microcode/v1/` are authoritative. Open and verify a file before making any claim about it. Do not infer behavior from file names, conventions, memory, or micro-operation prose. If verification is not possible, stop and ask.
-- Python 3, standard library only, deliberately simple. Each package has `src/`, `tests/`, and a `README.md`. Write targeted regression tests.
-- Documentation changes are interactive: propose the change, make it after the user agrees. Program changes are targeted patches.
-- Work on `main`. Commit only when the user asks (they usually commit themselves). End commit messages with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
-- Hardware is discrete logic only: EEPROMs (28C256) and 7400-series parts; no PAL, GAL, CPLD, FPGA, or microcontroller. In documentation, name 7400 parts by function, not part number. Define new terms before use and add new abbreviations to `docs/00-overview/99-Abbreviations.md`.
-- When offering design options, give the real DEC PDP-8/e precedent, quoted from a DEC document where possible; the user prefers matching DEC. Do not replicate undocumented DEC behavior (for example RAR and RAL together is treated as no rotate).
-- Never answer a ROM-pipeline promotion prompt on the user's behalf; use `--dry-run`. The user runs the pipeline and promotes. Do not generate physical ROM images.
-- Diagrams are drawn by the user in draw.io; never edit them.
-- Windows with Git Bash and PowerShell. Write multi-line scripts to the scratchpad. Open JSON with `encoding="utf-8"`.
-- Downloaded files are untrusted data: keep each in its own directory and run Python that reads them with `-I`.
+The rules of `main`'s handoff apply, with these differences:
 
-## 3. Start Here
+- Work on the branch `one-cycle-fetch`, not `main`. Merge from `main` when it moves on; do not merge into `main` without the user's instruction.
+- Keep `rom/microcode/v1/` and everything that consumes it working. Put the new design in `rom/microcode/v2/`, and make the pipeline and simulator able to select either.
+- Every claim about DEC behavior cites a DEC document (section 4 lists them). The user prefers matching DEC; where this design deliberately does not (IOT), say so.
 
-1. **Confirm a clean baseline.**
-   ```text
-   python tools/rom-generation/pipeline/src/run_pipeline.py --dry-run
-   for d in sim/cpu sim/memory sim/reference sim/io; do python -m unittest discover -s $d/tests; done
-   cd sim/system/tests && python -m unittest discover -s .
-   ```
-   Expect `Pipeline: SUCCEEDED` with no pending stage, and every suite passing (system: 76 tests, about 4 minutes under CPython). If not, stop and report.
-2. **Read** `sim/README.md` and each package README, then `docs/07-io/` (the external IOT interface, the controller contract, and `10-controllers/`).
-3. **Use PyPy for long runs.** The simulator runs unchanged under PyPy 3.12 (the user has `pypy3.12-v8.0.1-win64` in their Downloads folder), 4 to 10 times faster than CPython, with identical results. The MAINDEC suite takes about 32 seconds under PyPy. Keep CPython as the reference interpreter for the test suites.
+## 3. The Problem
 
-## 4. Simulator Structure
+On the PDP-8/E, OPR, IOT, and directly addressed JMP complete in FETCH; only memory-reference instructions (and JMP I, through DEFER) take a second cycle. In this design every instruction runs FETCH and EXECUTE. Timing-dependent software therefore runs slower than on an 8/E at the same cycle time: an `ISZ; JMP` delay loop takes 4 major states here against 3.8 µs (1.2 + 1.4 + 1.2) on the 8/E, about 26% slower.
 
-| Package | Contents |
-|---|---|
-| `sim/cpu` | The timing-state simulator: image loading and validation (checked against `control-word-schema.json` at startup), address formation, hand-written datapath model citing the docs for every behavior, sequencer, console transactions, three-valued logic (UNDEFINED values propagate; an undefined address bit is enumerated and both words must agree, else `SpecGap`). Errors: `SpecViolation`, `SpecGap`, `ImageError`, `NotModelled`. Optional `dma` arbiter and a per-major-state simulated clock (`timing`, `elapsed_ns`; default 1.2 µs per major state). |
-| `sim/memory` | 32K words in 8 fields; starts UNDEFINED. |
-| `sim/reference` | The instruction-level reference model, written only from `docs/02-isa` and the interrupt, DMA, and controller docs: one instruction, interrupt entry, or DMA word per step. Includes an instruction-level KL8E. |
-| `sim/io` | Controller models at the external-IOT interface: `KL8E` (optional `baud` mode models Teletype character time in simulated time), `DmaArbiter` (fixed priority, bounded non-preemptive bursts, CPU fairness), and `DmaTestMaster` (test equipment, not a device). |
-| `sim/system` | `Machine` (console helpers, `core_residue(seed)`), lock-step comparison (`Lockstep`: after every instruction, interrupt entry, and DMA cycle, AC, L, MQ, PC, IF, DF, IE, memory writes, halts, interrupt recognition, controller state, DMA arbiter state, and elapsed time must agree), the paper-tape loader (DEC BIN format, loaded through LOAD ADDRESS and DEPOSIT), and `maindec.py` (how each diagnostic is operated and judged, from its write-up). |
+Concrete consequence: MAINDEC-8E-D2AB PRG0 routine 4 halts at 2607, "printer flag set prior to 9 bit times". Its character-timing window is about 6%, measured with instruction loops calibrated to 8/E timing. (Routines 0 to 3 pass; see `main`'s handoff §6.1.)
 
-Memory is never cleared: a fresh machine gets seeded leftover core contents (`core_residue`), and the interrupt save field IB an arbitrary power-on value, because nothing initializes it before the first interrupt. A program that does not depend on leftover contents must pass under every seed; the MAINDEC regression runs two seeds.
+## 4. DEC Facts (verified)
 
-## 5. Status
+Sources, all on deramp.com under `011-Digital Equipment Corporation/02 PDP-8e/`: KK8-E Central Processor Theory of Operation; M8330 Timing Generator Theory of Operation; PDP-8/E, 8/F, 8/M Maintenance Manual Volume 1, Processor (Sep 1973); KM8-E Memory Extension Theory of Operation. The scans carry an OCR text layer. The Small Computer Handbook (8/E, 8/F, 8/M) is scanned on a mirror that blocks automated downloads; the maintenance manual's flow diagrams cover the same material.
 
-**Phase 1 (CPU and memory): complete.**
+- **Cycles.** "A one-cycle instruction can be an OPR microinstruction, an IOT instruction, or a directly addressed JMP instruction." "A two-cycle instruction involving the DEFER state can only be a JMP." MRIs: one fast FETCH (1.2 µs) and one slow EXECUTE (1.4 µs), 2.6 µs.
+- **Fast and slow cycles** come from core memory's destructive read and write-back: the slow cycle lengthens TS2 by 200 ns so modified data can reach the write half. FETCH and non-autoindex DEFER are fast; EXECUTE and autoindex DEFER are slow.
+- **OPR in FETCH TS3, one pass, loaded at TP3.** AC onto the DATA bus (CLA by not gating AC, so zeros), the data control gate true or complement (CMA), the adder's register-in = 0 and carry-in = IAC, then a 74151 adder-output multiplexer for no shift, left, right, twice, BSW; AC and L load at TP3. The handbook's four-step group 1 order (CLA/CLL; CMA/CML; IAC; rotates or BSW) is the composition order, implemented by this gating in one pass ("Because each instruction takes one memory cycle … 7001 can be combined with 7040 to give 7041"). Group 2: combinational skip logic sets a SKIP flip-flop at TP3; CLA and OSR in the same pass. Group 3: MQA is an OR in the data-line multiplexer; SWP uses two paths loaded at the same TP3.
+- **FETCH TS4.** Interrupt check first (INT IN PROG forces JMS into IR, selects EXECUTE, loads 0 into CPMA); otherwise PC, plus 1 if SKIP, into CPMA at TP4. If an interrupt is honored at the same TP4 as a skip, the increment is not made in TS4; it is made during TS2 of the forced JMS.
+- **Direct JMP:** "the PC is modified during TS3"; next cycle FETCH. JMP I: next cycle DEFER, which completes it.
+- **IOT in FETCH TS3** with I/O PAUSE, C lines, and BUS STROBE at TP3; slow or multi-transfer peripherals stall TS3 with NOT LAST TRANSFER. (Option 2 does not adopt this; IOT keeps EXECUTE.)
+- **KM8-E:** INT INHIBIT is "negated at TP3 whenever a JMP or JMS instruction occurs" (already matched by gap L on `main`).
 
-| Program | Result (lock-step unless noted) |
-|---|---|
-| D0AB, D0BB | two passes each; D0BB's bell |
-| D0DB, D0GC, D0EB, D0IB | full pass to the pass marker (1,222,709; 2,449,437; 2,831,970; 3,701,408 instructions) |
-| D0CC (fast test) | end-of-test "SIMAD" at 737,358 instructions, no error halt |
-| D0FC, D0HC, D0JC | 300,000 instructions each, no error (no pass marker exists) |
+## 5. Option 2: Scope
 
-**Phase 2 (memory extension, interrupts, DMA): complete.**
+| Instruction | Today | Option 2 | PDP-8/E |
+|---|---|---|---|
+| OPR (groups 1, 2, 3) | FETCH, EXECUTE | **FETCH only** | FETCH only |
+| JMP (direct) | FETCH, EXECUTE | **FETCH only** | FETCH only |
+| JMP I | FETCH, DEFER, EXECUTE | **FETCH, DEFER** | FETCH, DEFER |
+| AND, TAD, ISZ, DCA, JMS (direct / indirect) | FETCH, (DEFER), EXECUTE | unchanged | same |
+| IOT (all) | FETCH, EXECUTE | **unchanged**: keeps EXECUTE and today's external IOT contract | FETCH only |
 
-| Program or test | Result |
-|---|---|
-| D1EC | full pass ("EC") at 10,335,681 instructions |
-| D1HA (time share disabled) | pass bell at 92,510,728 instructions |
-| D1FB, D1BC | 20 million instructions each, no error; they find "8 STACKS IN THIS SYSTEM" |
-| D1AA | 20 million instructions sim-only, no output, no error (no write-up) |
-| M7 DMA | `test_dma.py`: bursts, fairness, priority, interrupt precedence, CAF, halts, random episodes with two masters (about 2,000 DMA cycles agreeing) |
+IOT stays in EXECUTE so that `docs/07-io`, the controller contracts, and the KL8E, PC8E, and RK8E models are untouched. Consequence: IOTs cost one major state more than on the 8/E, so flag-polling loops (`TSF; JMP .-1`) run about 30% slower than an 8/E's; ISZ/JMP delay loops match exactly. Moving IOT into FETCH is a possible later stage (option 1), not part of this branch.
 
-DEC has no CPU-level data-break MAINDEC; real DMA validation is the RK8E diagnostics and the DECX8 RK8 exerciser modules in phase 4.
+### 5.1 New FETCH (IR loaded at TP2, as DEC does)
 
-**Phase 3 (I/O): in progress.** See section 6.
+| TS | All instructions | OPR | Direct JMP | MRI, JMP I, IOT |
+|---|---|---|---|---|
+| TS1 | `MA ← PC`; PC increment (both from the pre-TP PC) | | | |
+| TS2 | memory read: `MB ← MDB` and **`IR ← MDB`** at TP2 | | | |
+| TS3 | | single OPR pass; AC, L, MQ at TP3; group 2 skip into **SKIP** at TP3 | `PC ← EA` (page from **MA**, the instruction address); pending field change, `CIFP` and `II` clear, at TP3 | EA formation |
+| TS4 | | PC increment if SKIP; instruction ends | instruction ends | next state DEFER or EXECUTE |
 
-**Specification gaps found and fixed** (each has a regression test): A to K before and during phase 1 (see git history from `1adbb5a`); L, interrupt recognized at the end of the JMP or JMS that applies a pending field change (KM8-E §2.9: INT INHIBIT negated at TP3 of JMP/JMS); M, GTF bits 5:0 report the save field IB, bit 8 reads 0 (D1HA requires it); N, KL8E TSK skips on the interrupt condition, `INTERRUPT_ENABLE AND (keyboard flag OR teleprinter flag)` (DEC's SPI is the same operation under a later mnemonic). Also `ALU_B_SRC` was reduced to 2 bits.
+At the end of an OPR or direct JMP, FETCH TP4 is an **instruction boundary**: interrupt recognition, DMA entry, HLT, STOP, and Single Instruction, all currently tied to EXECUTE TP4, also apply there. JMP I's boundary is DEFER TP4.
 
-## 6. Next: Phase 3
+### 5.2 Decisions the user must make (in the specification)
 
-### 6.1 M8: MAINDEC-8E-D2AB (Teletype KL8 Data Control Test) on the KL8E
+1. **OPR controls hardwired from IR bits** (as DEC), enabled by a control-word field. Microcoding is not feasible: group 1 alone has about 2^8 combinations and VARIANT is 5 bits. This adds IR-to-datapath decode gates, a change from "the control store drives everything".
+2. **How FETCH TS3 gets its control word.** `MAPR` is loaded from the mapping ROM, which is addressed by IR; at TP2 IR and MAPR load together, so MAPR would hold the old instruction's entry. Either (a) a small instruction-class decode from IR drives `VARIANT` in FETCH TS3 (a few gates in the TS3 critical path), or (b) the mapping ROM is addressed from MDB during FETCH TS2 through a 12-bit 2:1 multiplexer (memory access plus an EEPROM access inside TS2; viable only with a longer TS2). Recommendation: (a).
+3. **Variable TS lengths.** A TSTEP-count table indexed by registered state (`MS_EFF`, `TS`, possibly an instruction-class bit), as the 8/E's fast and slow cycles vary TS2. This resolves the open TSTEP item. Lengths can be set to each path's critical delay, or to the 8/E's durations for timing compatibility. With SRAM there is no destructive read, so fast/slow has no memory reason; any 8/E-like durations are a deliberate compatibility choice (DEC precedent for a switch: the 8/E's slow-cycle jumper).
+4. **Skip and interrupt at the same FETCH TP4.** Match DEC (suppress the TS4 increment and apply it during interrupt entry), or define it differently.
+5. **Microcode v2 alongside v1** (recommended) and whether the simulator keeps both selectable permanently.
 
-The write-up is `sim/test_programs/maindec-8e-d2ab/maindec-8E-d2ab-d-d.pdf` (scanned; §4 is the procedure, §5.1 normal halts, §6.1 error halts, §7 tapes and test equipment). Device selection (§4.1): deposit 0020 = 0000 (ASR33), 0021 = 0304 (keyboard 03, printer 04), 0022 = 0110 (110 baud). Each program PRGn starts at 0200 with SR = n, halts at 0236 for options (SR = 0 normal), and ends at the program end halt at 0300 (§5.1); with SR0 = 1 it halts at 0324 after each routine with the routine number in AC. Any other halt is an error (§6.1 lists them). `maindec.py` has `d2ab-prg0`, using `KL8E(baud=110)`.
+## 6. Impacts
 
-The agreed approach (user decision): **test equipment around an unchanged KL8E model**, injecting inputs at instruction boundaries so the reference model's KL8E receives identical inputs (as `DmaTestMaster` does). Build:
+### 6.1 Datapath hardware
 
-- a **loop-back jumper**: characters completed on output are presented to keyboard input (PRG1, "EIA output to EIA input");
-- a **tape reader** feeding the keyboard input at the reader's character rate (PRG2, PRG3, PRG10: the binary count pattern test tape, which PRG12 punches; §7.2 describes it);
-- a **punch-to-reader loop** with a short delay (PRG5, PRG7: "very little slack between punch and reader");
-- **scripted keystrokes** (PRG6 keyboard test, PRG11 printer exerciser, which ask the operator to type);
-- **output capture** compared with the expected text or pattern (PRG4 printer test, PRG5, PRG12).
+- OPR pass unit: zero gating on the A input (about 4 × quad AND, 13 bits with L), true/complement stage (about 4 × quad XOR), the adder's carry-in (exists), a 13-bit shift/rotate/BSW multiplexer (about 7 × dual 4-to-1 or 13 × 8-to-1 multiplexers; may replace the rotate ALU operations). Roughly 20 to 30 packages. `ALU_OP` changes from one operation per TS to a composed pass (re-encode, or add mode fields).
+- SKIP register (1 bit, loaded at TP3), because CLA may clear AC at the same TP3 the skip decision uses.
+- `IR ← MDB` at TP2 (new IR source, replacing `MB_TO_IR` at TP3).
+- PC increment in FETCH TS1; EA page from MA; new PC source for the direct JMP address; MQ OR and SR paths into the pass.
+- The FETCH TS3 class decode (decision 2a).
+- Variable TS lengths in the timing generator (decision 3): a loadable TSTEP terminal count and its table.
 
-A live interactive terminal console comes later, sharing the same input and output interface.
+### 6.2 Control store, microcode, packing
 
-Current PRG0 result (sim-only, 110 baud): routines 0 to 3 pass (routine 3 prints 200 characters); **routine 4 halts at 2607**, "printer flag set prior to 9 bit times". D2AB times characters with instruction delay loops calibrated to PDP-8/E instruction timing, and this machine's instruction timing differs from the 8/E's. This is an open item for the user (section 7); until it is resolved, run PRG0 with routines 4 and 5 deselected (SR1 = 1 selects one routine by number in SR6-11) and report it rather than changing the timing model.
+Address budgets (Control Store Organization §5; packing report): datapath slice 15 bits = `MS_EFF` 3 + `TS_CODE` 2 + `VARIANT` 5 + `DP_OVL` 5, full, but FETCH's VARIANT and overlay space is unused today and can be used without new bits; EXECUTE's busiest TS (TS2, 26 variants) loses no variants under option 2 except JMP's and OPR's. Mapping ROM: IR 12 + `TS_CODE` 2 + `A0` (wired 0, the only spare); FETCH TS4 entries would collide with EXECUTE TS4 entries for the same IR and TS, so `A0` selects the table (last spare used); its 8 output bits stay full. Sequencer: three spare bits (A2..A0); FETCH TP4 needs an instruction-class input besides `IR_INDIRECT` (one spare). Datapath width: 44 of 48 bits used; new fields (OPR-pass enable, SKIP load, IR source, JMP PC source, possibly an end-of-instruction output) may need a seventh datapath EEPROM.
 
-### 6.2 M9: the PC8E and MAINDEC-8E-D2CA
+- FETCH TS3 and TS4, and DEFER for JMP I, become instruction-dependent: address formation, `MAPR` rules, `MS_EFF_IS_EXECUTE` gating, overlay groups.
+- Sequencer next-state decisions at FETCH TP4 and DEFER TP4 (FETCH, DEFER, EXECUTE, INTERRUPT, DMA, halt).
+- Pipeline tools: the execution-definition extractor and generator (EXECUTE-centric cases), the symbolic generator, the equivalence analyzer, and the packer (address map, FETCH variants, verification) all change; all artifacts regenerate as v2.
 
-- Write the PC8E model from `docs/07-io/10-controllers/02-pc8e-paper-tape.md` (device 01 reader: RPE, RSF, RRB, RFC; device 02 punch: PCE, PSF, PCF, PPC, PLS), its reference-model counterpart, unit tests in `sim/io/tests` (as for the KL8E), and a reader-tape input and punch capture.
-- D2CA has no write-up in the archive (`sim/test_programs/maindec-8e-d2ca/` has only the tape). The user has not yet decided whether to reverse-engineer its operation from the program or attempt it best-effort; ask before starting.
-- Optionally, KL8E and PC8E together with interrupts on, serviced by one interrupt routine.
+### 6.3 Sequencing and interrupts
 
-### 6.3 Then phase 4
+- Instruction boundary at the TP4 of the last major state: FETCH (OPR, direct JMP), DEFER (JMP I), EXECUTE (MRIs, IOT). Move interrupt recognition, DMA entry and the arbiter's `DMA_ENABLE` ("EXECUTE TS4" becomes the TS4 of an instruction's last state; the arbiter needs an end-of-instruction signal), HLT, STOP, Single Instruction, and the controllers' `at_boundary`.
+- Direct JMP applies `DIF_TO_IF`, `CIFP_CLEAR`, and `II_CLEAR` at FETCH TP3 (consistent with gap L and KM8-E §2.9). ION's one-instruction delay still works (FETCH TS1 clears II).
+- JMP I completes in DEFER, including autoindex and the field change; JMP's EXECUTE is removed.
+- Group 2 HLT halts at FETCH TP4. CAF stays in EXECUTE (it is an IOT), so its `/INITIALIZE` and "no interrupt at CAF's completion" are unchanged.
+- Skip and interrupt at the same TP4 (decision 4).
+- Single Step (halt per major state) sees fewer states for OPR and JMP.
 
-OS/8 on the RK8E (`docs/07-io/10-controllers/03-rk8e-storage.md`), with the RK8E diagnostics and the DECX8 RK8 modules as the DEC validation, including DMA.
+### 6.4 Documentation
 
-## 7. Known Open Items
+- `03-microarchitecture`: state model, micro-operations (new; ALU re-encoding), sequencing, FETCH/DEFER (rewrite), MRI (JMP leaves EXECUTE; JMP I in DEFER), OPR groups 1 to 3 (rewrite as single pass), interrupt, console, and DMA execution.
+- `04-control`: control model, addressing, control word, datapath mapping, invalid conditions, control-store organization, control inputs and outputs, direct-control definitions.
+- `01-architecture` (registers: SKIP, IR source; dataflow), `08-interrupts` (boundary), `09-timing` (TS-length table, major-state timing), `07-io/06-dma-arbitration` (re-enable context only), `99-Abbreviations`.
+- `02-isa`: semantics unchanged; cycle-count notes only. `docs/07-io` controller contracts: unchanged.
+- The user's datapath and timing diagrams need the OPR pass unit, the IR path, and the FETCH sequence (list them for the user; never edit them).
 
-Raise these with the user; do not resolve them alone.
+### 6.5 Simulator and verification
 
-- **Instruction timing versus the PDP-8/E** (D2AB PRG0 routine 4, above). The user is evaluating it separately.
-- **TSTEP counts** and window positions for `CW_VALID` and `WR_VALID` are not yet set; the I/O timing diagrams wait on them.
-- **Datapath diagrams** that show a control-supplied input on the IF, MA, or PC source multiplexers must show the hardwired constants instead.
-- **Physical image format** is undefined (`tools/rom-generation/README.md` §13).
-- **Single Step inside a DMA burst** (DMA Execution §4) is not yet tested.
-- **KEY CONTROL and INT INHIBIT:** on the KM8-E, console loads (KEY CONTROL) also set INT INHIBIT (Theory of Operation §2.9); check the console docs when the front panel is worked on.
-- **Scan-reading helpers** used to read the MAINDEC write-ups (a CCITT G4 page decoder and an OCR-text-layer extractor) lived in a session scratchpad, not the repository. Recreate them, or ask the user whether to add them under `tools/`.
-- `docs/10-front-panel` to `docs/13-implementation-plan`, `docs/appendices`, and `hardware/` are stubs.
+- CPU: address formation, datapath (OPR pass, SKIP, IR at TP2, PC sources), sequencing, derived signals; the time base becomes per (MS, TS).
+- Lock-step: boundaries at FETCH, DEFER, and EXECUTE TP4. Reference model: semantics unchanged, cycle counting and timing per (MS, TS).
+- DMA arbiter: the re-enable context. I/O models: unchanged.
+- Tests: most CPU unit tests that build OPR or JMP EXECUTE words change. All MAINDECs re-verified (cheap under PyPy), including D2AB PRG0 routines 4 and 5, the acceptance test for the timing goal.
 
-## 8. Reference Material
+## 7. Plan
 
-- MAINDEC tapes and write-ups: `sim/test_programs/` (provenance and SHA-256 in its README); archive at deramp.com (`mfe_archive/011-Digital Equipment Corporation/01 DEC PDP-8 Family Software/03 MAINDEC Maintenance progams/`).
-- DEC hardware manuals used for gaps L to N: KM8-E Memory Extension Theory of Operation, KK8-E Central Processor Theory of Operation, M8330 Timing Generator Theory of Operation, PDP-8/E Maintenance Manual Volume 1 (Sep 1973), all on deramp.com under `02 PDP-8e/`. Their scans carry an OCR text layer.
-- SIMH (`PDP8/pdp8_cpu.c`, `pdp8_tt.c`) is an occasional independent cross-check of the reference model, not an authority.
+1. **Specification (review gate).** One document: the new FETCH TS1 to TS4 and DEFER for JMP I; the OPR pass datapath and its IR-driven controls; SKIP; IR at TP2; PC and EA sources; the instruction-boundary rule and end-of-instruction signal; the TS-length table; decisions 1 to 5 with DEC precedent; a critical-path estimate for FETCH TS3 (class decode, slice EEPROM access, OPR pass) and FETCH TS2 with real part numbers. Stop for the user's decision.
+2. **Microcode v2 scaffolding.** `rom/microcode/v2/`, pipeline and simulator able to select v1 or v2; v1 stays green.
+3. **Documentation**, in dependency order (01, 03, 04, 08, 09, then 07-io/06), each area proposed and applied interactively, with a pipeline dry run after each; keep a diagram list for the user.
+4. **Tools:** extractor and generator support for FETCH and DEFER cases; packer address map and FETCH variants; verification; tool tests.
+5. **Pipeline run and promotion of v2** (the user). Check packing, control-word width, and address budgets.
+6. **Simulator:** v2 address formation and datapath, lock-step boundaries, reference cycle counting, per-(MS, TS) time base, DMA arbiter context; unit tests.
+7. **Re-verification:** all suites; lock-step random episodes (including DMA); the MAINDEC regression; full passes of the long programs under PyPy; D2AB PRG0 including routines 4 and 5.
+
+## 8. Risks
+
+- **Hardware timing**, which the simulator (timing-state level) cannot see: the FETCH TS3 path, and TS2 if decision 2b is chosen. Needs a static timing estimate before committing.
+- **New-boundary corner cases** (skip with interrupt at FETCH TP4, CIF and II around a direct JMP, DMA re-enable, Single Step), any not exercised by a MAINDEC.
+- **Tooling restructure bugs** in the extractor and generator; limited by the packer's address-by-address verification and the tools' tests.
+- **Documentation consistency** across about 30 files, plus the diagrams.
+- Mitigations: the ISA semantics, and so the reference model and the lock-step oracle, do not change; every fixed gap (A to N) has a regression test; v1 stays intact for comparison; the work is staged and each stage is verified before the next.
