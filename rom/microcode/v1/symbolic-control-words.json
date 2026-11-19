@@ -2080,7 +2080,7 @@
         ],
         "ALU_B_SRC": [
           {
-            "value": "2",
+            "value": "1",
             "when": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 3) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_AND_MB"
@@ -2875,7 +2875,7 @@
         ],
         "ALU_B_SRC": [
           {
-            "value": "2",
+            "value": "1",
             "when": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 3) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "ADD_AC_MB"
@@ -18607,7 +18607,7 @@
         ],
         "ALU_B_SRC": [
           {
-            "value": "4",
+            "value": "3",
             "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP2 = 1) AND TS = 3) AND RUN = 1) AND IR_OPR_OSR = 1)",
             "origin": "conditional micro-operation mapping",
             "source": "AC_OR_FP_SR"
@@ -19286,7 +19286,7 @@
         ],
         "ALU_B_SRC": [
           {
-            "value": "3",
+            "value": "2",
             "when": "(((((MS = EXECUTE AND IR_IS_OPR = 1) AND IR_OPR_GROUP3 = 1) AND TS = 2) AND RUN = 1) AND (IR_OPR_MQA = 1 AND IR_OPR_MQL = 0))",
             "origin": "conditional micro-operation mapping",
             "source": "AC_OR_MQ"

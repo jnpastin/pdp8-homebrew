@@ -1,8 +1,10 @@
 """Milestone M3: DEC MAINDEC-8E diagnostics, loaded through the console and run in lock-step.
 
-Each program is operated as its write-up directs (sim/test_programs/*/…-d.pdf, §4.3). A pass is
-a return to the program's restart point with no error halt; the simulator and the reference
-model must agree on every instruction.
+Each program is operated as its write-up directs (sim/test_programs/*/…-d.pdf, §4.3). D0AB and
+D0BB pass by returning to their restart points with no error halt. The random and specialized
+tests (D0CC-D0JC) take 1 to 4 million instructions per pass, so the regression runs are bounded:
+a fixed number of instructions with no error halt and no error printout, under two core
+residues. The simulator and the reference model must agree on every instruction.
 """
 
 import sys
@@ -11,6 +13,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
+from pdp8_system import maindec
 from pdp8_system.lockstep import Lockstep, disassemble
 from pdp8_system.machine import KL8E, Machine, load_store
 from pdp8_system.papertape import load_tape, read_tape
@@ -88,6 +91,43 @@ class InstructionTest2(unittest.TestCase):
         m = self.start(kl, counter=0o3015)
         run_passes(self, m, restart=0o0200, passes=2)
         self.assertEqual((kl.printed, m.memory.read(0, 0o3747)), ([0o207], 1))
+
+
+
+class PassCriteria(unittest.TestCase):
+    """maindec.classify: the end-of-pass text observed from each program, and error text."""
+
+    def chars(self, s):
+        return [ord(c) | 0o200 for c in s]
+
+    def test_markers_and_line_breaks(self):
+        D, nl = maindec.DIAGNOSTICS, [maindec.CR, maindec.LF]
+        self.assertEqual(maindec.classify(D["d0db"], nl + self.chars("A") + nl + self.chars("A")), (2, []))
+        self.assertEqual(maindec.classify(D["d0eb"], nl + self.chars("T")), (1, []))
+        self.assertEqual(maindec.classify(D["d0gc"], [maindec.BEL]), (1, []))
+
+    def test_error_text(self):
+        D = maindec.DIAGNOSTICS
+        self.assertEqual(maindec.classify(D["d0gc"], self.chars("E")), (0, self.chars("E")))
+        self.assertEqual(maindec.classify(D["d0jc"], [maindec.RUBOUT] + self.chars("F")),
+                         (0, self.chars("F")))
+
+    def test_halt_only_programs_do_not_judge_text(self):
+        self.assertEqual(maindec.classify(maindec.DIAGNOSTICS["d0cc"], self.chars("PASS")), (0, []))
+
+
+class RandomAndSpecializedTests(unittest.TestCase):
+    """MAINDEC-8E-D0CC to D0JC: bounded lock-step runs, under two core residues."""
+
+    STEPS = 25_000
+
+    def test_programs(self):
+        for name in ("d0cc", "d0db", "d0eb", "d0fc", "d0gc", "d0hc", "d0ib", "d0jc"):
+            for seed in (1, 2):
+                with self.subTest(program=name, seed=seed):
+                    outcome = maindec.run(name, self.STEPS, seed=seed)
+                    self.assertTrue(outcome.passed, outcome.summary())
+                    self.assertEqual(outcome.steps, self.STEPS, outcome.summary())
 
 
 if __name__ == "__main__":

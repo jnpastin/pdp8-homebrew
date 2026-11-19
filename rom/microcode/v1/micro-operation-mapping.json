@@ -29,7 +29,7 @@
         },
         {
           "field": "ALU_B_SRC",
-          "value": "2"
+          "value": "1"
         },
         {
           "field": "ALU_OP",
@@ -267,7 +267,7 @@
         },
         {
           "field": "ALU_B_SRC",
-          "value": "3"
+          "value": "2"
         },
         {
           "field": "ALU_OP",
@@ -306,7 +306,7 @@
         },
         {
           "field": "ALU_B_SRC",
-          "value": "4"
+          "value": "3"
         },
         {
           "field": "ALU_OP",
@@ -668,7 +668,7 @@
         },
         {
           "field": "ALU_B_SRC",
-          "value": "2"
+          "value": "1"
         },
         {
           "field": "ALU_OP",
@@ -1659,5 +1659,42 @@
       "notes": []
     }
   ],
-  "diagnostics": []
+  "diagnostics": [
+    {
+      "severity": "WARNING",
+      "code": "MAINTAINED_ASSIGNMENT_CHANGED",
+      "message": "Assignment ALU_B_SRC changes from '2' to '1'.",
+      "micro_operation": "AC_AND_MB",
+      "field_name": "ALU_B_SRC",
+      "source_path": "docs/03-microarchitecture/02-micro-operations.md",
+      "source_line": 148
+    },
+    {
+      "severity": "WARNING",
+      "code": "MAINTAINED_ASSIGNMENT_CHANGED",
+      "message": "Assignment ALU_B_SRC changes from '3' to '2'.",
+      "micro_operation": "AC_OR_MQ",
+      "field_name": "ALU_B_SRC",
+      "source_path": "docs/03-microarchitecture/02-micro-operations.md",
+      "source_line": 262
+    },
+    {
+      "severity": "WARNING",
+      "code": "MAINTAINED_ASSIGNMENT_CHANGED",
+      "message": "Assignment ALU_B_SRC changes from '4' to '3'.",
+      "micro_operation": "AC_OR_FP_SR",
+      "field_name": "ALU_B_SRC",
+      "source_path": "docs/03-microarchitecture/02-micro-operations.md",
+      "source_line": 281
+    },
+    {
+      "severity": "WARNING",
+      "code": "MAINTAINED_ASSIGNMENT_CHANGED",
+      "message": "Assignment ALU_B_SRC changes from '2' to '1'.",
+      "micro_operation": "ADD_AC_MB",
+      "field_name": "ALU_B_SRC",
+      "source_path": "docs/03-microarchitecture/02-micro-operations.md",
+      "source_line": 472
+    }
+  ]
 }

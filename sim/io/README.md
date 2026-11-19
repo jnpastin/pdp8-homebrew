@@ -25,4 +25,4 @@ How output completes is outside the controller contract (§17.4). The model comp
 
 ## 4. Testing
 
-The controller is tested through the CPU, in lock-step with the reference model's KL8E: `sim/system/tests/test_kl8e.py`, and MAINDEC-8E-D0BB in `sim/system/tests/test_maindec.py`.
+`tests/test_kl8e.py` drives the controller on its own at the external-IOT interface, with no CPU, checking each rule of the KL8E document: every IOT's requests and commits, the busy and discard rules, the interrupt contribution, initialization, and selection. The controller is also tested through the CPU, in lock-step with the reference model's KL8E: `sim/system/tests/test_kl8e.py`, and MAINDEC-8E-D0BB in `sim/system/tests/test_maindec.py`.

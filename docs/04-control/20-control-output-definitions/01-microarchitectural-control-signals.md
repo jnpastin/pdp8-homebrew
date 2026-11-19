@@ -494,7 +494,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Mnemonic:** ALU_B_SRC  
 **Name:** ALU Input B Select  
 **Class:** Select  
-**Bit Width:** 3  
+**Bit Width:** 2  
 **Default Value:** 0  
 **Explicit Value Required:** Conditionally  
 **Value Required When:** (IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1 OR (L_LOAD=1 AND L_OP=2)  
@@ -504,33 +504,30 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Encoding:**
 ```
 0 → NONE
-1 → AC
-2 → MB
-3 → MQ
-4 → FP_SR
-5 → PC
-6 → reserved
-7 → reserved
+1 → MB
+2 → MQ
+3 → FP_SR
 ```
 
 **Constraints:**
 - NONE required for unary operations
+- AC and PC are not B operands; no micro-operation combines either with a second operand
 - L is not an operand; the ALU reads L on its dedicated link input ([§7.3.1](#731-alu-evaluation))
 
 **Used by μops:**
-- [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 2
+- [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 1
 - [AC_BSW](../../03-microarchitecture/02-micro-operations.md#ac_bsw) = 0
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 0
 - [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp) = 0
 - [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc) = 0
-- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr) = 4
-- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 3
+- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr) = 3
+- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 2
 - [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral) = 0
 - [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar) = 0
 - [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl) = 0
 - [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr) = 0
 - [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 0
-- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 2
+- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 1
 - [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc) = 0
 - [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 0
 - [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc) = 0

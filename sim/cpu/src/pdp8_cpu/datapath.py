@@ -98,7 +98,7 @@ class _Eval:
             if b_src == 0 and op in (E.ADD, E.AND, E.OR):
                 raise SpecViolation(f"binary ALU_OP {op:o} with ALU_B_SRC = NONE",
                                     "MCS ALU_B_SRC (NONE is for unary operations), §9.5.2")
-            b = {0: None, 1: st["AC"], 2: st["MB"], 3: st["MQ"], 4: self.panel.sr, 5: st["PC"]}[b_src]
+            b = {0: None, 1: st["MB"], 2: st["MQ"], 3: self.panel.sr}[b_src]
             self._alu = alu(op, a, b, st["L"])
         return self._alu
 
