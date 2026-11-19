@@ -63,6 +63,8 @@ class Reference:
         self.dma_selected = None       # the controller selected for the current burst, or None
         self.dma_count = 0             # words completed in the current burst
         self.dma_pending = False       # a DMA word is the next step
+        self.timing = {"FETCH": 1200, "DEFER": 1200, "EXECUTE": 1200, "INTERRUPT": 1200, "DMA": 1200}
+        self.elapsed_ns = 0            # simulated time: the durations of the major states run
 
     # -- memory -----------------------------------------------------------------------------
 
@@ -86,7 +88,7 @@ class Reference:
             action()
         self._late = []
         for device in self.devices:
-            device.at_boundary()
+            device.at_boundary(self.elapsed_ns)
 
     # -- one step -----------------------------------------------------------------------------
 
@@ -102,6 +104,11 @@ class Reference:
         # INH §12: a JMP or JMS applies a pending field change and clears the inhibit, so only
         # another instruction is inhibited by a change pending at its start.
         cifp_at_start = self.staged_if is not None and ir >> 9 not in (0o4, 0o5)
+        # Every instruction runs FETCH and EXECUTE, and an indirect MRI also DEFER (the major-state
+        # sequence of docs/03-microarchitecture).
+        indirect = ir >> 9 <= 0o5 and (ir >> 8) & 1
+        t = self.timing
+        self.elapsed_ns += t["FETCH"] + (t["DEFER"] if indirect else 0) + t["EXECUTE"]
         result = StepResult("instruction", pc, f, ir)
         inhibit = self._execute(ir, pc, result) or cifp_at_start
         result.writes = self._writes
@@ -121,6 +128,7 @@ class Reference:
     def _dma_word(self) -> StepResult:
         """DMA §6, ARB §9-§12: one single-word DMA transfer, and the burst decision."""
         result = StepResult("dma", self.pc, self.if_, None)
+        self.elapsed_ns += self.timing["DMA"]
         c = self.dma_selected
         if c is None:                                  # DMA §6.2: arbitrate
             requesting = sorted((x for x in self.dma_controllers if x.dma_request()),
@@ -152,6 +160,7 @@ class Reference:
     def _interrupt_entry(self) -> StepResult:
         """ENT §4-§6: M[0:0000] <- PC; IB <- IF, DF; IE, IF, DF, staged field cleared; PC <- 0001."""
         result = StepResult("interrupt", self.pc, self.if_, None)
+        self.elapsed_ns += self.timing["INTERRUPT"]
         self.write(0, 0, self.pc)
         self.ib = (self.if_ << 3) | self.df
         self.ie = 0

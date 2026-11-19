@@ -52,9 +52,15 @@ class TraceRecord:
     strobes: dict = field(default_factory=dict)
 
 
+# Simulated duration of each major state, in ns: the PDP-8/E's 1.2 µs memory cycle by default. The
+# documentation does not yet fix this machine's cycle time (TSTEP counts are an open item); time is
+# simulated only so that controllers can model real-time behavior such as Teletype character times.
+DEFAULT_TIMING = {"FETCH": 1200, "DEFER": 1200, "EXECUTE": 1200, "INTERRUPT": 1200, "DMA": 1200}
+
+
 class Cpu:
     def __init__(self, store: ControlStore, memory, panel: FrontPanel | None = None,
-                 ext: ExternalInputs | None = None, trace=None, devices=(), dma=None):
+                 ext: ExternalInputs | None = None, trace=None, devices=(), dma=None, timing=None):
         """ext: test stimulus for the external inputs (for example /INT_REQ); controllers in
         `devices` contribute their own responses each TS. A controller provides present(bus),
         commit(bus, tp, db_write, initialize), initialize(), and optionally at_boundary().
@@ -62,13 +68,18 @@ class Cpu:
         dma: the DMA arbiter (docs/07-io/06-dma-arbitration.md), which supplies aggregate
         /DMA_REQ and, while /DMA_GRANT is asserted, the selected controller's memory transfer:
         aggregate_n(in_execute, in_dma, ts), operation(), and
-        commit(tp, in_execute, in_dma, initialize, transferred)."""
+        commit(tp, in_execute, in_dma, initialize, transferred).
+
+        timing: the simulated duration of each major state in ns (DEFAULT_TIMING); `elapsed_ns`
+        accumulates it at every main-sequence TP4 and is passed to `at_boundary(now_ns)`."""
         self.store = store
         self.memory = memory
         self.panel = panel or FrontPanel()
         self.ext = ext or ExternalInputs()
         self.devices = list(devices)
         self.dma = dma
+        self.timing = dict(DEFAULT_TIMING, **(timing or {}))
+        self.elapsed_ns = 0
         self.st = CpuState()
         self.trace = trace          # optional callable(TraceRecord)
         self.last_record: TraceRecord | None = None
@@ -205,9 +216,11 @@ class Cpu:
             device.commit(bus, "C" if console else ts, effects.db_write, initialize)
         if self.dma is not None:
             self.dma.commit("C" if console else ts, ms == E.EXECUTE, ms == E.DMA, initialize, dma_value)
+        if not console and ts == 4:                  # a major state completes
+            self.elapsed_ns += self.timing[E.MS_NAMES[ms]]
         if not console and ts == 4 and ms in (E.EXECUTE, E.INTERRUPT):
             for device in self.devices:              # an instruction boundary (see KL8E model)
-                getattr(device, "at_boundary", lambda: None)()
+                getattr(device, "at_boundary", lambda now_ns: None)(self.elapsed_ns)
 
         record = TraceRecord("TPC" if console else "TS", ms, ts, run, context["IR"], context["PC"],
                              self.panel.latched, dp_addrs, seq_addrs, dp_fields, seq,

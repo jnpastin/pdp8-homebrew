@@ -170,7 +170,7 @@ class DmaTestMaster:
         if initialize:
             self.initialize()
 
-    def at_boundary(self):
+    def at_boundary(self, now_ns: int = 0):
         self.boundaries += 1
         self.load(self.schedule.get(self.boundaries, ()))
 

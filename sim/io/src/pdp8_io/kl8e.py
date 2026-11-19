@@ -3,10 +3,16 @@
 Source: docs/07-io/10-controllers/01-kl8e-uart.md (KL8E): device addresses 03 (keyboard) and 04
 (teleprinter); each IOT's request and commit points are those of KL8E §11-§24.
 
-Output completion is outside the controller contract (KL8E §17.4). This model completes an
-accepted character after `output_delay` instruction boundaries, counted by `at_boundary()`, which
-the simulator calls after the TP4 of each EXECUTE or INTERRUPT major state. Counting boundaries
-rather than time lets the instruction-level reference model complete it at the same instruction.
+Output completion is outside the controller contract (KL8E §17.4). Without a baud rate, this model
+completes an accepted character after `output_delay` instruction boundaries. With `baud`, it
+models the Teletype line in simulated time (`now_ns`, from the major-state clock): a character
+starts when the line is free, its flag sets `flag_bits` bit times after the start, and the line
+stays busy for the whole frame (11 bits at 110 baud, 10 above). The default of 9.25 bit times lies
+in the window MAINDEC-8E-D2AB accepts for a PDP-8/E KL8-E (no earlier than 9, no later than 9.55
+bit times after TLS), and back-to-back characters complete one frame apart, as D2AB expects.
+
+`at_boundary(now_ns)` is called after the TP4 of each EXECUTE or INTERRUPT major state, so the
+instruction-level reference model completes a character at the same instruction.
 
 Keyboard input arrives through `type_character()`.
 """
@@ -17,10 +23,17 @@ from .bus import BusView, Response
 
 KEYBOARD, TELEPRINTER = 0o03, 0o04
 
+def frame_bits(baud):
+    """Bits per Teletype character: 11 at 110 baud (two stop bits), 10 above."""
+    return 11 if baud <= 110 else 10
+
 
 class KL8E:
-    def __init__(self, output_delay: int = 3):
+    def __init__(self, output_delay: int = 3, baud: int | None = None, flag_bits: float = 9.25):
         self.output_delay = output_delay
+        self.baud = baud
+        self.flag_bits = flag_bits
+        self.line_free_at = 0             # simulated time the line finishes the last frame
         self.printed: list[int] = []
         self.initialize()
 
@@ -34,13 +47,16 @@ class KL8E:
         self.teleprinter_flag = 0
         self.interrupt_enable = 1
         self.output_countdown = None      # boundaries until the accepted character completes
+                                          # (0 while pending, with a baud rate)
+        self.output_due = None            # with a baud rate: the time its flag sets
         self._transfer = None             # "read" or "write" accepted for the TS after TP2/TP3
         self._asserted = Response()
 
     def state(self) -> dict:
         return {k: getattr(self, k) for k in ("keyboard_buffer", "keyboard_flag", "transmit_buffer",
                                               "teleprinter_flag", "interrupt_enable", "output_countdown",
-                                              "output_delay")}
+                                              "output_delay", "baud", "flag_bits", "output_due",
+                                              "line_free_at")}
 
     def interrupt_request(self) -> bool:
         """KL8E §7: INTERRUPT_ENABLE AND (KEYBOARD_FLAG OR TELEPRINTER_FLAG)."""
@@ -52,13 +68,23 @@ class KL8E:
             self.keyboard_buffer = char & 0o377
             self.keyboard_flag = 1
 
-    def at_boundary(self):
-        if self.output_countdown is not None:
+    def at_boundary(self, now_ns: int = 0):
+        if self.output_countdown is None:
+            return
+        if self.baud is None:
             self.output_countdown -= 1
-            if self.output_countdown <= 0:
-                self.output_countdown = None
-                self.teleprinter_flag = 1
-                self.printed.append(self.transmit_buffer)
+            done = self.output_countdown <= 0
+        else:
+            if self.output_due is None:              # accepted at this boundary: start when free
+                start = max(now_ns, self.line_free_at)
+                bit = 1_000_000_000 / self.baud
+                self.output_due = start + round(self.flag_bits * bit)
+                self.line_free_at = start + round(frame_bits(self.baud) * bit)
+            done = now_ns >= self.output_due
+        if done:
+            self.output_countdown = self.output_due = None
+            self.teleprinter_flag = 1
+            self.printed.append(self.transmit_buffer)
 
     # -- interface -------------------------------------------------------------------------------
 
@@ -89,8 +115,8 @@ class KL8E:
             else:
                 if op == 1 and ts == 4:                          # TSF
                     r.io_skip_req = self.teleprinter_flag
-                elif op == 5 and ts == 4:                        # TSK
-                    r.io_skip_req = int(bool(self.keyboard_flag or self.teleprinter_flag))
+                elif op == 5 and ts == 4:                        # TSK (§23): the interrupt condition
+                    r.io_skip_req = int(self.interrupt_request())
                 elif op in (4, 6) and ts == 3 and self.output_countdown is None:   # TPC, TLS
                     r.io_write_req = 1
             if ts == 4 and self._transfer == "read":
@@ -125,7 +151,7 @@ class KL8E:
                 self.teleprinter_flag = 0
             elif op in (4, 6) and tp == 4 and self._transfer == "write":   # TPC, TLS
                 self.transmit_buffer = db_write & 0o377
-                self.output_countdown = self.output_delay
+                self.output_countdown = self.output_delay if self.baud is None else 0
                 if op == 6:
                     self.teleprinter_flag = 0
         if tp == 4:

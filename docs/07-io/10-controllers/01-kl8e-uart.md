@@ -429,7 +429,7 @@ How the controller achieves or detects physical output completion is outside thi
 | `6042` | TCF | Clear teleprinter flag |
 | `6043` | Undefined | Ignore |
 | `6044` | TPC | Accept `AC[7:0]` as the next output character |
-| `6045` | TSK | Request skip when keyboard flag or teleprinter flag is set |
+| `6045` | TSK | Request skip when the interrupt enable is set and the keyboard flag or teleprinter flag is set |
 | `6046` | TLS | Accept `AC[7:0]` and clear teleprinter flag |
 | `6047` | Undefined | Ignore |
 
@@ -533,8 +533,12 @@ ADDRESS_MATCH
 AND
 (IOP = 5)
 AND
+INTERRUPT_ENABLE
+AND
 (KEYBOARD_FLAG OR TELEPRINTER_FLAG)
 ```
+
+TSK skips exactly when the controller contributes an interrupt request (section 7). This is the PDP-8/E KL8-E's SPI ("skip on printer or keyboard interrupt"): MAINDEC-8E-D2AB treats a skip with the interrupt enable clear as an error.
 
 TSK does not modify controller state.
 
@@ -599,7 +603,7 @@ The interrupt service routine identifies the requesting interface using the cont
 
 - KSF tests the keyboard flag.
 - TSF tests the teleprinter flag.
-- TSK tests whether either the keyboard flag or teleprinter flag is set.
+- TSK tests whether the controller is requesting an interrupt: the interrupt enable is set and either the keyboard flag or teleprinter flag is set.
 
 The interrupt service routine clears or services the keyboard interrupt condition using the existing keyboard operations:
 

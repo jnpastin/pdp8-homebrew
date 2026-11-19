@@ -54,6 +54,8 @@ def reference_from(machine: Machine) -> Reference:
     ref.sr = machine.panel.sr
     ref.memory = [list(words) for words in machine.memory.words]
     ref.interrupt_pending = st["MS"] == E.INTERRUPT
+    ref.timing = dict(machine.cpu.timing)
+    ref.elapsed_ns = machine.cpu.elapsed_ns
     ref.devices = [_reference_device(d) for d in machine.devices]
     arbiter = machine.dma
     if arbiter is not None:
@@ -136,6 +138,8 @@ class Lockstep:
             if mine != theirs:
                 problems.append(f"{name}: simulator {_o(mine)}, reference {_o(theirs)}"
                                 f" ({self._last_commit(got, name)})")
+        if self.m.cpu.elapsed_ns != ref.elapsed_ns:
+            problems.append(f"elapsed time: simulator {self.m.cpu.elapsed_ns} ns, reference {ref.elapsed_ns} ns")
         if got.writes != expected.writes:
             problems.append(f"memory writes: simulator {_writes(got.writes)}, reference {_writes(expected.writes)}")
         for sim_dev, ref_dev in zip(self.m.devices, ref.devices):

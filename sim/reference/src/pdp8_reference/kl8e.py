@@ -6,17 +6,25 @@ to the interrupt-recognition decision at that instruction's completion; effects 
 TLS, TPC, and KRB's flag clear) are not, and are returned as a `late` action.
 
 Output completion follows the same rule as the timing-state model (sim/io): an accepted character
-completes after `output_delay` instruction boundaries.
+completes after `output_delay` instruction boundaries or, with a baud rate, at the simulated time
+its flag is due (the reference model keeps the same major-state clock).
 """
 
 from __future__ import annotations
 
 KEYBOARD, TELEPRINTER = 0o03, 0o04
 
+def frame_bits(baud):
+    """Bits per Teletype character: 11 at 110 baud (two stop bits), 10 above."""
+    return 11 if baud <= 110 else 10
+
 
 class KL8E:
-    def __init__(self, output_delay: int = 3):
+    def __init__(self, output_delay: int = 3, baud: int | None = None, flag_bits: float = 9.25):
         self.output_delay = output_delay
+        self.baud = baud
+        self.flag_bits = flag_bits
+        self.line_free_at = 0
         self.printed: list[int] = []
         self.initialize()
 
@@ -35,17 +43,28 @@ class KL8E:
         self.teleprinter_flag = 0
         self.interrupt_enable = 1
         self.output_countdown = None
+        self.output_due = None
 
     def interrupt_request(self) -> bool:
         return bool(self.interrupt_enable and (self.keyboard_flag or self.teleprinter_flag))
 
-    def at_boundary(self):
-        if self.output_countdown is not None:
+    def at_boundary(self, now_ns: int = 0):
+        if self.output_countdown is None:
+            return
+        if self.baud is None:
             self.output_countdown -= 1
-            if self.output_countdown <= 0:
-                self.output_countdown = None
-                self.teleprinter_flag = 1
-                self.printed.append(self.transmit_buffer)
+            done = self.output_countdown <= 0
+        else:
+            if self.output_due is None:
+                start = max(now_ns, self.line_free_at)
+                bit = 1_000_000_000 / self.baud
+                self.output_due = start + round(self.flag_bits * bit)
+                self.line_free_at = start + round(frame_bits(self.baud) * bit)
+            done = now_ns >= self.output_due
+        if done:
+            self.output_countdown = self.output_due = None
+            self.teleprinter_flag = 1
+            self.printed.append(self.transmit_buffer)
 
     def selects(self, device: int) -> bool:
         return device in (KEYBOARD, TELEPRINTER)
@@ -81,10 +100,10 @@ class KL8E:
 
                 def accept(clear_flag=(op == 6)):
                     self.transmit_buffer = char
-                    self.output_countdown = self.output_delay
+                    self.output_countdown = self.output_delay if self.baud is None else 0
                     if clear_flag:
                         self.teleprinter_flag = 0
                 late = accept
-            elif op == 5:                                  # TSK
-                skip = bool(self.keyboard_flag or self.teleprinter_flag)
+            elif op == 5:                                  # TSK (§23): the interrupt condition
+                skip = self.interrupt_request()
         return skip, late

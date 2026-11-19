@@ -39,6 +39,8 @@ class Diagnostic:
     continue_switches: int | None = None  # SR set before CONTINUE at a documented halt
     preamble: bool = False             # text before the first documented halt (a banner) is not judged
     info_lines: tuple = ()             # regexes for whole lines of information, not errors
+    pass_halts: frozenset = frozenset()  # PC after a documented end-of-program halt: the run passed
+    kl8e_baud: int | None = None       # model the Teletype line at this baud rate (KL8E timing)
     jump_to_self_errors: bool = False  # a JMP to its own address that keeps looping is an error (§6)
     printout_halts: bool = False       # every error printout is followed by a halt (§6), so the
                                        # halt alone is the error; other text is not judged
@@ -76,10 +78,18 @@ DIAGNOSTICS = {
                        ignored=NEWLINE | {ord("E") | 0o200}),
     # §4.3.2, time share disabled (no time-share hardware): SR0 = 1 (memory extension only) and
     # SR9-11 = 7 extended fields; a halt at 3651 confirms time share is disabled, then CONTINUE.
-    # §4.3: a bell after every pass. §6.1: errors are halts or jumps to self.
+    # §4.3: a bell after every pass (sent as 007, without the parity bit; observed after
+    # 92,510,728 instructions). §6.1: errors are halts or jumps to self.
     "d1ha": Diagnostic("maindec-8e-d1ha", "Memory Extension and Time Share Control Test", switches=0o4007,
-                       markers=frozenset({BEL}), continue_halts=frozenset({0o3651, 0o3652}),
+                       markers=frozenset({BEL, BEL & 0o177}), continue_halts=frozenset({0o3651, 0o3652}),
                        jump_to_self_errors=True),
+    # §4.1: device selection in 0020-0022 (ASR33; keyboard 03, printer 04; 110 baud), then each
+    # program PRGn starts at 0200 with SR = n, halts at 0236 for its options (SR = 0 is the normal
+    # run), and ends at the program end halt at 0300 (§5.1). §6.1: any other halt is an error.
+    "d2ab-prg0": Diagnostic("maindec-8e-d2ab", "Teletype KL8 Data Control Test, PRG0 (output logic)",
+                            switches=0o0000, deposits=((0o0020, 0o0000), (0o0021, 0o0304), (0o0022, 0o0110)),
+                            continue_halts=frozenset({0o0237}), continue_switches=0o0000,
+                            pass_halts=frozenset({0o0301}), kl8e_baud=110, printout_halts=True),
     # §4.1: start at 0200 (IF = DF = 0); it types a banner and "SETUP SR & CONT" and halts (at
     # 2634); then SR06-08 = 0 and SR09-11 = 7 select stacks 0-7, and CONTINUE. It reports the stacks
     # it found and selected (STACK_INFO; observed "8 STACKS IN THIS SYSTEM") and tests in silence.
@@ -105,6 +115,7 @@ class Outcome:
     printed: list = field(default_factory=list)
     halt: str | None = None            # description of an error halt or jump to self
     continued: int = 0                 # documented halts continued from
+    completed: bool = False            # stopped at a documented end-of-program halt
     error_text: list = field(default_factory=list)
 
     @property
@@ -141,7 +152,7 @@ def classify(d: Diagnostic, chars) -> tuple[int, list]:
 def prepare(name: str, seed: int = 1) -> tuple[Machine, KL8E]:
     """A machine with the program loaded and started as its write-up directs."""
     d = DIAGNOSTICS[name]
-    kl = KL8E()
+    kl = KL8E(baud=d.kl8e_baud)
     m = Machine(load_store(), devices=[kl])
     m.core_residue(seed)
     load_tape(m, read_tape(next((PROGRAMS / d.directory).glob("*-pb"))))
@@ -189,6 +200,9 @@ def run(name: str, max_steps: int, seed: int = 1, lockstep: bool = True, stop_af
                 outcome.error_text += errors
         seen = len(kl.printed)
         if halted:
+            if m.state["PC"] in d.pass_halts:
+                outcome.completed = True
+                break
             if m.state["PC"] in d.continue_halts:
                 outcome.continued += 1
                 if d.continue_switches is not None:

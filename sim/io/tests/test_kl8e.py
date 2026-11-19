@@ -118,8 +118,8 @@ class Teleprinter(unittest.TestCase):
         iot(self.kl, TELEPRINTER, 2)
         self.assertEqual((self.kl.teleprinter_flag, iot(self.kl, TELEPRINTER, 1).skip), (0, 0))
 
-    def test_tsk_skips_on_either_flag(self):
-        # §23: skip when the keyboard flag or the teleprinter flag is set; no state change.
+    def test_tsk_skips_on_the_interrupt_condition(self):
+        # §23: skip when the interrupt enable is set and either flag is set; no state change.
         self.assertEqual(iot(self.kl, TELEPRINTER, 5).skip, 0)
         self.kl.type_character(0o301)
         self.assertEqual(iot(self.kl, TELEPRINTER, 5).skip, 1)
@@ -127,6 +127,8 @@ class Teleprinter(unittest.TestCase):
         iot(self.kl, TELEPRINTER, 0)
         self.assertEqual(iot(self.kl, TELEPRINTER, 5).skip, 1)
         self.assertEqual((self.kl.keyboard_flag, self.kl.teleprinter_flag), (0, 1))
+        iot(self.kl, KEYBOARD, 5, ac=0)                            # KIE: interrupt enable clear
+        self.assertEqual(iot(self.kl, TELEPRINTER, 5).skip, 0)     # a flag alone does not skip
 
     def test_tls_accepts_clears_the_flag_and_completes_later(self):
         # §24: write request in TS3, DB[7:0] loaded and the flag cleared at TP4. §17.4: the flag
