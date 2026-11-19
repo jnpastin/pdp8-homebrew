@@ -878,16 +878,17 @@ GTF_FLAGS[9]   = (/INT_REQ = 0)
 GTF_FLAGS[8]   = 0
 GTF_FLAGS[7]   = IE
 GTF_FLAGS[6]   = 0
-GTF_FLAGS[5:3] = IF
-GTF_FLAGS[2:0] = DF
+GTF_FLAGS[5:3] = IB[5:3]
+GTF_FLAGS[2:0] = IB[2:0]
 ```
+
+Bits 5:0 are the save field held in IB, not the current IF and DF ([IOT Instruction Detail §3.1](../../02-isa/04-iot.md#31-processor-flags-word-gtf-rtf)).
 
 **Sources:**
 - L
 - /INT_REQ
 - IE
-- IF
-- DF
+- IB
 
 **Constraints:**
 - GTF_FLAGS is a combinational datapath value and is not stored state.

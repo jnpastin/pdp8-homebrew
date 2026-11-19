@@ -49,6 +49,7 @@ class ProgramsInLockstep(unittest.TestCase):
         for name, blocks in PROGRAMS.items():
             with self.subTest(program=name):
                 m = started(blocks)
+                m.state["IB"] = 0o03     # "iots": GTF reports IB, and RTF then restores IF 0, DF 3 from it
                 Lockstep(m).run(200)
                 self.assertEqual(m.state["RUN"], 0)
 

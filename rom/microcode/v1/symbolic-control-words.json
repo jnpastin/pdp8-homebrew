@@ -4927,7 +4927,14 @@
             "source": "DIF_TO_IF"
           }
         ],
-        "II_LOAD": [],
+        "II_LOAD": [
+          {
+            "value": "1",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 1) AND RUN = 1) AND CIFP = 1)",
+            "origin": "conditional micro-operation mapping",
+            "source": "II_CLEAR"
+          }
+        ],
         "IOT_TRANSFER_LOAD": [],
         "IR_LOAD": [],
         "L_LOAD": [],
@@ -4983,7 +4990,14 @@
           }
         ],
         "IE_VAL": [],
-        "II_VAL": [],
+        "II_VAL": [
+          {
+            "value": "0",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 1) AND RUN = 1) AND CIFP = 1)",
+            "origin": "conditional micro-operation mapping",
+            "source": "II_CLEAR"
+          }
+        ],
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
@@ -5031,7 +5045,8 @@
       "selected_micro_operations": {
         "CIFP_CLEAR": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 1) AND RUN = 1) AND CIFP = 1)",
         "DIF_TO_IF": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 1) AND RUN = 1) AND IF_CHANGE_PENDING = 1)",
-        "EA_ADDR_TO_MA": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 1) AND RUN = 1)"
+        "EA_ADDR_TO_MA": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 1) AND RUN = 1)",
+        "II_CLEAR": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 1) AND RUN = 1) AND CIFP = 1)"
       },
       "applicable_direct_control_definitions": [
         "01:3.3.2",
@@ -5692,7 +5707,7 @@
       "execution_case_id": "mri:3.6:ts1",
       "source": {
         "path": "docs/03-microarchitecture/05-mri-execution.md",
-        "line": 136
+        "line": 137
       },
       "base_context": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -5769,7 +5784,14 @@
             "source": "DIF_TO_IF"
           }
         ],
-        "II_LOAD": [],
+        "II_LOAD": [
+          {
+            "value": "1",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 1) AND RUN = 1) AND CIFP = 1)",
+            "origin": "conditional micro-operation mapping",
+            "source": "II_CLEAR"
+          }
+        ],
         "IOT_TRANSFER_LOAD": [],
         "IR_LOAD": [],
         "L_LOAD": [],
@@ -5811,7 +5833,14 @@
           }
         ],
         "IE_VAL": [],
-        "II_VAL": [],
+        "II_VAL": [
+          {
+            "value": "0",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 1) AND RUN = 1) AND CIFP = 1)",
+            "origin": "conditional micro-operation mapping",
+            "source": "II_CLEAR"
+          }
+        ],
         "IOT_TRANSFER_VAL": [],
         "/RD": [],
         "/WR": [],
@@ -5858,7 +5887,8 @@
       },
       "selected_micro_operations": {
         "CIFP_CLEAR": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 1) AND RUN = 1) AND CIFP = 1)",
-        "DIF_TO_IF": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 1) AND RUN = 1) AND IF_CHANGE_PENDING = 1)"
+        "DIF_TO_IF": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 1) AND RUN = 1) AND IF_CHANGE_PENDING = 1)",
+        "II_CLEAR": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 1) AND RUN = 1) AND CIFP = 1)"
       },
       "applicable_direct_control_definitions": [
         "01:3.3.2",
@@ -5876,7 +5906,7 @@
       "execution_case_id": "mri:3.6:ts2",
       "source": {
         "path": "docs/03-microarchitecture/05-mri-execution.md",
-        "line": 136
+        "line": 137
       },
       "base_context": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -6029,7 +6059,7 @@
       "execution_case_id": "mri:3.6:ts3",
       "source": {
         "path": "docs/03-microarchitecture/05-mri-execution.md",
-        "line": 136
+        "line": 137
       },
       "base_context": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -6212,7 +6242,7 @@
       "execution_case_id": "mri:3.6:ts4",
       "source": {
         "path": "docs/03-microarchitecture/05-mri-execution.md",
-        "line": 136
+        "line": 137
       },
       "base_context": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 101) AND TS = 4) AND RUN = 1)",
       "defaults": {

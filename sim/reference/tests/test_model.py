@@ -89,9 +89,15 @@ class Operate(unittest.TestCase):
 
 
 class ProcessorAndMemoryExtensionIots(unittest.TestCase):
-    def test_gtf(self):
-        r = run(ref_with({(1, 0o200): [0o7120, 0o6231, 0o6001, 0o6004, HLT]}, field=1))
-        self.assertEqual(r.ac, 0o4213)
+    def test_gtf_reports_the_save_field(self):
+        # IOT §3.1: L in 11, interrupt request in 9, IE in 7, the save field IB (not IF, DF) in 5:0.
+        r = ref_with({(1, 0o200): [0o7120, 0o6231, 0o6001, 0o6004, HLT]}, field=1)
+        r.ib = 0o25
+        self.assertEqual(run(r).ac, 0o4225)
+
+    def test_gtf_before_any_interrupt_is_refused(self):
+        with self.assertRaises(ReferenceError):
+            run(ref_with({(0, 0o200): [0o6004, HLT]}))
 
     def test_rtf(self):
         r = run(ref_with({(0, 0o200): [0o7300, 0o1210, 0o6005, 0o5611], (0, 0o210): [0o4013, 0o0300],
@@ -115,9 +121,11 @@ class Interrupts(unittest.TestCase):
         self.assertEqual((r.memory[0][0], r.ib, r.if_, r.df, r.pc), (0o203, 0o35, 0, 0, 0o002))
 
     def test_cif_window(self):
+        # INH §12: the JMP that applies the field change clears the inhibit, so the interrupt is
+        # taken at that JMP's boundary and saves its target in the new field.
         r = run(ref_with({(0, 0o200): [0o6001, 0o6212, 0o5300], (1, 0o300): [NOP, HLT],
                           (0, 0o001): [HLT]}), int_req=True)
-        self.assertEqual((r.memory[0][0], r.ib), (0o301, 0o10))
+        self.assertEqual((r.memory[0][0], r.ib), (0o300, 0o10))
 
     def test_no_interrupt_at_caf_completion(self):
         r = run(ref_with({(0, 0o200): [0o6001, 0o6007, HLT]}), int_req=True)

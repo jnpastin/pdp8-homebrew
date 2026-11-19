@@ -249,9 +249,13 @@ class ProcessorIots(unittest.TestCase):
         self.assertEqual(m.state["PC"], 0o202)
 
     def test_gtf(self):
-        # ISA 04-iot §3.1: L in bit 11, interrupt request in 9, IE in 7, IF in 5:3, DF in 2:0.
-        m = run({(1, 0o200): [0o7120, 0o6231, 0o6001, 0o6004, HLT]}, field=1)   # STL; CDF 30; ION; GTF
-        self.assertEqual(m.state["AC"], 0o4000 | 0o0200 | 0o0010 | 0o0003)
+        # ISA 04-iot §3.1: L in bit 11, interrupt request in 9, IE in 7, the save field IB in 5:0
+        # (not the current IF and DF).
+        m = machine({(1, 0o200): [0o7120, 0o6231, 0o6001, 0o6004, HLT]}, field=1)   # STL; CDF 30; ION; GTF
+        m.state["IB"] = 0o25
+        m.start()
+        m.run(10_000)
+        self.assertEqual(m.state["AC"], 0o4000 | 0o0200 | 0o0025)
 
     def test_rtf_restores_and_applies_if_at_jmp(self):
         m = run({(0, 0o200): [0o7300, 0o1210, 0o6005, 0o5611], (0, 0o210): [0o4013, 0o0300],
@@ -302,13 +306,14 @@ class Interrupts(unittest.TestCase):
         self.assertIsNone(m.memory.read(3, 0))
         self.assertEqual((st["IB"], st["IF"], st["DF"], st["DIF"], st["PC"]), (0o35, 0, 0, 0, 0o002))
 
-    def test_cif_inhibits_until_after_the_jmp(self):
-        # Interrupt Enable and Inhibit §16: recognition waits for the instruction after the JMP.
+    def test_cif_inhibits_until_the_jmp(self):
+        # Interrupt Enable and Inhibit §12: the JMP that applies the field change clears the
+        # inhibit, so the interrupt is taken at that JMP's boundary (as on the PDP-8/E).
         m = interrupt_machine({(0, 0o200): [0o6001, 0o6212, 0o5300], (1, 0o300): [NOP, HLT],
                                (0, 0o001): [HLT]})
         m.run(100)
-        self.assertEqual(m.memory.read(0, 0), 0o301)                       # after NOP at 1:0300
-        self.assertEqual(m.state["IB"], 0o10)
+        self.assertEqual(m.memory.read(0, 0), 0o300)                       # the JMP's target
+        self.assertEqual(m.state["IB"], 0o10)                              # in the new field 1
 
     def test_rmf_and_return(self):
         # Interrupt Entry and Return §8: RMF restores DF now and IF at JMP I 0.

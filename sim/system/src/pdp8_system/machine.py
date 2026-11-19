@@ -61,10 +61,16 @@ class Machine:
         autoindex test ANDs location 7777, which it never loads, into a zero AC, for example).
         The values come from `seed`; a program that does not depend on leftover contents gives
         the same result for every seed. Memory of a machine created without this stays
-        UNDEFINED, so unit tests still catch accidental reads."""
+        UNDEFINED, so unit tests still catch accidental reads.
+
+        The interrupt save field IB gets an arbitrary value too: nothing initializes it before the
+        first interrupt entry (Register Model IB; on the PDP-8/E the save field is loaded only at
+        interrupt entry), and GTF reports it. MAINDEC-8E-D0BB executes GTF before any interrupt and
+        masks those bits off."""
         rng = random.Random(seed)
         for f in range(8):
             self.memory.preload(f, 0, [rng.randrange(4096) for _ in range(4096)])
+        self.state["IB"] = rng.randrange(0o100)
 
     # -- console helpers -------------------------------------------------------------------
 

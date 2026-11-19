@@ -209,13 +209,13 @@ At that operation:
 
 - `DIF` is transferred to `IF` when the defined field-change condition is satisfied
 - `CIFP` is cleared
-- `II` remains governed by its existing update rules
+- `II` is cleared
 
 The JMP and JMS execution sequences are defined in [MRI Execution](../03-microarchitecture/05-mri-execution.md).
 
-Application of the pending field change does not permit an interrupt to be recognized at the same TP4 boundary. The recognition decision uses the pre-TP4 state, in which `II` remains set.
+All three commit at the TP1 of the JMP or JMS, so interrupt recognition may occur at the EXECUTE TP4 boundary of that same JMP or JMS if all eligibility conditions are satisfied. The interrupt entry then saves the new instruction field in `IB` and the transfer address (JMP) or the address after the return-address word (JMS) in location `0000`, so no field change is lost.
 
-During the following FETCH, `CIFP` is clear, so the defined FETCH behavior may clear `II`. Interrupt recognition may then occur at the EXECUTE TP4 boundary of the instruction fetched in the new instruction field if all eligibility conditions are satisfied.
+This matches the PDP-8/E, where the KM8-E negates its interrupt inhibit during any JMP or JMS ("negated at TP3 whenever a JMP or JMS instruction occurs", KM8-E Memory Extension Theory of Operation §2.9), and MAINDEC-8E-D1HA checks that the interrupt follows the field-changing JMP.
 
 ## 13. FETCH-Time Inhibit Clearing
 
@@ -273,7 +273,7 @@ The following invariants apply:
 - CIF, RMF, and RTF set II and CIFP.
 - FETCH must not clear II while CIFP is set.
 - A pending instruction-field change established by CIF, RMF, or RTF inhibits interrupt recognition until JMP or JMS applies the deferred field.
-- Clearing CIFP and applying DIF at the EXECUTE TP1 of a JMP or JMS does not permit interrupt recognition at that instruction's EXECUTE TP4; II remains set until the following FETCH clears it.
+- A JMP or JMS that applies a pending instruction-field change clears CIFP and II at its EXECUTE TP1, so interrupt recognition may occur at that instruction's EXECUTE TP4.
 - Interrupt recognition after a deferred field change may occur only at a later eligible EXECUTE TP4 boundary.
 - Interrupt enable and inhibit state do not control DMA eligibility.
 - All changes to IE, II, and CIFP occur only at TP events.

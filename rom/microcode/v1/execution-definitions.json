@@ -459,6 +459,10 @@
         {
           "predicate": "CIFP = 1",
           "micro_operation": "CIFP_CLEAR"
+        },
+        {
+          "predicate": "CIFP = 1",
+          "micro_operation": "II_CLEAR"
         }
       ]
     },
@@ -521,7 +525,7 @@
       "id": "mri:3.6:ts1",
       "source": {
         "path": "docs/03-microarchitecture/05-mri-execution.md",
-        "line": 136
+        "line": 137
       },
       "execution_model": "major-state",
       "context": [
@@ -539,6 +543,10 @@
         {
           "predicate": "CIFP = 1",
           "micro_operation": "CIFP_CLEAR"
+        },
+        {
+          "predicate": "CIFP = 1",
+          "micro_operation": "II_CLEAR"
         }
       ]
     },
@@ -546,7 +554,7 @@
       "id": "mri:3.6:ts2",
       "source": {
         "path": "docs/03-microarchitecture/05-mri-execution.md",
-        "line": 136
+        "line": 137
       },
       "execution_model": "major-state",
       "context": [
@@ -562,7 +570,7 @@
       "id": "mri:3.6:ts3",
       "source": {
         "path": "docs/03-microarchitecture/05-mri-execution.md",
-        "line": 136
+        "line": 137
       },
       "execution_model": "major-state",
       "context": [
@@ -580,7 +588,7 @@
       "id": "mri:3.6:ts4",
       "source": {
         "path": "docs/03-microarchitecture/05-mri-execution.md",
-        "line": 136
+        "line": 137
       },
       "execution_model": "major-state",
       "context": [

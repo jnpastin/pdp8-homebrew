@@ -12,19 +12,23 @@ UNDEFINED = None
 
 
 def t_and(*bits):
-    if any(b == 0 for b in bits):
-        return 0
-    if any(b is None for b in bits):
-        return None
-    return 1
+    undefined = False
+    for b in bits:
+        if b == 0:
+            return 0
+        if b is None:
+            undefined = True
+    return None if undefined else 1
 
 
 def t_or(*bits):
-    if any(b == 1 for b in bits):
-        return 1
-    if any(b is None for b in bits):
-        return None
-    return 0
+    undefined = False
+    for b in bits:
+        if b == 1:
+            return 1
+        if b is None:
+            undefined = True
+    return None if undefined else 0
 
 
 def t_not(bit):

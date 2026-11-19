@@ -73,6 +73,8 @@ class ControlStore:
             g["code"]: [(b["bit"], b["signal"], b["width"]) for b in g["bits"]]
             for g in packing["overlay_groups"]
         }
+        self._dp_words: dict[int, dict] = {}     # decoded words, by address (the images never change)
+        self._seq_words: dict[int, dict] = {}
         self._validate()
 
     @classmethod
@@ -140,18 +142,29 @@ class ControlStore:
     # -- decoding --------------------------------------------------------------------------
 
     def decode_datapath(self, address: int) -> dict:
-        """Every datapath field, read from its wired bits; shared bits give every sharer a value."""
+        """Every datapath field, read from its wired bits; shared bits give every sharer a value.
+
+        Cached per address; callers must not modify the result."""
+        cached = self._dp_words.get(address)
+        if cached is not None:
+            return cached
         word = self.datapath[address]
         out = {}
         for slot in self.datapath_layout:
             raw = (word >> slot.offset) & ((1 << slot.width) - 1)
             for name in slot.fields:
                 out[name] = raw & ((1 << E.DATAPATH_FIELDS[name].width) - 1)
+        self._dp_words[address] = out
         return out
 
     def decode_sequencer(self, address: int) -> dict:
-        word = self.sequencer[address]
-        return {s.fields[0]: (word >> s.offset) & ((1 << s.width) - 1) for s in self.sequencer_layout}
+        """Every sequencer field. Cached per address; callers must not modify the result."""
+        cached = self._seq_words.get(address)
+        if cached is None:
+            word = self.sequencer[address]
+            cached = {s.fields[0]: (word >> s.offset) & ((1 << s.width) - 1) for s in self.sequencer_layout}
+            self._seq_words[address] = cached
+        return cached
 
     def mapping_entry(self, address: int) -> int:
         return self.mapping[address]

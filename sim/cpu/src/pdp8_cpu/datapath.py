@@ -244,11 +244,11 @@ class _Eval:
         return u(lambda a, g: a | g, ac, self.gtf_flags())  # GTF_FLAGS_TO_AC: AC <- AC OR GTF_FLAGS
 
     def gtf_flags(self):
-        """MCS GTF_FLAGS: [11] L, [9] (/INT_REQ = 0), [7] IE, [5:3] IF, [2:0] DF."""
+        """MCS GTF_FLAGS: [11] L, [9] (/INT_REQ = 0), [7] IE, [5:0] IB (the save field)."""
         st = self.st
         int_req = int(self.ext.int_req_n == 0)
-        return u(lambda l, ie, i, d: (l << 11) | (int_req << 9) | (ie << 7) | (i << 3) | d,
-                 st["L"], st["IE"], st["IF"], st["DF"])
+        return u(lambda l, ie, ib: (l << 11) | (int_req << 9) | (ie << 7) | ib,
+                 st["L"], st["IE"], st["IB"])
 
     def l_input(self):
         """MCS L_OP: CLEAR, COMP, ALU_LINK, or the pre-TP AC[11]."""

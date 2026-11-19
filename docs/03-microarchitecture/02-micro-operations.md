@@ -790,11 +790,11 @@ AC[9] ← AC[9] OR (/INT_REQ = 0)
 AC[8] ← AC[8]  
 AC[7] ← AC[7] OR IE  
 AC[6] ← AC[6]  
-AC[5:3] ← AC[5:3] OR IF  
-AC[2:0] ← AC[2:0] OR DF
+AC[5:3] ← AC[5:3] OR IB[5:3]  
+AC[2:0] ← AC[2:0] OR IB[2:0]
 
 **Sources:** 
-AC, L, /INT_REQ, IE, IF, DF  
+AC, L, /INT_REQ, IE, IB  
 
 **Preconditions:**
 - AC was cleared by AC_CLEAR at the preceding TP.

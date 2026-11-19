@@ -112,6 +112,17 @@ class PassCriteria(unittest.TestCase):
         self.assertEqual(maindec.classify(D["d0jc"], [maindec.RUBOUT] + self.chars("F")),
                          (0, self.chars("F")))
 
+    def test_information_lines(self):
+        d, out = maindec.DIAGNOSTICS["d1fb"], maindec.Outcome("d1fb")
+        nl = [maindec.CR, maindec.LF]
+        for line in ("8 STACKS IN THIS SYSTEM", "STACKS SEL'D ARE 7 6 5 4 3 2 1 0 ", "PROG WILL RELOCATE"):
+            maindec._judge_line(d, self.chars(line) + nl, out)
+        self.assertEqual((out.markers, out.error_text), (0, []))
+        maindec._judge_line(d, nl + self.chars("5"), out)
+        self.assertEqual((out.markers, out.error_text), (1, []))
+        maindec._judge_line(d, self.chars("RELOCATION ERROR AT LOCATION 12345") + nl, out)
+        self.assertTrue(out.error_text)
+
     def test_halt_only_programs_do_not_judge_text(self):
         self.assertEqual(maindec.classify(maindec.DIAGNOSTICS["d0cc"], self.chars("PASS")), (0, []))
 
@@ -128,6 +139,27 @@ class RandomAndSpecializedTests(unittest.TestCase):
                     outcome = maindec.run(name, self.STEPS, seed=seed)
                     self.assertTrue(outcome.passed, outcome.summary())
                     self.assertEqual(outcome.steps, self.STEPS, outcome.summary())
+
+
+
+class MemoryTests(unittest.TestCase):
+    """Phase 2: MAINDEC-8E-D1AA (4K checkerboard), D1EC (memory address test), D1HA (memory
+    extension control, time share disabled), D1FB (extended memory address test), and D1BC
+    (extended memory checkerboard), bounded lock-step runs under two core residues. Their passes
+    run to millions of instructions, so no run reaches a pass marker; D1HA, D1FB, and D1BC each
+    take their documented start-up halt and continue."""
+
+    STEPS = 25_000
+
+    def test_programs(self):
+        for name in ("d1aa", "d1ec", "d1ha", "d1fb", "d1bc"):
+            for seed in (1, 2):
+                with self.subTest(program=name, seed=seed):
+                    outcome = maindec.run(name, self.STEPS, seed=seed)
+                    self.assertTrue(outcome.passed, outcome.summary())
+                    self.assertEqual(outcome.steps, self.STEPS, outcome.summary())
+                    if maindec.DIAGNOSTICS[name].continue_halts:
+                        self.assertEqual(outcome.continued, 1, outcome.summary())
 
 
 if __name__ == "__main__":

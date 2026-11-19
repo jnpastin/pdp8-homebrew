@@ -65,7 +65,7 @@ GTF and RTF use the PDP-8/E processor flags-word format.
 ┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┐
 │ 11 │ 10 │  9 │  8 │  7 │  6 │  5 │  4 │  3 │  2 │  1 │  0 │
 ├────┼────┼────┼────┼────┼────┼────┴────┴────┼────┴────┴────┤
-│ L  │ 0  │ IR │ 0  │ IE │ 0  │      IF      │      DF      │
+│ L  │ 0  │ IR │ 0  │ IE │ 0  │    IF (SF)   │    DF (SF)   │
 └────┴────┴────┴────┴────┴────┴──────────────┴──────────────┘
 ```
 
@@ -73,11 +73,12 @@ Where:
 - L is the current Link value.
 - IR is 1 when /INT_REQ is asserted and 0 when /INT_REQ is deasserted.
 - IE is the current interrupt-enable value.
-- IF is the current Instruction Field.
-- DF is the current Data Field.
+- IF (SF) and DF (SF) are the save field: the instruction and data fields saved in `IB` at the last interrupt entry, as RIB reads them. GTF reports the save field, not the current IF and DF. RTF loads these bits as the restored instruction field (staged in DIF) and data field (section 3.1.2).
 - Bit 10 is 0 because the EAE Greater-Than flag is not implemented.
-- Bit 8 is 0 because the time-share interrupt-inhibit facility is not implemented.
+- Bit 8 is 0. GTF does not report the interrupt inhibit (`II`), as on the PDP-8/E: MAINDEC-8E-D1HA requires GTF to return the word RTF loaded while the inhibit RTF sets is still in effect.
 - Bit 6 is 0 because user mode is not implemented.
+
+`IB` is not initialized at power-on or by system initialization; it is first written at interrupt entry. Until then, GTF bits 5:0 are undefined. The PDP-8/E likewise loads its save field only at interrupt entry (KM8-E Memory Extension Theory of Operation §2.16, §2.19).
 
 The IR field reports raw interrupt-request presence. It does not report `INTERRUPT_REQUEST_VALID` and is independent of IE and II.
 
@@ -89,8 +90,9 @@ GTF execution:
 - clears AC
 - loads the processor flags word into AC
 - does not require software to clear AC before execution
+- reports the save field from `IB`, not the current IF and DF
 - observes /INT_REQ without acknowledging, clearing, or consuming any controller interrupt condition
-- does not modify L, IE, II, IF, DF, DIF, or CIFP
+- does not modify L, IE, II, IF, DF, DIF, CIFP, or IB
 
 #### 3.1.2 RTF
 

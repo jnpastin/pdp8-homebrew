@@ -231,7 +231,7 @@ Writers:
 
 Width: 6 bits
 
-Role: Holds the instruction and data fields (IF, DF) saved at interrupt entry.  Serves as the source for RIB (read into AC) and RMF (restore to IF/DF).
+Role: Holds the instruction and data fields (IF, DF) saved at interrupt entry, the save field.  Serves as the source for RIB (read into AC), GTF (AC[5:0] of the processor flags word), and RMF (restore to IF/DF).
 
 Bit layout:
 - IB[5:3] = saved IF
@@ -244,8 +244,8 @@ Invariants:
 - Stable from interrupt entry until the next interrupt entry
 
 Constraints:
-- Written only at interrupt entry
-- Read only by RIB and RMF
+- Written only at interrupt entry; not initialized at power-on or by system initialization, so undefined until the first interrupt entry
+- Read only by RIB, GTF, and RMF
 
 Writers:
 - Interrupt entry control (IF_DF_TO_IB)

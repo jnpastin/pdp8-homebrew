@@ -9,6 +9,7 @@ the program's documented pass markers and start-up characters is an error printo
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -19,8 +20,11 @@ from .machine import KL8E, Machine, load_store
 from .papertape import load_tape, read_tape
 
 PROGRAMS = Path(__file__).resolve().parents[3] / "test_programs"
+JUMP_TO_SELF_LIMIT = 10_000           # consecutive self-jumps that count as an error loop
 BEL, NUL, RUBOUT, CR, LF = 0o207, 0o000, 0o377, 0o215, 0o212
 NEWLINE = frozenset({CR, LF})
+# Lines D1FB and D1BC type after setup, reporting the memory they found and will test.
+STACK_INFO = (r"\d STACKS IN THIS SYSTEM", r"STACKS SEL'D ARE( \d)* ?", r"PROG WILL (NOT )?RELOCATE")
 
 
 @dataclass(frozen=True)
@@ -31,17 +35,22 @@ class Diagnostic:
     deposits: tuple = ()               # (address, value) set up before starting (§4.3, §5)
     markers: frozenset = frozenset()   # characters that mark a completed pass (§8)
     ignored: frozenset = frozenset()   # start-up characters and the line breaks around markers
-    initial_halt: int | None = None    # PC of a documented start-up halt, after which CONTINUE
+    continue_halts: frozenset = frozenset()  # PC after a documented halt, after which CONTINUE
+    continue_switches: int | None = None  # SR set before CONTINUE at a documented halt
+    preamble: bool = False             # text before the first documented halt (a banner) is not judged
+    info_lines: tuple = ()             # regexes for whole lines of information, not errors
+    jump_to_self_errors: bool = False  # a JMP to its own address that keeps looping is an error (§6)
     printout_halts: bool = False       # every error printout is followed by a halt (§6), so the
                                        # halt alone is the error; other text is not judged
 
 
 DIAGNOSTICS = {
     "d0ab": Diagnostic("maindec-8e-d0ab", "Instruction Test 1", switches=0o7777,
-                       markers=frozenset({BEL}), initial_halt=0o0147),
+                       markers=frozenset({BEL}), continue_halts=frozenset({0o0147})),
     "d0bb": Diagnostic("maindec-8e-d0bb", "Instruction Test 2", markers=frozenset({BEL})),
     # §5.1 fast test (SR03 = 1): ARG2 starts at the value in 0170 instead of 0000. The end-of-test
-    # typeout is not documented; every error message ends in a halt (§6.1).
+    # typeout is not documented; observed, it is CR LF and the test's name ("SIMAD" after 737,358
+    # instructions with 0170 = 7777). Every error message ends in a halt (§6.1), so only halts count.
     "d0cc": Diagnostic("maindec-8e-d0cc", "Adder Test", switches=0o0400, deposits=((0o0170, 0o7777),),
                        printout_halts=True),
     # §8: CR LF "A" after each 4096 tests (observed every 1.16-1.23 million instructions).
@@ -58,6 +67,33 @@ DIAGNOSTICS = {
     # §8.1: a bell every 3456 loops (observed first at 3,701,408 instructions).
     "d0ib": Diagnostic("maindec-8e-d0ib", "Basic JMP-JMS Test", markers=frozenset({BEL})),
     "d0jc": Diagnostic("maindec-8e-d0jc", "Random JMP-JMS Test", ignored=frozenset({RUBOUT})),
+    # No write-up in the archive: started at 0200 with SR = 0 and judged by halts until its output
+    # is known.
+    "d1aa": Diagnostic("maindec-8e-d1aa", "MM8-E 4K Memory Checkerboard", printout_halts=True),
+    # §7.1: "EC" after every 96 loops, before each relocation; §6.1: errors print "A xxxx C yyyy"
+    # and halt (SR0 = 0). The "C" is counted, so an "A" or a digit is error text.
+    "d1ec": Diagnostic("maindec-8e-d1ec", "Memory Address Test", markers=frozenset({ord("C") | 0o200}),
+                       ignored=NEWLINE | {ord("E") | 0o200}),
+    # §4.3.2, time share disabled (no time-share hardware): SR0 = 1 (memory extension only) and
+    # SR9-11 = 7 extended fields; a halt at 3651 confirms time share is disabled, then CONTINUE.
+    # §4.3: a bell after every pass. §6.1: errors are halts or jumps to self.
+    "d1ha": Diagnostic("maindec-8e-d1ha", "Memory Extension and Time Share Control Test", switches=0o4007,
+                       markers=frozenset({BEL}), continue_halts=frozenset({0o3651, 0o3652}),
+                       jump_to_self_errors=True),
+    # §4.1: start at 0200 (IF = DF = 0); it types a banner and "SETUP SR & CONT" and halts (at
+    # 2634); then SR06-08 = 0 and SR09-11 = 7 select stacks 0-7, and CONTINUE. It reports the stacks
+    # it found and selected (STACK_INFO; observed "8 STACKS IN THIS SYSTEM") and tests in silence.
+    # §7: a "5" about every five minutes of real run time (about 100 million instructions), so a
+    # run is judged by its errors. §5: error typeouts ("PR LOC ADDR GOOD BAD TEST", "RELOCATION
+    # ERROR") and the program continues.
+    "d1fb": Diagnostic("maindec-8e-d1fb", "Extended Memory Address Test", markers=frozenset({ord("5") | 0o200}),
+                       ignored=NEWLINE, continue_halts=frozenset({0o2635}), continue_switches=0o0007,
+                       preamble=True, info_lines=STACK_INFO),
+    # No write-up; the archive's note: SR09-11 = the number of fields to check, a "5" after each
+    # pass. Same start-up as D1FB (banner, "SETUP SR & CONT", halt at 2632, STACK_INFO).
+    "d1bc": Diagnostic("maindec-8e-d1bc", "KM8-E Extended Memory Checkerboard", markers=frozenset({ord("5") | 0o200}),
+                       ignored=NEWLINE, continue_halts=frozenset({0o2633}), continue_switches=0o0007,
+                       preamble=True, info_lines=STACK_INFO),
 }
 
 
@@ -67,7 +103,8 @@ class Outcome:
     steps: int = 0
     markers: int = 0
     printed: list = field(default_factory=list)
-    halt: str | None = None            # description of an error halt
+    halt: str | None = None            # description of an error halt or jump to self
+    continued: int = 0                 # documented halts continued from
     error_text: list = field(default_factory=list)
 
     @property
@@ -126,15 +163,36 @@ def run(name: str, max_steps: int, seed: int = 1, lockstep: bool = True, stop_af
     outcome = Outcome(name)
     stepper = _LockstepStepper(m) if lockstep else _SimStepper(m)
     seen = 0
+    pending = []                               # an incomplete line, for info_lines judging
+    self_jumps = 0
     while outcome.steps < max_steps:
         halted, pc, ir = stepper.step()
         outcome.steps += 1
-        markers, errors = classify(d, kl.printed[seen:])
-        outcome.markers += markers
-        outcome.error_text += errors
+        if d.jump_to_self_errors and ir is not None and ir >> 9 == 0o5 and m.state["PC"] == pc:
+            self_jumps += 1
+            if self_jumps >= JUMP_TO_SELF_LIMIT:
+                outcome.halt = f"jump to self at {pc:04o} {disassemble(ir)}, AC = {m.state['AC']:04o}"
+                break
+        else:
+            self_jumps = 0
+        if not (d.preamble and outcome.continued == 0):
+            new = kl.printed[seen:]
+            if d.info_lines:                       # judge whole lines, so information lines pass
+                pending += new
+                while LF in pending:
+                    i = pending.index(LF)
+                    _judge_line(d, pending[:i + 1], outcome)
+                    pending = pending[i + 1:]
+            else:
+                markers, errors = classify(d, new)
+                outcome.markers += markers
+                outcome.error_text += errors
         seen = len(kl.printed)
         if halted:
-            if d.initial_halt is not None and m.state["PC"] == d.initial_halt and outcome.steps < 100:
+            if m.state["PC"] in d.continue_halts:
+                outcome.continued += 1
+                if d.continue_switches is not None:
+                    m.panel.sr = d.continue_switches
                 m.cont()
                 continue
             outcome.halt = f"at {pc:04o} {disassemble(ir)}, AC = {m.state['AC']:04o}"
@@ -143,8 +201,19 @@ def run(name: str, max_steps: int, seed: int = 1, lockstep: bool = True, stop_af
             break
         if progress and outcome.steps % 100_000 == 0:
             progress(outcome)
+    if pending:
+        _judge_line(d, pending, outcome)
     outcome.printed = list(kl.printed)
     return outcome
+
+
+def _judge_line(d: Diagnostic, line, outcome: Outcome):
+    body = "".join(chr(c & 0o177) for c in line if c not in NEWLINE)
+    if any(re.fullmatch(p, body) for p in d.info_lines):
+        return
+    markers, errors = classify(d, line)
+    outcome.markers += markers
+    outcome.error_text += errors
 
 
 class _LockstepStepper:

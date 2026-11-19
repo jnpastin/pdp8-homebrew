@@ -84,12 +84,15 @@ class Reference:
         pc, f = self.pc, self.if_
         ir = self.read(f, pc)
         self.pc = (pc + 1) & M12                      # the PC advances during fetch
-        cifp_at_start = self.staged_if is not None
+        # INH §12: a JMP or JMS applies a pending field change and clears the inhibit, so only
+        # another instruction is inhibited by a change pending at its start.
+        cifp_at_start = self.staged_if is not None and ir >> 9 not in (0o4, 0o5)
         result = StepResult("instruction", pc, f, ir)
         inhibit = self._execute(ir, pc, result) or cifp_at_start
         result.writes = self._writes
         # REC §6: recognition at instruction completion; INH §16: ION, CIF, RMF, RTF and a pending
-        # field change inhibit recognition at this boundary; IOT §3.2: never at CAF's completion.
+        # field change (other than at the JMP or JMS that applies it) inhibit recognition at this
+        # boundary; IOT §3.2: never at CAF's completion.
         caf = ir == 0o6007
         result.interrupt_next = bool(self.ie and self.interrupt_request() and not inhibit and not caf)
         self.interrupt_pending = result.interrupt_next
@@ -194,9 +197,10 @@ class Reference:
         elif operation == 3:                                       # SRQ
             if self.interrupt_request():
                 self.pc = (self.pc + 1) & M12
-        elif operation == 4:                                       # GTF (§3.1.1)
-            self.ac = ((self.l << 11) | (int(self.interrupt_request()) << 9) | (self.ie << 7)
-                       | (self.if_ << 3) | self.df)
+        elif operation == 4:                                       # GTF (§3.1.1): AC[5:0] = save field
+            if self.ib is None:
+                raise ReferenceError("GTF reads the save field (IB) before any interrupt has set it")
+            self.ac = (self.l << 11) | (int(self.interrupt_request()) << 9) | (self.ie << 7) | self.ib
         elif operation == 5:                                       # RTF (§3.1.2)
             self.l = self.ac >> 11
             self.df = self.ac & 0o7

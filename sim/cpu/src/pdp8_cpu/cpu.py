@@ -8,7 +8,7 @@ CW_VALID, WR_VALID, /IO_WAIT) is below this granularity and not modelled.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, field
 
 from . import address as A
 from . import derived as D
@@ -119,7 +119,8 @@ class Cpu:
 
     def _external_inputs(self, bus: IotBus) -> ExternalInputs:
         """The test stimulus combined with every controller's responses for this TS."""
-        ext = replace(self.ext)
+        ext = object.__new__(ExternalInputs)          # a copy of the test stimulus (faster than replace())
+        ext.__dict__.update(self.ext.__dict__)
         for device in self.devices:
             r = device.present(bus)
             ext.io_read_req |= r.io_read_req
@@ -218,6 +219,8 @@ class Cpu:
         return effects, fields
 
     def _sequencer_word(self, addresses, undefined):
+        if len(addresses) == 1:
+            return self.store.decode_sequencer(addresses[0])
         words = {tuple(sorted(self.store.decode_sequencer(a).items())) for a in addresses}
         if len(words) > 1:
             names = [{9: "HLT_REQ", 8: "FP_STOP", 7: "SEQ_OVL[2]", 6: "SEQ_OVL[1]", 5: "SEQ_OVL[0]",
