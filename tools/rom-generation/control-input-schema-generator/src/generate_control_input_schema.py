@@ -25,18 +25,22 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "common"))
+from design import DESIGN  # noqa: E402  (control-design selection: common/design.py)
+
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
 
 DEFAULT_INPUT = Path(
-    "build/simulation_outputs/rom-generation/control-input-extractor/"
+    f"{DESIGN.build}/control-input-extractor/"
     "control-inputs.json"
 )
-DEFAULT_MAINTAINED = Path("rom/microcode/v1/control-input-schema.json")
+DEFAULT_MAINTAINED = Path(f"{DESIGN.maintained}/control-input-schema.json")
 
 OUTPUT_DIRECTORY = Path(
-    "build/simulation_outputs/rom-generation/control-input-schema-generator"
+    f"{DESIGN.build}/control-input-schema-generator"
 )
 DEFAULT_CANDIDATE = OUTPUT_DIRECTORY / "control-input-schema.candidate.json"
 DEFAULT_REPORT = OUTPUT_DIRECTORY / "generation-report.txt"
@@ -60,7 +64,7 @@ DERIVATION_SECTIONS = ("derivation", "expression", "internal_composition")
 
 SCHEMA_TYPE = "control-input-schema"
 SCHEMA_VERSION = 1
-CONTROL_DESIGN_VERSION = "v1"
+CONTROL_DESIGN_VERSION = DESIGN.name
 SCHEMA_DESCRIPTION = "Logical control-input schema for version 1 CPU control."
 CONTROL_USES = frozenset({"predicate", "value"})
 
@@ -450,7 +454,7 @@ def validate_maintained(
             make_diagnostic(
                 ERROR,
                 "CONTROL_DESIGN_VERSION_MISMATCH",
-                "Expected control_design_version v1.",
+                f"Expected control_design_version {DESIGN.name}.",
             )
         )
 

@@ -28,6 +28,10 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "common"))
+from design import DESIGN  # noqa: E402  (control-design selection: common/design.py)
+
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
@@ -39,7 +43,7 @@ SOURCE_PATHS = (
 )
 
 OUTPUT_DIRECTORY = Path(
-    "build/simulation_outputs/rom-generation/direct-control-extractor"
+    f"{DESIGN.build}/direct-control-extractor"
 )
 DEFAULT_JSON_OUTPUT = OUTPUT_DIRECTORY / "direct-control-definitions.json"
 DEFAULT_REPORT_OUTPUT = OUTPUT_DIRECTORY / "extraction-report.txt"
@@ -49,7 +53,7 @@ DEFAULT_REPORT_OUTPUT = OUTPUT_DIRECTORY / "extraction-report.txt"
 # ---------------------------------------------------------------------------
 
 FORMAT_VERSION = 1
-CONTROL_DESIGN_VERSION = "v1"
+CONTROL_DESIGN_VERSION = DESIGN.name
 ARTIFACT = "direct-control-definitions"
 EXTRACTION_STAGE = "documentation-extraction"
 

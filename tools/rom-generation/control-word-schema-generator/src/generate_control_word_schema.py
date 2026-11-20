@@ -26,18 +26,22 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "common"))
+from design import DESIGN  # noqa: E402  (control-design selection: common/design.py)
+
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
 
 DEFAULT_INPUT = Path(
-    "build/simulation_outputs/rom-generation/control-output-extractor/"
+    f"{DESIGN.build}/control-output-extractor/"
     "control-outputs.json"
 )
-DEFAULT_MAINTAINED = Path("rom/microcode/v1/control-word-schema.json")
+DEFAULT_MAINTAINED = Path(f"{DESIGN.maintained}/control-word-schema.json")
 
 OUTPUT_DIRECTORY = Path(
-    "build/simulation_outputs/rom-generation/control-word-schema-generator"
+    f"{DESIGN.build}/control-word-schema-generator"
 )
 DEFAULT_CANDIDATE = OUTPUT_DIRECTORY / "control-word-schema.candidate.json"
 DEFAULT_REPORT = OUTPUT_DIRECTORY / "generation-report.txt"
@@ -67,7 +71,7 @@ CONTROL_METADATA_KEYS = (
 
 SCHEMA_TYPE = "control-word-schema"
 SCHEMA_VERSION = 1
-CONTROL_DESIGN_VERSION = "v1"
+CONTROL_DESIGN_VERSION = DESIGN.name
 SCHEMA_DESCRIPTION = "Logical symbolic control-word schema for version 1 CPU control."
 CONTROL_WORD_ROLES = frozenset({"encoded", "derived", "external_input"})
 

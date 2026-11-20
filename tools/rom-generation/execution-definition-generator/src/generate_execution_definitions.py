@@ -23,18 +23,22 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "common"))
+from design import DESIGN  # noqa: E402  (control-design selection: common/design.py)
+
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
 
 DEFAULT_EXTRACTED = Path(
-    "build/simulation_outputs/rom-generation/execution-definition-extractor/"
+    f"{DESIGN.build}/execution-definition-extractor/"
     "execution-definitions.json"
 )
-DEFAULT_MAINTAINED = Path("rom/microcode/v1/execution-definitions.json")
+DEFAULT_MAINTAINED = Path(f"{DESIGN.maintained}/execution-definitions.json")
 
 OUTPUT_DIRECTORY = Path(
-    "build/simulation_outputs/rom-generation/execution-definition-generator"
+    f"{DESIGN.build}/execution-definition-generator"
 )
 DEFAULT_CANDIDATE = OUTPUT_DIRECTORY / "execution-definitions.candidate.json"
 DEFAULT_REPORT = OUTPUT_DIRECTORY / "generation-report.txt"

@@ -29,19 +29,23 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "common"))
+from design import DESIGN  # noqa: E402  (control-design selection: common/design.py)
+
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
 
 DEFAULT_MICRO_OPERATIONS = Path(
-    "build/simulation_outputs/rom-generation/micro-operation-extractor/"
+    f"{DESIGN.build}/micro-operation-extractor/"
     "micro-operations.json"
 )
-DEFAULT_CONTROL_WORD_SCHEMA = Path("rom/microcode/v1/control-word-schema.json")
-DEFAULT_MAINTAINED_MAPPING = Path("rom/microcode/v1/micro-operation-mapping.json")
+DEFAULT_CONTROL_WORD_SCHEMA = Path(f"{DESIGN.maintained}/control-word-schema.json")
+DEFAULT_MAINTAINED_MAPPING = Path(f"{DESIGN.maintained}/micro-operation-mapping.json")
 
 OUTPUT_DIRECTORY = Path(
-    "build/simulation_outputs/rom-generation/micro-operation-mapping-generator"
+    f"{DESIGN.build}/micro-operation-mapping-generator"
 )
 DEFAULT_CANDIDATE_OUTPUT = OUTPUT_DIRECTORY / "micro-operation-mapping.candidate.json"
 DEFAULT_REPORT_OUTPUT = OUTPUT_DIRECTORY / "generation-report.txt"
@@ -79,7 +83,7 @@ UNASSIGNABLE_MEANINGS = frozenset({"reserved", "invalid"})
 
 MAPPING_TYPE = "micro-operation-mapping"
 MAPPING_VERSION = 1
-CONTROL_DESIGN_VERSION = "v1"
+CONTROL_DESIGN_VERSION = DESIGN.name
 MAPPING_DESCRIPTION = (
     "Maps documented micro-operations to symbolic control-field assignments."
 )
@@ -380,7 +384,7 @@ def validate_schema(
     if data.get("control_design_version") != CONTROL_DESIGN_VERSION:
         diagnostics.append(
             make_error(
-                "CONTROL_DESIGN_VERSION_MISMATCH", "Control design version must be v1."
+                "CONTROL_DESIGN_VERSION_MISMATCH", f"Control design version must be {DESIGN.name}."
             )
         )
 
@@ -514,7 +518,7 @@ def validate_maintained(
         diagnostics.append(
             make_error(
                 "MAPPING_DESIGN_VERSION_MISMATCH",
-                "Mapping control design version must be v1.",
+                f"Mapping control design version must be {DESIGN.name}.",
             )
         )
 

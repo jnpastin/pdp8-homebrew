@@ -41,6 +41,7 @@ from pathlib import Path
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "common"))
+from design import DESIGN  # noqa: E402  (control-design selection: common/design.py)
 
 from predicates import (  # noqa: E402  (shared ROM-generation module)
     Expression,
@@ -58,8 +59,8 @@ from predicates import (  # noqa: E402  (shared ROM-generation module)
 # Paths and constants
 # ---------------------------------------------------------------------------
 
-DEFAULT_ARTIFACT_DIRECTORY = Path("rom/microcode/v1")
-OUTPUT_DIRECTORY = Path("build/simulation_outputs/rom-generation/control-store-packer")
+DEFAULT_ARTIFACT_DIRECTORY = Path(DESIGN.maintained)
+OUTPUT_DIRECTORY = Path(f"{DESIGN.build}/control-store-packer")
 DEFAULT_PACKING = OUTPUT_DIRECTORY / "control-store-packing.json"
 DEFAULT_REPORT = OUTPUT_DIRECTORY / "packing-report.txt"
 DEFAULT_IMAGES = OUTPUT_DIRECTORY / "images"
@@ -1111,7 +1112,7 @@ def packing_json(packing: Packing, diagnostics: Sequence[Diagnostic]) -> dict[st
     datapath_bits = sum(w for w, _ in packing.slots)
     return {
         "format_version": FORMAT_VERSION,
-        "control_design_version": "v1",
+        "control_design_version": DESIGN.name,
         "artifact": ARTIFACT,
         "summary": {
             "datapath_bits": datapath_bits,

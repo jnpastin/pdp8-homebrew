@@ -7,12 +7,14 @@ the real ROM-generation tools.
 from __future__ import annotations
 
 import io
+import os
 import subprocess
 import sys
 import tempfile
 import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
+from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -227,10 +229,26 @@ class StageTableTests(unittest.TestCase):
             P.select_stages("control-store-packer", "control-input-extractor")
 
     def test_list(self) -> None:
-        with redirect_stdout(io.StringIO()) as out:
-            self.assertEqual(P.main(["--list"]), P.EXIT_OK)
-        self.assertIn("13. symbolic-control-word-generator  -> rom/microcode/v1/"
+        with mock.patch.dict(os.environ), redirect_stdout(io.StringIO()) as out:
+            self.assertEqual(P.main(["--list", "--design", "v2"]), P.EXIT_OK)
+        self.assertIn("13. symbolic-control-word-generator  -> rom/microcode/v2/"
                       "symbolic-control-words.json", out.getvalue())
+
+    def test_list_frozen_design_is_packer_only(self) -> None:  # V1-ONLY
+        with mock.patch.dict(os.environ), redirect_stdout(io.StringIO()) as out:
+            self.assertEqual(P.main(["--list", "--design", "v1"]), P.EXIT_OK)
+        self.assertIn("frozen", out.getvalue())
+        self.assertIn(" 1. control-store-packer\n", out.getvalue())
+        self.assertNotIn("control-input-extractor", out.getvalue())
+
+    def test_stages_follow_the_design(self) -> None:
+        stages = P.stages_for(P.select("v2"))
+        self.assertEqual(len(stages), len(P.STAGES))
+        self.assertTrue(all(str(s.report).startswith("build/simulation_outputs/rom-generation-v2/")
+                            for s in stages))
+        self.assertTrue(all(str(s.maintained).startswith("rom/microcode/v2/")
+                            for s in stages if s.maintained))
+        self.assertEqual(P.runnable(P.select("v2"), stages), stages)
 
 
 class OutputEncodingTests(unittest.TestCase):

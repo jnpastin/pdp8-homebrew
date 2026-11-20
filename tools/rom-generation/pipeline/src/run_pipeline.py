@@ -3,10 +3,14 @@
 
 Each stage runs one tool. After every stage the runner prints the diagnostics
 from the tool's report. A generator stage writes a candidate artifact; when
-the candidate differs from the maintained artifact in ``rom/microcode/v1``,
+the candidate differs from the maintained artifact in ``rom/microcode/<design>``,
 the runner asks the user to accept the promotion before copying it there.
 Later stages read the maintained artifacts, so a declined promotion stops the
 pipeline.
+
+``--design`` selects the control design (tools/rom-generation/common/design.py); the
+runner passes it to every tool. A frozen design is not regenerated from ``docs/``: only the
+control-store packer runs, on the design's maintained artifacts.
 
 Exit status: 0 when every stage succeeded and every needed promotion was
 accepted, 1 when a tool failed, 2 when a promotion was declined.
@@ -16,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import difflib
+import os
 import re
 import subprocess
 import sys
@@ -24,9 +29,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Sequence
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "common"))
+from design import DESIGN, ENVIRONMENT_VARIABLE, Design, select  # noqa: E402  (common/design.py)
+
 TOOLS = Path("tools/rom-generation")
-BUILD = Path("build/simulation_outputs/rom-generation")
-MAINTAINED = Path("rom/microcode/v1")
 
 SEVERITIES = ("FATAL", "ERROR", "WARNING", "INFO")
 DIAGNOSTIC_HEADINGS = ("Diagnostics", "Diagnostic Details")
@@ -44,41 +50,56 @@ class Stage:
     maintained: Path | None = None
 
 
-def _stage(name: str, script: str, report: str, artifact: str | None = None) -> Stage:
-    return Stage(
-        name, TOOLS / name / "src" / script, BUILD / name / report,
-        BUILD / name / f"{artifact}.candidate.json" if artifact else None,
-        MAINTAINED / f"{artifact}.json" if artifact else None,
-    )
+def stages_for(design: Design) -> tuple[Stage, ...]:
+    """Every tool stage, in run order, with `design`'s build and maintained paths."""
+    build, maintained = Path(design.build), Path(design.maintained)
+
+    def _stage(name: str, script: str, report: str, artifact: str | None = None) -> Stage:
+        return Stage(
+            name, TOOLS / name / "src" / script, build / name / report,
+            build / name / f"{artifact}.candidate.json" if artifact else None,
+            maintained / f"{artifact}.json" if artifact else None,
+        )
+
+    return _all_stages(_stage)
+
+
+def runnable(design: Design, stages: tuple[Stage, ...]) -> tuple[Stage, ...]:
+    """The stages a run of `design` executes: a frozen design is only packed."""
+    return tuple(s for s in stages if s.name == "control-store-packer") if design.frozen else stages
 
 
 # Run order: each generator reads the artifacts promoted before it.
-STAGES: tuple[Stage, ...] = (
-    _stage("control-input-extractor", "extract_control_inputs.py", "extraction-report.txt"),
-    _stage("control-input-schema-generator", "generate_control_input_schema.py",
-           "generation-report.txt", "control-input-schema"),
-    _stage("control-output-extractor", "extract_control_outputs.py", "extraction-report.txt"),
-    _stage("control-word-schema-generator", "generate_control_word_schema.py",
-           "generation-report.txt", "control-word-schema"),
-    _stage("micro-operation-extractor", "extract_micro_operations.py", "extraction-report.txt"),
-    _stage("micro-operation-mapping-generator", "generate_micro_operation_mapping.py",
-           "generation-report.txt", "micro-operation-mapping"),
-    _stage("direct-control-extractor", "extract_direct_control.py", "extraction-report.txt"),
-    _stage("direct-control-generator", "generate_direct_control.py",
-           "generation-report.txt", "direct-control-definitions"),
-    _stage("execution-definition-extractor", "extract_execution_definitions.py",
-           "extraction-report.txt"),
-    _stage("execution-definition-generator", "generate_execution_definitions.py",
-           "generation-report.txt", "execution-definitions"),
-    _stage("timing-constraint-extractor", "extract_timing_constraints.py", "extraction-report.txt"),
-    _stage("timing-constraint-generator", "generate_timing_constraints.py",
-           "generation-report.txt", "timing-constraints"),
-    _stage("symbolic-control-word-generator", "generate_symbolic_control_words.py",
-           "generation-report.txt", "symbolic-control-words"),
-    _stage("control-word-equivalence-analyzer", "analyze_control_word_equivalence.py",
-           "analysis-report.txt"),
-    _stage("control-store-packer", "pack_control_store.py", "packing-report.txt"),
-)
+def _all_stages(_stage) -> tuple[Stage, ...]:
+    return (
+        _stage("control-input-extractor", "extract_control_inputs.py", "extraction-report.txt"),
+        _stage("control-input-schema-generator", "generate_control_input_schema.py",
+               "generation-report.txt", "control-input-schema"),
+        _stage("control-output-extractor", "extract_control_outputs.py", "extraction-report.txt"),
+        _stage("control-word-schema-generator", "generate_control_word_schema.py",
+               "generation-report.txt", "control-word-schema"),
+        _stage("micro-operation-extractor", "extract_micro_operations.py", "extraction-report.txt"),
+        _stage("micro-operation-mapping-generator", "generate_micro_operation_mapping.py",
+               "generation-report.txt", "micro-operation-mapping"),
+        _stage("direct-control-extractor", "extract_direct_control.py", "extraction-report.txt"),
+        _stage("direct-control-generator", "generate_direct_control.py",
+               "generation-report.txt", "direct-control-definitions"),
+        _stage("execution-definition-extractor", "extract_execution_definitions.py",
+               "extraction-report.txt"),
+        _stage("execution-definition-generator", "generate_execution_definitions.py",
+               "generation-report.txt", "execution-definitions"),
+        _stage("timing-constraint-extractor", "extract_timing_constraints.py", "extraction-report.txt"),
+        _stage("timing-constraint-generator", "generate_timing_constraints.py",
+               "generation-report.txt", "timing-constraints"),
+        _stage("symbolic-control-word-generator", "generate_symbolic_control_words.py",
+               "generation-report.txt", "symbolic-control-words"),
+        _stage("control-word-equivalence-analyzer", "analyze_control_word_equivalence.py",
+               "analysis-report.txt"),
+        _stage("control-store-packer", "pack_control_store.py", "packing-report.txt"),
+    )
+
+
+STAGES: tuple[Stage, ...] = stages_for(DESIGN)
 
 
 # ---------------------------------------------------------------------------
@@ -267,11 +288,14 @@ def parse_arguments(arguments: Sequence[str] | None = None) -> argparse.Namespac
     parser.add_argument("--dry-run", action="store_true",
                         help="run every stage and report pending promotions without promoting")
     parser.add_argument("--list", action="store_true", help="list the stages and exit")
+    parser.add_argument("--design", help=f"control design to build (default: ${ENVIRONMENT_VARIABLE} "
+                                         f"or {DESIGN.name})")
     return parser.parse_args(arguments)
 
 
-def select_stages(start: str | None, stop: str | None) -> tuple[Stage, ...]:
-    names = [s.name for s in STAGES]
+def select_stages(start: str | None, stop: str | None,
+                  stages: tuple[Stage, ...] = STAGES) -> tuple[Stage, ...]:
+    names = [s.name for s in stages]
     for name in (start, stop):
         if name is not None and name not in names:
             raise SystemExit(f"Unknown stage {name!r}. Stages: {', '.join(names)}")
@@ -279,7 +303,7 @@ def select_stages(start: str | None, stop: str | None) -> tuple[Stage, ...]:
     last = names.index(stop) if stop else len(names) - 1
     if first > last:
         raise SystemExit(f"--from {start} comes after --to {stop}.")
-    return STAGES[first:last + 1]
+    return stages[first:last + 1]
 
 
 def tolerate_unencodable_output() -> None:
@@ -296,12 +320,16 @@ def tolerate_unencodable_output() -> None:
 def main(arguments: Sequence[str] | None = None) -> int:
     tolerate_unencodable_output()
     options = parse_arguments(arguments)
+    design = select(options.design)
+    os.environ[ENVIRONMENT_VARIABLE] = design.name     # every tool the runner starts builds it
+    all_stages = runnable(design, stages_for(design))
+    print(f"Control design: {design.name}" + (" (frozen: packer only)" if design.frozen else ""))
     if options.list:
-        for number, stage in enumerate(STAGES, 1):
+        for number, stage in enumerate(all_stages, 1):
             promotes = f"  -> {stage.maintained.as_posix()}" if stage.maintained else ""
             print(f"{number:2}. {stage.name}{promotes}")
         return EXIT_OK
-    stages = select_stages(options.start, options.stop)
+    stages = select_stages(options.start, options.stop, all_stages)
     root = options.repo_root.resolve()
     code, outcomes = run_pipeline(root, stages, dry_run=options.dry_run)
     for line in summary(outcomes, len(stages)):

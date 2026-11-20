@@ -25,6 +25,10 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "common"))
+from design import DESIGN  # noqa: E402  (control-design selection: common/design.py)
+
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
@@ -32,7 +36,7 @@ from typing import Any
 SOURCE_PATH = Path("docs/03-microarchitecture/02-micro-operations.md")
 
 OUTPUT_DIRECTORY = Path(
-    "build/simulation_outputs/rom-generation/micro-operation-extractor"
+    f"{DESIGN.build}/micro-operation-extractor"
 )
 DEFAULT_JSON_OUTPUT = OUTPUT_DIRECTORY / "micro-operations.json"
 DEFAULT_REPORT_OUTPUT = OUTPUT_DIRECTORY / "extraction-report.txt"

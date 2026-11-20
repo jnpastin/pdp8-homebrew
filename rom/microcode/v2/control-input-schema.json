@@ -1,0 +1,6506 @@
+{
+  "specification_type": "control-input-schema",
+  "schema_version": 1,
+  "control_design_version": "v2",
+  "description": "Logical control-input schema for version 1 CPU control.",
+  "source": {
+    "specification_type": "control-input-extractor",
+    "format_version": 1,
+    "extraction_stage": "final-structure-validation"
+  },
+  "fields": [
+    {
+      "name": "ACN",
+      "category": null,
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "AC_IS_NEGATIVE",
+        "source_register": "AC",
+        "purpose": "Indicates whether the accumulator sign bit is set."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "Primitive Flags",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "AC[11] = 0 (non-negative)",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 51
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "AC[11] = 1 (negative)",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 52
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "Skip logic driving:",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 55
+          }
+        },
+        {
+          "text": "PC_INC μop",
+          "target": "../../03-microarchitecture/02-micro-operations.md#pc_inc",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 56
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 34
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+          "line": 44,
+          "heading": "ACN"
+        }
+      }
+    },
+    {
+      "name": "ACZ",
+      "category": null,
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "AC_IS_ZERO",
+        "source_register": "AC",
+        "purpose": "Indicates whether the accumulator value is zero."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "Primitive Flags",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "AC ≠ 0",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 67
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "AC = 0",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 68
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "Skip logic driving:",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 71
+          }
+        },
+        {
+          "text": "PC_INC μop",
+          "target": "../../03-microarchitecture/02-micro-operations.md#pc_inc",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 72
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 35
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+          "line": 60,
+          "heading": "ACZ"
+        }
+      }
+    },
+    {
+      "name": "CIFP",
+      "category": null,
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "CIF_PENDING",
+        "source_register": "CIFP",
+        "purpose": "Indicates that a deferred instruction-field change initiated by CIF, RMF, or RTF is pending, awaiting the next JMP or JMS."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "Primitive Flags",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "no deferred instruction-field change pending",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 83
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "deferred instruction-field change pending",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 84
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "Control decision:",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 87
+          }
+        },
+        {
+          "text": "Interrupt inhibit gating while the staged instruction field is pending",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 88
+          }
+        },
+        {
+          "text": "FETCH II_CLEAR selection (II_CLEAR is selected only when CIFP = 0)",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 89
+          }
+        },
+        {
+          "text": "Modified by:",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 90
+          }
+        },
+        {
+          "text": "CIFP_SET",
+          "target": "../../03-microarchitecture/02-micro-operations.md#cifp_set",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 91
+          }
+        },
+        {
+          "text": "CIFP_CLEAR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#cifp_clear",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 92
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 36
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+          "line": 76,
+          "heading": "CIFP"
+        }
+      }
+    },
+    {
+      "name": "EAI",
+      "category": null,
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "EA_IS_AUTOINDEX",
+        "source_register": "EA_ADDR",
+        "purpose": "Indicates that the effective address lies within the auto-index range."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "Primitive Flags",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "EA_ADDR ∉ [0010–0017]",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 103
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "EA_ADDR ∈ [0010–0017] (octal)",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 104
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "Auto-index execution:",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 107
+          }
+        },
+        {
+          "text": "MB_INC μop",
+          "target": "../../03-microarchitecture/02-micro-operations.md#mb_inc",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 108
+          }
+        },
+        {
+          "text": "MEM_WRITE_FROM_MB μop",
+          "target": "../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 109
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 37
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+          "line": 96,
+          "heading": "EAI"
+        }
+      }
+    },
+    {
+      "name": "HLT_REQ",
+      "category": null,
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "HALT_REQUEST_PENDING",
+        "source_register": "HLT_REQ",
+        "purpose": "Indicates that a halt request is pending."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "Primitive Flags",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "no pending halt request",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 120
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "halt request pending",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 121
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "Control decision:",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 124
+          }
+        },
+        {
+          "text": "Instruction-completion halt processing",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 125
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 38
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+          "line": 113,
+          "heading": "HLT_REQ"
+        }
+      }
+    },
+    {
+      "name": "IE",
+      "category": null,
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "IE_IS_SET",
+        "source_register": "IE",
+        "purpose": "Indicates whether interrupts are enabled."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "Primitive Flags",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "interrupts disabled",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 136
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "interrupts enabled",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 137
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "Control decision:",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 140
+          }
+        },
+        {
+          "text": "Interrupt entry condition (control logic)",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 141
+          }
+        },
+        {
+          "text": "Modified by:",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 142
+          }
+        },
+        {
+          "text": "IE_SET μop",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ie_set",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 143
+          }
+        },
+        {
+          "text": "IE_CLEAR μop",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ie_clear",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 144
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 39
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+          "line": 129,
+          "heading": "IE"
+        }
+      }
+    },
+    {
+      "name": "II",
+      "category": null,
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "II_IS_SET",
+        "source_register": "II",
+        "purpose": "Indicates that interrupt inhibit is active."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "Primitive Flags",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "not inhibited",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 155
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "inhibited",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 156
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "Control decision:",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 159
+          }
+        },
+        {
+          "text": "Interrupt entry gating (control logic)",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 160
+          }
+        },
+        {
+          "text": "Modified by:",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 161
+          }
+        },
+        {
+          "text": "II_SET μop",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ii_set",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 162
+          }
+        },
+        {
+          "text": "II_CLEAR μop",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ii_clear",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 163
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 40
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+          "line": 148,
+          "heading": "II"
+        }
+      }
+    },
+    {
+      "name": "IOT_READ_PENDING",
+      "category": null,
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "IOT Read Transfer Pending",
+        "source_register": "IOT_TRANSFER",
+        "purpose": "Indicates that an external-IOT read request was accepted at the preceding TP and must execute during the current TS."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "Primitive Flags",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "no device-to-CPU DB transfer is pending",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 181
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "a device-to-CPU DB transfer is pending",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 182
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IOT_READ_PENDING = (IOT_TRANSFER = 01)",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+          "line": 173
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "/DB_READ generation during the active transfer TS",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 186
+          }
+        },
+        {
+          "text": "DB_READ_TO_AC selection at the associated transfer commit TP",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 187
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 41
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+          "line": 167,
+          "heading": "IOT_READ_PENDING"
+        }
+      }
+    },
+    {
+      "name": "IOT_WRITE_PENDING",
+      "category": null,
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "IOT Write Transfer Pending",
+        "source_register": "IOT_TRANSFER",
+        "purpose": "Indicates that an external-IOT write request was accepted at the preceding TP and must execute during the current TS."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "Primitive Flags",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "no CPU-to-device DB transfer is pending",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 205
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "a CPU-to-device DB transfer is pending",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 206
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IOT_WRITE_PENDING = (IOT_TRANSFER = 10)",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+          "line": 197
+        }
+      },
+      "constraints": [
+        {
+          "text": "IOT_READ_PENDING and IOT_WRITE_PENDING must never both be asserted.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 215
+          }
+        },
+        {
+          "text": "Both flags are combinational interpretations of committed IOT_TRANSFER state.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 216
+          }
+        },
+        {
+          "text": "Neither flag introduces additional stored state.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 217
+          }
+        }
+      ],
+      "consumers": [
+        {
+          "text": "/DB_WRITE generation during the active transfer TS",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 210
+          }
+        },
+        {
+          "text": "DB_WRITE_FROM_AC selection during the active transfer TS",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 211
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 42
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+          "line": 191,
+          "heading": "IOT_WRITE_PENDING"
+        }
+      }
+    },
+    {
+      "name": "LZ",
+      "category": null,
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "L_IS_ZERO",
+        "source_register": "L",
+        "purpose": "Indicates whether the Link register is zero."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "Primitive Flags",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "L = 1",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 228
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "L = 0",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 229
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "Skip logic driving:",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 232
+          }
+        },
+        {
+          "text": "PC_INC μop",
+          "target": "../../03-microarchitecture/02-micro-operations.md#pc_inc",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 233
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 43
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+          "line": 221,
+          "heading": "LZ"
+        }
+      }
+    },
+    {
+      "name": "MBZ",
+      "category": null,
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "MB_IS_ZERO",
+        "source_register": "MB",
+        "purpose": "Indicates whether the memory buffer contains zero."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "Primitive Flags",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "MB ≠ 0",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 244
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "MB = 0",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 245
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "ISZ execution:",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 248
+          }
+        },
+        {
+          "text": "PC_INC μop",
+          "target": "../../03-microarchitecture/02-micro-operations.md#pc_inc",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 249
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 44
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+          "line": 237,
+          "heading": "MBZ"
+        }
+      }
+    },
+    {
+      "name": "RUN",
+      "category": null,
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "RUN_STATE",
+        "source_register": "RUN",
+        "purpose": "Indicates whether normal instruction execution is active."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "Primitive Flags",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "processor halted",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 260
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "processor executing",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 261
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "Control decision:",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 264
+          }
+        },
+        {
+          "text": "Front panel execution control",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 265
+          }
+        },
+        {
+          "text": "Single-step control",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 266
+          }
+        },
+        {
+          "text": "Single-instruction control",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+            "line": 267
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 45
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/01-flags.md",
+          "line": 253,
+          "heading": "RUN"
+        }
+      }
+    },
+    {
+      "name": "IR_IS_IOT",
+      "category": "IR Class Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_IS_IOT",
+        "display_name": "IOT Instruction Flag",
+        "input_type": "IR Class",
+        "purpose": "Indicates that the current instruction is an I/O transfer instruction."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "not IOT",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 489
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "IOT",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 490
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_IS_IOT = (IR[11:9] == 110)",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 482
+        }
+      },
+      "constraints": [],
+      "consumers": [],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 58
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 473,
+          "heading": "IR_IS_IOT"
+        }
+      }
+    },
+    {
+      "name": "IR_IS_MRI",
+      "category": "IR Class Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_IS_MRI",
+        "display_name": "Memory Reference Instruction Flag",
+        "input_type": "IR Class",
+        "purpose": "Indicates that the instruction is a memory reference instruction."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "not MRI",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 544
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "MRI",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 545
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_IS_MRI =\n(IR[11:9] == 000) OR  // AND\n(IR[11:9] == 001) OR  // TAD\n(IR[11:9] == 010) OR  // ISZ\n(IR[11:9] == 011) OR  // DCA\n(IR[11:9] == 100) OR  // JMS\n(IR[11:9] == 101)     // JMP",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 531
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "AC_AND_MB",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_and_mb",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 549
+          }
+        },
+        {
+          "text": "ADD_AC_MB",
+          "target": "../../03-microarchitecture/02-micro-operations.md#add_ac_mb",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 550
+          }
+        },
+        {
+          "text": "AC_TO_MB",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_to_mb",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 551
+          }
+        },
+        {
+          "text": "MEM_READ_TO_MB",
+          "target": "../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 552
+          }
+        },
+        {
+          "text": "MEM_WRITE_FROM_MB",
+          "target": "../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 553
+          }
+        },
+        {
+          "text": "MB_INC",
+          "target": "../../03-microarchitecture/02-micro-operations.md#mb_inc",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 554
+          }
+        },
+        {
+          "text": "IR_ADDR_TO_EA_ADDR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ir_addr_to_ea_addr",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 555
+          }
+        },
+        {
+          "text": "MB_TO_EA_ADDR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 556
+          }
+        },
+        {
+          "text": "EA_ADDR_TO_MA",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ea_addr_to_ma",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 557
+          }
+        },
+        {
+          "text": "PC_LOAD_EA_ADDR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 558
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 59
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 522,
+          "heading": "IR_IS_MRI"
+        }
+      }
+    },
+    {
+      "name": "IR_IS_OPR",
+      "category": "IR Class Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_IS_OPR",
+        "display_name": "Operate Instruction Flag",
+        "input_type": "IR Class",
+        "purpose": "Indicates that the current instruction is an OPR instruction."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "not OPR",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 579
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "OPR",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 580
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_IS_OPR = (IR[11:9] == 111)",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 572
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "AC_CLEAR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_clear",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 584
+          }
+        },
+        {
+          "text": "AC_COMP",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_comp",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 585
+          }
+        },
+        {
+          "text": "AC_INC",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_inc",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 586
+          }
+        },
+        {
+          "text": "L_CLEAR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#l_clear",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 587
+          }
+        },
+        {
+          "text": "L_COMP",
+          "target": "../../03-microarchitecture/02-micro-operations.md#l_comp",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 588
+          }
+        },
+        {
+          "text": "AC_RAL",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_ral",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 589
+          }
+        },
+        {
+          "text": "AC_RAR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_rar",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 590
+          }
+        },
+        {
+          "text": "AC_RTL",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_rtl",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 591
+          }
+        },
+        {
+          "text": "AC_RTR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_rtr",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 592
+          }
+        },
+        {
+          "text": "AC_BSW",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_bsw",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 593
+          }
+        },
+        {
+          "text": "AC_OR_MQ",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_or_mq",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 594
+          }
+        },
+        {
+          "text": "AC_OR_FP_SR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 595
+          }
+        },
+        {
+          "text": "PC_INC",
+          "target": "../../03-microarchitecture/02-micro-operations.md#pc_inc",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 596
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 60
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 563,
+          "heading": "IR_IS_OPR"
+        }
+      }
+    },
+    {
+      "name": "IR_MRI_OPCODE",
+      "category": "Instruction Selection",
+      "width": 3,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_MRI_OPCODE",
+        "display_name": "Memory Reference Instruction Opcode",
+        "input_type": "MRI Opcode Field",
+        "purpose": "Provides the MRI opcode used to select the applicable memory-reference instruction behavior."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "000",
+          "meaning": "AND",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 648
+          }
+        },
+        {
+          "value": "001",
+          "meaning": "TAD",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 649
+          }
+        },
+        {
+          "value": "010",
+          "meaning": "ISZ",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 650
+          }
+        },
+        {
+          "value": "011",
+          "meaning": "DCA",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 651
+          }
+        },
+        {
+          "value": "100",
+          "meaning": "JMS",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 652
+          }
+        },
+        {
+          "value": "101",
+          "meaning": "JMP",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 653
+          }
+        },
+        {
+          "value": "110",
+          "meaning": "not MRI",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 654
+          }
+        },
+        {
+          "value": "111",
+          "meaning": "not MRI",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 655
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_MRI_OPCODE = IR[11:9]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 640
+        }
+      },
+      "constraints": [
+        {
+          "text": "IR_MRI_OPCODE selects MRI behavior only when IR_IS_MRI = 1.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 659
+          }
+        }
+      ],
+      "consumers": [
+        {
+          "text": "MRI execution selection",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 663
+          }
+        },
+        {
+          "text": "ISZ_SKIP_REQUIRED",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 664
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 66
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 631,
+          "heading": "IR_MRI_OPCODE"
+        }
+      }
+    },
+    {
+      "name": "IR_IS_CAF",
+      "category": "Instruction Selection",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_IS_CAF",
+        "display_name": "Clear All Flags Instruction Flag",
+        "input_type": "Processor IOT Detection",
+        "purpose": "Indicates that the current instruction is CAF."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "not CAF",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 409
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "CAF",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 410
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_IS_CAF =\nIR_IS_IOT\nAND (IR_IOA == 000000)\nAND (IR[2:0] == 111)",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 399
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "System Initialization",
+          "target": "../20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 413
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 67
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 390,
+          "heading": "IR_IS_CAF"
+        }
+      }
+    },
+    {
+      "name": "IR_IS_GTF",
+      "category": "Instruction Selection",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_IS_GTF",
+        "display_name": "Get Flags Instruction Flag",
+        "input_type": "Processor IOT Detection",
+        "purpose": "Indicates that the current instruction is GTF."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "not GTF",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 464
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "GTF",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 465
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_IS_GTF =\nIR_IS_IOT\nAND (IR_IOA == 000000)\nAND (IR[2:0] == 100)",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 455
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "AC_CLEAR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_clear",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 468
+          }
+        },
+        {
+          "text": "GTF_FLAGS_TO_AC",
+          "target": "../../03-microarchitecture/02-micro-operations.md#gtf_flags_to_ac",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 469
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 68
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 446,
+          "heading": "IR_IS_GTF"
+        }
+      }
+    },
+    {
+      "name": "IR_IS_RTF",
+      "category": "Instruction Selection",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_IS_RTF",
+        "display_name": "Restore Flags Instruction Flag",
+        "input_type": "Processor IOT Detection",
+        "purpose": "Indicates that the current instruction is RTF."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "not RTF",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 618
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "RTF",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 619
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_IS_RTF =\nIR_IS_IOT\nAND (IR_IOA == 000000)\nAND (IR[2:0] == 101)",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 608
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "AC_TO_DF",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_to_df",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 622
+          }
+        },
+        {
+          "text": "AC_TO_DIF",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_to_dif",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 623
+          }
+        },
+        {
+          "text": "AC_TO_L",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_to_l",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 624
+          }
+        },
+        {
+          "text": "CIFP_SET",
+          "target": "../../03-microarchitecture/02-micro-operations.md#cifp_set",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 625
+          }
+        },
+        {
+          "text": "IE_SET",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ie_set",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 626
+          }
+        },
+        {
+          "text": "II_SET",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ii_set",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 627
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 69
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 600,
+          "heading": "IR_IS_RTF"
+        }
+      }
+    },
+    {
+      "name": "IR_INDIRECT",
+      "category": "Addressing Mode",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_INDIRECT",
+        "display_name": "Indirect Addressing Flag",
+        "input_type": "Addressing Mode",
+        "purpose": "Indicates whether MRI uses indirect addressing."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "direct addressing",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 328
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "indirect addressing",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 329
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_INDIRECT = IR_IS_MRI AND IR[8]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 322
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "MB_TO_EA_ADDR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 332
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 75
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 313,
+          "heading": "IR_INDIRECT"
+        }
+      }
+    },
+    {
+      "name": "IR_ZERO_PAGE",
+      "category": "Addressing Mode",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_ZERO_PAGE",
+        "display_name": "Zero Page Select",
+        "input_type": "Addressing Mode",
+        "purpose": "Selects zero page vs current page addressing for MRI instructions."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "current page addressing",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1331
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "zero page addressing",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1332
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_ZERO_PAGE = IR_IS_MRI AND NOT(IR[7])",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1324
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "IR_ADDR_TO_EA_ADDR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ir_addr_to_ea_addr",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1335
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 76
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1315,
+          "heading": "IR_ZERO_PAGE"
+        }
+      }
+    },
+    {
+      "name": "IR_OPR_GROUP1",
+      "category": "OPR Class",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_OPR_GROUP1",
+        "display_name": "OPR Group 1 Selection",
+        "input_type": "OPR Class",
+        "purpose": "Selects Group 1 OPR instruction format."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "not Group 1",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 814
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "Group 1",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 815
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_OPR_GROUP1 = IR_IS_OPR AND (IR[8] == 0)",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 807
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "AC_CLEAR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_clear",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 819
+          }
+        },
+        {
+          "text": "AC_COMP",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_comp",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 820
+          }
+        },
+        {
+          "text": "AC_INC",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_inc",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 821
+          }
+        },
+        {
+          "text": "L_CLEAR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#l_clear",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 822
+          }
+        },
+        {
+          "text": "L_COMP",
+          "target": "../../03-microarchitecture/02-micro-operations.md#l_comp",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 823
+          }
+        },
+        {
+          "text": "AC_RAL",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_ral",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 824
+          }
+        },
+        {
+          "text": "AC_RAR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_rar",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 825
+          }
+        },
+        {
+          "text": "AC_RTL",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_rtl",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 826
+          }
+        },
+        {
+          "text": "AC_RTR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_rtr",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 827
+          }
+        },
+        {
+          "text": "AC_BSW",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_bsw",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 828
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 82
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 798,
+          "heading": "IR_OPR_GROUP1"
+        }
+      }
+    },
+    {
+      "name": "IR_OPR_GROUP2",
+      "category": "OPR Class",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_OPR_GROUP2",
+        "display_name": "OPR Group 2 Selection",
+        "input_type": "OPR Class",
+        "purpose": "Selects Group 2 OPR instruction format."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "not Group 2",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 849
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "Group 2",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 850
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_OPR_GROUP2 = IR_IS_OPR AND IR[8] AND (IR[0] == 0)",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 842
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "AC_CLEAR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_clear",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 854
+          }
+        },
+        {
+          "text": "AC_OR_FP_SR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 855
+          }
+        },
+        {
+          "text": "PC_INC",
+          "target": "../../03-microarchitecture/02-micro-operations.md#pc_inc",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 856
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 83
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 833,
+          "heading": "IR_OPR_GROUP2"
+        }
+      }
+    },
+    {
+      "name": "IR_OPR_GROUP3",
+      "category": "OPR Class",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_OPR_GROUP3",
+        "display_name": "OPR Group 3 Selection",
+        "input_type": "OPR Class",
+        "purpose": "Selects Group 3 OPR instruction format."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "not Group 3",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 877
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "Group 3",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 878
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_OPR_GROUP3 = IR_IS_OPR AND IR[8] AND IR[0]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 870
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "AC_CLEAR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_clear",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 882
+          }
+        },
+        {
+          "text": "AC_OR_MQ",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_or_mq",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 883
+          }
+        },
+        {
+          "text": "AC_TO_MQ_AND_CLEAR_AC",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 884
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 84
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 861,
+          "heading": "IR_OPR_GROUP3"
+        }
+      }
+    },
+    {
+      "name": "IR_OPR_BSW",
+      "category": "OPR Bit Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_OPR_BSW",
+        "display_name": "Byte Swap / Rotate Modifier",
+        "input_type": "OPR Bit Flag",
+        "purpose": "Modifier bit used in Group 1 OPR operations."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "modifier inactive",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 691
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "modifier active",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 692
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_OPR_BSW = IR_OPR_GROUP1 AND IR[1]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 684
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "AC_BSW",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_bsw",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 695
+          }
+        },
+        {
+          "text": "AC_RTL",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_rtl",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 696
+          }
+        },
+        {
+          "text": "AC_RTR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_rtr",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 697
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 90
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 668,
+          "heading": "IR_OPR_BSW"
+        }
+      }
+    },
+    {
+      "name": "IR_OPR_CLA",
+      "category": "OPR Bit Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_OPR_CLA",
+        "display_name": "Clear Accumulator",
+        "input_type": "OPR Bit Flag",
+        "purpose": "Clears the accumulator (AC)."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "inactive",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 718
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "clear AC",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 719
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_OPR_CLA = IR_IS_OPR AND IR[7]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 711
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "AC_CLEAR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_clear",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 722
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 91
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 702,
+          "heading": "IR_OPR_CLA"
+        }
+      }
+    },
+    {
+      "name": "IR_OPR_CLL",
+      "category": "OPR Bit Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_OPR_CLL",
+        "display_name": "Clear Link",
+        "input_type": "OPR Bit Flag",
+        "purpose": "Clears the Link (L)."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "inactive",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 742
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "clear Link",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 743
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_OPR_CLL = IR_OPR_GROUP1 AND IR[6]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 735
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "L_CLEAR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#l_clear",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 746
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 92
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 726,
+          "heading": "IR_OPR_CLL"
+        }
+      }
+    },
+    {
+      "name": "IR_OPR_CMA",
+      "category": "OPR Bit Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_OPR_CMA",
+        "display_name": "Complement Accumulator",
+        "input_type": "OPR Bit Flag",
+        "purpose": "Performs bitwise complement of the accumulator."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "inactive",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 766
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "complement AC",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 767
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_OPR_CMA = IR_OPR_GROUP1 AND IR[5]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 759
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "AC_COMP",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_comp",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 770
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 93
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 750,
+          "heading": "IR_OPR_CMA"
+        }
+      }
+    },
+    {
+      "name": "IR_OPR_CML",
+      "category": "OPR Bit Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_OPR_CML",
+        "display_name": "Complement Link",
+        "input_type": "OPR Bit Flag",
+        "purpose": "Performs bitwise complement of the Link register."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "inactive",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 790
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "complement Link",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 791
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_OPR_CML = IR_OPR_GROUP1 AND IR[4]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 783
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "L_COMP",
+          "target": "../../03-microarchitecture/02-micro-operations.md#l_comp",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 794
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 94
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 774,
+          "heading": "IR_OPR_CML"
+        }
+      }
+    },
+    {
+      "name": "IR_OPR_HLT",
+      "category": "OPR Bit Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_OPR_HLT",
+        "display_name": "Halt",
+        "input_type": "OPR Bit Flag",
+        "purpose": "Halts CPU execution."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "inactive",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 905
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "halt",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 906
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_OPR_HLT = IR_OPR_GROUP2 AND IR[1]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 898
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "Halt-request sequencing control",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 909
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 95
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 889,
+          "heading": "IR_OPR_HLT"
+        }
+      }
+    },
+    {
+      "name": "IR_OPR_IAC",
+      "category": "OPR Bit Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_OPR_IAC",
+        "display_name": "Increment Accumulator",
+        "input_type": "OPR Bit Flag",
+        "purpose": "Increments the accumulator (AC)."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "inactive",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 929
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "increment AC",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 930
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_OPR_IAC = IR_OPR_GROUP1 AND IR[0]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 922
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "AC_INC",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_inc",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 934
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 96
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 913,
+          "heading": "IR_OPR_IAC"
+        }
+      }
+    },
+    {
+      "name": "IR_OPR_OSR",
+      "category": "OPR Bit Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_OPR_OSR",
+        "display_name": "OR Switch Register",
+        "input_type": "OPR Bit Flag",
+        "purpose": "Performs OR operation between switch register and accumulator."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "inactive",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1004
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "OR switch register into AC",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1005
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_OPR_OSR = IR_OPR_GROUP2 AND IR[2]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 997
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "AC_OR_FP_SR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1009
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 97
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 988,
+          "heading": "IR_OPR_OSR"
+        }
+      }
+    },
+    {
+      "name": "IR_OPR_MQA",
+      "category": "OPR Bit Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_OPR_MQA",
+        "display_name": "MQ OR into AC",
+        "input_type": "OPR Bit Flag",
+        "purpose": "Performs OR operation between switch multiplier quotient and accumulator."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "inactive",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 954
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "OR MQ into AC",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 955
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_OPR_MQA = IR_OPR_GROUP3 AND IR[6]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 947
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "AC_OR_MQ",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_or_mq",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 959
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 98
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 938,
+          "heading": "IR_OPR_MQA"
+        }
+      }
+    },
+    {
+      "name": "IR_OPR_MQL",
+      "category": "OPR Bit Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_OPR_MQL",
+        "display_name": "AC load to MQ",
+        "input_type": "OPR Bit Flag",
+        "purpose": "Loads AC contents into MQ and clears AC"
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "inactive",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 979
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "Load MQ into AC and clear AC",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 980
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_OPR_MQL = IR_OPR_GROUP3 AND IR[4]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 972
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "AC_TO_MQ_AND_CLEAR_AC",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 984
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 99
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 963,
+          "heading": "IR_OPR_MQL"
+        }
+      }
+    },
+    {
+      "name": "IR_OPR_RAL",
+      "category": "OPR Bit Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_OPR_RAL",
+        "display_name": "Rotate Accumulator Left Enable",
+        "input_type": "OPR Bit Flag",
+        "purpose": "Enables rotate-left behavior of the accumulator."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "inactive",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1029
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "rotate-left component enabled",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1030
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_OPR_RAL = IR_OPR_GROUP1 AND IR[2]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1022
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "AC_RAL",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_ral",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1035
+          }
+        },
+        {
+          "text": "AC_RTL",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_rtl",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1036
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 100
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1013,
+          "heading": "IR_OPR_RAL"
+        }
+      }
+    },
+    {
+      "name": "IR_OPR_RAR",
+      "category": "OPR Bit Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_OPR_RAR",
+        "display_name": "Rotate Accumulator Right Enable",
+        "input_type": "OPR Bit Flag",
+        "purpose": "Enables rotate-right behavior of the accumulator."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "inactive",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1056
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "rotate-right component enabled",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1057
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_OPR_RAR = IR_OPR_GROUP1 AND IR[3]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1049
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "AC_RAR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_rar",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1061
+          }
+        },
+        {
+          "text": "AC_RTR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ac_rtr",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1062
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 101
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1040,
+          "heading": "IR_OPR_RAR"
+        }
+      }
+    },
+    {
+      "name": "IR_OPR_SKIP_MODE",
+      "category": "OPR Bit Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_OPR_SKIP_MODE",
+        "display_name": "Skip Mode Select",
+        "input_type": "OPR Bit Flag",
+        "purpose": "Defines how Group 2 skip condition bits are combined."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "OR mode (any enabled condition true causes skip)",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1082
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "AND mode (all enabled conditions must be true)",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1083
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_OPR_SKIP_MODE = IR_OPR_GROUP2 AND IR[3]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1075
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "PC_INC",
+          "target": "../../03-microarchitecture/02-micro-operations.md#pc_inc",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1087
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 102
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1066,
+          "heading": "IR_OPR_SKIP_MODE"
+        }
+      }
+    },
+    {
+      "name": "IR_OPR_SMA",
+      "category": "OPR Bit Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_OPR_SMA",
+        "display_name": "Skip on AC Negative",
+        "input_type": "OPR Bit Flag",
+        "purpose": "Enables skip condition when accumulator is negative (AC < 0)."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "condition disabled",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1107
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "condition enabled",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1108
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_OPR_SMA = IR_OPR_GROUP2 AND IR[6]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1100
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "PC_INC",
+          "target": "../../03-microarchitecture/02-micro-operations.md#pc_inc",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1112
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 103
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1091,
+          "heading": "IR_OPR_SMA"
+        }
+      }
+    },
+    {
+      "name": "IR_OPR_SNL",
+      "category": "OPR Bit Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_OPR_SNL",
+        "display_name": "Skip on Link Non-Zero",
+        "input_type": "OPR Bit Flag",
+        "purpose": "Enables skip condition when Link register is non-zero."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "condition disabled",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1132
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "condition enabled",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1133
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_OPR_SNL = IR_OPR_GROUP2 AND IR[4]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1125
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "PC_INC",
+          "target": "../../03-microarchitecture/02-micro-operations.md#pc_inc",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1137
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 104
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1116,
+          "heading": "IR_OPR_SNL"
+        }
+      }
+    },
+    {
+      "name": "IR_OPR_SZA",
+      "category": "OPR Bit Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_OPR_SZA",
+        "display_name": "Skip on AC Zero",
+        "input_type": "OPR Bit Flag",
+        "purpose": "Enables skip condition when accumulator equals zero."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "condition disabled",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1157
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "condition enabled",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1158
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_OPR_SZA = IR_OPR_GROUP2 AND IR[5]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1150
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "PC_INC",
+          "target": "../../03-microarchitecture/02-micro-operations.md#pc_inc",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1162
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 105
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1141,
+          "heading": "IR_OPR_SZA"
+        }
+      }
+    },
+    {
+      "name": "IR_READS_DF",
+      "category": "Memory Management Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_READS_DF",
+        "display_name": "Data Field Read Flag",
+        "input_type": "Memory Management",
+        "purpose": "Indicates that the current instruction reads DF"
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "Does not read DF",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1182
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "Reads DF",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1183
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_READS_DF = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==001) // octal 6214",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1175
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "DF_TO_AC",
+          "target": "../../03-microarchitecture/02-micro-operations.md#df_to_ac",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1186
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 111
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1166,
+          "heading": "IR_READS_DF"
+        }
+      }
+    },
+    {
+      "name": "IR_READS_IB",
+      "category": "Memory Management Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_READS_IB",
+        "display_name": "Interrupt Buffer Read Flag",
+        "input_type": "Memory Management",
+        "purpose": "Indicates that the current instruction reads the IB into AC"
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "Does not read IB",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1206
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "Reads IB",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1207
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_READS_IB = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==011) // octal 6234",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1199
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "IB_TO_AC",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ib_to_ac",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1210
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 112
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1190,
+          "heading": "IR_READS_IB"
+        }
+      }
+    },
+    {
+      "name": "IR_READS_IF",
+      "category": "Memory Management Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_READS_IF",
+        "display_name": "Instruction Field Read Flag",
+        "input_type": "Memory Management",
+        "purpose": "Indicates that the current instruction reads IF"
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "Does not read IF",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1230
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "Reads IF",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1231
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_READS_IF = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==010) // octal 6224",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1223
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "IF_TO_AC",
+          "target": "../../03-microarchitecture/02-micro-operations.md#if_to_ac",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1234
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 113
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1214,
+          "heading": "IR_READS_IF"
+        }
+      }
+    },
+    {
+      "name": "IR_RESTORES_IB",
+      "category": "Memory Management Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_RESTORES_IB",
+        "display_name": "Restore Memory Field From IB Flag",
+        "input_type": "Memory Management",
+        "purpose": "Indicates that the current instruction restores DF and IF from IB"
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "Does not restore DF/IF from IB",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1254
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "Restores IF/DF from IB",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1255
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_RESTORES_IB = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==100) // octal 6244",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1247
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "IB_TO_DF",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ib_to_df",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1258
+          }
+        },
+        {
+          "text": "IB_TO_DIF",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ib_to_dif",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1259
+          }
+        },
+        {
+          "text": "II_SET",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ii_set",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1260
+          }
+        },
+        {
+          "text": "CIFP_SET",
+          "target": "../../03-microarchitecture/02-micro-operations.md#cifp_set",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1261
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 114
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1238,
+          "heading": "IR_RESTORES_IB"
+        }
+      }
+    },
+    {
+      "name": "IR_WRITES_DF",
+      "category": "Memory Management Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_WRITES_DF",
+        "display_name": "Data Field Change Flag",
+        "input_type": "Memory Management",
+        "purpose": "Indicates that the current instruction writes DF (either CDF or CDF+CIF)"
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "Does not write DF",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1281
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "Writes DF",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1282
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_WRITES_DF = (IR[11:6] == 110010 AND IR[2]==0 AND IR[0]==1)",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1274
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "IR_DF_TO_DF",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ir_df_to_df",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1285
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 115
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1265,
+          "heading": "IR_WRITES_DF"
+        }
+      }
+    },
+    {
+      "name": "IR_WRITES_IF",
+      "category": "Memory Management Flags",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_WRITES_IF",
+        "display_name": "Instruction Field Change Flag",
+        "input_type": "Memory Management",
+        "purpose": "Indicates that the current instruction writes IF (either CIF or CDF+CIF)"
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "not CIF",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1305
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "CIF",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1306
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_WRITES_IF = (IR[11:6] == 110010 AND IR[2]==0 AND IR[1]==1)",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1298
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "IR_IF_TO_DIF",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ir_if_to_dif",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1309
+          }
+        },
+        {
+          "text": "II_SET",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ii_set",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1310
+          }
+        },
+        {
+          "text": "CIFP_SET",
+          "target": "../../03-microarchitecture/02-micro-operations.md#cifp_set",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1311
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 116
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 1289,
+          "heading": "IR_WRITES_IF"
+        }
+      }
+    },
+    {
+      "name": "IR_IS_EXTERNAL_IOT",
+      "category": "IOT Device Classes",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_IS_EXTERNAL_IOT",
+        "display_name": "External-Device IOT Flag",
+        "input_type": "IOT Device Class",
+        "purpose": "Indicates that the current instruction is an IOT addressed to an external controller: any device other than 00 (processor control) and 20–27 (memory extension control)."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "not an external-device IOT",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 436
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "external-device IOT",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 437
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_IS_EXTERNAL_IOT =\nIR_IS_IOT\nAND NOT (IR_IOA == 000000)    // device 00: processor control\nAND NOT IR_IS_MEMEXT_IOT      // devices 20-27: memory extension control",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 426
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "External-Device IOT",
+          "target": "../30-direct-control-definitions/02-interface-and-ownership-control.md#72-external-device-iot",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 441
+          }
+        },
+        {
+          "text": "EXECUTE: External IOT",
+          "target": "../../09-timing/03-major-state-timing.md#52-execute-external-iot",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 442
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 122
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 417,
+          "heading": "IR_IS_EXTERNAL_IOT"
+        }
+      }
+    },
+    {
+      "name": "IR_IS_MEMEXT_IOT",
+      "category": "IOT Device Classes",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_IS_MEMEXT_IOT",
+        "display_name": "Memory Extension IOT Flag",
+        "input_type": "IOT Device Class",
+        "purpose": "Indicates that the current instruction is a memory extension control IOT (devices 20–27). These IOTs execute internally and do not qualify external controllers."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "not a memory extension IOT",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 512
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "memory extension IOT",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 513
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_IS_MEMEXT_IOT = IR_IS_IOT AND (IR[8:6] == 010)   // devices 20-27",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 505
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "IR_IS_EXTERNAL_IOT",
+          "target": "#ir_is_external_iot",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 517
+          }
+        },
+        {
+          "text": "Memory Extension Control",
+          "target": "../../03-microarchitecture/06-iot-execution.md#10-instruction-definitions-memory-extension-control---devices-20-27",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 518
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 123
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 496,
+          "heading": "IR_IS_MEMEXT_IOT"
+        }
+      }
+    },
+    {
+      "name": "IR_ADDR",
+      "category": "Field Extraction Signals",
+      "width": 7,
+      "control_uses": [
+        "value"
+      ],
+      "attributes": {
+        "mnemonic": "IR_ADDR",
+        "display_name": "Memory Address Field",
+        "input_type": "Field Extraction",
+        "purpose": "Extracts the address field used by memory reference instructions."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [],
+      "ranges": [
+        {
+          "start": "0000000",
+          "end": "1111111",
+          "meaning": "address field",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 254
+          }
+        }
+      ],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_ADDR = IR[6:0]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 248
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "IR_ADDR_TO_EA_ADDR",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ir_addr_to_ea_addr",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 257
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 129
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 239,
+          "heading": "IR_ADDR"
+        }
+      }
+    },
+    {
+      "name": "IR_DF",
+      "category": "Field Extraction Signals",
+      "width": 3,
+      "control_uses": [
+        "value"
+      ],
+      "attributes": {
+        "mnemonic": "IR_DF",
+        "display_name": "Data Field",
+        "input_type": "Field Extraction",
+        "purpose": "Extracts the field used by the CDF instruction"
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [],
+      "ranges": [
+        {
+          "start": "000",
+          "end": "111",
+          "meaning": "data field",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 276
+          }
+        }
+      ],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_DF = IR[5:3]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 270
+        }
+      },
+      "constraints": [
+        {
+          "text": "IR_DF and IR_IF share the same bit positions but are interpreted in different instruction contexts (CDF vs CIF)",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 279
+          }
+        }
+      ],
+      "consumers": [
+        {
+          "text": "IR_DF_TO_DF",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ir_df_to_df",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 283
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 130
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 261,
+          "heading": "IR_DF"
+        }
+      }
+    },
+    {
+      "name": "IR_IOA",
+      "category": "Field Extraction Signals",
+      "width": 6,
+      "control_uses": [
+        "predicate",
+        "value"
+      ],
+      "attributes": {
+        "mnemonic": "IR_IOA",
+        "display_name": "I/O Address Field",
+        "input_type": "Field Extraction",
+        "purpose": "Specifies the I/O device address for IOT instructions."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [],
+      "ranges": [
+        {
+          "start": "000000",
+          "end": "111111",
+          "meaning": "device address",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 354
+          }
+        }
+      ],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_IOA = IR[8:3]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 347
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "Architectural Control Signals",
+          "target": "../20-control-output-definitions/02-architectural-control-signals.md",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 357
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 131
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 338,
+          "heading": "IR_IOA"
+        }
+      }
+    },
+    {
+      "name": "IR_IOT_OP",
+      "category": "Field Extraction Signals",
+      "width": 3,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IR_IOT_OP",
+        "display_name": "IOT Operation Field",
+        "input_type": "IOT Operation Field",
+        "purpose": "Provides IR[2:0] for IOT operation selection."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [],
+      "ranges": [
+        {
+          "start": "000",
+          "end": "111",
+          "meaning": "IOT operation",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 378
+          }
+        }
+      ],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_IOT_OP = IR[2:0]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 370
+        }
+      },
+      "constraints": [
+        {
+          "text": "IR_IOT_OP is used for instruction selection only when IR_IS_IOT = 1.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 382
+          }
+        }
+      ],
+      "consumers": [
+        {
+          "text": "IOT execution selection",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 386
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 132
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 361,
+          "heading": "IR_IOT_OP"
+        }
+      }
+    },
+    {
+      "name": "IR_IF",
+      "category": "Field Extraction Signals",
+      "width": 3,
+      "control_uses": [
+        "value"
+      ],
+      "attributes": {
+        "mnemonic": "IR_IF",
+        "display_name": "Instruction Field",
+        "input_type": "Field Extraction",
+        "purpose": "Extracts the field used by the CIF instruction"
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "IR-Derived Signals",
+      "values": [],
+      "ranges": [
+        {
+          "start": "000",
+          "end": "111",
+          "meaning": "instruction field",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 302
+          }
+        }
+      ],
+      "dependencies": [],
+      "derivation": {
+        "text": "IR_IF = IR[5:3]",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 296
+        }
+      },
+      "constraints": [
+        {
+          "text": "IR_DF and IR_IF share the same bit positions but are interpreted in different instruction contexts (CDF vs CIF)",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 305
+          }
+        }
+      ],
+      "consumers": [
+        {
+          "text": "IR_IF_TO_DIF",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ir_if_to_dif",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 309
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 133
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+          "line": 287,
+          "heading": "IR_IF"
+        }
+      }
+    },
+    {
+      "name": "AUTO_INDEX_REQUIRED",
+      "category": null,
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "AUTO_INDEX_REQUIRED",
+        "display_name": "Auto Index Required",
+        "purpose": "Determines whether auto-index increment and writeback must occur."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "Derived Flags",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "no auto-index",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 157
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "perform auto-index increment",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 158
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [
+        {
+          "name": "IR_INDIRECT",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 137
+          }
+        },
+        {
+          "name": "EAI",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 138
+          }
+        }
+      ],
+      "derivation": {
+        "text": "AUTO_INDEX_REQUIRED =\nIR_INDIRECT\nAND EAI",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+          "line": 146
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "MB_INC",
+          "target": "../../03-microarchitecture/02-micro-operations.md#mb_inc",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 163
+          }
+        },
+        {
+          "text": "MEM_WRITE_FROM_MB",
+          "target": "../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 164
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 141
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+          "line": 131,
+          "heading": "AUTO_INDEX_REQUIRED"
+        }
+      }
+    },
+    {
+      "name": "IF_CHANGE_PENDING",
+      "category": null,
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "IF_CHANGE_PENDING",
+        "display_name": "Instruction Field Change Pending",
+        "purpose": "Indicates that a pending field value is staged for application. Gates the DIF_TO_IF apply at JMP/JMS."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "Derived Flags",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "CIFP=0 (no pending field to apply)",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 222
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "CIFP=1 (pending field to apply)",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 223
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [
+        {
+          "name": "CIFP",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 212
+          }
+        }
+      ],
+      "derivation": {
+        "text": "IF_CHANGE_PENDING = CIFP",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+          "line": 216
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "DIF_TO_IF",
+          "target": "../../03-microarchitecture/02-micro-operations.md#dif_to_if",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 226
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 142
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+          "line": 206,
+          "heading": "IF_CHANGE_PENDING"
+        }
+      }
+    },
+    {
+      "name": "INTERRUPT_REQUEST_VALID",
+      "category": null,
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "INTERRUPT_REQUEST_VALID",
+        "display_name": "Interrupt Request Valid",
+        "purpose": "Determines whether interrupt entry conditions are satisfied."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "Derived Flags",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "no interrupt",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 196
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "enter interrupt sequence",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 197
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [
+        {
+          "name": "IE",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 174
+          }
+        },
+        {
+          "name": "II",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 175
+          }
+        },
+        {
+          "name": "/INT_REQ",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 176
+          }
+        }
+      ],
+      "derivation": {
+        "text": "INTERRUPT_REQUEST_VALID =\nIE\nAND (II = 0)\nAND (/INT_REQ = 0)",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+          "line": 184
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "(none — used for MS transition control)",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 202
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 143
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+          "line": 168,
+          "heading": "INTERRUPT_REQUEST_VALID"
+        }
+      }
+    },
+    {
+      "name": "ISZ_SKIP_REQUIRED",
+      "category": null,
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "ISZ_SKIP_REQUIRED",
+        "display_name": "Increment Skip if Zero - Skip Required",
+        "purpose": "Determines whether ISZ causes a skip after increment."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "Derived Flags",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "no skip",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 122
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "increment PC",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 123
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [
+        {
+          "name": "IR_MRI_OPCODE",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 107
+          }
+        },
+        {
+          "name": "MBZ",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 108
+          }
+        }
+      ],
+      "derivation": {
+        "text": "ISZ_SKIP_REQUIRED =\n(IR_MRI_OPCODE = 010)\nAND MBZ",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+          "line": 112
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "PC_INC",
+          "target": "../../03-microarchitecture/02-micro-operations.md#pc_inc",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 127
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 144
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+          "line": 100,
+          "heading": "ISZ_SKIP_REQUIRED"
+        }
+      }
+    },
+    {
+      "name": "SKIP_TAKEN",
+      "category": null,
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "mnemonic": "SKIP_TAKEN",
+        "display_name": "Skip Taken",
+        "purpose": "Determines whether a Group 2 OPR instruction causes a skip (PC increment)."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "Derived Flags",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "no skip",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 90
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "increment PC",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 91
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [
+        {
+          "name": "IR_OPR_GROUP2",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 25
+          }
+        },
+        {
+          "name": "IR_OPR_SKIP_MODE",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 26
+          }
+        },
+        {
+          "name": "IR_OPR_SMA",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 27
+          }
+        },
+        {
+          "name": "IR_OPR_SZA",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 28
+          }
+        },
+        {
+          "name": "IR_OPR_SNL",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 29
+          }
+        },
+        {
+          "name": "ACN",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 30
+          }
+        },
+        {
+          "name": "ACZ",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 31
+          }
+        },
+        {
+          "name": "LZ",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 32
+          }
+        }
+      ],
+      "derivation": {
+        "text": "OR-subgroup predicates (active when SKIP_MODE = 0):\n\nSMA_OR = ( !IR_OPR_SKIP_MODE ) AND IR_OPR_SMA AND (ACN = 1)\nSZA_OR = ( !IR_OPR_SKIP_MODE ) AND IR_OPR_SZA AND (ACZ = 1)\nSNL_OR = ( !IR_OPR_SKIP_MODE ) AND IR_OPR_SNL AND (LZ = 0)\n\nOR-subgroup result:\n\nOR_ANY_TRUE =\nSMA_OR\nOR SZA_OR\nOR SNL_OR\n\nAND-subgroup predicates (reinterpretation when SKIP_MODE = 1):\n\nSPA = IR_OPR_SKIP_MODE AND IR_OPR_SMA\nSNA = IR_OPR_SKIP_MODE AND IR_OPR_SZA\nSZL = IR_OPR_SKIP_MODE AND IR_OPR_SNL\n\nMasking for AND composition:\n\nAND_ALL_TRUE =\n( !SPA OR (ACN = 0) )\nAND ( !SNA OR (ACZ = 0) )\nAND ( !SZL OR (LZ = 1) )\n\nFinal expression:\n\nSKIP_TAKEN =\nIR_OPR_GROUP2\nAND (\n( !IR_OPR_SKIP_MODE AND OR_ANY_TRUE )\nOR ( IR_OPR_SKIP_MODE AND  AND_ALL_TRUE )\n)",
+        "source": {
+          "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+          "line": 40
+        }
+      },
+      "constraints": [],
+      "consumers": [
+        {
+          "text": "PC_INC",
+          "target": "../../03-microarchitecture/02-micro-operations.md#pc_inc",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+            "line": 96
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 145
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
+          "line": 18,
+          "heading": "SKIP_TAKEN"
+        }
+      }
+    },
+    {
+      "name": "FP_START",
+      "category": "Front Panel Commands",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "Front Panel Start Command",
+        "input_type": "External Command Input",
+        "purpose": "Indicates that the operator has requested START from the front panel."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "External Inputs",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "START command not asserted",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 98
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "START command asserted",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 99
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [
+        {
+          "text": "meaningful only when RUN = 0",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 107
+          }
+        },
+        {
+          "text": "must be treated as a momentary command input",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 108
+          }
+        }
+      ],
+      "consumers": [
+        {
+          "text": "Control decision:",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 102
+          }
+        },
+        {
+          "text": "run-state sequencing",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 103
+          }
+        },
+        {
+          "text": "console execution control",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 104
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 154
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+          "line": 89,
+          "heading": "FP_START"
+        }
+      }
+    },
+    {
+      "name": "FP_CLEAR",
+      "category": "Front Panel Commands",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "Front Panel Clear Command",
+        "input_type": "External Command Input",
+        "purpose": "Indicates that the operator has requested system initialization from the front panel."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "External Inputs",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "CLEAR command not asserted",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 119
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "CLEAR command asserted",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 120
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [
+        {
+          "text": "meaningful only when RUN = 0",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 126
+          }
+        },
+        {
+          "text": "ignored when RUN = 1",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 127
+          }
+        },
+        {
+          "text": "must be synchronized and debounced before use",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 128
+          }
+        },
+        {
+          "text": "must be treated as a momentary command input",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 129
+          }
+        },
+        {
+          "text": "generates one /INITIALIZE pulse per distinct accepted press",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 130
+          }
+        },
+        {
+          "text": "must not retrigger while the synchronized input remains asserted",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 131
+          }
+        },
+        {
+          "text": "is re-armed only after the synchronized input is released",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 132
+          }
+        },
+        {
+          "text": "must not directly modify processor or controller state",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 133
+          }
+        }
+      ],
+      "consumers": [
+        {
+          "text": "System Initialization",
+          "target": "../20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 123
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 155
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+          "line": 110,
+          "heading": "FP_CLEAR"
+        }
+      }
+    },
+    {
+      "name": "FP_CONTINUE",
+      "category": "Front Panel Commands",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "Front Panel Continue Command",
+        "input_type": "External Command Input",
+        "purpose": "Indicates that the operator has requested CONTINUE from the front panel."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "External Inputs",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "CONTINUE command not asserted",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 154
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "CONTINUE command asserted",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 155
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [
+        {
+          "text": "meaningful only when RUN = 0",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 163
+          }
+        },
+        {
+          "text": "must be treated as a momentary command input",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 164
+          }
+        }
+      ],
+      "consumers": [
+        {
+          "text": "Control decision:",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 158
+          }
+        },
+        {
+          "text": "run-state sequencing",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 159
+          }
+        },
+        {
+          "text": "console execution control",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 160
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 156
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+          "line": 145,
+          "heading": "FP_CONTINUE"
+        }
+      }
+    },
+    {
+      "name": "FP_STOP",
+      "category": "Front Panel Commands",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "Front Panel Stop Command",
+        "input_type": "External Command Input",
+        "purpose": "Indicates that the operator has requested STOP from the front panel."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "External Inputs",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "STOP command not asserted",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 175
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "STOP command asserted",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 176
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [
+        {
+          "text": "may be recognized during normal execution",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 182
+          }
+        },
+        {
+          "text": "must not halt execution immediately",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 183
+          }
+        },
+        {
+          "text": "contributes only to halt-request behavior",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 184
+          }
+        }
+      ],
+      "consumers": [
+        {
+          "text": "halt request generation",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 179
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 157
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+          "line": 166,
+          "heading": "FP_STOP"
+        }
+      }
+    },
+    {
+      "name": "FP_LOAD_ADDRESS",
+      "category": "Front Panel Commands",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "Front Panel Load Address Command",
+        "input_type": "External Command Input",
+        "purpose": "Indicates that the operator has requested LOAD ADDRESS from the front panel."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "External Inputs",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "LOAD ADDRESS command not asserted",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 195
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "LOAD ADDRESS command asserted",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 196
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [
+        {
+          "text": "meaningful only when RUN = 0",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 202
+          }
+        },
+        {
+          "text": "ignored during normal execution",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 203
+          }
+        },
+        {
+          "text": "must be treated as a momentary command input",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 204
+          }
+        }
+      ],
+      "consumers": [
+        {
+          "text": "console execution control",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 199
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 158
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+          "line": 186,
+          "heading": "FP_LOAD_ADDRESS"
+        }
+      }
+    },
+    {
+      "name": "FP_EXAMINE",
+      "category": "Front Panel Commands",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "Front Panel Examine Command",
+        "input_type": "External Command Input",
+        "purpose": "Indicates that the operator has requested EXAMINE from the front panel."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "External Inputs",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "EXAMINE command not asserted",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 215
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "EXAMINE command asserted",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 216
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [
+        {
+          "text": "meaningful only when RUN = 0",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 222
+          }
+        },
+        {
+          "text": "ignored during normal execution",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 223
+          }
+        },
+        {
+          "text": "must be treated as a momentary command input",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 224
+          }
+        }
+      ],
+      "consumers": [
+        {
+          "text": "console execution control",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 219
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 159
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+          "line": 206,
+          "heading": "FP_EXAMINE"
+        }
+      }
+    },
+    {
+      "name": "FP_DEPOSIT",
+      "category": "Front Panel Commands",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "Front Panel Deposit Command",
+        "input_type": "External Command Input",
+        "purpose": "Indicates that the operator has requested DEPOSIT from the front panel."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "External Inputs",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "DEPOSIT command not asserted",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 235
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "DEPOSIT command asserted",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 236
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [
+        {
+          "text": "meaningful only when RUN = 0",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 242
+          }
+        },
+        {
+          "text": "ignored during normal execution",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 243
+          }
+        },
+        {
+          "text": "must be treated as a momentary command input",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 244
+          }
+        }
+      ],
+      "consumers": [
+        {
+          "text": "console execution control",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 239
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 160
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+          "line": 226,
+          "heading": "FP_DEPOSIT"
+        }
+      }
+    },
+    {
+      "name": "FP_SINGLE_INSTRUCTION",
+      "category": "Front Panel Modes",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "Front Panel Single Instruction Mode",
+        "input_type": "External Mode Input",
+        "purpose": "Indicates that Single Instruction mode is enabled."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "External Inputs",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "disabled",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 263
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "enabled",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 264
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [
+        {
+          "text": "does not initiate execution",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 270
+          }
+        },
+        {
+          "text": "does not modify instruction behavior",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 271
+          }
+        },
+        {
+          "text": "affects only run/stop behavior",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 272
+          }
+        }
+      ],
+      "consumers": [
+        {
+          "text": "run-state sequencing",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 267
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 163
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+          "line": 254,
+          "heading": "FP_SINGLE_INSTRUCTION"
+        }
+      }
+    },
+    {
+      "name": "FP_SINGLE_STEP",
+      "category": "Front Panel Modes",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "Front Panel Single Step Mode",
+        "input_type": "External Mode Input",
+        "purpose": "Indicates that Single Step mode is enabled."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "External Inputs",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "disabled",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 283
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "enabled",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 284
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [
+        {
+          "text": "does not initiate execution",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 290
+          }
+        },
+        {
+          "text": "does not modify instruction behavior",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 291
+          }
+        },
+        {
+          "text": "affects only run/stop behavior",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 292
+          }
+        }
+      ],
+      "consumers": [
+        {
+          "text": "run-state sequencing",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 287
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 164
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+          "line": 274,
+          "heading": "FP_SINGLE_STEP"
+        }
+      }
+    },
+    {
+      "name": "FP_IF",
+      "category": "Front Panel Data",
+      "width": 3,
+      "control_uses": [
+        "value"
+      ],
+      "attributes": {
+        "display_name": "Front Panel Instruction Field Input",
+        "input_type": "External Data Input",
+        "purpose": "Provides the front-panel Instruction Field value."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "External Inputs",
+      "values": [],
+      "ranges": [
+        {
+          "start": "000",
+          "end": "111",
+          "meaning": "instruction field value",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 309
+          }
+        }
+      ],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [
+        {
+          "text": "must be stable when sampled",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 316
+          }
+        },
+        {
+          "text": "must not directly modify IF",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 317
+          }
+        }
+      ],
+      "consumers": [
+        {
+          "text": "FP_IF_TO_IF",
+          "target": "../../03-microarchitecture/02-micro-operations.md#fp_if_to_if",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 312
+          }
+        },
+        {
+          "text": "FP_IF_TO_DIF",
+          "target": "../../03-microarchitecture/02-micro-operations.md#fp_if_to_dif",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 313
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 167
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+          "line": 300,
+          "heading": "FP_IF"
+        }
+      }
+    },
+    {
+      "name": "FP_DF",
+      "category": "Front Panel Data",
+      "width": 3,
+      "control_uses": [
+        "value"
+      ],
+      "attributes": {
+        "display_name": "Front Panel Data Field Input",
+        "input_type": "External Data Input",
+        "purpose": "Provides the front-panel Data Field value."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "External Inputs",
+      "values": [],
+      "ranges": [
+        {
+          "start": "000",
+          "end": "111",
+          "meaning": "data field value",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 328
+          }
+        }
+      ],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [
+        {
+          "text": "must be stable when sampled",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 334
+          }
+        },
+        {
+          "text": "must not directly modify DF",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 335
+          }
+        }
+      ],
+      "consumers": [
+        {
+          "text": "FP_DF_TO_DF",
+          "target": "../../03-microarchitecture/02-micro-operations.md#fp_df_to_df",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 331
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 168
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+          "line": 319,
+          "heading": "FP_DF"
+        }
+      }
+    },
+    {
+      "name": "/INT_REQ",
+      "category": "External Requests",
+      "width": 1,
+      "control_uses": [
+        "predicate",
+        "value"
+      ],
+      "attributes": {
+        "display_name": "Interrupt Request",
+        "input_type": "External Request Input",
+        "purpose": "Indicates that one or more external devices are requesting interrupt service."
+      },
+      "polarity": {
+        "value": "active-low",
+        "source": "explicit"
+      },
+      "domain": "External Inputs",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "interrupt request pending",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 380
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "no interrupt request pending",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 381
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [
+        {
+          "text": "must be synchronized before use by control",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 388
+          }
+        },
+        {
+          "text": "must not directly modify processor state",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 389
+          }
+        }
+      ],
+      "consumers": [
+        {
+          "text": "Interrupt Request Valid",
+          "target": "./03-derived-flags.md#interrupt_request_valid",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 384
+          }
+        },
+        {
+          "text": "GTF_FLAGS",
+          "target": "../20-control-output-definitions/01-microarchitectural-control-signals.md#gtf_flags",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 385
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 171
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+          "line": 370,
+          "heading": "/INT_REQ"
+        }
+      }
+    },
+    {
+      "name": "/DMA_REQ",
+      "category": "External Requests",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "DMA Request",
+        "input_type": "External Request Input",
+        "purpose": "Indicates that an external DMA-capable device or device-side DMA arbiter is requesting DMA service."
+      },
+      "polarity": {
+        "value": "active-low",
+        "source": "explicit"
+      },
+      "domain": "External Inputs",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "DMA request pending",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 351
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "no DMA request pending",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 352
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [
+        {
+          "text": "participates in EXT",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 361
+          }
+        },
+        {
+          "text": "contributes to CTRL_ADDR formation",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 362
+          }
+        },
+        {
+          "text": "is derived combinationally from DMA_ENABLE and registered controller /DMA_REQ[n] outputs",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 363
+          }
+        },
+        {
+          "text": "must not pass through an additional stateful synchronization stage",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 364
+          }
+        },
+        {
+          "text": "must satisfy the applicable setup and hold requirements before CPU control samples it at TP4",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 365
+          }
+        },
+        {
+          "text": "must not directly modify processor state",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 366
+          }
+        },
+        {
+          "text": "must not directly assert memory, address, or data-bus control",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 367
+          }
+        },
+        {
+          "text": "may be deasserted while controller /DMA_REQ[n] lines remain asserted when DMA_ENABLE = 0",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 368
+          }
+        }
+      ],
+      "consumers": [
+        {
+          "text": "DMA sequencing control",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 355
+          }
+        },
+        {
+          "text": "/DMA_GRANT",
+          "target": "../20-control-output-definitions/02-architectural-control-signals.md#45-dma_grant",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 356
+          }
+        },
+        {
+          "text": "MS_NEXT",
+          "target": "../20-control-output-definitions/03-sequencing-control-signals.md#41-next-major-state-ms_next",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 357
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 172
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+          "line": 341,
+          "heading": "/DMA_REQ"
+        }
+      }
+    },
+    {
+      "name": "IO_READ_REQ",
+      "category": "External IOT Response Inputs",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "I/O Read Request",
+        "input_type": "External IOT Response Input",
+        "purpose": "Requests a device-to-CPU DB transfer during the phase following acceptance of the request."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "explicit"
+      },
+      "domain": "External Inputs",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "no read requested",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 418
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "device-to-CPU read requested",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 419
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [
+        {
+          "text": "Valid only when IOT_ACTIVE is asserted.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 429
+          }
+        },
+        {
+          "text": "Valid only from the address-matched controller.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 430
+          }
+        },
+        {
+          "text": "Phase-specific.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 431
+          }
+        },
+        {
+          "text": "Mutually exclusive with IO_WRITE_REQ.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 432
+          }
+        },
+        {
+          "text": "Must be asserted early enough for the complete DB transfer to occur within the current external-IOT EXECUTE major state.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 433
+          }
+        },
+        {
+          "text": "Must be stable before and through the TP at which CPU control accepts the request.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 434
+          }
+        },
+        {
+          "text": "Must not cause the controller to drive DB during the request phase.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 435
+          }
+        },
+        {
+          "text": "Must not directly modify AC.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 436
+          }
+        },
+        {
+          "text": "The selected controller drives DB only while CPU control asserts /DB_READ during the following transfer phase.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 437
+          }
+        }
+      ],
+      "consumers": [
+        {
+          "text": "CPU control at the TP following the request TS",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 423
+          }
+        },
+        {
+          "text": "/DB_READ generation during the following TS",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 424
+          }
+        },
+        {
+          "text": "DB_READ_TO_AC at the subsequent TP",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 425
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 176
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+          "line": 407,
+          "heading": "IO_READ_REQ"
+        }
+      }
+    },
+    {
+      "name": "IO_WRITE_REQ",
+      "category": "External IOT Response Inputs",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "I/O Write Request",
+        "input_type": "External IOT Response Input",
+        "purpose": "Requests a CPU-to-device DB transfer during the phase following acceptance of the request."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "explicit"
+      },
+      "domain": "External Inputs",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "no write requested",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 450
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "CPU-to-device write requested",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 451
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [
+        {
+          "text": "Valid only when IOT_ACTIVE is asserted.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 461
+          }
+        },
+        {
+          "text": "Valid only from the address-matched controller.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 462
+          }
+        },
+        {
+          "text": "Phase-specific.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 463
+          }
+        },
+        {
+          "text": "Mutually exclusive with IO_READ_REQ.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 464
+          }
+        },
+        {
+          "text": "Must be asserted early enough for the complete DB transfer to occur within the current external-IOT EXECUTE major state.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 465
+          }
+        },
+        {
+          "text": "Must be stable before and through the TP at which CPU control accepts the request.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 466
+          }
+        },
+        {
+          "text": "Must not cause the controller to capture DB during the request phase.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 467
+          }
+        },
+        {
+          "text": "The selected controller captures DB only at the TP following the transfer phase in which CPU control asserts /DB_WRITE.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 468
+          }
+        }
+      ],
+      "consumers": [
+        {
+          "text": "CPU control at the TP following the request TS",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 455
+          }
+        },
+        {
+          "text": "/DB_WRITE generation during the following TS",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 456
+          }
+        },
+        {
+          "text": "controller DB capture at the subsequent TP",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 457
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 177
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+          "line": 439,
+          "heading": "IO_WRITE_REQ"
+        }
+      }
+    },
+    {
+      "name": "IO_SKIP_REQ",
+      "category": "External IOT Response Inputs",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "I/O Skip Request",
+        "input_type": "External IOT Response Input",
+        "purpose": "Requests PC increment at TP4."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "External Inputs",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "no skip requested",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 479
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "skip requested",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 480
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [
+        {
+          "text": "Valid only during TS4 of an external IOT.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 488
+          }
+        },
+        {
+          "text": "Valid only from the address-matched controller.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 489
+          }
+        },
+        {
+          "text": "Must be based on controller state captured at TP3.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 490
+          }
+        },
+        {
+          "text": "Causes only CPU PC_INC.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 491
+          }
+        },
+        {
+          "text": "Must not depend on a result committed at TP4.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 492
+          }
+        },
+        {
+          "text": "Must not directly modify PC.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 493
+          }
+        }
+      ],
+      "consumers": [
+        {
+          "text": "PC_INC",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 484
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 178
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+          "line": 470,
+          "heading": "IO_SKIP_REQ"
+        }
+      }
+    },
+    {
+      "name": "IO_CLEAR_AC_REQ",
+      "category": "External IOT Response Inputs",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "I/O Clear AC Request",
+        "input_type": "External IOT Response Input",
+        "purpose": "Requests AC clear at the following TP."
+      },
+      "polarity": {
+        "value": "active-high",
+        "source": "defaulted"
+      },
+      "domain": "External Inputs",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "no AC clear requested",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 504
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "AC clear requested",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 505
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [
+        {
+          "text": "Valid only when IOT_ACTIVE = 1.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 513
+          }
+        },
+        {
+          "text": "Valid only from the address-matched controller.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 514
+          }
+        },
+        {
+          "text": "Phase-specific.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 515
+          }
+        },
+        {
+          "text": "May coincide with IO_READ_REQ during the read-request TS; AC clear commits when the read request is accepted, and the DB read commits during the following TS and TP.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 516
+          }
+        },
+        {
+          "text": "Must not be asserted during the transfer TS following an accepted IO_READ_REQ.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 517
+          }
+        },
+        {
+          "text": "Must not cause AC clear and DB_READ_TO_AC to commit at the same TP.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 518
+          }
+        },
+        {
+          "text": "May coincide with IO_WRITE_REQ.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 519
+          }
+        },
+        {
+          "text": "Must not directly modify AC.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 520
+          }
+        }
+      ],
+      "consumers": [
+        {
+          "text": "AC clear control",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 509
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 179
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+          "line": 495,
+          "heading": "IO_CLEAR_AC_REQ"
+        }
+      }
+    },
+    {
+      "name": "/IO_WAIT",
+      "category": "External IOT Response Inputs",
+      "width": 1,
+      "control_uses": [
+        "predicate"
+      ],
+      "attributes": {
+        "display_name": "I/O Wait Request",
+        "input_type": "External Timing Request Input",
+        "purpose": "Holds the current eligible non-TP setup TSTEP until the selected controller is ready."
+      },
+      "polarity": {
+        "value": "active-low",
+        "source": "explicit"
+      },
+      "domain": "External Inputs",
+      "values": [
+        {
+          "value": "0",
+          "meaning": "hold the current eligible non-TP setup TSTEP",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 533
+          }
+        },
+        {
+          "value": "1",
+          "meaning": "normal TSTEP progression",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 534
+          }
+        }
+      ],
+      "ranges": [],
+      "dependencies": [],
+      "derivation": null,
+      "constraints": [
+        {
+          "text": "Valid only when IOT_ACTIVE = 1.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 542
+          }
+        },
+        {
+          "text": "Valid only from the address-matched controller.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 543
+          }
+        },
+        {
+          "text": "Ignored when the current TSTEP is a TP position.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 544
+          }
+        },
+        {
+          "text": "Must not extend, suppress, or repeat a TP.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 545
+          }
+        },
+        {
+          "text": "Must be synchronized before influencing TSTEP progression.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 546
+          }
+        },
+        {
+          "text": "Must not modify RUN.",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 547
+          }
+        },
+        {
+          "text": "Must not directly modify MS or architectural state. Detailed behavior is defined in [I/O Timing](../../07-io/03-io-timing.md)",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 548
+          }
+        }
+      ],
+      "consumers": [
+        {
+          "text": "TSTEP progression logic",
+          "target": null,
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+            "line": 538
+          }
+        }
+      ],
+      "sources": {
+        "index": {
+          "path": "docs/04-control/10-control-input-definitions/00-index.md",
+          "line": 180
+        },
+        "definition": {
+          "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+          "line": 522,
+          "heading": "/IO_WAIT"
+        }
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "kind": "exactly_one",
+      "inputs": [
+        "IR_IS_MRI",
+        "IR_IS_IOT",
+        "IR_IS_OPR"
+      ],
+      "source": {
+        "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+        "line": 63
+      }
+    },
+    {
+      "kind": "at_most_one",
+      "inputs": [
+        "IR_OPR_GROUP1",
+        "IR_OPR_GROUP2",
+        "IR_OPR_GROUP3"
+      ],
+      "source": {
+        "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+        "line": 99
+      }
+    },
+    {
+      "kind": "at_most_one",
+      "inputs": [
+        "IR_IS_MEMEXT_IOT",
+        "IR_IS_EXTERNAL_IOT"
+      ],
+      "source": {
+        "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+        "line": 156
+      }
+    },
+    {
+      "kind": "at_most_one",
+      "inputs": [
+        "FP_START",
+        "FP_CLEAR",
+        "FP_CONTINUE",
+        "FP_LOAD_ADDRESS",
+        "FP_EXAMINE",
+        "FP_DEPOSIT"
+      ],
+      "source": {
+        "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
+        "line": 84
+      }
+    }
+  ],
+  "diagnostics": []
+}

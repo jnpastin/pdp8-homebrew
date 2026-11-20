@@ -1,0 +1,2498 @@
+{
+  "format_version": 1,
+  "control_design_version": "v2",
+  "artifact": "direct-control-definitions",
+  "generation_stage": "candidate-generation",
+  "sources": [
+    "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+    "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md"
+  ],
+  "definitions": [
+    {
+      "id": "01:3.2.2",
+      "title": "3.2.2 FETCH Transition Without Indirection",
+      "group": "3.2 Next Major State",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 134
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = FETCH\nTS = 4\nIR_INDIRECT = 0"
+      ],
+      "direct_assignments": [
+        "MS_NEXT = EXECUTE"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [
+        "MS <- EXECUTE at TP4"
+      ],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [
+        {
+          "label": "Fetch & Defer",
+          "target": "../../03-microarchitecture/04-fetch-defer.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.2.3",
+      "title": "3.2.3 FETCH Transition With Indirection",
+      "group": "3.2 Next Major State",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 163
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = FETCH\nTS = 4\nIR_INDIRECT = 1"
+      ],
+      "direct_assignments": [
+        "MS_NEXT = DEFER"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [
+        "MS <- DEFER at TP4"
+      ],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [
+        {
+          "label": "Fetch & Defer",
+          "target": "../../03-microarchitecture/04-fetch-defer.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.2.4",
+      "title": "3.2.4 DEFER Completion",
+      "group": "3.2 Next Major State",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 192
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = DEFER\nTS = 4"
+      ],
+      "direct_assignments": [
+        "MS_NEXT = EXECUTE"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [
+        "MS <- EXECUTE at TP4"
+      ],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [
+        {
+          "label": "Fetch & Defer",
+          "target": "../../03-microarchitecture/04-fetch-defer.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.2.5",
+      "title": "3.2.5 EXECUTE Completion With Valid Interrupt",
+      "group": "3.2 Next Major State",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 220
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = EXECUTE\nTS = 4\nINTERRUPT_REQUEST_VALID = 1\nIR_IS_CAF = 0"
+      ],
+      "direct_assignments": [
+        "MS_NEXT = INTERRUPT"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [
+        "MS <- INTERRUPT at TP4"
+      ],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "CAF never selects INTERRUPT: its `/INITIALIZE` clears IE and every controller request at the same TP4, and on the PDP-8/e CAF's INITIALIZE clears the interrupt logic before TP4 (sections 3.2.6 and 3.2.7)."
+      ],
+      "sources": [
+        {
+          "label": "Derived Flags",
+          "target": "../10-control-input-definitions/03-derived-flags.md#interrupt_request_valid"
+        },
+        {
+          "label": "Interrupt Recognition & Sequencing",
+          "target": "../../08-interrupts-and-skip/02-interrupt-recognition-and-sequencing.md"
+        },
+        {
+          "label": "Sequencing Control Signals",
+          "target": "../20-control-output-definitions/03-sequencing-control-signals.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.2.6",
+      "title": "3.2.6 EXECUTE Completion With DMA Request",
+      "group": "3.2 Next Major State",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 256
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = EXECUTE\nTS = 4\nAND (\n    INTERRUPT_REQUEST_VALID = 0\n    OR IR_IS_CAF = 1\n)\n/DMA_REQ = 0"
+      ],
+      "direct_assignments": [
+        "MS_NEXT = DMA"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [
+        "MS <- DMA at TP4"
+      ],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "The interrupt decision has priority over DMA entry.",
+        "`/DMA_REQ` must be established before TS4.",
+        "DMA entry must be selected through the control word.",
+        "The DMA arbiter does not modify `MS_NEXT`."
+      ],
+      "sources": [
+        {
+          "label": "DMA Arbitration",
+          "target": "../../07-io/06-dma-arbitration.md"
+        },
+        {
+          "label": "DMA Interface",
+          "target": "../../07-io/05-dma-interface.md"
+        },
+        {
+          "label": "Sequencing Control Signals",
+          "target": "../20-control-output-definitions/03-sequencing-control-signals.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.2.7",
+      "title": "3.2.7 EXECUTE Completion Without Interrupt or DMA",
+      "group": "3.2 Next Major State",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 298
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = EXECUTE\nTS = 4\nAND (\n    INTERRUPT_REQUEST_VALID = 0\n    OR IR_IS_CAF = 1\n)\n/DMA_REQ = 1"
+      ],
+      "direct_assignments": [
+        "MS_NEXT = FETCH"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [
+        "MS <- FETCH at TP4"
+      ],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [
+        {
+          "label": "Interrupt Recognition & Sequencing",
+          "target": "../../08-interrupts-and-skip/02-interrupt-recognition-and-sequencing.md"
+        },
+        {
+          "label": "Sequencing Control Signals",
+          "target": "../20-control-output-definitions/03-sequencing-control-signals.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.2.8",
+      "title": "3.2.8 INTERRUPT Completion",
+      "group": "3.2 Next Major State",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 332
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = INTERRUPT\nTS = 4"
+      ],
+      "direct_assignments": [
+        "MS_NEXT = FETCH"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [
+        "MS <- FETCH at TP4"
+      ],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [
+        {
+          "label": "Interrupt Execution",
+          "target": "../../03-microarchitecture/08-interrupt-execution.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.2.9",
+      "title": "3.2.9 DMA Continuation",
+      "group": "3.2 Next Major State",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 360
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = DMA\nTS = 4\n/DMA_REQ = 0"
+      ],
+      "direct_assignments": [
+        "MS_NEXT = DMA"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [
+        "MS <- DMA at TP4"
+      ],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "`/DMA_REQ` is the aggregate CPU-facing request.",
+        "The request value used by CPU control must settle before TP4.",
+        "DMA continuation must be selected through the control word.",
+        "External DMA ownership must not modify `MS_NEXT`."
+      ],
+      "sources": [
+        {
+          "label": "DMA Interface",
+          "target": "../../07-io/05-dma-interface.md"
+        },
+        {
+          "label": "DMA Arbitration",
+          "target": "../../07-io/06-dma-arbitration.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.2.10",
+      "title": "3.2.10 DMA Exit",
+      "group": "3.2 Next Major State",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 397
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = DMA\nTS = 4\n/DMA_REQ = 1"
+      ],
+      "direct_assignments": [
+        "MS_NEXT = FETCH"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [
+        "MS <- FETCH at TP4"
+      ],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "The selected controller and arbiter prepare release decisions before TP4.",
+        "CPU ownership resumes in the following FETCH TS1.",
+        "CPU and DMA ownership must not overlap."
+      ],
+      "sources": [
+        {
+          "label": "DMA Interface",
+          "target": "../../07-io/05-dma-interface.md"
+        },
+        {
+          "label": "DMA Arbitration",
+          "target": "../../07-io/06-dma-arbitration.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.2.11",
+      "title": "3.2.11 Major-State Load While Running",
+      "group": "3.2 Next Major State",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 433
+      },
+      "applicable_context": [
+        "RUN = 1\nTS = 4"
+      ],
+      "direct_assignments": [
+        "MS_LOAD = 1"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [
+        "MS <- MS_NEXT at TP4"
+      ],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "Every major-state transition while running loads `MS` at TP4.",
+        "This includes the TP4 at which the processor halts, so the halted `MS` is the state in which execution resumes.",
+        "While halted, `MS` is held except when START loads it."
+      ],
+      "sources": [
+        {
+          "label": "Sequencing Control Signals",
+          "target": "../20-control-output-definitions/03-sequencing-control-signals.md#44-major-state-load-ms_load"
+        },
+        {
+          "label": "Major State Timing",
+          "target": "../../09-timing/03-major-state-timing.md#8-halted-state-and-console-transactions"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.3.2",
+      "title": "3.3.2 Continued Running",
+      "group": "3.3 Run-State Sequencing",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 496
+      },
+      "applicable_context": [
+        "RUN = 1\nNOT (\n    HLT_REQ = 1\n    AND MS = EXECUTE\n    AND TS = 4\n)\nNOT (\n    FP_SINGLE_INSTRUCTION = 1\n    AND MS = EXECUTE\n    AND TS = 4\n)\nNOT (\n    FP_SINGLE_STEP = 1\n    AND TS = 4\n)"
+      ],
+      "direct_assignments": [
+        "RUN_NEXT = 1"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [
+        "RUN <- 1 at TP"
+      ],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "Preservation of the running state is explicit.",
+        "`RUN_NEXT = 1` must not be inferred from the field default.",
+        "Single Instruction mode does not halt before instruction completion.",
+        "Single Step mode does not halt before completion of the current major state.",
+        "Execution never halts in the middle of a major state."
+      ],
+      "sources": [
+        {
+          "label": "Console Execution",
+          "target": "../../03-microarchitecture/09-console-execution.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.3.3",
+      "title": "3.3.3 Start",
+      "group": "3.3 Run-State Sequencing",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 550
+      },
+      "applicable_context": [
+        "RUN = 0\nFP_START = 1"
+      ],
+      "direct_assignments": [
+        "RUN_NEXT = 1\nMS_NEXT  = FETCH\nMS_LOAD  = 1"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [
+        "RUN <- 1 at TPC\nMS  <- FETCH at TPC"
+      ],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [
+        {
+          "label": "Console Execution",
+          "target": "../../03-microarchitecture/09-console-execution.md#10-start-operation"
+        },
+        {
+          "label": "External Inputs",
+          "target": "../10-control-input-definitions/04-external-inputs.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.3.4",
+      "title": "3.3.4 Continue",
+      "group": "3.3 Run-State Sequencing",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 585
+      },
+      "applicable_context": [
+        "RUN = 0\nFP_CONTINUE = 1\nFP_START = 0"
+      ],
+      "direct_assignments": [
+        "RUN_NEXT = 1"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [
+        "RUN <- 1 at TPC"
+      ],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [
+        {
+          "label": "Console Execution",
+          "target": "../../03-microarchitecture/09-console-execution.md#11-continue-operation"
+        },
+        {
+          "label": "External Inputs",
+          "target": "../10-control-input-definitions/04-external-inputs.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.3.6",
+      "title": "3.3.6 Pending-Halt Consumption",
+      "group": "3.3 Run-State Sequencing",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 631
+      },
+      "applicable_context": [
+        "RUN = 1\nHLT_REQ = 1\nMS = EXECUTE\nTS = 4"
+      ],
+      "direct_assignments": [
+        "RUN_NEXT     = 0\nHLT_REQ_NEXT = 0"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [
+        "RUN     <- 0 at TP\nHLT_REQ <- 0 at TP"
+      ],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "A pending STOP or HLT request is consumed only at an instruction-completion boundary.",
+        "Consumption transitions the processor to the halted state.",
+        "Consumption clears the pending halt request at the same TP.",
+        "`RUN_NEXT` and `HLT_REQ_NEXT` are derived from the current committed `HLT_REQ` value.",
+        "A new halt request must be committed before the instruction-completion decision that consumes it."
+      ],
+      "sources": [
+        {
+          "label": "Registers",
+          "target": "../../01-architecture/01-registers.md"
+        },
+        {
+          "label": "Console Execution",
+          "target": "../../03-microarchitecture/09-console-execution.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.3.7",
+      "title": "3.3.7 Single Instruction Halt",
+      "group": "3.3 Run-State Sequencing",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 671
+      },
+      "applicable_context": [
+        "RUN = 1\nFP_SINGLE_INSTRUCTION = 1\nMS = EXECUTE\nTS = 4"
+      ],
+      "direct_assignments": [
+        "RUN_NEXT = 0"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [
+        "RUN <- 0 at TP"
+      ],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "Single Instruction mode executes one complete instruction.",
+        "It does not modify instruction behavior.",
+        "It changes only when execution halts.",
+        "It must not halt after FETCH when DEFER or EXECUTE remains part of the current instruction.",
+        "If `HLT_REQ = 1` at instruction completion, the pending halt request is consumed and `HLT_REQ_NEXT = 0`.",
+        "If no halt request is pending, Single Instruction mode does not create one."
+      ],
+      "sources": [
+        {
+          "label": "Console Execution",
+          "target": "../../03-microarchitecture/09-console-execution.md#12-single-instruction-mode"
+        },
+        {
+          "label": "External Inputs",
+          "target": "../10-control-input-definitions/04-external-inputs.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.3.8",
+      "title": "3.3.8 Single Step Halt",
+      "group": "3.3 Run-State Sequencing",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 724
+      },
+      "applicable_context": [
+        "RUN = 1\nFP_SINGLE_STEP = 1\nTS = 4"
+      ],
+      "direct_assignments": [
+        "RUN_NEXT = 0"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [
+        "RUN <- 0 at TP4"
+      ],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "Single Step mode does not initiate execution.",
+        "Single Step mode does not modify the behavior of the major state being executed.",
+        "Execution does not halt before completion of TS4.",
+        "Resumption requires START or CONTINUE.",
+        "Single Step does not create a pending halt request.",
+        "If `HLT_REQ = 1` and the Single Step boundary is not an instruction-completion boundary, `HLT_REQ_NEXT = 1`.",
+        "If `HLT_REQ = 1` and the Single Step boundary is also an instruction-completion boundary, the pending halt request is consumed and `HLT_REQ_NEXT = 0`."
+      ],
+      "sources": [
+        {
+          "label": "Console Execution",
+          "target": "../../03-microarchitecture/09-console-execution.md"
+        },
+        {
+          "label": "External Inputs",
+          "target": "../10-control-input-definitions/04-external-inputs.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.3.10",
+      "title": "3.3.10 Halted Without START or CONTINUE",
+      "group": "3.3 Run-State Sequencing",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 802
+      },
+      "applicable_context": [
+        "RUN = 0\nFP_START = 0\nFP_CONTINUE = 0"
+      ],
+      "direct_assignments": [
+        "RUN_NEXT = 0"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [
+        "RUN <- 0 at TPC"
+      ],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "Preservation of the halted state is explicit.",
+        "`RUN_NEXT = 0` must not be inferred from the field default.",
+        "Console operations other than START and CONTINUE leave the processor halted."
+      ],
+      "sources": [
+        {
+          "label": "Console Execution",
+          "target": "../../03-microarchitecture/09-console-execution.md"
+        },
+        {
+          "label": "Major State Timing",
+          "target": "../../09-timing/03-major-state-timing.md#8-halted-state-and-console-transactions"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.4.2",
+      "title": "3.4.2 No Pending Halt",
+      "group": "3.4 Halt-Request Sequencing",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 867
+      },
+      "applicable_context": [
+        "HLT_REQ = 0\nNOT (\n    RUN = 1\n    AND (\n        IR_OPR_HLT = 1\n        OR FP_STOP = 1\n    )\n)"
+      ],
+      "direct_assignments": [
+        "HLT_REQ_NEXT = 0"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [
+        "HLT_REQ <- 0 at TP"
+      ],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "Preservation of the clear state is explicit.",
+        "While running, the clear state is preserved only when neither a HLT instruction nor STOP is present.",
+        "While halted, the clear state is preserved at every console TP; STOP and HLT requests are not captured while halted."
+      ],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.4.3",
+      "title": "3.4.3 STOP Request Capture",
+      "group": "3.4 Halt-Request Sequencing",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 902
+      },
+      "applicable_context": [
+        "RUN = 1\nFP_STOP = 1\nNOT (\n    MS = EXECUTE\n    AND TS = 4\n)"
+      ],
+      "direct_assignments": [
+        "HLT_REQ_NEXT = 1"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [
+        "HLT_REQ <- 1 at TP"
+      ],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "The STOP request affects an instruction-completion decision only after the request has committed to `HLT_REQ`.",
+        "A request committed before the applicable instruction-completion TP is available to that decision.",
+        "A request not committed before the applicable instruction-completion TP does not affect that decision.",
+        "A request committed after that decision remains pending until the next instruction-completion boundary.",
+        "Consumption of the committed request is defined separately by [Pending-Halt Consumption](#346-pending-halt-consumption)."
+      ],
+      "sources": [
+        {
+          "label": "Console Execution",
+          "target": "../../03-microarchitecture/09-console-execution.md"
+        },
+        {
+          "label": "External Inputs",
+          "target": "../10-control-input-definitions/04-external-inputs.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.4.4",
+      "title": "3.4.4 HLT Instruction Request Capture",
+      "group": "3.4 Halt-Request Sequencing",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 944
+      },
+      "applicable_context": [
+        "MS = EXECUTE\nTS = 3\nIR_OPR_HLT = 1"
+      ],
+      "direct_assignments": [
+        "HLT_REQ_NEXT = 1"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [
+        "HLT_REQ <- 1 at TP3"
+      ],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "The request committed at TP3 is available as `HLT_REQ = 1` to the subsequent EXECUTE TP4 control decision.",
+        "This definition covers only capture of the HLT request.",
+        "The subsequent run-state transition and request consumption are defined separately by [Pending-Halt Consumption](#346-pending-halt-consumption).",
+        "Request capture is independent of whether normal running, Single Instruction mode, or Single Step mode is active."
+      ],
+      "sources": [
+        {
+          "label": "Group 2 Execution",
+          "target": "../../03-microarchitecture/07-opr/02-group2-execution.md"
+        },
+        {
+          "label": "IR-Derived Control Inputs",
+          "target": "../10-control-input-definitions/02-ir-derived-fields.md"
+        },
+        {
+          "label": "Console Execution",
+          "target": "../../03-microarchitecture/09-console-execution.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.4.5",
+      "title": "3.4.5 Pending-Halt Preservation",
+      "group": "3.4 Halt-Request Sequencing",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 981
+      },
+      "applicable_context": [
+        "HLT_REQ = 1\nNOT (\n    RUN = 1\n    AND MS = EXECUTE\n    AND TS = 4\n)"
+      ],
+      "direct_assignments": [
+        "HLT_REQ_NEXT = 1"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [
+        "HLT_REQ <- 1 at TP"
+      ],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "A pending halt request remains set until consumed.",
+        "The request must not be cleared during an intermediate TS or major-state boundary.",
+        "Preservation of the pending state is explicit.",
+        "A Single Step halt at a boundary that is not instruction completion does not consume the pending request.",
+        "A pending halt request is preserved while the processor is halted, including at every console TP."
+      ],
+      "sources": [
+        {
+          "label": "Registers",
+          "target": "../../01-architecture/01-registers.md"
+        },
+        {
+          "label": "Console Execution",
+          "target": "../../03-microarchitecture/09-console-execution.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:3.4.6",
+      "title": "3.4.6 Pending-Halt Consumption",
+      "group": "3.4 Halt-Request Sequencing",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1021
+      },
+      "applicable_context": [
+        "RUN = 1\nHLT_REQ = 1\nMS = EXECUTE\nTS = 4"
+      ],
+      "direct_assignments": [
+        "RUN_NEXT     = 0\nHLT_REQ_NEXT = 0"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [
+        "RUN     <- 0 at TP\nHLT_REQ <- 0 at TP"
+      ],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "The halt request is cleared only when consumed.",
+        "Consumption and transition to the halted state commit at the same TP.",
+        "Consumption applies regardless of whether another run-state halt condition also applies at that boundary.",
+        "Single Instruction completion and EXECUTE Single Step completion do not prevent consumption of an existing pending halt request.",
+        "A `HLT_REQ_NEXT = 1` value committed at the current TP is not available as `HLT_REQ = 1` for another decision at that same TP."
+      ],
+      "sources": [
+        {
+          "label": "Registers",
+          "target": "../../01-architecture/01-registers.md"
+        },
+        {
+          "label": "Console Execution",
+          "target": "../../03-microarchitecture/09-console-execution.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.2.1",
+      "title": "4.2.1 Instruction Fetch",
+      "group": "4.2 Program-Counter Address Context",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1156
+      },
+      "applicable_context": [
+        "MS = FETCH\nTS = 2"
+      ],
+      "direct_assignments": [
+        "AB_SRC = PC"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [
+        {
+          "label": "Fetch & Defer",
+          "target": "../../03-microarchitecture/04-fetch-defer.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.2.2",
+      "title": "4.2.2 Console Examine",
+      "group": "4.2 Program-Counter Address Context",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1175
+      },
+      "applicable_context": [
+        "RUN = 0\nFP_EXAMINE = 1"
+      ],
+      "direct_assignments": [
+        "AB_SRC = PC"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [
+        {
+          "label": "Console Execution",
+          "target": "../../03-microarchitecture/09-console-execution.md#7-examine-operation"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.2.3",
+      "title": "4.2.3 Console Deposit",
+      "group": "4.2 Program-Counter Address Context",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1194
+      },
+      "applicable_context": [
+        "RUN = 0\nFP_DEPOSIT = 1"
+      ],
+      "direct_assignments": [
+        "AB_SRC = PC"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "These cases define the documented CPU-owned memory accesses that drive `AB` from `PC`.",
+        "`AB_SRC` remains independent from `/RD`, `/WR`, `MDB_SRC`, and `MFB_SRC`."
+      ],
+      "sources": [
+        {
+          "label": "Console Execution",
+          "target": "../../03-microarchitecture/09-console-execution.md#8-deposit-operation"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.3.1",
+      "title": "4.3.1 DEFER Pointer Read",
+      "group": "4.3 Memory-Address Register Context",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1222
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = DEFER\nTS = 2"
+      ],
+      "direct_assignments": [
+        "AB_SRC = MA"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.3.2",
+      "title": "4.3.2 DEFER Auto-Index Writeback",
+      "group": "4.3 Memory-Address Register Context",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1238
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = DEFER\nTS = 4\nAUTO_INDEX_REQUIRED = 1"
+      ],
+      "direct_assignments": [
+        "AB_SRC = MA"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.3.3",
+      "title": "4.3.3 MRI Memory Read",
+      "group": "4.3 Memory-Address Register Context",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1255
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = EXECUTE\nTS = 2\nIR_IS_MRI = 1\nIR_MRI_OPCODE = 000",
+        "RUN = 1\nMS = EXECUTE\nTS = 2\nIR_IS_MRI = 1\nIR_MRI_OPCODE = 001",
+        "RUN = 1\nMS = EXECUTE\nTS = 2\nIR_IS_MRI = 1\nIR_MRI_OPCODE = 010"
+      ],
+      "direct_assignments": [
+        "AB_SRC = MA"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.3.4",
+      "title": "4.3.4 ISZ Writeback",
+      "group": "4.3 Memory-Address Register Context",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1293
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = EXECUTE\nTS = 4\nIR_IS_MRI = 1\nIR_MRI_OPCODE = 010"
+      ],
+      "direct_assignments": [
+        "AB_SRC = MA"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.3.5",
+      "title": "4.3.5 DCA Write",
+      "group": "4.3 Memory-Address Register Context",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1311
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = EXECUTE\nTS = 3\nIR_IS_MRI = 1\nIR_MRI_OPCODE = 011"
+      ],
+      "direct_assignments": [
+        "AB_SRC = MA"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.3.6",
+      "title": "4.3.6 JMS Write",
+      "group": "4.3 Memory-Address Register Context",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1329
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = EXECUTE\nTS = 3\nIR_IS_MRI = 1\nIR_MRI_OPCODE = 100"
+      ],
+      "direct_assignments": [
+        "AB_SRC = MA"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.3.7",
+      "title": "4.3.7 Interrupt Return-Address Write",
+      "group": "4.3 Memory-Address Register Context",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1347
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = INTERRUPT\nTS = 3"
+      ],
+      "direct_assignments": [
+        "AB_SRC = MA"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "These cases define the documented CPU-owned memory accesses that drive `AB` from `MA`.",
+        "`AB_SRC` remains independent from `/RD`, `/WR`, `MDB_SRC`, and `MFB_SRC`."
+      ],
+      "sources": [
+        {
+          "label": "Fetch & Defer",
+          "target": "../../03-microarchitecture/04-fetch-defer.md"
+        },
+        {
+          "label": "MRI Execution",
+          "target": "../../03-microarchitecture/05-mri-execution.md"
+        },
+        {
+          "label": "Interrupt Execution",
+          "target": "../../03-microarchitecture/08-interrupt-execution.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.5.1",
+      "title": "4.5.1 Instruction Fetch",
+      "group": "4.5 Memory Field Selection Rules",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1407
+      },
+      "applicable_context": [
+        "MS = FETCH\nTS = 2"
+      ],
+      "direct_assignments": [
+        "MFB_SRC = IF"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [
+        {
+          "label": "Fetch & Defer",
+          "target": "../../03-microarchitecture/04-fetch-defer.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.5.2.1",
+      "title": "4.5.2.1 Direct MRI Read",
+      "group": "4.5.2 Direct MRI Access",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1451
+      },
+      "applicable_context": [
+        "MS = EXECUTE\nTS = 2\nIR_IS_MRI = 1\nIR_INDIRECT = 0\nAND (\n    IR_MRI_OPCODE = 000\n    OR IR_MRI_OPCODE = 001\n    OR IR_MRI_OPCODE = 010\n)"
+      ],
+      "direct_assignments": [
+        "MFB_SRC = IF"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.5.2.2",
+      "title": "4.5.2.2 Direct ISZ Writeback",
+      "group": "4.5.2 Direct MRI Access",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1473
+      },
+      "applicable_context": [
+        "MS = EXECUTE\nTS = 4\nIR_IS_MRI = 1\nIR_INDIRECT = 0\nIR_MRI_OPCODE = 010"
+      ],
+      "direct_assignments": [
+        "MFB_SRC = IF"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.5.2.3",
+      "title": "4.5.2.3 Direct DCA/JMS Write",
+      "group": "4.5.2 Direct MRI Access",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1491
+      },
+      "applicable_context": [
+        "MS = EXECUTE\nTS = 3\nIR_IS_MRI = 1\nIR_INDIRECT = 0\nAND (\n    IR_MRI_OPCODE = 011\n    OR IR_MRI_OPCODE = 100\n)"
+      ],
+      "direct_assignments": [
+        "MFB_SRC = IF"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.5.3",
+      "title": "4.5.3 Indirect Pointer Read",
+      "group": "4.5 Memory Field Selection Rules",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1516
+      },
+      "applicable_context": [
+        "MS = DEFER\nTS = 2\nIR_IS_MRI = 1"
+      ],
+      "direct_assignments": [
+        "MFB_SRC = IF"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "The indirect bit does not cause the pointer location itself to use `DF`.",
+        "The zero-page or current-page selection determines the pointer address within `IF`."
+      ],
+      "sources": [
+        {
+          "label": "Addressing Model",
+          "target": "../../02-isa/05-addressing-model.md"
+        },
+        {
+          "label": "Fetch & Defer",
+          "target": "../../03-microarchitecture/04-fetch-defer.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.5.4",
+      "title": "4.5.4 Indirect Autoindex Writeback",
+      "group": "4.5 Memory Field Selection Rules",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1546
+      },
+      "applicable_context": [
+        "MS = DEFER\nTS = 4\nAUTO_INDEX_REQUIRED = 1"
+      ],
+      "direct_assignments": [
+        "MFB_SRC = IF"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "Pointer read and autoindex writeback use the same field.",
+        "Autoindex processing does not change the pointer-location field from `IF` to `DF`."
+      ],
+      "sources": [
+        {
+          "label": "Addressing Model",
+          "target": "../../02-isa/05-addressing-model.md"
+        },
+        {
+          "label": "Fetch & Defer",
+          "target": "../../03-microarchitecture/04-fetch-defer.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.5.5.1",
+      "title": "4.5.5.1 Indirect MRI Read",
+      "group": "4.5 Memory Field Selection Rules",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1599
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = EXECUTE\nTS = 2\nIR_IS_MRI = 1\nIR_INDIRECT = 1\nAND (\n    IR_MRI_OPCODE = 000\n    OR IR_MRI_OPCODE = 001\n    OR IR_MRI_OPCODE = 010\n)"
+      ],
+      "direct_assignments": [
+        "MFB_SRC = DF"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.5.5.2",
+      "title": "4.5.5.2 Indirect ISZ Writeback",
+      "group": "4.5 Memory Field Selection Rules",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1622
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = EXECUTE\nTS = 4\nIR_IS_MRI = 1\nIR_INDIRECT = 1\nIR_MRI_OPCODE = 010"
+      ],
+      "direct_assignments": [
+        "MFB_SRC = DF"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.5.5.3",
+      "title": "4.5.5.3 Indirect DCA Write",
+      "group": "4.5 Memory Field Selection Rules",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1641
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = EXECUTE\nTS = 3\nIR_IS_MRI = 1\nIR_INDIRECT = 1\nIR_MRI_OPCODE = 011"
+      ],
+      "direct_assignments": [
+        "MFB_SRC = DF"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.5.5.4",
+      "title": "4.5.5.4 Indirect JMS Write",
+      "group": "4.5 Memory Field Selection Rules",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1660
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = EXECUTE\nTS = 3\nIR_IS_MRI = 1\nIR_INDIRECT = 1\nIR_MRI_OPCODE = 100"
+      ],
+      "direct_assignments": [
+        "MFB_SRC = IF"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.5.6",
+      "title": "4.5.6 Interrupt Entry",
+      "group": "4.5 Memory Field Selection Rules",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1683
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = INTERRUPT\nTS = 3"
+      ],
+      "direct_assignments": [
+        "MFB_SRC = IF"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [
+        {
+          "label": "Interrupt Execution",
+          "target": "../../03-microarchitecture/08-interrupt-execution.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.5.7",
+      "title": "4.5.7 Console Examine",
+      "group": "4.5 Memory Field Selection Rules",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1707
+      },
+      "applicable_context": [
+        "RUN = 0\nFP_EXAMINE = 1"
+      ],
+      "direct_assignments": [
+        "MFB_SRC = IF"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [
+        {
+          "label": "Console Execution",
+          "target": "../../03-microarchitecture/09-console-execution.md#7-examine-operation"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.5.8",
+      "title": "4.5.8 Console Deposit",
+      "group": "4.5 Memory Field Selection Rules",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1730
+      },
+      "applicable_context": [
+        "RUN = 0\nFP_DEPOSIT = 1"
+      ],
+      "direct_assignments": [
+        "MFB_SRC = IF"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [
+        {
+          "label": "Console Execution",
+          "target": "../../03-microarchitecture/09-console-execution.md#8-deposit-operation"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.5.9",
+      "title": "4.5.9 DMA Ownership",
+      "group": "4.5 Memory Field Selection Rules",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1753
+      },
+      "applicable_context": [
+        "MS = DMA"
+      ],
+      "direct_assignments": [],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [
+        {
+          "label": "DMA & Console Access",
+          "target": "../../06-memory/06-dma-and-console-access.md"
+        },
+        {
+          "label": "DMA Interface",
+          "target": "../../07-io/05-dma-interface.md"
+        }
+      ],
+      "drive_states": [
+        "CPU MFB driver = HIGH_Z"
+      ],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:5.5.1",
+      "title": "5.5.1 Read Request Acceptance",
+      "group": "5.5 Pending External-IOT Transfer Value",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1887
+      },
+      "applicable_context": [
+        "IR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_READ_REQ = 1"
+      ],
+      "direct_assignments": [
+        "IOT_TRANSFER_LOAD = 1\nIOT_TRANSFER_VAL  = READ"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "`IO_READ_REQ` and `IO_WRITE_REQ` must not both be accepted for the same request.",
+        "The accepted request must have a transfer phase and commit TP within the current external-IOT EXECUTE major state."
+      ],
+      "sources": [
+        {
+          "label": "Microarchitectural Control Signals",
+          "target": "../20-control-output-definitions/01-microarchitectural-control-signals.md"
+        },
+        {
+          "label": "IOT Execution",
+          "target": "../../03-microarchitecture/06-iot-execution.md"
+        },
+        {
+          "label": "External I/O Interface",
+          "target": "../../07-io/02-external-iot-interface.md"
+        },
+        {
+          "label": "I/O Timing",
+          "target": "../../07-io/03-io-timing.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:5.5.2",
+      "title": "5.5.2 Write Request Acceptance",
+      "group": "5.5 Pending External-IOT Transfer Value",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1916
+      },
+      "applicable_context": [
+        "IR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_WRITE_REQ = 1"
+      ],
+      "direct_assignments": [
+        "IOT_TRANSFER_LOAD = 1\nIOT_TRANSFER_VAL  = WRITE"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "`IO_READ_REQ` and `IO_WRITE_REQ` must not both be accepted for the same request.",
+        "The accepted request must have a transfer phase and commit TP within the current external-IOT EXECUTE major state."
+      ],
+      "sources": [
+        {
+          "label": "Microarchitectural Control Signals",
+          "target": "../20-control-output-definitions/01-microarchitectural-control-signals.md"
+        },
+        {
+          "label": "IOT Execution",
+          "target": "../../03-microarchitecture/06-iot-execution.md"
+        },
+        {
+          "label": "External I/O Interface",
+          "target": "../../07-io/02-external-iot-interface.md"
+        },
+        {
+          "label": "I/O Timing",
+          "target": "../../07-io/03-io-timing.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:5.5.3",
+      "title": "5.5.3 Completed Transfer Clear",
+      "group": "5.5 Pending External-IOT Transfer Value",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1945
+      },
+      "applicable_context": [
+        "(\n    IOT_READ_PENDING = 1\n    OR IOT_WRITE_PENDING = 1\n)\nIR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_READ_REQ = 0\nIO_WRITE_REQ = 0"
+      ],
+      "direct_assignments": [
+        "IOT_TRANSFER_LOAD = 1\nIOT_TRANSFER_VAL  = NONE"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "A newly accepted request does not affect the transfer committing at the same TP.",
+        "This case applies only when no replacement request is accepted."
+      ],
+      "sources": [
+        {
+          "label": "Microarchitectural Control Signals",
+          "target": "../20-control-output-definitions/01-microarchitectural-control-signals.md"
+        },
+        {
+          "label": "IOT Execution",
+          "target": "../../03-microarchitecture/06-iot-execution.md"
+        },
+        {
+          "label": "External I/O Interface",
+          "target": "../../07-io/02-external-iot-interface.md"
+        },
+        {
+          "label": "I/O Timing",
+          "target": "../../07-io/03-io-timing.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:5.5.4",
+      "title": "5.5.4 Completion With Read Replacement",
+      "group": "5.5 Pending External-IOT Transfer Value",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1982
+      },
+      "applicable_context": [
+        "(\n    IOT_READ_PENDING = 1\n    OR IOT_WRITE_PENDING = 1\n)\nIR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_READ_REQ = 1"
+      ],
+      "direct_assignments": [
+        "IOT_TRANSFER_LOAD = 1\nIOT_TRANSFER_VAL  = READ"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "The newly accepted read request replaces the completed transfer.",
+        "The new request does not affect the transfer committing at the current TP.",
+        "The replacement request must have a transfer phase and commit TP within the current external-IOT EXECUTE major state."
+      ],
+      "sources": [
+        {
+          "label": "Microarchitectural Control Signals",
+          "target": "../20-control-output-definitions/01-microarchitectural-control-signals.md"
+        },
+        {
+          "label": "IOT Execution",
+          "target": "../../03-microarchitecture/06-iot-execution.md"
+        },
+        {
+          "label": "External I/O Interface",
+          "target": "../../07-io/02-external-iot-interface.md"
+        },
+        {
+          "label": "I/O Timing",
+          "target": "../../07-io/03-io-timing.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:5.5.5",
+      "title": "5.5.5 Completion With Write Replacement",
+      "group": "5.5 Pending External-IOT Transfer Value",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 2019
+      },
+      "applicable_context": [
+        "(\n    IOT_READ_PENDING = 1\n    OR IOT_WRITE_PENDING = 1\n)\nIR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_WRITE_REQ = 1"
+      ],
+      "direct_assignments": [
+        "IOT_TRANSFER_LOAD = 1\nIOT_TRANSFER_VAL  = WRITE"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "The newly accepted write request replaces the completed transfer.",
+        "The new request does not affect the transfer committing at the current TP.",
+        "The replacement request must have a transfer phase and commit TP within the current external-IOT EXECUTE major state."
+      ],
+      "sources": [
+        {
+          "label": "Microarchitectural Control Signals",
+          "target": "../20-control-output-definitions/01-microarchitectural-control-signals.md"
+        },
+        {
+          "label": "IOT Execution",
+          "target": "../../03-microarchitecture/06-iot-execution.md"
+        },
+        {
+          "label": "External I/O Interface",
+          "target": "../../07-io/02-external-iot-interface.md"
+        },
+        {
+          "label": "I/O Timing",
+          "target": "../../07-io/03-io-timing.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "02:4.2",
+      "title": "4.2 CPU Memory Read",
+      "group": "4 CPU Memory-Interface Ownership",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
+        "line": 175
+      },
+      "applicable_context": [
+        "MEM_READ_TO_MB is selected"
+      ],
+      "direct_assignments": [],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [
+        "/RD = 0\n/WR = 1"
+      ],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "`/RD` and `/WR` must not both be asserted.",
+        "The CPU must not drive `MDB` during a memory read.",
+        "Memory must be the sole `MDB` producer.",
+        "The selected address and field must remain valid for the memory-read interval.",
+        "The read strobe does not itself select `AB_SRC`, `MFB_SRC`, or `MDB_SRC`.",
+        "The `/RD` & `/WR` assignments remain part of the micro-operation mappings rather than a separate direct-control assignment."
+      ],
+      "sources": [
+        {
+          "label": "Micro-Operations",
+          "target": "../../03-microarchitecture/02-micro-operations.md"
+        },
+        {
+          "label": "Architectural Control Signals",
+          "target": "../20-control-output-definitions/02-architectural-control-signals.md"
+        },
+        {
+          "label": "Memory Interface",
+          "target": "../../06-memory/02-memory-interface.md"
+        }
+      ],
+      "drive_states": [
+        "CPU AB driver  = driven according to AB_SRC\nCPU MFB driver = driven according to MFB_SRC\nCPU /RD driver = DRIVE_LOW\nCPU /WR driver = DRIVE_HIGH\nCPU MDB driver = HIGH_Z"
+      ],
+      "external_ownership": [
+        "Memory MDB driver = active"
+      ],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "02:4.3",
+      "title": "4.3 CPU Memory Write From MB",
+      "group": "4 CPU Memory-Interface Ownership",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
+        "line": 223
+      },
+      "applicable_context": [
+        "MEM_WRITE_FROM_MB is selected"
+      ],
+      "direct_assignments": [],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [
+        "/RD     = 1\n/WR     = 0\nMDB_SRC = MB"
+      ],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "`/RD` and `/WR` must not both be asserted.",
+        "The CPU must be the sole `MDB` producer.",
+        "Memory must not drive `MDB`.",
+        "The selected address, field, and write data must remain valid for the memory-write interval.",
+        "The `/RD` & `/WR` assignments remain part of the micro-operation mappings rather than a separate direct-control assignment."
+      ],
+      "sources": [
+        {
+          "label": "Micro-Operations",
+          "target": "../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb"
+        },
+        {
+          "label": "Architectural Control Signals",
+          "target": "../20-control-output-definitions/02-architectural-control-signals.md"
+        },
+        {
+          "label": "Memory Interface",
+          "target": "../../06-memory/02-memory-interface.md"
+        }
+      ],
+      "drive_states": [
+        "CPU AB driver  = driven according to AB_SRC\nCPU MFB driver = driven according to MFB_SRC\nCPU /RD driver = DRIVE_HIGH\nCPU /WR driver = DRIVE_LOW\nCPU MDB driver = driven from MB"
+      ],
+      "external_ownership": [
+        "Memory captures MDB."
+      ],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "02:4.4",
+      "title": "4.4 CPU Memory Write From Front Panel",
+      "group": "4 CPU Memory-Interface Ownership",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
+        "line": 271
+      },
+      "applicable_context": [
+        "MEM_WRITE_FROM_FP_SR is selected"
+      ],
+      "direct_assignments": [],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [
+        "/RD     = 1\n/WR     = 0\nMDB_SRC = FP_SR"
+      ],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "`/RD` and `/WR` must not both be asserted.",
+        "The CPU must be the sole `MDB` producer.",
+        "Memory must not drive `MDB`.",
+        "The selected address, field, and front-panel value must remain valid for the memory-write interval.",
+        "The `/RD` & `/WR` assignments remain part of the micro-operation mappings rather than a separate direct-control assignment."
+      ],
+      "sources": [
+        {
+          "label": "Micro-Operations",
+          "target": "../../03-microarchitecture/02-micro-operations.md"
+        },
+        {
+          "label": "Console Execution",
+          "target": "../../03-microarchitecture/09-console-execution.md#8-deposit-operation"
+        },
+        {
+          "label": "Architectural Control Signals",
+          "target": "../20-control-output-definitions/02-architectural-control-signals.md"
+        }
+      ],
+      "drive_states": [
+        "CPU AB driver  = driven according to AB_SRC\nCPU MFB driver = driven according to MFB_SRC\nCPU /RD driver = DRIVE_HIGH\nCPU /WR driver = DRIVE_LOW\nCPU MDB driver = driven from FP_SR"
+      ],
+      "external_ownership": [
+        "Memory captures MDB."
+      ],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "02:4.5",
+      "title": "4.5 Inactive CPU Memory Interface",
+      "group": "4 CPU Memory-Interface Ownership",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
+        "line": 319
+      },
+      "applicable_context": [
+        "MEM_READ_TO_MB is not selected\nMEM_WRITE_FROM_MB is not selected\nMEM_WRITE_FROM_FP_SR is not selected\nMS != DMA"
+      ],
+      "direct_assignments": [],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [
+        "/RD = 1\n/WR = 1"
+      ],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "Deasserting `/RD` and `/WR` does not transfer memory ownership.",
+        "CPU ownership remains distinct from whether a memory cycle is active.",
+        "An inactive strobe must not be treated as `HIGH_Z` unless the interface documentation explicitly requires driver release.",
+        "Select-field defaults do not imply a memory operation."
+      ],
+      "sources": [
+        {
+          "label": "Architectural Control Signals",
+          "target": "../20-control-output-definitions/02-architectural-control-signals.md"
+        }
+      ],
+      "drive_states": [
+        "CPU /RD driver = DRIVE_HIGH\nCPU /WR driver = DRIVE_HIGH"
+      ],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "02:5.2",
+      "title": "5.2 DMA Major State",
+      "group": "5 DMA Authorization and Ownership",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
+        "line": 393
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = DMA"
+      ],
+      "direct_assignments": [],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "`/DMA_GRANT` remains asserted throughout `MS = DMA` while `RUN = 1`; while halted it is deasserted (section 5.3).",
+        "CPU control must not drive `MFB`, `AB`, `MDB`, `/RD`, or `/WR`.",
+        "`AB_SRC`, `MFB_SRC`, and `MDB_SRC` may contain valid encoded values in the control word, but those values do not authorize CPU drivers during DMA ownership.",
+        "CPU-generated `/RD` and `/WR` requests remain inactive because the CPU drivers are released.",
+        "CPU and DMA ownership must not overlap.",
+        "The CPU must not select an individual DMA controller.",
+        "An external controller must not drive a DMA-owned interface unless it has a matching valid `DMA_GRANT_ID`."
+      ],
+      "sources": [
+        {
+          "label": "DMA & Console Access",
+          "target": "../../06-memory/06-dma-and-console-access.md"
+        },
+        {
+          "label": "DMA Interface",
+          "target": "../../07-io/05-dma-interface.md"
+        },
+        {
+          "label": "DMA Arbitration",
+          "target": "../../07-io/06-dma-arbitration.md"
+        },
+        {
+          "label": "Signal Ownership Matrix",
+          "target": "../../05-buses-and-signals/08-ownership-matrix.md"
+        }
+      ],
+      "drive_states": [
+        "CPU MFB driver = HIGH_Z\nCPU AB driver  = HIGH_Z\nCPU MDB driver = HIGH_Z\nCPU /RD driver = HIGH_Z\nCPU /WR driver = HIGH_Z"
+      ],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": [
+        "/DMA_GRANT = 0"
+      ]
+    },
+    {
+      "id": "02:5.3",
+      "title": "5.3 Non-DMA Major States and Halted Operation",
+      "group": "5 DMA Authorization and Ownership",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
+        "line": 437
+      },
+      "applicable_context": [
+        "NOT (\n    RUN = 1\n    AND MS = DMA\n)"
+      ],
+      "direct_assignments": [],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "`/DMA_GRANT` must not be asserted during normal instruction execution.",
+        "`/DMA_GRANT` is deasserted while halted, including while `MS = DMA` holds a suspended burst ([DMA Execution §4](../../03-microarchitecture/10-dma-execution.md#4-halting-between-dma-cycles)).",
+        "External DMA controllers must not drive DMA-owned interfaces.",
+        "`DMA_GRANT_ID` does not authorize ownership while `/DMA_GRANT` is deasserted.",
+        "Pending `/DMA_REQ[n]` inputs do not themselves transfer ownership.",
+        "Aggregate `/DMA_REQ` does not itself transfer ownership."
+      ],
+      "sources": [
+        {
+          "label": "Architectural Control Signals",
+          "target": "../20-control-output-definitions/02-architectural-control-signals.md"
+        },
+        {
+          "label": "DMA Arbitration",
+          "target": "../../07-io/06-dma-arbitration.md"
+        }
+      ],
+      "drive_states": [
+        "CPU /DMA_GRANT driver = DRIVE_HIGH"
+      ],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": [
+        "/DMA_GRANT = 1"
+      ]
+    },
+    {
+      "id": "02:5.4",
+      "title": "5.4 DMA Ownership",
+      "group": "5 DMA Authorization and Ownership",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
+        "line": 476
+      },
+      "applicable_context": [
+        "MS = DMA\nRUN = 1"
+      ],
+      "direct_assignments": [],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "Memory is the sole `MDB` producer.",
+        "The selected controller must not drive `MDB`.",
+        "The controller captures `MDB` at TP2.",
+        "No CPU control assignment may replace the controller-supplied address, field, or direction."
+      ],
+      "sources": [
+        {
+          "label": "DMA Interface",
+          "target": "../../07-io/05-dma-interface.md"
+        }
+      ],
+      "drive_states": [
+        "CPU MFB driver = HIGH_Z\nCPU AB driver  = HIGH_Z\nCPU MDB driver = HIGH_Z\nCPU /RD driver = HIGH_Z\nCPU /WR driver = HIGH_Z"
+      ],
+      "external_ownership": [
+        "selected controller drives MFB\nselected controller drives AB\nselected controller asserts /RD\nselected controller deasserts /WR\nmemory drives MDB"
+      ],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "02:6.1",
+      "title": "6.1 Inactive System Data Bus",
+      "group": "6 System Data Bus Ownership",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
+        "line": 543
+      },
+      "applicable_context": [
+        "DB_WRITE_FROM_AC is not selected"
+      ],
+      "direct_assignments": [],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "The CPU must not drive `DB` during a DB read.",
+        "The CPU must not drive `DB` merely because an external IOT is active.",
+        "A selected external controller may drive `DB` only during its documented read-transfer interval.",
+        "At most one participant may drive `DB`."
+      ],
+      "sources": [
+        {
+          "label": "Architectural Control Signals",
+          "target": "../20-control-output-definitions/02-architectural-control-signals.md"
+        },
+        {
+          "label": "External IOT Interface",
+          "target": "../../07-io/02-external-iot-interface.md"
+        },
+        {
+          "label": "Signal Ownership Matrix",
+          "target": "../../05-buses-and-signals/08-ownership-matrix.md"
+        }
+      ],
+      "drive_states": [
+        "CPU DB driver = HIGH_Z"
+      ],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "02:6.2",
+      "title": "6.2 CPU DB Write",
+      "group": "6 System Data Bus Ownership",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
+        "line": 572
+      },
+      "applicable_context": [
+        "DB_WRITE_FROM_AC is selected"
+      ],
+      "direct_assignments": [],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [
+        "/DB_READ  = 1\n/DB_WRITE = 0"
+      ],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "`/DB_READ` and `/DB_WRITE` must not both be asserted.",
+        "The CPU is the sole `DB` driver.",
+        "External controllers must not drive `DB`.",
+        "`/DB_WRITE` must be paired with `DB_WRITE_FROM_AC`.",
+        "The `/DB_WRITE` assignment and AC-to-DB datapath selection remain owned by the `DB_WRITE_FROM_AC` micro-operation mapping rather than a separate direct-control result."
+      ],
+      "sources": [
+        {
+          "label": "Micro Operations",
+          "target": "../../03-microarchitecture/02-micro-operations.md"
+        },
+        {
+          "label": "Architectural Control Signals",
+          "target": "../20-control-output-definitions/02-architectural-control-signals.md"
+        }
+      ],
+      "drive_states": [
+        "CPU DB driver = driven from AC"
+      ],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "02:6.3",
+      "title": "6.3 CPU DB Read",
+      "group": "6 System Data Bus Ownership",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
+        "line": 608
+      },
+      "applicable_context": [
+        "DB_READ_TO_AC is selected"
+      ],
+      "direct_assignments": [],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [
+        "/DB_READ  = 0\n/DB_WRITE = 1"
+      ],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "`/DB_READ` and `/DB_WRITE` must not both be asserted.",
+        "`/DB_READ` must be paired with `DB_READ_TO_AC`.",
+        "The CPU must not drive `DB`.",
+        "At most one selected external controller may drive `DB`.",
+        "The `/DB_READ` assignment and DB-to-AC datapath selection remain owned by the `DB_READ_TO_AC` micro-operation mapping rather than a separate direct-control result."
+      ],
+      "sources": [
+        {
+          "label": "Micro Operations",
+          "target": "../../03-microarchitecture/02-micro-operations.md"
+        },
+        {
+          "label": "Architectural Control Signals",
+          "target": "../20-control-output-definitions/02-architectural-control-signals.md"
+        }
+      ],
+      "drive_states": [
+        "CPU DB driver = HIGH_Z"
+      ],
+      "external_ownership": [
+        "the selected controller may drive DB"
+      ],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "02:7.2",
+      "title": "7.2 External-Device IOT",
+      "group": "7 External-IOT Qualification",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
+        "line": 671
+      },
+      "applicable_context": [
+        "RUN = 1\nMS = EXECUTE\nIR_IS_EXTERNAL_IOT = 1"
+      ],
+      "direct_assignments": [],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "`IOT_ACTIVE`, `IOA`, and `IOP` are derived outputs rather than direct-control assignments.",
+        "Only the address-matched controller may respond.",
+        "Controller response inputs are valid only while `IOT_ACTIVE = 1`.",
+        "`IOT_ACTIVE` does not itself determine whether a read, write, skip, clear-AC, or wait response is accepted.",
+        "DB ownership remains governed by `/DB_READ`, `/DB_WRITE`, and the accepted transfer state."
+      ],
+      "sources": [
+        {
+          "label": "IOT Execution",
+          "target": "../../03-microarchitecture/06-iot-execution.md"
+        },
+        {
+          "label": "External IOT Interface",
+          "target": "../../07-io/02-external-iot-interface.md"
+        },
+        {
+          "label": "Architectural Control Signals",
+          "target": "../20-control-output-definitions/02-architectural-control-signals.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": [
+        "IOT_ACTIVE = 1\nIOA = IR_IOA\nIOP = IR[2:0]"
+      ]
+    },
+    {
+      "id": "02:7.3",
+      "title": "7.3 Non-External-IOT Control Cases",
+      "group": "7 External-IOT Qualification",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
+        "line": 705
+      },
+      "applicable_context": [
+        "NOT (\n    RUN = 1\n    AND MS = EXECUTE\n    AND IR_IS_EXTERNAL_IOT = 1\n)"
+      ],
+      "direct_assignments": [],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "Processor IOT execution (device 00) and memory extension IOT execution (devices 20–27) must not qualify external controllers.",
+        "An `IOA` value alone does not make a controller response valid.",
+        "External response inputs must not affect control while `IOT_ACTIVE = 0`."
+      ],
+      "sources": [
+        {
+          "label": "IOT Execution",
+          "target": "../../03-microarchitecture/06-iot-execution.md"
+        },
+        {
+          "label": "External IOT Interface",
+          "target": "../../07-io/02-external-iot-interface.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": [
+        "IOT_ACTIVE = 0"
+      ]
+    },
+    {
+      "id": "02:8.2",
+      "title": "8.2 CAF Initialization",
+      "group": "8 System Initialization",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
+        "line": 762
+      },
+      "applicable_context": [
+        "MS = EXECUTE\nTS = 4\nIR_IS_CAF = 1"
+      ],
+      "direct_assignments": [
+        "/INITIALIZE = 0"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "`/INITIALIZE` is asserted during EXECUTE TS4 and its effects commit at TP4.",
+        "`/INITIALIZE` overrides normal controller activity.",
+        "Controller initialization behavior remains defined by each controller contract.",
+        "Software is responsible for satisfying documented device-idle and safety requirements before executing CAF.",
+        "`/INITIALIZE` must not be inferred from the CAF micro-operation list alone."
+      ],
+      "sources": [
+        {
+          "label": "ISA - IOT",
+          "target": "../../02-isa/04-iot.md"
+        },
+        {
+          "label": "IOT Execution",
+          "target": "../../03-microarchitecture/06-iot-execution.md"
+        },
+        {
+          "label": "Architectural Control Signals",
+          "target": "../20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize"
+        }
+      ],
+      "drive_states": [
+        "CPU /INITIALIZE driver = DRIVE_LOW"
+      ],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "02:8.3",
+      "title": "8.3 Front-Panel Clear Initialization",
+      "group": "8 System Initialization",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
+        "line": 800
+      },
+      "applicable_context": [
+        "RUN = 0\nFP_CLEAR = 1"
+      ],
+      "direct_assignments": [
+        "/INITIALIZE = 0"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "`/INITIALIZE` is asserted for the console transaction and its effects commit at TPC.",
+        "The associated CPU-state changes remain represented by their selected micro-operations and sequencing results.",
+        "`/INITIALIZE` does not replace those internal state assignments.",
+        "Controller initialization behavior remains defined by each controller contract."
+      ],
+      "sources": [
+        {
+          "label": "Console Execution",
+          "target": "../../03-microarchitecture/09-console-execution.md"
+        },
+        {
+          "label": "External Inputs",
+          "target": "../10-control-input-definitions/04-external-inputs.md#fp_clear"
+        },
+        {
+          "label": "Architectural Control Signals",
+          "target": "../20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize"
+        }
+      ],
+      "drive_states": [
+        "CPU /INITIALIZE driver = DRIVE_LOW"
+      ],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "02:8.4",
+      "title": "8.4 Inactive Initialization Output",
+      "group": "8 System Initialization",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
+        "line": 836
+      },
+      "applicable_context": [
+        "NOT (\n    MS = EXECUTE\n    AND TS = 4\n    AND IR_IS_CAF = 1\n)\nNOT (\n    RUN = 0\n    AND FP_CLEAR = 1\n)"
+      ],
+      "direct_assignments": [
+        "/INITIALIZE = 1"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "`/INITIALIZE` must not be asserted outside the TS or console transaction defined in sections 8.2 and 8.3."
+      ],
+      "sources": [
+        {
+          "label": "Architectural Control Signals",
+          "target": "../20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize"
+        }
+      ],
+      "drive_states": [
+        "CPU /INITIALIZE driver = DRIVE_HIGH"
+      ],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    }
+  ],
+  "diagnostics": []
+}

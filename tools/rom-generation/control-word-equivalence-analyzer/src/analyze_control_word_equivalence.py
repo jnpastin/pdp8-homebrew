@@ -37,6 +37,7 @@ from pathlib import Path
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "common"))
+from design import DESIGN  # noqa: E402  (control-design selection: common/design.py)
 
 from predicates import (  # noqa: E402  (shared ROM-generation module)
     EXCLUSIVE_KINDS,
@@ -53,9 +54,9 @@ from predicates import (  # noqa: E402  (shared ROM-generation module)
 # Paths and constants
 # ---------------------------------------------------------------------------
 
-DEFAULT_ARTIFACT_DIRECTORY = Path("rom/microcode/v1")
+DEFAULT_ARTIFACT_DIRECTORY = Path(DESIGN.maintained)
 OUTPUT_DIRECTORY = Path(
-    "build/simulation_outputs/rom-generation/control-word-equivalence-analyzer"
+    f"{DESIGN.build}/control-word-equivalence-analyzer"
 )
 DEFAULT_ANALYSIS = OUTPUT_DIRECTORY / "control-word-equivalence.json"
 DEFAULT_REPORT = OUTPUT_DIRECTORY / "analysis-report.txt"

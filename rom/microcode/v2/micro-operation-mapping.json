@@ -1,0 +1,1663 @@
+{
+  "specification_type": "micro-operation-mapping",
+  "schema_version": 1,
+  "control_design_version": "v2",
+  "description": "Maps documented micro-operations to symbolic control-field assignments.",
+  "sources": {
+    "micro_operations": "build/simulation_outputs/rom-generation-v2/micro-operation-extractor/micro-operations.json",
+    "control_word_schema": "rom/microcode/v2/control-word-schema.json"
+  },
+  "mappings": [
+    {
+      "micro_operation": "AC_AND_MB",
+      "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_A_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_B_SRC",
+          "value": "1"
+        },
+        {
+          "field": "ALU_OP",
+          "value": "1"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "7"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "AC_AND_MB",
+        "line": 148
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "AC_BSW",
+      "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_A_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_B_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_OP",
+          "value": "11"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "7"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "AC_BSW",
+        "line": 166
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "AC_CLEAR",
+      "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_A_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_B_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_OP",
+          "value": "12"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "7"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "AC_CLEAR",
+        "line": 184
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "AC_COMP",
+      "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_A_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_B_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_OP",
+          "value": "3"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "7"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "AC_COMP",
+        "line": 203
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "AC_INC",
+      "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "L_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_A_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_B_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_OP",
+          "value": "4"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "7"
+        },
+        {
+          "field": "L_OP",
+          "value": "2"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "AC_INC",
+        "line": 222
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "AC_MQ_SWAP",
+      "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "MQ_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "5"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "0"
+        },
+        {
+          "field": "MQ_SRC",
+          "value": "1"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "AC_MQ_SWAP",
+        "line": 242
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "AC_OR_MQ",
+      "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_A_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_B_SRC",
+          "value": "2"
+        },
+        {
+          "field": "ALU_OP",
+          "value": "2"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "7"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "AC_OR_MQ",
+        "line": 262
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "AC_OR_FP_SR",
+      "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_A_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_B_SRC",
+          "value": "3"
+        },
+        {
+          "field": "ALU_OP",
+          "value": "2"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "7"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "AC_OR_FP_SR",
+        "line": 281
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "AC_RAR",
+      "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "L_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_A_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_B_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_OP",
+          "value": "5"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "7"
+        },
+        {
+          "field": "L_OP",
+          "value": "2"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "AC_RAR",
+        "line": 300
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "AC_RAL",
+      "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "L_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_A_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_B_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_OP",
+          "value": "6"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "7"
+        },
+        {
+          "field": "L_OP",
+          "value": "2"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "AC_RAL",
+        "line": 319
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "AC_RTR",
+      "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "L_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_A_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_B_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_OP",
+          "value": "7"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "7"
+        },
+        {
+          "field": "L_OP",
+          "value": "2"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "AC_RTR",
+        "line": 338
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "AC_RTL",
+      "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "L_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_A_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_B_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_OP",
+          "value": "10"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "7"
+        },
+        {
+          "field": "L_OP",
+          "value": "2"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "AC_RTL",
+        "line": 357
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "AC_TO_DF",
+      "assignments": [
+        {
+          "field": "DF_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "DF_SRC",
+          "value": "3"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "AC_TO_DF",
+        "line": 376
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "AC_TO_DIF",
+      "assignments": [
+        {
+          "field": "DIF_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "DIF_SRC",
+          "value": "3"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "AC_TO_DIF",
+        "line": 395
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "AC_TO_L",
+      "assignments": [
+        {
+          "field": "L_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "L_OP",
+          "value": "3"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "AC_TO_L",
+        "line": 414
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "AC_TO_MB",
+      "assignments": [
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "MB_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "0"
+        },
+        {
+          "field": "MB_SRC",
+          "value": "0"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "AC_TO_MB",
+        "line": 433
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "AC_TO_MQ_AND_CLEAR_AC",
+      "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "MQ_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_A_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_B_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_OP",
+          "value": "12"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "7"
+        },
+        {
+          "field": "MQ_SRC",
+          "value": "1"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "AC_TO_MQ_AND_CLEAR_AC",
+        "line": 452
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "ADD_AC_MB",
+      "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "L_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_A_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_B_SRC",
+          "value": "1"
+        },
+        {
+          "field": "ALU_OP",
+          "value": "0"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "7"
+        },
+        {
+          "field": "L_OP",
+          "value": "2"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "ADD_AC_MB",
+        "line": 472
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "CIFP_CLEAR",
+      "assignments": [
+        {
+          "field": "CIFP_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "CIFP_VAL",
+          "value": "0"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "CIFP_CLEAR",
+        "line": 492
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "CIFP_SET",
+      "assignments": [
+        {
+          "field": "CIFP_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "CIFP_VAL",
+          "value": "1"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "CIFP_SET",
+        "line": 511
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "DB_READ_TO_AC",
+      "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "1"
+        },
+        {
+          "field": "/DB_READ",
+          "value": "0"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "DB_READ_TO_AC",
+        "line": 530
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "DB_WRITE_FROM_AC",
+      "assignments": [
+        {
+          "field": "/DB_WRITE",
+          "value": "0"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "DB_WRITE_FROM_AC",
+        "line": 558
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "DF_CLEAR",
+      "assignments": [
+        {
+          "field": "DF_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "DF_SRC",
+          "value": "0"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "DF_CLEAR",
+        "line": 583
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "DIF_CLEAR",
+      "assignments": [
+        {
+          "field": "DIF_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "DIF_SRC",
+          "value": "1"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "DIF_CLEAR",
+        "line": 602
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "DF_TO_AC",
+      "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "3"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "DF_TO_AC",
+        "line": 621
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "DIF_TO_IF",
+      "assignments": [
+        {
+          "field": "IF_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IF_SRC",
+          "value": "1"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "DIF_TO_IF",
+        "line": 641
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "EA_ADDR_TO_MA",
+      "assignments": [
+        {
+          "field": "MA_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "MA_SRC",
+          "value": "1"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "EA_ADDR_TO_MA",
+        "line": 660
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "FP_DF_TO_DF",
+      "assignments": [
+        {
+          "field": "DF_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "DF_SRC",
+          "value": "2"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "FP_DF_TO_DF",
+        "line": 679
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "FP_IF_TO_DIF",
+      "assignments": [
+        {
+          "field": "DIF_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "DIF_SRC",
+          "value": "2"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "FP_IF_TO_DIF",
+        "line": 698
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "FP_IF_TO_IF",
+      "assignments": [
+        {
+          "field": "IF_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IF_SRC",
+          "value": "2"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "FP_IF_TO_IF",
+        "line": 717
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "FP_SR_TO_MB",
+      "assignments": [
+        {
+          "field": "MB_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "MB_SRC",
+          "value": "2"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "FP_SR_TO_MB",
+        "line": 736
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "FP_SR_TO_PC",
+      "assignments": [
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "PC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "4"
+        },
+        {
+          "field": "PC_SRC",
+          "value": "0"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "FP_SR_TO_PC",
+        "line": 755
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "GTF_FLAGS_TO_AC",
+      "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "6"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "GTF_FLAGS_TO_AC",
+        "line": 774
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "IB_TO_AC",
+      "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "4"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "IB_TO_AC",
+        "line": 809
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "IB_TO_DF",
+      "assignments": [
+        {
+          "field": "DF_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "DF_SRC",
+          "value": "1"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "IB_TO_DF",
+        "line": 830
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "IB_TO_DIF",
+      "assignments": [
+        {
+          "field": "DIF_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "DIF_SRC",
+          "value": "0"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "IB_TO_DIF",
+        "line": 849
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "IE_CLEAR",
+      "assignments": [
+        {
+          "field": "IE_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IE_VAL",
+          "value": "0"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "IE_CLEAR",
+        "line": 868
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "IE_SET",
+      "assignments": [
+        {
+          "field": "IE_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IE_VAL",
+          "value": "1"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "IE_SET",
+        "line": 887
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "IF_CLEAR",
+      "assignments": [
+        {
+          "field": "IF_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IF_SRC",
+          "value": "0"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "IF_CLEAR",
+        "line": 906
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "IF_DF_TO_IB",
+      "assignments": [
+        {
+          "field": "IB_LOAD",
+          "value": "1"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "IF_DF_TO_IB",
+        "line": 925
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "IF_TO_AC",
+      "assignments": [
+        {
+          "field": "AC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "AC_SRC",
+          "value": "2"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "IF_TO_AC",
+        "line": 948
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "II_CLEAR",
+      "assignments": [
+        {
+          "field": "II_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "II_VAL",
+          "value": "0"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "II_CLEAR",
+        "line": 968
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "II_SET",
+      "assignments": [
+        {
+          "field": "II_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "II_VAL",
+          "value": "1"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "II_SET",
+        "line": 987
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "IOT_TRANSFER_CAPTURE",
+      "assignments": [
+        {
+          "field": "IOT_TRANSFER_LOAD",
+          "value": "1"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "IOT_TRANSFER_CAPTURE",
+        "line": 1006
+      },
+      "notes": [
+        "IOT_TRANSFER_VAL is supplied by the applicable control case from the accepted IO_READ_REQ or IO_WRITE_REQ."
+      ]
+    },
+    {
+      "micro_operation": "IOT_TRANSFER_CLEAR",
+      "assignments": [
+        {
+          "field": "IOT_TRANSFER_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IOT_TRANSFER_VAL",
+          "value": "0"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "IOT_TRANSFER_CLEAR",
+        "line": 1040
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "IR_ADDR_TO_EA_ADDR",
+      "assignments": [
+        {
+          "field": "EA_ADDR_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "EA_ADDR_SRC",
+          "value": "1"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "IR_ADDR_TO_EA_ADDR",
+        "line": 1064
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "IR_DF_TO_DF",
+      "assignments": [
+        {
+          "field": "DF_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "DF_SRC",
+          "value": "4"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "IR_DF_TO_DF",
+        "line": 1086
+      },
+      "notes": [
+        "DF_VAL is supplied by the applicable control case."
+      ]
+    },
+    {
+      "micro_operation": "IR_IF_TO_DIF",
+      "assignments": [
+        {
+          "field": "DIF_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "DIF_SRC",
+          "value": "4"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "IR_IF_TO_DIF",
+        "line": 1105
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "L_CLEAR",
+      "assignments": [
+        {
+          "field": "L_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "L_OP",
+          "value": "0"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "L_CLEAR",
+        "line": 1124
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "L_COMP",
+      "assignments": [
+        {
+          "field": "L_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "L_OP",
+          "value": "1"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "L_COMP",
+        "line": 1143
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "MA_CLEAR",
+      "assignments": [
+        {
+          "field": "MA_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "MA_SRC",
+          "value": "2"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "MA_CLEAR",
+        "line": 1162
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "MB_INC",
+      "assignments": [
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "MB_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "ALU_A_SRC",
+          "value": "1"
+        },
+        {
+          "field": "ALU_B_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_OP",
+          "value": "4"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "7"
+        },
+        {
+          "field": "MB_SRC",
+          "value": "0"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "MB_INC",
+        "line": 1181
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "MB_TO_EA_ADDR",
+      "assignments": [
+        {
+          "field": "EA_ADDR_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "EA_ADDR_SRC",
+          "value": "0"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "2"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "MB_TO_EA_ADDR",
+        "line": 1200
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "MB_TO_IR",
+      "assignments": [
+        {
+          "field": "IR_LOAD",
+          "value": "1"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "MB_TO_IR",
+        "line": 1219
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "MEM_READ_TO_MB",
+      "assignments": [
+        {
+          "field": "MB_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "MB_SRC",
+          "value": "1"
+        },
+        {
+          "field": "MDB_SRC",
+          "value": "0"
+        },
+        {
+          "field": "/RD",
+          "value": "0"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "MEM_READ_TO_MB",
+        "line": 1238
+      },
+      "notes": [
+        "AB_SRC and MFB_SRC are supplied by the applicable control case."
+      ]
+    },
+    {
+      "micro_operation": "MEM_WRITE_FROM_MB",
+      "assignments": [
+        {
+          "field": "MDB_SRC",
+          "value": "1"
+        },
+        {
+          "field": "/WR",
+          "value": "0"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "MEM_WRITE_FROM_MB",
+        "line": 1264
+      },
+      "notes": [
+        "AB_SRC and MFB_SRC are supplied by the applicable control case."
+      ]
+    },
+    {
+      "micro_operation": "MEM_WRITE_FROM_FP_SR",
+      "assignments": [
+        {
+          "field": "MDB_SRC",
+          "value": "2"
+        },
+        {
+          "field": "/WR",
+          "value": "0"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "MEM_WRITE_FROM_FP_SR",
+        "line": 1291
+      },
+      "notes": [
+        "AB_SRC and MFB_SRC are supplied by the applicable control case."
+      ]
+    },
+    {
+      "micro_operation": "MQ_CLEAR",
+      "assignments": [
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "MQ_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "ALU_A_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_B_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_OP",
+          "value": "12"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "7"
+        },
+        {
+          "field": "MQ_SRC",
+          "value": "0"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "MQ_CLEAR",
+        "line": 1323
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "PC_INC",
+      "assignments": [
+        {
+          "field": "PC_INC",
+          "value": "1"
+        },
+        {
+          "field": "ALU_A_SRC",
+          "value": "2"
+        },
+        {
+          "field": "ALU_B_SRC",
+          "value": "0"
+        },
+        {
+          "field": "ALU_OP",
+          "value": "4"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "PC_INC",
+        "line": 1342
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "PC_LOAD_EA_ADDR",
+      "assignments": [
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "PC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "5"
+        },
+        {
+          "field": "PC_SRC",
+          "value": "0"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "PC_LOAD_EA_ADDR",
+        "line": 1361
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "PC_SET_1",
+      "assignments": [
+        {
+          "field": "PC_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "PC_SRC",
+          "value": "1"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "PC_SET_1",
+        "line": 1380
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "PC_TO_EA_ADDR",
+      "assignments": [
+        {
+          "field": "EA_ADDR_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "EA_ADDR_SRC",
+          "value": "0"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "1"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "PC_TO_EA_ADDR",
+        "line": 1399
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "PC_TO_MA",
+      "assignments": [
+        {
+          "field": "MA_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "MA_SRC",
+          "value": "0"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "PC_TO_MA",
+        "line": 1418
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "PC_TO_MB",
+      "assignments": [
+        {
+          "field": "IDB_DRIVE",
+          "value": "1"
+        },
+        {
+          "field": "MB_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "IDB_SRC",
+          "value": "1"
+        },
+        {
+          "field": "MB_SRC",
+          "value": "0"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "PC_TO_MB",
+        "line": 1437
+      },
+      "notes": []
+    }
+  ],
+  "diagnostics": []
+}

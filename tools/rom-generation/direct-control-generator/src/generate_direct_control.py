@@ -29,21 +29,25 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "common"))
+from design import DESIGN  # noqa: E402  (control-design selection: common/design.py)
+
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
 
 DEFAULT_EXTRACTED = Path(
-    "build/simulation_outputs/rom-generation/direct-control-extractor/"
+    f"{DESIGN.build}/direct-control-extractor/"
     "direct-control-definitions.json"
 )
-DEFAULT_MAINTAINED = Path("rom/microcode/v1/direct-control-definitions.json")
-DEFAULT_INPUT_SCHEMA = Path("rom/microcode/v1/control-input-schema.json")
-DEFAULT_WORD_SCHEMA = Path("rom/microcode/v1/control-word-schema.json")
-DEFAULT_MAPPING = Path("rom/microcode/v1/micro-operation-mapping.json")
+DEFAULT_MAINTAINED = Path(f"{DESIGN.maintained}/direct-control-definitions.json")
+DEFAULT_INPUT_SCHEMA = Path(f"{DESIGN.maintained}/control-input-schema.json")
+DEFAULT_WORD_SCHEMA = Path(f"{DESIGN.maintained}/control-word-schema.json")
+DEFAULT_MAPPING = Path(f"{DESIGN.maintained}/micro-operation-mapping.json")
 
 OUTPUT_DIRECTORY = Path(
-    "build/simulation_outputs/rom-generation/direct-control-generator"
+    f"{DESIGN.build}/direct-control-generator"
 )
 DEFAULT_CANDIDATE = OUTPUT_DIRECTORY / "direct-control-definitions.candidate.json"
 DEFAULT_REPORT = OUTPUT_DIRECTORY / "generation-report.txt"

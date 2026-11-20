@@ -1,0 +1,1881 @@
+{
+  "format_version": 1,
+  "control_design_version": "v2",
+  "artifact": "execution-definitions",
+  "generation_stage": "candidate-generation",
+  "cases": [
+    {
+      "id": "fetch-defer:3.1",
+      "source": {
+        "path": "docs/03-microarchitecture/04-fetch-defer.md",
+        "line": 42
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = FETCH"
+      ],
+      "timing_state": 1,
+      "micro_operations": [
+        "PC_TO_MA"
+      ],
+      "conditional_micro_operations": [
+        {
+          "predicate": "CIFP = 0",
+          "micro_operation": "II_CLEAR"
+        }
+      ]
+    },
+    {
+      "id": "fetch-defer:3.2",
+      "source": {
+        "path": "docs/03-microarchitecture/04-fetch-defer.md",
+        "line": 59
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = FETCH"
+      ],
+      "timing_state": 2,
+      "micro_operations": [
+        "MEM_READ_TO_MB"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "fetch-defer:3.3",
+      "source": {
+        "path": "docs/03-microarchitecture/04-fetch-defer.md",
+        "line": 69
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = FETCH"
+      ],
+      "timing_state": 3,
+      "micro_operations": [
+        "MB_TO_IR"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "fetch-defer:3.4",
+      "source": {
+        "path": "docs/03-microarchitecture/04-fetch-defer.md",
+        "line": 79
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = FETCH"
+      ],
+      "timing_state": 4,
+      "micro_operations": [
+        "PC_INC",
+        "IR_ADDR_TO_EA_ADDR"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "fetch-defer:4.2",
+      "source": {
+        "path": "docs/03-microarchitecture/04-fetch-defer.md",
+        "line": 108
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = DEFER"
+      ],
+      "timing_state": 1,
+      "micro_operations": [
+        "EA_ADDR_TO_MA"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "fetch-defer:4.3",
+      "source": {
+        "path": "docs/03-microarchitecture/04-fetch-defer.md",
+        "line": 118
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = DEFER"
+      ],
+      "timing_state": 2,
+      "micro_operations": [
+        "MEM_READ_TO_MB"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "fetch-defer:4.4",
+      "source": {
+        "path": "docs/03-microarchitecture/04-fetch-defer.md",
+        "line": 128
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = DEFER"
+      ],
+      "timing_state": 3,
+      "micro_operations": [],
+      "conditional_micro_operations": [
+        {
+          "predicate": "AUTO_INDEX_REQUIRED = 1",
+          "micro_operation": "MB_INC"
+        }
+      ]
+    },
+    {
+      "id": "fetch-defer:4.5",
+      "source": {
+        "path": "docs/03-microarchitecture/04-fetch-defer.md",
+        "line": 142
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = DEFER"
+      ],
+      "timing_state": 4,
+      "micro_operations": [
+        "MB_TO_EA_ADDR"
+      ],
+      "conditional_micro_operations": [
+        {
+          "predicate": "AUTO_INDEX_REQUIRED = 1",
+          "micro_operation": "MEM_WRITE_FROM_MB"
+        }
+      ]
+    },
+    {
+      "id": "mri:3.1:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 30
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 000"
+      ],
+      "timing_state": 1,
+      "micro_operations": [
+        "EA_ADDR_TO_MA"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.1:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 30
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 000"
+      ],
+      "timing_state": 2,
+      "micro_operations": [
+        "MEM_READ_TO_MB"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.1:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 30
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 000"
+      ],
+      "timing_state": 3,
+      "micro_operations": [
+        "AC_AND_MB"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.1:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 30
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 000"
+      ],
+      "timing_state": 4,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.2:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 48
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 001"
+      ],
+      "timing_state": 1,
+      "micro_operations": [
+        "EA_ADDR_TO_MA"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.2:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 48
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 001"
+      ],
+      "timing_state": 2,
+      "micro_operations": [
+        "MEM_READ_TO_MB"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.2:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 48
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 001"
+      ],
+      "timing_state": 3,
+      "micro_operations": [
+        "ADD_AC_MB"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.2:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 48
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 001"
+      ],
+      "timing_state": 4,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.3:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 66
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 010"
+      ],
+      "timing_state": 1,
+      "micro_operations": [
+        "EA_ADDR_TO_MA"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.3:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 66
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 010"
+      ],
+      "timing_state": 2,
+      "micro_operations": [
+        "MEM_READ_TO_MB"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.3:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 66
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 010"
+      ],
+      "timing_state": 3,
+      "micro_operations": [
+        "MB_INC"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.3:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 66
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 010"
+      ],
+      "timing_state": 4,
+      "micro_operations": [
+        "MEM_WRITE_FROM_MB"
+      ],
+      "conditional_micro_operations": [
+        {
+          "predicate": "ISZ_SKIP_REQUIRED = 1",
+          "micro_operation": "PC_INC"
+        }
+      ]
+    },
+    {
+      "id": "mri:3.4:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 90
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 011"
+      ],
+      "timing_state": 1,
+      "micro_operations": [
+        "EA_ADDR_TO_MA"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.4:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 90
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 011"
+      ],
+      "timing_state": 2,
+      "micro_operations": [
+        "AC_TO_MB"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.4:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 90
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 011"
+      ],
+      "timing_state": 3,
+      "micro_operations": [
+        "MEM_WRITE_FROM_MB"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.4:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 90
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 011"
+      ],
+      "timing_state": 4,
+      "micro_operations": [
+        "AC_CLEAR"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.5:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 108
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 100"
+      ],
+      "timing_state": 1,
+      "micro_operations": [
+        "EA_ADDR_TO_MA"
+      ],
+      "conditional_micro_operations": [
+        {
+          "predicate": "IF_CHANGE_PENDING = 1",
+          "micro_operation": "DIF_TO_IF"
+        },
+        {
+          "predicate": "CIFP = 1",
+          "micro_operation": "CIFP_CLEAR"
+        },
+        {
+          "predicate": "CIFP = 1",
+          "micro_operation": "II_CLEAR"
+        }
+      ]
+    },
+    {
+      "id": "mri:3.5:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 108
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 100"
+      ],
+      "timing_state": 2,
+      "micro_operations": [
+        "PC_TO_MB"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.5:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 108
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 100"
+      ],
+      "timing_state": 3,
+      "micro_operations": [
+        "MEM_WRITE_FROM_MB",
+        "PC_LOAD_EA_ADDR"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.5:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 108
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 100"
+      ],
+      "timing_state": 4,
+      "micro_operations": [
+        "PC_INC"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.6:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 137
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 101"
+      ],
+      "timing_state": 1,
+      "micro_operations": [],
+      "conditional_micro_operations": [
+        {
+          "predicate": "IF_CHANGE_PENDING = 1",
+          "micro_operation": "DIF_TO_IF"
+        },
+        {
+          "predicate": "CIFP = 1",
+          "micro_operation": "CIFP_CLEAR"
+        },
+        {
+          "predicate": "CIFP = 1",
+          "micro_operation": "II_CLEAR"
+        }
+      ]
+    },
+    {
+      "id": "mri:3.6:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 137
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 101"
+      ],
+      "timing_state": 2,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.6:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 137
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 101"
+      ],
+      "timing_state": 3,
+      "micro_operations": [
+        "PC_LOAD_EA_ADDR"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "mri:3.6:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/05-mri-execution.md",
+        "line": 137
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MRI = 1",
+        "IR_MRI_OPCODE = 101"
+      ],
+      "timing_state": 4,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:external:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 135
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_EXTERNAL_IOT = 1"
+      ],
+      "timing_state": 1,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:external:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 135
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_EXTERNAL_IOT = 1"
+      ],
+      "timing_state": 2,
+      "micro_operations": [],
+      "conditional_micro_operations": [
+        {
+          "predicate": "IO_CLEAR_AC_REQ = 1",
+          "micro_operation": "AC_CLEAR"
+        }
+      ]
+    },
+    {
+      "id": "iot:external:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 135
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_EXTERNAL_IOT = 1"
+      ],
+      "timing_state": 3,
+      "micro_operations": [],
+      "conditional_micro_operations": [
+        {
+          "predicate": "IO_CLEAR_AC_REQ = 1",
+          "micro_operation": "AC_CLEAR"
+        },
+        {
+          "predicate": "IOT_READ_PENDING = 1",
+          "micro_operation": "DB_READ_TO_AC"
+        },
+        {
+          "predicate": "IOT_WRITE_PENDING = 1",
+          "micro_operation": "DB_WRITE_FROM_AC"
+        }
+      ]
+    },
+    {
+      "id": "iot:external:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 135
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_EXTERNAL_IOT = 1"
+      ],
+      "timing_state": 4,
+      "micro_operations": [],
+      "conditional_micro_operations": [
+        {
+          "predicate": "IO_CLEAR_AC_REQ = 1",
+          "micro_operation": "AC_CLEAR"
+        },
+        {
+          "predicate": "IO_SKIP_REQ = 1",
+          "micro_operation": "PC_INC"
+        },
+        {
+          "predicate": "IOT_READ_PENDING = 1",
+          "micro_operation": "DB_READ_TO_AC"
+        },
+        {
+          "predicate": "IOT_WRITE_PENDING = 1",
+          "micro_operation": "DB_WRITE_FROM_AC"
+        }
+      ]
+    },
+    {
+      "id": "iot:9.1:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 176
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_IOT = 1",
+        "IR_IOA = 000000",
+        "IR_IOT_OP = 010"
+      ],
+      "timing_state": 1,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.1:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 176
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_IOT = 1",
+        "IR_IOA = 000000",
+        "IR_IOT_OP = 010"
+      ],
+      "timing_state": 2,
+      "micro_operations": [
+        "IE_CLEAR"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.1:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 176
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_IOT = 1",
+        "IR_IOA = 000000",
+        "IR_IOT_OP = 010"
+      ],
+      "timing_state": 3,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.1:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 176
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_IOT = 1",
+        "IR_IOA = 000000",
+        "IR_IOT_OP = 010"
+      ],
+      "timing_state": 4,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.2:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 194
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_IOT = 1",
+        "IR_IOA = 000000",
+        "IR_IOT_OP = 001"
+      ],
+      "timing_state": 1,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.2:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 194
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_IOT = 1",
+        "IR_IOA = 000000",
+        "IR_IOT_OP = 001"
+      ],
+      "timing_state": 2,
+      "micro_operations": [
+        "IE_SET",
+        "II_SET"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.2:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 194
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_IOT = 1",
+        "IR_IOA = 000000",
+        "IR_IOT_OP = 001"
+      ],
+      "timing_state": 3,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.2:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 194
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_IOT = 1",
+        "IR_IOA = 000000",
+        "IR_IOT_OP = 001"
+      ],
+      "timing_state": 4,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.3:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 217
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_IOT = 1",
+        "IR_IOA = 000000",
+        "IR_IOT_OP = 000"
+      ],
+      "timing_state": 1,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.3:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 217
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_IOT = 1",
+        "IR_IOA = 000000",
+        "IR_IOT_OP = 000"
+      ],
+      "timing_state": 2,
+      "micro_operations": [
+        "IE_CLEAR"
+      ],
+      "conditional_micro_operations": [
+        {
+          "predicate": "IE = 1",
+          "micro_operation": "PC_INC"
+        }
+      ]
+    },
+    {
+      "id": "iot:9.3:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 217
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_IOT = 1",
+        "IR_IOA = 000000",
+        "IR_IOT_OP = 000"
+      ],
+      "timing_state": 3,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.3:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 217
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_IOT = 1",
+        "IR_IOA = 000000",
+        "IR_IOT_OP = 000"
+      ],
+      "timing_state": 4,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.4:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 246
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_IOT = 1",
+        "IR_IOA = 000000",
+        "IR_IOT_OP = 011"
+      ],
+      "timing_state": 1,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.4:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 246
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_IOT = 1",
+        "IR_IOA = 000000",
+        "IR_IOT_OP = 011"
+      ],
+      "timing_state": 2,
+      "micro_operations": [],
+      "conditional_micro_operations": [
+        {
+          "predicate": "/INT_REQ = 0",
+          "micro_operation": "PC_INC"
+        }
+      ]
+    },
+    {
+      "id": "iot:9.4:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 246
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_IOT = 1",
+        "IR_IOA = 000000",
+        "IR_IOT_OP = 011"
+      ],
+      "timing_state": 3,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.4:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 246
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_IOT = 1",
+        "IR_IOA = 000000",
+        "IR_IOT_OP = 011"
+      ],
+      "timing_state": 4,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.5:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 275
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_GTF = 1"
+      ],
+      "timing_state": 1,
+      "micro_operations": [
+        "AC_CLEAR"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.5:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 275
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_GTF = 1"
+      ],
+      "timing_state": 2,
+      "micro_operations": [
+        "GTF_FLAGS_TO_AC"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.5:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 275
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_GTF = 1"
+      ],
+      "timing_state": 3,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.5:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 275
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_GTF = 1"
+      ],
+      "timing_state": 4,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.6:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 298
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_RTF = 1"
+      ],
+      "timing_state": 1,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.6:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 298
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_RTF = 1"
+      ],
+      "timing_state": 2,
+      "micro_operations": [
+        "AC_TO_L",
+        "AC_TO_DF",
+        "AC_TO_DIF",
+        "IE_SET",
+        "II_SET",
+        "CIFP_SET"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.6:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 298
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_RTF = 1"
+      ],
+      "timing_state": 3,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.6:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 298
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_RTF = 1"
+      ],
+      "timing_state": 4,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.7:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 329
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_IOT = 1",
+        "IR_IOA = 000000",
+        "IR_IOT_OP = 110"
+      ],
+      "timing_state": 1,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.7:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 329
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_IOT = 1",
+        "IR_IOA = 000000",
+        "IR_IOT_OP = 110"
+      ],
+      "timing_state": 2,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.7:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 329
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_IOT = 1",
+        "IR_IOA = 000000",
+        "IR_IOT_OP = 110"
+      ],
+      "timing_state": 3,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.7:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 329
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_IOT = 1",
+        "IR_IOA = 000000",
+        "IR_IOT_OP = 110"
+      ],
+      "timing_state": 4,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.8:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 353
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_CAF = 1"
+      ],
+      "timing_state": 1,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.8:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 353
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_CAF = 1"
+      ],
+      "timing_state": 2,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.8:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 353
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_CAF = 1"
+      ],
+      "timing_state": 3,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:9.8:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 353
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_CAF = 1"
+      ],
+      "timing_state": 4,
+      "micro_operations": [
+        "AC_CLEAR",
+        "L_CLEAR",
+        "IE_CLEAR"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:10.1:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 393
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MEMEXT_IOT = 1"
+      ],
+      "timing_state": 1,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:10.1:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 393
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MEMEXT_IOT = 1"
+      ],
+      "timing_state": 2,
+      "micro_operations": [],
+      "conditional_micro_operations": [
+        {
+          "predicate": "IR_WRITES_DF = 1",
+          "micro_operation": "IR_DF_TO_DF"
+        },
+        {
+          "predicate": "IR_WRITES_IF = 1",
+          "micro_operation": "IR_IF_TO_DIF"
+        },
+        {
+          "predicate": "IR_WRITES_IF = 1 OR IR_RESTORES_IB = 1",
+          "micro_operation": "II_SET"
+        },
+        {
+          "predicate": "IR_WRITES_IF = 1 OR IR_RESTORES_IB = 1",
+          "micro_operation": "CIFP_SET"
+        },
+        {
+          "predicate": "IR_READS_DF = 1",
+          "micro_operation": "DF_TO_AC"
+        },
+        {
+          "predicate": "IR_READS_IF = 1",
+          "micro_operation": "IF_TO_AC"
+        },
+        {
+          "predicate": "IR_READS_IB = 1",
+          "micro_operation": "IB_TO_AC"
+        },
+        {
+          "predicate": "IR_RESTORES_IB = 1",
+          "micro_operation": "IB_TO_DF"
+        },
+        {
+          "predicate": "IR_RESTORES_IB = 1",
+          "micro_operation": "IB_TO_DIF"
+        }
+      ]
+    },
+    {
+      "id": "iot:10.1:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 393
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MEMEXT_IOT = 1"
+      ],
+      "timing_state": 3,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "iot:10.1:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/06-iot-execution.md",
+        "line": 393
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_MEMEXT_IOT = 1"
+      ],
+      "timing_state": 4,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "interrupt:4.1",
+      "source": {
+        "path": "docs/03-microarchitecture/08-interrupt-execution.md",
+        "line": 59
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = INTERRUPT"
+      ],
+      "timing_state": 1,
+      "micro_operations": [
+        "PC_TO_MB",
+        "MA_CLEAR"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "interrupt:4.2",
+      "source": {
+        "path": "docs/03-microarchitecture/08-interrupt-execution.md",
+        "line": 70
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = INTERRUPT"
+      ],
+      "timing_state": 2,
+      "micro_operations": [
+        "IF_DF_TO_IB",
+        "IF_CLEAR",
+        "DF_CLEAR",
+        "DIF_CLEAR",
+        "CIFP_CLEAR"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "interrupt:4.3",
+      "source": {
+        "path": "docs/03-microarchitecture/08-interrupt-execution.md",
+        "line": 87
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = INTERRUPT"
+      ],
+      "timing_state": 3,
+      "micro_operations": [
+        "MEM_WRITE_FROM_MB"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "interrupt:4.4",
+      "source": {
+        "path": "docs/03-microarchitecture/08-interrupt-execution.md",
+        "line": 96
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = INTERRUPT"
+      ],
+      "timing_state": 4,
+      "micro_operations": [
+        "PC_SET_1",
+        "IE_CLEAR"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "dma:3.1",
+      "source": {
+        "path": "docs/03-microarchitecture/10-dma-execution.md",
+        "line": 37
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = DMA"
+      ],
+      "timing_state": 1,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "dma:3.2",
+      "source": {
+        "path": "docs/03-microarchitecture/10-dma-execution.md",
+        "line": 47
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = DMA"
+      ],
+      "timing_state": 2,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "dma:3.3",
+      "source": {
+        "path": "docs/03-microarchitecture/10-dma-execution.md",
+        "line": 57
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = DMA"
+      ],
+      "timing_state": 3,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "dma:3.4",
+      "source": {
+        "path": "docs/03-microarchitecture/10-dma-execution.md",
+        "line": 67
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = DMA"
+      ],
+      "timing_state": 4,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "console:6",
+      "source": {
+        "path": "docs/03-microarchitecture/09-console-execution.md",
+        "line": 159
+      },
+      "execution_model": "console-transaction",
+      "context": [
+        "RUN = 0",
+        "FP_LOAD_ADDRESS = 1"
+      ],
+      "timing_state": null,
+      "micro_operations": [
+        "CIFP_CLEAR",
+        "FP_SR_TO_PC",
+        "FP_IF_TO_DIF",
+        "FP_IF_TO_IF",
+        "FP_DF_TO_DF"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "console:7",
+      "source": {
+        "path": "docs/03-microarchitecture/09-console-execution.md",
+        "line": 199
+      },
+      "execution_model": "console-transaction",
+      "context": [
+        "RUN = 0",
+        "FP_EXAMINE = 1"
+      ],
+      "timing_state": null,
+      "micro_operations": [
+        "PC_TO_MA",
+        "PC_TO_EA_ADDR",
+        "PC_INC",
+        "MEM_READ_TO_MB"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "console:8",
+      "source": {
+        "path": "docs/03-microarchitecture/09-console-execution.md",
+        "line": 236
+      },
+      "execution_model": "console-transaction",
+      "context": [
+        "RUN = 0",
+        "FP_DEPOSIT = 1"
+      ],
+      "timing_state": null,
+      "micro_operations": [
+        "PC_TO_MA",
+        "PC_TO_EA_ADDR",
+        "PC_INC",
+        "FP_SR_TO_MB",
+        "MEM_WRITE_FROM_FP_SR"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "console:9",
+      "source": {
+        "path": "docs/03-microarchitecture/09-console-execution.md",
+        "line": 282
+      },
+      "execution_model": "console-transaction",
+      "context": [
+        "RUN = 0",
+        "FP_CLEAR = 1"
+      ],
+      "timing_state": null,
+      "micro_operations": [
+        "AC_CLEAR",
+        "L_CLEAR",
+        "IE_CLEAR"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "console:10",
+      "source": {
+        "path": "docs/03-microarchitecture/09-console-execution.md",
+        "line": 331
+      },
+      "execution_model": "console-transaction",
+      "context": [
+        "RUN = 0",
+        "FP_START = 1"
+      ],
+      "timing_state": null,
+      "micro_operations": [
+        "AC_CLEAR",
+        "L_CLEAR",
+        "MQ_CLEAR",
+        "IE_CLEAR",
+        "II_CLEAR"
+      ],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "console:11",
+      "source": {
+        "path": "docs/03-microarchitecture/09-console-execution.md",
+        "line": 378
+      },
+      "execution_model": "console-transaction",
+      "context": [
+        "RUN = 0",
+        "FP_CONTINUE = 1"
+      ],
+      "timing_state": null,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "console:15",
+      "source": {
+        "path": "docs/03-microarchitecture/09-console-execution.md",
+        "line": 547
+      },
+      "execution_model": "console-transaction",
+      "context": [
+        "RUN = 0",
+        "FP_START = 0",
+        "FP_CLEAR = 0",
+        "FP_CONTINUE = 0",
+        "FP_LOAD_ADDRESS = 0",
+        "FP_EXAMINE = 0",
+        "FP_DEPOSIT = 0"
+      ],
+      "timing_state": null,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "opr1:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/07-opr/01-group1-execution.md",
+        "line": 52
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_OPR = 1",
+        "IR_OPR_GROUP1 = 1"
+      ],
+      "timing_state": 1,
+      "micro_operations": [],
+      "conditional_micro_operations": [
+        {
+          "predicate": "IR_OPR_CLA = 1",
+          "micro_operation": "AC_CLEAR"
+        },
+        {
+          "predicate": "IR_OPR_CLL = 1",
+          "micro_operation": "L_CLEAR"
+        }
+      ]
+    },
+    {
+      "id": "opr1:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/07-opr/01-group1-execution.md",
+        "line": 56
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_OPR = 1",
+        "IR_OPR_GROUP1 = 1"
+      ],
+      "timing_state": 2,
+      "micro_operations": [],
+      "conditional_micro_operations": [
+        {
+          "predicate": "IR_OPR_CMA = 1",
+          "micro_operation": "AC_COMP"
+        },
+        {
+          "predicate": "IR_OPR_CML = 1",
+          "micro_operation": "L_COMP"
+        }
+      ]
+    },
+    {
+      "id": "opr1:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/07-opr/01-group1-execution.md",
+        "line": 60
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_OPR = 1",
+        "IR_OPR_GROUP1 = 1"
+      ],
+      "timing_state": 3,
+      "micro_operations": [],
+      "conditional_micro_operations": [
+        {
+          "predicate": "IR_OPR_IAC = 1",
+          "micro_operation": "AC_INC"
+        }
+      ]
+    },
+    {
+      "id": "opr1:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/07-opr/01-group1-execution.md",
+        "line": 63
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_OPR = 1",
+        "IR_OPR_GROUP1 = 1"
+      ],
+      "timing_state": 4,
+      "micro_operations": [],
+      "conditional_micro_operations": [
+        {
+          "predicate": "IR_OPR_RAR = 1 AND IR_OPR_RAL = 0 AND IR_OPR_BSW = 0",
+          "micro_operation": "AC_RAR"
+        },
+        {
+          "predicate": "IR_OPR_RAL = 1 AND IR_OPR_RAR = 0 AND IR_OPR_BSW = 0",
+          "micro_operation": "AC_RAL"
+        },
+        {
+          "predicate": "IR_OPR_RAR = 1 AND IR_OPR_RAL = 0 AND IR_OPR_BSW = 1",
+          "micro_operation": "AC_RTR"
+        },
+        {
+          "predicate": "IR_OPR_RAL = 1 AND IR_OPR_RAR = 0 AND IR_OPR_BSW = 1",
+          "micro_operation": "AC_RTL"
+        },
+        {
+          "predicate": "IR_OPR_RAR = 0 AND IR_OPR_RAL = 0 AND IR_OPR_BSW = 1",
+          "micro_operation": "AC_BSW"
+        }
+      ]
+    },
+    {
+      "id": "opr2:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/07-opr/02-group2-execution.md",
+        "line": 62
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_OPR = 1",
+        "IR_OPR_GROUP2 = 1"
+      ],
+      "timing_state": 1,
+      "micro_operations": [],
+      "conditional_micro_operations": [
+        {
+          "predicate": "SKIP_TAKEN = 1",
+          "micro_operation": "PC_INC"
+        }
+      ]
+    },
+    {
+      "id": "opr2:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/07-opr/02-group2-execution.md",
+        "line": 76
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_OPR = 1",
+        "IR_OPR_GROUP2 = 1"
+      ],
+      "timing_state": 2,
+      "micro_operations": [],
+      "conditional_micro_operations": [
+        {
+          "predicate": "IR_OPR_CLA = 1",
+          "micro_operation": "AC_CLEAR"
+        }
+      ]
+    },
+    {
+      "id": "opr2:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/07-opr/02-group2-execution.md",
+        "line": 82
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_OPR = 1",
+        "IR_OPR_GROUP2 = 1"
+      ],
+      "timing_state": 3,
+      "micro_operations": [],
+      "conditional_micro_operations": [
+        {
+          "predicate": "IR_OPR_OSR = 1",
+          "micro_operation": "AC_OR_FP_SR"
+        }
+      ]
+    },
+    {
+      "id": "opr2:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/07-opr/02-group2-execution.md",
+        "line": 95
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_OPR = 1",
+        "IR_OPR_GROUP2 = 1"
+      ],
+      "timing_state": 4,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "opr3:ts1",
+      "source": {
+        "path": "docs/03-microarchitecture/07-opr/03-group3-execution.md",
+        "line": 51
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_OPR = 1",
+        "IR_OPR_GROUP3 = 1"
+      ],
+      "timing_state": 1,
+      "micro_operations": [],
+      "conditional_micro_operations": [
+        {
+          "predicate": "IR_OPR_CLA = 1",
+          "micro_operation": "AC_CLEAR"
+        }
+      ]
+    },
+    {
+      "id": "opr3:ts2",
+      "source": {
+        "path": "docs/03-microarchitecture/07-opr/03-group3-execution.md",
+        "line": 57
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_OPR = 1",
+        "IR_OPR_GROUP3 = 1"
+      ],
+      "timing_state": 2,
+      "micro_operations": [],
+      "conditional_micro_operations": [
+        {
+          "predicate": "IR_OPR_MQA = 1 AND IR_OPR_MQL = 0",
+          "micro_operation": "AC_OR_MQ"
+        },
+        {
+          "predicate": "IR_OPR_MQL = 1 AND IR_OPR_MQA = 0",
+          "micro_operation": "AC_TO_MQ_AND_CLEAR_AC"
+        },
+        {
+          "predicate": "IR_OPR_MQA = 1 AND IR_OPR_MQL = 1",
+          "micro_operation": "AC_MQ_SWAP"
+        }
+      ]
+    },
+    {
+      "id": "opr3:ts3",
+      "source": {
+        "path": "docs/03-microarchitecture/07-opr/03-group3-execution.md",
+        "line": 65
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_OPR = 1",
+        "IR_OPR_GROUP3 = 1"
+      ],
+      "timing_state": 3,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    },
+    {
+      "id": "opr3:ts4",
+      "source": {
+        "path": "docs/03-microarchitecture/07-opr/03-group3-execution.md",
+        "line": 71
+      },
+      "execution_model": "major-state",
+      "context": [
+        "MS = EXECUTE",
+        "IR_IS_OPR = 1",
+        "IR_OPR_GROUP3 = 1"
+      ],
+      "timing_state": 4,
+      "micro_operations": [],
+      "conditional_micro_operations": []
+    }
+  ],
+  "diagnostics": []
+}

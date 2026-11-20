@@ -24,18 +24,22 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "common"))
+from design import DESIGN  # noqa: E402  (control-design selection: common/design.py)
+
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
 
 DEFAULT_EXTRACTED = Path(
-    "build/simulation_outputs/rom-generation/timing-constraint-extractor/"
+    f"{DESIGN.build}/timing-constraint-extractor/"
     "timing-constraints.json"
 )
-DEFAULT_MAINTAINED = Path("rom/microcode/v1/timing-constraints.json")
+DEFAULT_MAINTAINED = Path(f"{DESIGN.maintained}/timing-constraints.json")
 
 OUTPUT_DIRECTORY = Path(
-    "build/simulation_outputs/rom-generation/timing-constraint-generator"
+    f"{DESIGN.build}/timing-constraint-generator"
 )
 DEFAULT_CANDIDATE = OUTPUT_DIRECTORY / "timing-constraints.candidate.json"
 DEFAULT_REPORT = OUTPUT_DIRECTORY / "generation-report.txt"

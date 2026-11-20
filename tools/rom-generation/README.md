@@ -537,6 +537,15 @@ No file should be copied between these locations solely for convenience. Each fi
 
 ## 19. Current Status
 
+**Control-design selection (branch `one-cycle-fetch`).** Every tool reads its maintained-artifact directory, its build directory, and the `control_design_version` it writes from `common/design.py`, selected by the `PDP8_DESIGN` environment variable or `run_pipeline.py --design` (default `v1`):
+
+| Design | Maintained | Build | Pipeline |
+|---|---|---|---|
+| `v1` | `rom/microcode/v1/` | `build/simulation_outputs/rom-generation/` | frozen: packer only |
+| `v2` | `rom/microcode/v2/` | `build/simulation_outputs/rom-generation-v2/` | every stage |
+
+The tables below name `rom/microcode/v1/`; for `v2`, read `rom/microcode/v2/`. See `option2/plan.md`.
+
 The pipeline through logical control-store packing is implemented. Each tool is a Python 3 program using only the standard library, with its own README and tests. Shared predicate parsing is in `common/`.
 
 Stages, in run order:

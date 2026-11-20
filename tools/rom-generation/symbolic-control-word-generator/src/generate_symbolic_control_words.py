@@ -34,6 +34,7 @@ from pathlib import Path
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "common"))
+from design import DESIGN  # noqa: E402  (control-design selection: common/design.py)
 
 from predicates import (  # noqa: E402  (shared ROM-generation module)
     EXCLUSIVE_KINDS,
@@ -61,11 +62,11 @@ from predicates import (  # noqa: E402  (shared ROM-generation module)
 # Paths
 # ---------------------------------------------------------------------------
 
-DEFAULT_ARTIFACT_DIRECTORY = Path("rom/microcode/v1")
+DEFAULT_ARTIFACT_DIRECTORY = Path(DESIGN.maintained)
 DEFAULT_MAINTAINED = DEFAULT_ARTIFACT_DIRECTORY / "symbolic-control-words.json"
 
 OUTPUT_DIRECTORY = Path(
-    "build/simulation_outputs/rom-generation/symbolic-control-word-generator"
+    f"{DESIGN.build}/symbolic-control-word-generator"
 )
 DEFAULT_CANDIDATE = OUTPUT_DIRECTORY / "symbolic-control-words.candidate.json"
 DEFAULT_REPORT = OUTPUT_DIRECTORY / "generation-report.txt"

@@ -26,6 +26,10 @@ from itertools import pairwise
 from pathlib import Path
 from typing import Iterable, Iterator, Sequence
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "common"))
+from design import DESIGN  # noqa: E402  (control-design selection: common/design.py)
+
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
@@ -53,7 +57,7 @@ SOURCE_PATHS = (
 )
 
 OUTPUT_DIRECTORY = Path(
-    "build/simulation_outputs/rom-generation/control-input-extractor"
+    f"{DESIGN.build}/control-input-extractor"
 )
 DEFAULT_JSON_OUTPUT = OUTPUT_DIRECTORY / "control-inputs.json"
 DEFAULT_REPORT_OUTPUT = OUTPUT_DIRECTORY / "extraction-report.txt"

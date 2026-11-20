@@ -28,6 +28,10 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "common"))
+from design import DESIGN  # noqa: E402  (control-design selection: common/design.py)
+
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
@@ -35,7 +39,7 @@ from typing import Any
 SOURCE_PATH = Path("docs/09-timing/03-major-state-timing.md")
 
 OUTPUT_DIRECTORY = Path(
-    "build/simulation_outputs/rom-generation/timing-constraint-extractor"
+    f"{DESIGN.build}/timing-constraint-extractor"
 )
 DEFAULT_JSON_OUTPUT = OUTPUT_DIRECTORY / "timing-constraints.json"
 DEFAULT_REPORT_OUTPUT = OUTPUT_DIRECTORY / "extraction-report.txt"
@@ -45,7 +49,7 @@ DEFAULT_REPORT_OUTPUT = OUTPUT_DIRECTORY / "extraction-report.txt"
 # ---------------------------------------------------------------------------
 
 FORMAT_VERSION = 1
-CONTROL_DESIGN_VERSION = "v1"
+CONTROL_DESIGN_VERSION = DESIGN.name
 ARTIFACT = "timing-constraints"
 EXTRACTION_STAGE = "documentation-extraction"
 
