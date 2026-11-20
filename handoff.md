@@ -55,14 +55,14 @@ From [option2/spec.md](option2/spec.md) §11, each with a recommendation there:
 |---|---|---|
 | 1 | OPR controls hardwired from IR, enabled by one `OPR_PASS` select | Yes (DEC does this) |
 | 2 | FETCH TS3's control word: `VARIANT = IR_CLASS` outside EXECUTE (2a) or mapping ROM from MDB (2b) | 2a |
-| 3' | TS-length mechanism: a small timing ROM with speed modes; TSTEP 50 ns or 25 ns | Timing ROM; decide the TSTEP before designing the timing generator |
+| 3' | TS-length mechanism: a small timing ROM with speed modes; TSTEP 50 ns or 25 ns | Timing ROM, **50 ns** (timing.md rev. 2) |
 | 4 | Skip and interrupt at the same FETCH TP4 | No special case (same programmer-visible result as DEC) |
 | 6 | `RUN` multiplexer on overlay group 1's low bits, to carry `SKIP` | Yes |
 | 7 | `INSTR_END` decoded by gates from the sequencer word | Gates |
-| 8 | Logic families | ACT/F on the paths in timing.md §6; **the control-store address path must be ACT** |
-| 9 | **PC as a synchronous counter** (or a dedicated incrementer) | **Yes. Without it FETCH needs 25 steps; 3a exactly (24/28) is unreachable, and the fallback (25/26) has no slack.** |
-| 10 | Drive AB from MA whenever the CPU owns the bus | Yes, if the memory-board design allows |
-| 11 | Register `MS_EFF_IS_EXECUTE` and overlay zero-detect conditions at the preceding TP | Yes |
+| 8 | Logic families | ACT/F on the paths in timing.md §6; **the control-store address path must stay ACT** (HCT there cancels the SRAM's gain) |
+| 9 | PC as a synchronous counter (or a dedicated incrementer) | **No** since decision 12: FETCH has 103 ns of margin with the ALU increment (as the 8/E) |
+| 10 | Drive AB from MA whenever the CPU owns the bus | **No** since decision 12: the read has 110 ns of margin |
+| 11 | Register `MS_EFF_IS_EXECUTE` and overlay zero-detect conditions at the preceding TP | **Not required** since decision 12 |
 | 12 | **SRAM-shadowed control store** | **Decided 2026-11-20: yes, with option 2** (spec §11.1) |
 
 ### 3.1 Session of 2026-11-20 (Windows host)
@@ -80,7 +80,7 @@ Points raised in the review that the spec does not yet cover (resolve before or 
 4. **`INSTR_END`:** Claude now leans to the spare sequencer output bit (control decides) over gates.
 5. **Design principle:** the OPR pass unit (IR bits gating the datapath) departs from `00-design-principles.md` §3.1 ("no hardwired control logic"); amend the principle explicitly.
 6. **`02-group2-execution.md`** says "No persistent flag state is introduced"; the SKIP register changes that. `SKIP_TAKEN` keeps its inputs and becomes SKIP's D input; group 3's `SKIP_TAKEN` overlay bit is freed.
-7. **timing.md must be redone** with SRAM figures (spec §11.1).
+7. **timing.md revision 2 done** (2026-11-20, awaiting review): control-store SRAM AS7C256B-15 (PDIP); `T_CW` 81 ns; proposed lengths FETCH/plain DEFER 5/8/6/5 = 24, EXECUTE/autoindex DEFER 6/9/7/6 = 28 (3a exactly), at least 50 ns margin per TS. Main memory left unchosen (the user's instruction): any part up to about 165 ns access fits (timing.md §4.4).
 
 Notes for the review:
 - **Decision 9 is invisible to the timing-state simulator.** `PC_INC` already loads PC "through a dedicated increment path" (MCS `PC_INC`). It changes the docs' hardware description and timing, not the simulated behavior, so it does not block slices A to C.

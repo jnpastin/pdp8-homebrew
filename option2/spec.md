@@ -275,7 +275,7 @@ Full analysis: [timing.md](timing.md).
 - **The console transaction timer** (Major State Timing §8: "the transaction duration equals the TS2 duration") uses the slow TS2 length.
 - **External-IOT EXECUTE** keeps slow-cycle lengths, and `/IO_WAIT` still stretches it. The controller contracts are unchanged.
 
-Result of the per-TS analysis ([timing.md](timing.md) §4): with ACT on the control-store address path and a counter PC (decision 9), the minimum lengths are about FETCH 23 and ISZ EXECUTE 26 steps at 50 ns. That pads to **FETCH 24, EXECUTE 28 (3a exactly)** with 1 to 2 steps of slack. Without decision 9, the fallback split F 25 / X 26 meets D2AB with no slack.
+Result of the per-TS analysis ([timing.md](timing.md) revision 2, §4), with the SRAM-shadowed control store (decision 12) and ACT on the control-store address path: the minimum lengths are about FETCH 15 and ISZ EXECUTE 16 steps at 50 ns, with the PC still incremented through the ALU. The proposed lengths are **FETCH and plain DEFER 5/8/6/5 = 24, EXECUTE and autoindex DEFER 6/9/7/6 = 28 (3a exactly; the slow states keep today's lengths)**, with at least 50 ns of margin in every TS. Any main-memory part with an access time up to about 165 ns fits ([timing.md](timing.md) §4.4).
 
 ## 9. Impacts
 
@@ -307,15 +307,15 @@ Per [plan.md](plan.md):
 | 1 | OPR controls hardwired from IR bits, enabled by `OPR_PASS` | Yes (DEC does this; microcoding needs about 2^8 group 1 combinations) | **open** |
 | 2 | How FETCH TS3 gets its control word | **2a**: `VARIANT = IR_CLASS` outside EXECUTE (section 5.2) | **open** |
 | 3 | Variable TS lengths | 3a | decided 2026-11-19 |
-| 3' | TS-length mechanism: timing ROM with speed modes (section 8); TSTEP 50 ns, or finer | Timing ROM, 50 ns; see [timing.md](timing.md) §7 | **open** |
+| 3' | TS-length mechanism: timing ROM with speed modes (section 8); TSTEP 50 ns, or finer | Timing ROM (shadowed in SRAM), **50 ns**: 3a's lengths are whole 50 ns steps ([timing.md](timing.md) §4.3) | **open** |
 | 4 | Skip and interrupt at the same TP4 | No special case (section 6.2) | **open** |
 | 5 | v1 alongside v2 | Side by side, removable before merge | decided 2026-11-19 |
 | 6 | Overlay: `RUN` multiplexer on state-group bits 2 to 0 for `SKIP` (section 5.3) | Yes | **open** |
 | 7 | `INSTR_END` decoded by gates from the sequencer word (section 6.1) | Gates | **open** |
-| 8 | Logic family per path | Mixed: ACT or F on the critical paths named in [timing.md](timing.md) §6 | **open** (user stated "mixed") |
-| 9 | PC as a synchronous counter (or a dedicated incrementer) instead of incrementing through the ALU | Yes: without it FETCH needs 25 steps and 3a is not reachable ([timing.md](timing.md) §4.3) | **open** |
-| 10 | Drive AB from MA whenever the CPU owns the bus (not only while `/RD` or `/WR`), so the address leads `/RD` | Yes, if the memory-board design allows; it shortens TS2 reads | **open** |
-| 11 | Register `MS_EFF_IS_EXECUTE` and the overlay's combinational conditions (zero detects) at the preceding TP | Yes: keeps `T_addr` ≤ 52 ns ([timing.md](timing.md) §3) | **open** |
+| 8 | Logic family per path | Mixed: ACT or F on the critical paths named in [timing.md](timing.md) §6. **The control-store address path must stay ACT**: with HCT there, the SRAM's gain is lost (timing.md §7.2) | **open** (user stated "mixed") |
+| 9 | PC as a synchronous counter (or a dedicated incrementer) instead of incrementing through the ALU | **No** (revised with decision 12): FETCH has 103 ns of margin with the ALU increment, which is what DEC's 8/E does (timing.md §4.3) | **open** |
+| 10 | Drive AB from MA whenever the CPU owns the bus (not only while `/RD` or `/WR`), so the address leads `/RD` | **No** (revised with decision 12): the read already has 110 ns of margin | **open** |
+| 11 | Register `MS_EFF_IS_EXECUTE` and the overlay's combinational conditions (zero detects) at the preceding TP | **Not required** (revised with decision 12): without it every TS still fits, with at least 50 ns of margin (timing.md §4.3, conclusion 5) | **open** |
 | 12 | Control store shadowed in fast SRAM: the EEPROMs are copied into SRAM at power-on reset, and the machine runs from the SRAM | Yes | **decided 2026-11-20** (with option 2) |
 
 ### 11.1 Decision 12: SRAM-shadowed control store
@@ -332,4 +332,4 @@ Decided 2026-11-20: option 2 **and** an SRAM shadow, for per-class fidelity (opt
   - the EEPROMs' `/WE` is tied high.
 - **Optional:** a front-panel RELOAD accepted only while `RUN = 0` (as every console command), and a verify pass with a fault lamp.
 - **DEC precedent:** the KL10's microcode was loaded into control RAM by its front-end PDP-11 at boot; the VAX-11/780 loaded writable-control-store patches from its console floppy. The PDP-8/E itself is hardwired, so there is no 8-family precedent.
-- **Effect on other decisions, to be re-evaluated in a revised [timing.md](timing.md):** decision 9 (counter PC) and decision 10 (early AB) are probably no longer needed for 3a; decision 8's "the control-store address path must be ACT" probably relaxes; decision 3' (TSTEP) is still open.
+- **Effect on other decisions** ([timing.md](timing.md) revision 2): decisions 9 (counter PC), 10 (early AB), and 11 (registered conditions) are no longer needed for 3a; decision 3' can be 50 ns; decision 8's "the control-store address path must be ACT" still holds, because HCT there would cancel the SRAM's gain.
