@@ -103,6 +103,21 @@ IR_SEQ = ("IR_INDIRECT", "IR_OPR_HLT", "IR_IS_CAF")
 # overlay group, and IR_SEQ = IR_INDIRECT from predecode.
 NON_EXECUTE_GROUP = 1
 NON_EXECUTE_IR_SEQ = "IR_INDIRECT"
+# Outside EXECUTE the datapath slice's VARIANT is the design's class decode
+# (v2: IR_CLASS), and the sequencer slice's A2 the design's A2 decode (v2:
+# IR_NO_EXECUTE); None means 0 (v1). Control Store Organization §5.4.2, §5.6.
+NON_EXECUTE_VARIANT = DESIGN.non_execute_variant
+SEQ_A2 = DESIGN.sequencer_a2
+SEQ_A2_BIT = 2
+# The non-EXECUTE contexts in which IR holds the current instruction (it loads
+# at FETCH TP2), so the datapath word may depend on the class. In every other
+# non-EXECUTE context the word must be the same for every class (§5.4.2).
+CLASS_VALID_CONTEXTS = frozenset({"FETCH:TS3", "FETCH:TS4", "DEFER:TS1", "DEFER:TS2",
+                                  "DEFER:TS3", "DEFER:TS4"})
+# Instruction completion (Architectural Control Signals §4.10, INSTR_END): the
+# major states an instruction can end in, and the next states that continue it.
+COMPLETING_STATES = ("FETCH", "DEFER", "EXECUTE")
+CONTINUING_STATES = ("DEFER", "EXECUTE")
 STATE_NAMES = ("MS", "TS", "RUN")
 OTHER = "~other"
 
@@ -320,6 +335,14 @@ def build_model(documents: dict[str, dict[str, Any]]) -> tuple[Model | None, lis
     for name in IR_SEQ:
         if name not in ir_table:
             error("MISSING_IR_DECODE", "IR_SEQ decode is not an evaluable IR-derived input.", name)
+    for name, what in ((NON_EXECUTE_VARIANT, "non-EXECUTE VARIANT"), (SEQ_A2, "sequencer A2")):
+        if name is not None and name not in ir_table:
+            error("MISSING_IR_DECODE", f"The {what} decode is not an evaluable IR-derived input.",
+                  name)
+    if NON_EXECUTE_VARIANT in ir_table and len(ir_table[NON_EXECUTE_VARIANT][0]) > VARIANT_WIDTH:
+        error("VARIANT_OVERFLOW", f"{NON_EXECUTE_VARIANT} is wider than VARIANT.")
+    if SEQ_A2 in ir_table and len(ir_table[SEQ_A2][0]) != 1:
+        error("A2_NOT_ONE_BIT", "The sequencer A2 decode must be one bit.", SEQ_A2)
 
     if has_failures(diagnostics):
         return None, diagnostics
@@ -672,7 +695,7 @@ class Packing:
     variants: dict[int, list[Signature]]
     variant_of: dict[tuple[int, int], int]          # (ts, ir) -> variant
     variant_group: dict[tuple[int, int], int]       # (ts, variant) -> group
-    nonexec: dict[str, Signature]                   # context name -> signature
+    nonexec: dict[tuple[str, int], Signature]       # (context name, class) -> signature
     layout: dict[str, tuple[int, int]]              # field -> (offset, width)
     slots: list[tuple[int, list[str]]]
     sequencer_table: dict[tuple, dict[str, int]]
@@ -693,8 +716,8 @@ def pack(model: Model) -> tuple[Packing | None, list[Diagnostic]]:
     dp = behaviors(model, model.datapath_fields, diagnostics)
     variants: dict[int, list[Signature]] = defaultdict(list)
     variant_of: dict[tuple[int, int], int] = {}
-    nonexec_sigs: dict[str, set] = defaultdict(set)
-    nonexec: dict[str, Signature] = {}
+    nonexec_sigs: dict[tuple[str, int], set] = defaultdict(set)
+    nonexec: dict[tuple[str, int], Signature] = {}
     needs: list[frozenset] = []
     non_execute_needs: set[str] = set()
     for b in dp:
@@ -720,14 +743,24 @@ def pack(model: Model) -> tuple[Packing | None, list[Diagnostic]]:
                 variant_of[(b.context.ts, ir)] = codes.index(sig)
             needs.append(frozenset(signals))
         else:
-            nonexec_sigs[b.context.name].add((sig.signals, sig.table))
-            nonexec[b.context.name] = sig
+            for cls in sorted({non_execute_class(model, ir) for ir in b.irs}):
+                nonexec_sigs[(b.context.name, cls)].add((sig.signals, sig.table))
+                nonexec[(b.context.name, cls)] = sig
             non_execute_needs |= set(signals)
-    for name, sigs in nonexec_sigs.items():
+    for (name, cls), sigs in nonexec_sigs.items():
         if len(sigs) > 1:
             error("NON_EXECUTE_IR_DEPENDENCE",
-                  "The datapath word depends on IR outside EXECUTE, where the mapping "
-                  "ROM supplies no variant.", name)
+                  "The datapath word depends on IR outside EXECUTE beyond "
+                  + (f"{NON_EXECUTE_VARIANT}" if NON_EXECUTE_VARIANT else "the wired VARIANT 0")
+                  + ", the only instruction input there.", f"{name} class {cls}")
+    by_context: dict[str, set] = defaultdict(set)
+    for (name, cls), sigs in nonexec_sigs.items():
+        by_context[name] |= sigs
+    for name, sigs in by_context.items():
+        if name not in CLASS_VALID_CONTEXTS and len(sigs) > 1:
+            error("NON_EXECUTE_CLASS_DEPENDENCE",
+                  "The datapath word depends on the instruction class in a context where IR "
+                  "does not hold the current instruction.", name)
     for ts, codes in variants.items():
         if len(codes) > 2 ** VARIANT_WIDTH:
             error("VARIANT_OVERFLOW", f"{len(codes)} variants exceed {2 ** VARIANT_WIDTH}.",
@@ -790,7 +823,7 @@ def pack(model: Model) -> tuple[Packing | None, list[Diagnostic]]:
     for key, records in seq_records.items():
         if projection(records, []) is None:
             error("SEQUENCER_IR_DEPENDENCE",
-                  "The sequencer word depends on IR beyond the IR_SEQ decodes.", key[0])
+                  "The sequencer word depends on IR beyond the IR_SEQ and A2 decodes.", key[0])
     if has_failures(diagnostics):
         return None, diagnostics
     ir_seq_needs = _ir_seq_needs(model, seq_records)
@@ -822,7 +855,7 @@ def pack(model: Model) -> tuple[Packing | None, list[Diagnostic]]:
         for ts in ((context.ts,) if context.ts else (1, 2, 3, 4)):
             selected = ir_seq_select.get((execute, ts))
             bit = irseq[IR_SEQ.index(selected)] if selected else "0"
-            seq_projected[(ctx, ts, bit, visible)].extend(records)
+            seq_projected[(ctx, ts, bit, irseq[-1], visible)].extend(records)
     for key, records in seq_projected.items():
         table = projection(records, [])
         if table is None:
@@ -831,6 +864,9 @@ def pack(model: Model) -> tuple[Packing | None, list[Diagnostic]]:
                   "carry in this timing state.", f"{key[0]} TS{key[1]}")
             continue
         seq_table[key] = table[()]
+    if has_failures(diagnostics):
+        return None, diagnostics
+    check_instruction_end(model, seq_table, diagnostics)
     if has_failures(diagnostics):
         return None, diagnostics
 
@@ -842,7 +878,19 @@ def pack(model: Model) -> tuple[Packing | None, list[Diagnostic]]:
 
 
 def _split_by_irseq(model: Model, irs: Sequence[int]) -> list[tuple[str, ...]]:
-    return sorted({tuple(model.ir_table[n][ir] for n in IR_SEQ) for ir in irs})
+    """The IR_SEQ decodes, then the A2 decode, of each IR value."""
+    return sorted({tuple(model.ir_table[n][ir] for n in IR_SEQ) + (a2_value(model, ir),)
+                   for ir in irs})
+
+
+def a2_value(model: Model, ir: int) -> str:
+    """The sequencer slice's A2 for IR value `ir` (Control Store Organization §5.6)."""
+    return model.ir_table[SEQ_A2][ir] if SEQ_A2 else "0"
+
+
+def non_execute_class(model: Model, ir: int) -> int:
+    """The datapath slice's VARIANT outside EXECUTE for IR value `ir` (§5.4.2)."""
+    return int(model.ir_table[NON_EXECUTE_VARIANT][ir], 2) if NON_EXECUTE_VARIANT else 0
 
 
 def context_label(execute: int, ts: int) -> str:
@@ -921,7 +969,7 @@ def slice_select(packing: Packing, execute: bool, ir: int, ts: int) -> int:
     if execute:
         return packing.images["mapping"][mapping_address(ir, previous_ts(ts))]
     indirect = int(packing.model.ir_table[NON_EXECUTE_IR_SEQ][ir])
-    return mapping_entry(0, NON_EXECUTE_GROUP, indirect)
+    return mapping_entry(non_execute_class(packing.model, ir), NON_EXECUTE_GROUP, indirect)
 
 
 def datapath_address(ms_eff: int, ts: int, variant: int, ovl: int) -> int:
@@ -929,13 +977,13 @@ def datapath_address(ms_eff: int, ts: int, variant: int, ovl: int) -> int:
 
 
 def sequencer_address(ms_eff: int, ts: int, values: dict[str, str], halted: bool,
-                      irseq: str) -> int:
+                      irseq: str, a2: str = "0") -> int:
     def bit(name):
         return 1 if values.get(name) == "1" else 0
     ovl = fp_code(values) if halted else (
         bit(SEQ_RUNNING[0]) << 2 | bit(SEQ_RUNNING[1]) << 1 | bit(SEQ_RUNNING[2]))
     return ((ms_eff << 12) | ((ts - 1) << 10) | bit("HLT_REQ") << 9 | bit("FP_STOP") << 8
-            | ovl << 5 | bit("/DMA_REQ") << 4 | int(irseq) << 3)
+            | ovl << 5 | bit("/DMA_REQ") << 4 | int(irseq) << 3 | int(a2) << SEQ_A2_BIT)
 
 
 def build_images(packing: Packing) -> None:
@@ -961,7 +1009,7 @@ def build_images(packing: Packing) -> None:
             context = contexts.get((ms_eff, ts))
             for variant in range(1 << VARIANT_WIDTH):
                 if ms_eff == HALTED_CODE:
-                    sig, group = packing.nonexec["HALTED"], NON_EXECUTE_GROUP
+                    sig, group = _class_independent(packing, "HALTED"), NON_EXECUTE_GROUP
                 elif context is None:
                     continue
                 elif context.execute:
@@ -970,8 +1018,12 @@ def build_images(packing: Packing) -> None:
                         continue
                     sig = codes[variant]
                     group = packing.variant_group[(ts, variant)]
+                elif NON_EXECUTE_VARIANT and context.name in CLASS_VALID_CONTEXTS:
+                    sig, group = packing.nonexec.get((context.name, variant)), NON_EXECUTE_GROUP
+                    if sig is None:
+                        continue                      # no instruction has this class
                 else:
-                    sig, group = packing.nonexec[context.name], NON_EXECUTE_GROUP
+                    sig, group = _class_independent(packing, context.name), NON_EXECUTE_GROUP
                 table = sig.lookup()
                 g = packing.groups[group]
                 for ovl in range(1 << DP_OVL_WIDTH):
@@ -985,7 +1037,7 @@ def build_images(packing: Packing) -> None:
                         packing, word, set(dict(required)))
 
     sequencer = [seq_default] * (1 << ADDRESS_BITS)
-    for (ctx, ts, irseq, visible), required in packing.sequencer_table.items():
+    for (ctx, ts, irseq, a2, visible), required in packing.sequencer_table.items():
         context = next(c for c in model.contexts if c.name == ctx)
         values = dict(zip(list(SEQ_ALWAYS) + ([FP_CMD] if context.halted else list(SEQ_RUNNING)),
                           visible))
@@ -994,13 +1046,51 @@ def build_images(packing: Packing) -> None:
             values.update({n: "1" if i + 1 == code else "0" for i, n in enumerate(FP_COMMANDS)})
         word = _seq_word(model, {**model.defaults, **required})
         ms_eff = HALTED_CODE if context.halted else context.ms_code
-        sequencer[sequencer_address(ms_eff, ts, values, context.halted, irseq)] = word
+        sequencer[sequencer_address(ms_eff, ts, values, context.halted, irseq, a2)] = word
 
     packing.images = {"mapping": mapping, "sequencer": sequencer}
     for device in range(DATAPATH_DEVICES):
         packing.images[f"datapath-{device}"] = [
             (w >> (DEVICE_WIDTH * device)) & 0xFF for w in datapath]
     packing.images["_datapath_words"] = datapath
+
+
+def _class_independent(packing: Packing, name: str) -> Signature:
+    """The datapath signature of a non-EXECUTE context whose word does not
+    depend on the class: it fills every VARIANT, so an undefined IR (power-on)
+    selects the same word."""
+    return next(sig for (ctx, _), sig in sorted(packing.nonexec.items(),
+                                                 key=lambda kv: kv[0]) if ctx == name)
+
+
+def check_instruction_end(model: Model, seq_table: dict, diagnostics: list[Diagnostic]) -> None:
+    """INSTR_END (Architectural Control Signals §4.10) is decoded by gates from
+    MS_EFF, TS, and the predecodes; it must hold exactly where a running TS4
+    sequencer word completes an instruction, that is, where the word does not
+    continue it into DEFER or EXECUTE (Control Store Organization §9)."""
+
+    ms_names = {code: name for name, code in model.ms_codes.items()}
+    continuing = {model.ms_codes[name] for name in CONTINUING_STATES}
+    contexts = {c.name: c for c in model.contexts}
+    bad = []
+    for (ctx, ts, irseq, a2, visible), word in seq_table.items():
+        context = contexts[ctx]
+        if context.halted or ts != 4:
+            continue
+        ms = ms_names[context.ms_code]
+        if ms not in COMPLETING_STATES:
+            continue
+        completes = word.get("MS_NEXT") not in continuing
+        indirect = irseq == "1"            # outside EXECUTE, IR_SEQ is IR_INDIRECT
+        gates = (ms == EXECUTE
+                 or (ms == "FETCH" and a2 == "1" and not indirect)
+                 or (ms == "DEFER" and a2 == "1"))
+        if completes != gates:
+            bad.append(f"{ctx} IR_SEQ={irseq} A2={a2}")
+    for entry in sorted(set(bad))[:20]:
+        diagnostics.append(Diagnostic(ERROR, "INSTR_END_DISAGREES",
+                                      "The INSTR_END decode disagrees with the sequencer's "
+                                      "instruction completion.", entry))
 
 
 def _seq_word(model: Model, word: dict[str, int]) -> int:
@@ -1073,7 +1163,11 @@ def verify(packing: Packing, dp: Sequence[Behavior], seq: Sequence[Behavior],
         ms_eff = HALTED_CODE if context.halted else context.ms_code
         visible = list(SEQ_ALWAYS) + ([FP_CMD] if context.halted else list(SEQ_RUNNING))
         for ts in ((context.ts,) if context.ts else (1, 2, 3, 4)):
-            for entry, ir in entries(b, ts).items():
+            seen: dict[tuple, int] = {}
+            for ir in b.irs:
+                seen.setdefault((slice_select(packing, context.execute, ir, ts),
+                                 a2_value(model, ir)), ir)
+            for (entry, a2), ir in seen.items():
                 irseq = str((entry >> IR_SEQ_BIT) & 1)
                 for record in b.records:
                     for concrete in concrete_combinations(visible, record.values):
@@ -1083,7 +1177,7 @@ def verify(packing: Packing, dp: Sequence[Behavior], seq: Sequence[Behavior],
                             values.update({n: "1" if i + 1 == code else "0"
                                            for i, n in enumerate(FP_COMMANDS)})
                         word = sequencer[sequencer_address(ms_eff, ts, values,
-                                                           context.halted, irseq)]
+                                                           context.halted, irseq, a2)]
                         checked += 1
                         for f in record.care:
                             if _seq_unpack(model, word, f) != record.word[f]:
@@ -1130,8 +1224,11 @@ def packing_json(packing: Packing, diagnostics: Sequence[Diagnostic]) -> dict[st
                               "A4..A0 = DP_OVL",
             "sequencer_slice": "A14..A12 = MS_EFF, A11..A10 = TS_CODE (TS-1), A9 = HLT_REQ, "
                                "A8 = FP_STOP, A7..A5 = SEQ_OVL, A4 = /DMA_REQ, A3 = IR_SEQ, "
-                               "A2..A0 = 0",
+                               + (f"A2 = {SEQ_A2}, A1..A0 = 0" if SEQ_A2 else "A2..A0 = 0"),
         },
+        # Present only for a design that sets them (absent for v1), so v1 output is unchanged.
+        **({"non_execute_variant": NON_EXECUTE_VARIANT} if NON_EXECUTE_VARIANT else {}),
+        **({"sequencer_a2": SEQ_A2} if SEQ_A2 else {}),
         "mapping_rom": {
             "fields": {"VARIANT": [0, VARIANT_WIDTH],
                        "DP_OVL_SEL": [VARIANT_WIDTH, DP_OVL_SEL_WIDTH],

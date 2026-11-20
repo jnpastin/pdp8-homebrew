@@ -19,7 +19,7 @@ All shared execution semantics are defined in:
   
 Applies to instructions where:
 
-IR[11:9] = 000–101  
+IR[11:9] = 000–100  
 
 ---
 
@@ -134,29 +134,7 @@ A pending instruction-field change is applied at TP1, so the TS3 return-address 
 
 ---
 
-### 3.6 IR[11:9] = 101
-  
-**Mnemonic (non-normative):** JMP  
-
-TS1:
-Conditional μops:
-
-```text
-IF_CHANGE_PENDING = 1 -> DIF_TO_IF
-CIFP = 1 -> CIFP_CLEAR
-CIFP = 1 -> II_CLEAR
-```
-
-TS2:
-- (no μops)  
-
-TS3:
-- PC_LOAD_EA_ADDR  
-
-TS4:
-- (no μops)  
-
-A pending instruction-field change is applied at TP1, so the following FETCH uses the new instruction field. The same TP1 clears `II`, so an interrupt may be recognized at this instruction's TP4 ([Interrupt Enable and Inhibit §12](../08-interrupts-and-skip/03-interrupt-enable-and-inhibit.md#12-deferred-field-application)).
+JMP (IR[11:9] = 101) does not enter EXECUTE; it completes in FETCH (direct) or DEFER (indirect) ([Fetch & Defer §3.3, §4.4](./04-fetch-defer.md)).
 
 ---
 

@@ -23,7 +23,7 @@ Section 8 defines:
 - the relationship among `IE`, `II`, `CIFP`, CIF, RMF, RTF, and ION
 - interrupt entry and software-controlled return
 - software identification and servicing of interrupt sources
-- interrupt precedence over DMA at EXECUTE TP4
+- interrupt precedence over DMA at [instruction-completion TP4](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#311-instruction-completion)
 - the common architectural result of a taken skip
 - the absence of persistent skip state
 - Section 8-specific illegal conditions
@@ -50,21 +50,21 @@ Section 8 does not define:
 
 ## 4. Model Summary
 
-Interrupt requests are aggregated without preserving controller identity. CPU control recognizes an eligible interrupt only at EXECUTE TP4 and selects the INTERRUPT major state. Interrupt entry preserves the return address and field context, establishes the interrupt-service context in field 0, and disables interrupts.
+Interrupt requests are aggregated without preserving controller identity. CPU control recognizes an eligible interrupt only at instruction-completion TP4 and selects the INTERRUPT major state. Interrupt entry preserves the return address and field context, establishes the interrupt-service context in field 0, and disables interrupts.
 
 Software identifies and services the requesting controller or controllers. Hardware does not assign priority among interrupting controllers.
 
-A valid interrupt takes precedence over DMA at the same EXECUTE TP4 boundary. The INTERRUPT major state exits unconditionally to FETCH, so neither interrupt nor DMA service may begin directly from INTERRUPT.
+A valid interrupt takes precedence over DMA at the same instruction-completion TP4 boundary. The INTERRUPT major state exits unconditionally to FETCH, so neither interrupt nor DMA service may begin directly from INTERRUPT.
 
 A taken skip increments `PC` exactly once in addition to the normal FETCH increment. Skip conditions are evaluated and consumed at their assigned execution point; no persistent skip state exists.
 
 ## 5. Core Invariants
 
 - Interrupt eligibility, interrupt recognition, and interrupt entry are distinct concepts.
-- Interrupt recognition occurs only at EXECUTE TP4.
+- Interrupt recognition occurs only at instruction-completion TP4.
 - Interrupt entry occurs only during the INTERRUPT major state.
 - INTERRUPT exits unconditionally to FETCH.
-- A valid interrupt takes precedence over an eligible DMA request at the same EXECUTE TP4 boundary.
+- A valid interrupt takes precedence over an eligible DMA request at the same instruction-completion TP4 boundary.
 - Interrupt recognition and entry do not identify, acknowledge, service, or clear an interrupting controller.
 - Interrupt-controller priority and dispatch are controlled by software.
 - ION delays interrupt recognition until the following instruction completes.

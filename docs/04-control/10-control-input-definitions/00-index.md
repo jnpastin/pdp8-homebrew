@@ -134,6 +134,13 @@ Defined in:
 
 ---
 
+### 4.9 Instruction Class Signals
+
+- [IR_CLASS](./02-ir-derived-fields.md#ir_class)  
+- [IR_NO_EXECUTE](./02-ir-derived-fields.md#ir_no_execute)  
+
+---
+
 ## 5. Derived Flags
 
 Defined in: [Derived Flags](./03-derived-flags.md)

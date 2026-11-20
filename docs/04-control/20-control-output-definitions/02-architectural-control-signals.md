@@ -68,7 +68,7 @@ The control word may take transient values for up to `T_CS` after each TS bounda
 | `/WR` | the control word asserts it and `WR_VALID` is asserted |
 | `/INITIALIZE`, CAF and front-panel CLEAR | the control word asserts it and `CW_VALID` is asserted |
 | `/INITIALIZE`, power-on | the power-on reset is active ([Timing Terminology §3.4](../../09-timing/01-terminology.md#34-power-on-reset)) |
-| `/DMA_GRANT`, `IOT_ACTIVE` | always; derived from registered state, so they do not glitch (sections 4.5 and 4.8) |
+| `/DMA_GRANT`, `IOT_ACTIVE`, `INSTR_END` | always; derived from registered state, so they do not glitch (sections 4.5, 4.8, and 4.10) |
 | `IOA`, `IOP` | always; taken from IR |
 
 Each window is a gate on the control-store output: an OR with the inverted window for an active-low signal, an AND for an active-high one.
@@ -514,6 +514,50 @@ The CPU's AC, L, and IE are cleared by the `AC_CLEAR`, `L_CLEAR`, and `IE_CLEAR`
 - CAF and front-panel CLEAR produce the same initialization result
 - /INITIALIZE does not modify II, CIFP, DIF, IF, DF, or IB
 - controller-specific initialized states are defined in the corresponding controller documents
+
+---
+
+### 4.10 Instruction End (INSTR_END)
+
+**Mnemonic:** INSTR_END  
+**Name:** Instruction End  
+**Polarity:** Active-high  
+**Domain:** Architectural  
+
+**Bit Width:** 1
+
+**Default Value:** 0  
+**Explicit Value Required:** No  
+**Value Required When:** Always  
+
+**Description:** Marks the TS4 of an instruction's last major state, at whose TP4 the instruction completes.
+
+**Derivation:**
+
+```text
+INSTR_END =
+    (TS = 4)
+    AND (
+            (MS_EFF = EXECUTE)
+         OR (MS_EFF = FETCH AND IR_NO_EXECUTE AND NOT IR_INDIRECT)
+         OR (MS_EFF = DEFER AND IR_NO_EXECUTE)
+    )
+```
+
+`INSTR_END` is decoded by gates from `MS_EFF`, TS, and the predecodes `IR_NO_EXECUTE` and `IR_INDIRECT` ([IR-Derived Fields](../10-control-input-definitions/02-ir-derived-fields.md#ir_no_execute)). Every input is registered state that changes only at a TP, so `INSTR_END` does not glitch within a TS. It is not stored in the control word: a control-store output would feed back through the arbiter's `DMA_ENABLE` and aggregate `/DMA_REQ` into the sequencer slice's address within the same TS4. It is deasserted while halted (`MS_EFF = HALTED`).
+
+The derivation restates the instruction-completion condition of [Sequencing and Internal Control §3](../30-direct-control-definitions/01-sequencing-and-internal-control.md#3-sequencing-control); the two must agree.
+
+**Timing**
+- asserted for the whole of the TS4 that ends an instruction
+- deasserted in every other TS, in INTERRUPT and DMA, and while halted
+
+**Constraints**
+- must be generated only by this decode
+- does not modify CPU architectural state
+
+**Consumed By**
+- the external DMA arbiter: `DMA_ENABLE` and the retained burst-enabled state ([DMA Arbitration](../../07-io/06-dma-arbitration.md))
 
 ---
 

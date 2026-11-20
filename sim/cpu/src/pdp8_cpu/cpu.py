@@ -202,7 +202,11 @@ class Cpu:
             is_exec = A.ms_eff_is_execute(mseff)
             D.check_derived(run, ms, mseff, is_exec, cond.get("IR_IS_EXTERNAL_IOT"))
 
-            variant, sel, ir_seq = A.execute_selection(is_exec, st["MAPR"], cond.get("IR_INDIRECT"))
+            design = self.design
+            non_exec_variant = cond.get(design.non_execute_variant) if design.non_execute_variant else 0
+            variant, sel, ir_seq = A.execute_selection(is_exec, st["MAPR"], cond.get("IR_INDIRECT"),
+                                                       non_exec_variant)
+            a2 = cond.get(design.sequencer_a2) if design.sequencer_a2 else 0
             group = self.store.overlay_groups[sel]
             ovl = A.overlay_bits(group, lambda s: self._signal(cond, s))
             tsc = A.ts_code(ts)
@@ -210,7 +214,7 @@ class Cpu:
             seq_ovl = A.seq_ovl_bits(run, self.panel.fp_cmd(), int(self.panel.single_instruction),
                                      int(self.panel.single_step), cond.get("INTERRUPT_REQUEST_VALID"))
             seq_base, seq_undef = A.sequencer_address(mseff, tsc, st["HLT_REQ"], int(self.panel.stop),
-                                                      seq_ovl, ext.dma_req_n, ir_seq)
+                                                      seq_ovl, ext.dma_req_n, ir_seq, a2)
             context.update(dp_addr=dp_base, seq_addr=seq_base)
 
             dp_addrs = A.expand(dp_base, dp_undef)
@@ -301,7 +305,7 @@ class Cpu:
         words = {tuple(sorted(self.store.decode_sequencer(a).items())) for a in addresses}
         if len(words) > 1:
             names = [{9: "HLT_REQ", 8: "FP_STOP", 7: "SEQ_OVL[2]", 6: "SEQ_OVL[1]", 5: "SEQ_OVL[0]",
-                      4: "/DMA_REQ", 3: "IR_SEQ"}.get(p, f"A{p}") for p in undefined]
+                      4: "/DMA_REQ", 3: "IR_SEQ", 2: "A2"}.get(p, f"A{p}") for p in undefined]
             raise SpecGap(f"the sequencer word depends on undefined input(s) {names}", "CSO §9")
         return dict(words.pop())
 

@@ -83,9 +83,9 @@ Its instruction-level behavior is defined in [IOT Instruction Detail](../02-isa/
 
 The relationship among the affected states is:
 - ION sets `IE`.
-- The EXECUTE TP4 boundary of ION cannot recognize an interrupt because `II` remains set.
+- The [instruction-completion TP4](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#311-instruction-completion) boundary of ION cannot recognize an interrupt because `II` remains set.
 - During FETCH of the following instruction, `II` is cleared at TP1 only if no deferred instruction-field change is pending (`CIFP = 0`).
-- The following instruction executes before interrupt recognition may occur at its EXECUTE TP4 boundary.
+- The following instruction executes before interrupt recognition may occur at its instruction-completion TP4 boundary.
 
 This produces the required one-instruction recognition delay after ION.
 
@@ -93,7 +93,7 @@ The delay does not prevent:
 
 - interrupting controllers from asserting requests
 - `/INT_REQ` from remaining asserted
-- DMA recognition at an eligible EXECUTE TP4 boundary
+- DMA recognition at an eligible instruction-completion TP4 boundary
 
 ## 7. IOF Behavior
 
@@ -211,11 +211,11 @@ At that operation:
 - `CIFP` is cleared
 - `II` is cleared
 
-The JMP and JMS execution sequences are defined in [MRI Execution](../03-microarchitecture/05-mri-execution.md).
+The JMP execution sequences are defined in [Fetch & Defer](../03-microarchitecture/04-fetch-defer.md) (a JMP completes in FETCH or DEFER), and the JMS sequence in [MRI Execution](../03-microarchitecture/05-mri-execution.md).
 
-All three commit at the TP1 of the JMP or JMS, so interrupt recognition may occur at the EXECUTE TP4 boundary of that same JMP or JMS if all eligibility conditions are satisfied. The interrupt entry then saves the new instruction field in `IB` and the transfer address (JMP) or the address after the return-address word (JMS) in location `0000`, so no field change is lost.
+All three commit at FETCH TP3 of a direct JMP or EXECUTE TP1 of a JMS. A JMP I clears `II` at DEFER TP3 and applies the field and clears `CIFP` at DEFER TP4, after the auto-index write-back of its pointer in DEFER TS4, which must still use the old field ([Fetch & Defer §4.5](../03-microarchitecture/04-fetch-defer.md#45-ts4)). In every case `II` is clear before the instruction's completion, so interrupt recognition may occur at the instruction-completion TP4 of that same JMP or JMS if all eligibility conditions are satisfied. The interrupt entry then saves the new instruction field in `IB` and the transfer address (JMP) or the address after the return-address word (JMS) in location `0000`, so no field change is lost.
 
-This matches the PDP-8/E, where the KM8-E negates its interrupt inhibit during any JMP or JMS ("negated at TP3 whenever a JMP or JMS instruction occurs", KM8-E Memory Extension Theory of Operation §2.9), and MAINDEC-8E-D1HA checks that the interrupt follows the field-changing JMP.
+The JMP timing matches the PDP-8/E, where the KM8-E negates its interrupt inhibit during any JMP or JMS ("negated at TP3 whenever a JMP or JMS instruction occurs", KM8-E Memory Extension Theory of Operation §2.9), and MAINDEC-8E-D1HA checks that the interrupt follows the field-changing JMP.
 
 ## 13. FETCH-Time Inhibit Clearing
 
@@ -251,13 +251,13 @@ The required behavior is determined by the committed II and CIFP state rather th
 
 They do not enable, inhibit, prioritize, acknowledge, or cancel DMA requests.
 
-Therefore, DMA may be selected at an eligible EXECUTE TP4 boundary while interrupt recognition is prevented by:
+Therefore, DMA may be selected at an eligible instruction-completion TP4 boundary while interrupt recognition is prevented by:
 
 - `IE` being clear
 - `II` being set
 - a CIF-, RMF-, or RTF-established deferred instruction-field inhibit interval
 
-When an interrupt is valid at the same EXECUTE TP4 boundary as DMA, the precedence rule is defined in [Interrupt Recognition and Sequencing](./02-interrupt-recognition-and-sequencing.md#7-interrupt-precedence-over-dma).
+When an interrupt is valid at the same instruction-completion TP4 boundary as DMA, the precedence rule is defined in [Interrupt Recognition and Sequencing](./02-interrupt-recognition-and-sequencing.md#7-interrupt-precedence-over-dma).
 
 ## 16. Invariants
   
@@ -273,8 +273,8 @@ The following invariants apply:
 - CIF, RMF, and RTF set II and CIFP.
 - FETCH must not clear II while CIFP is set.
 - A pending instruction-field change established by CIF, RMF, or RTF inhibits interrupt recognition until JMP or JMS applies the deferred field.
-- A JMP or JMS that applies a pending instruction-field change clears CIFP and II at its EXECUTE TP1, so interrupt recognition may occur at that instruction's EXECUTE TP4.
-- Interrupt recognition after a deferred field change may occur only at a later eligible EXECUTE TP4 boundary.
+- A JMP or JMS that applies a pending instruction-field change clears II at FETCH TP3 (direct JMP), DEFER TP3 (JMP I), or EXECUTE TP1 (JMS), and applies the field and clears CIFP at the same TP, except that a JMP I does so at DEFER TP4; interrupt recognition may occur at that instruction's completion TP4.
+- Interrupt recognition after a deferred field change may occur only at a later eligible instruction-completion TP4 boundary.
 - Interrupt enable and inhibit state do not control DMA eligibility.
 - All changes to IE, II, and CIFP occur only at TP events.
 - All same-TP decisions use pre-TP state.

@@ -9,7 +9,10 @@ take 3.75 to 3.85 us).
 About 32 million reference-model instructions: run only when PDP8_LONG_TESTS is set (PyPy
 recommended). Expected per design:
 - v1: halt at 2607, "printer flag set prior to 9 bit times" (too slow). # V1-ONLY
-- v2: halt at 2607 until slice D gives it its state lengths; then the end-of-program halt.
+- v2 after slice B (JMP completes in FETCH): halt at 2614, "printer flag not set by 9.55 bit
+  times" (too fast: the ISZ + JMP loop is FETCH, EXECUTE, FETCH = 3.6 us at the placeholder
+  1.2 us per state; phase 0 found the same). Slice D gives v2 its state lengths; then the
+  end-of-program halt.
 """
 
 import os
@@ -23,7 +26,7 @@ from pdp8_system import maindec  # noqa: E402
 from pdp8_system.lockstep import reference_from  # noqa: E402
 
 LONG = bool(os.environ.get("PDP8_LONG_TESTS"))
-EXPECTED = {"v1": 0o2607, "v2": 0o2607}   # error-halt address, or None for a pass
+EXPECTED = {"v1": 0o2607, "v2": 0o2614}   # error-halt address, or None for a pass
 
 
 def run_reference_alone(name: str, max_steps: int, seed: int = 1):

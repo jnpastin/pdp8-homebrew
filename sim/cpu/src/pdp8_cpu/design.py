@@ -13,6 +13,9 @@ can be removed before the merge. A `Design` names everything that differs betwee
 - `ea_page`: the register whose bits 11:7 give the current page in EA formation, "MA" (v2: the
   instruction's address, because PC has already advanced at FETCH TP1) or "PC" (v1).
   docs/03-microarchitecture/02-micro-operations.md, IR_ADDR_TO_EA_ADDR.
+- `non_execute_variant`, `sequencer_a2`: the IR decodes on the datapath slice's VARIANT and the
+  sequencer slice's A2 outside EXECUTE (v2: IR_CLASS and IR_NO_EXECUTE; v1: none, so 0).
+  docs/04-control/08-control-store-organization.md §5.4.2, §5.6.
 
 `PDP8_DESIGN` selects the design (default v1), as for the ROM-generation tools
 (tools/rom-generation/common/design.py).
@@ -41,9 +44,11 @@ class Design:
     build: Path                       # the ROM-generation build directory for this design
     schema: Path                      # the maintained control-word schema
     ts_ns: dict = field(default_factory=lambda: dict(UNIFORM_1200))
-    boundary_rule: str = "execute"    # see is_last_state
+    boundary_rule: str = "instr_end"  # see is_last_state
     ir_source: str = "MDB"            # IR's load input (slice A)
     ea_page: str = "MA"               # EA formation's page source (slice A)
+    non_execute_variant: str | None = "IR_CLASS"      # slice B
+    sequencer_a2: str | None = "IR_NO_EXECUTE"        # slice B
 
     @property
     def image_dir(self) -> Path:
@@ -64,7 +69,8 @@ DESIGNS = {
     # V1-ONLY
     "v1": Design("v1", _ROM_BUILD / "rom-generation",
                  REPO_ROOT / "rom" / "microcode" / "v1" / "control-word-schema.json",
-                 ir_source="MB", ea_page="PC"),                       # V1-ONLY
+                 ir_source="MB", ea_page="PC", boundary_rule="execute",
+                 non_execute_variant=None, sequencer_a2=None),        # V1-ONLY
     "v2": Design("v2", _ROM_BUILD / "rom-generation-v2",
                  REPO_ROOT / "rom" / "microcode" / "v2" / "control-word-schema.json"),
 }
@@ -86,18 +92,42 @@ def is_last_state(design: Design, ms: str, ir) -> bool:
     arbiter's re-enable, halts, and controllers' `at_boundary` (option2/spec.md §6.1).
 
     Rules:
-    - "execute": every instruction ends in EXECUTE (v1; v2 until slice B).
+    - "execute": every instruction ends in EXECUTE (v1).
+    - "instr_end": INSTR_END (docs/04-control/20-control-output-definitions/
+      02-architectural-control-signals.md §4.10): EXECUTE, or FETCH when IR_NO_EXECUTE and not
+      IR_INDIRECT (a direct JMP), or DEFER when IR_NO_EXECUTE (a JMP I) (v2).
     """
-    if design.boundary_rule == "execute":
+    if design.boundary_rule == "execute":  # V1-ONLY
         return ms == "EXECUTE"
+    if design.boundary_rule == "instr_end":
+        if ms == "EXECUTE":
+            return True
+        if ms not in ("FETCH", "DEFER"):
+            return False
+        no_execute, indirect = _completion_decodes(ir)
+        if no_execute is None:
+            return False
+        return bool(no_execute) and (ms == "DEFER" or not indirect)
     raise ValueError(f"unknown boundary rule {design.boundary_rule!r}")
+
+
+def _completion_decodes(ir):
+    """(IR_NO_EXECUTE, IR_INDIRECT) of `ir`, from the simulator's IR decodes."""
+    from .inputs import ir_decodes        # inputs does not import design
+    d = ir_decodes(ir)
+    return d["IR_NO_EXECUTE"], d["IR_INDIRECT"]
 
 
 def major_states(design: Design, ir: int) -> tuple:
     """The major states instruction `ir` runs, in order, under `design`'s boundary rule: the
     instruction-level cycle count the reference model charges (option2/plan.md phase 2.6)."""
     indirect = ir >> 9 <= 0o5 and (ir >> 8) & 1        # an indirect MRI, JMP and JMS included
-    if design.boundary_rule == "execute":
+    if design.boundary_rule == "execute":  # V1-ONLY
+        return ("FETCH", "DEFER", "EXECUTE") if indirect else ("FETCH", "EXECUTE")
+    if design.boundary_rule == "instr_end":
+        no_execute, _ = _completion_decodes(ir)
+        if no_execute:                                  # JMP: completes in FETCH or DEFER
+            return ("FETCH", "DEFER") if indirect else ("FETCH",)
         return ("FETCH", "DEFER", "EXECUTE") if indirect else ("FETCH", "EXECUTE")
     raise ValueError(f"unknown boundary rule {design.boundary_rule!r}")
 

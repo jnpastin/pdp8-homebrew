@@ -85,10 +85,10 @@ v2 FETCH, IR loaded at TP2, as DEC does:
 |---|---|---|
 | TS1 | `MA ← EA_ADDR` | same |
 | TS2 | read the pointer: `MB ← MDB` | same |
-| TS3 | autoindex: `MB ← MB + 1` | autoindex as for MRI; **`DIF_TO_IF` if `CIFP`; `CIFP_CLEAR`; `II_CLEAR`** at TP3 |
-| TS4 | autoindex write-back; `EA_ADDR ← MB`; next state EXECUTE | autoindex write-back; **`PC ← MB`**; **instruction boundary** |
+| TS3 | autoindex: `MB ← MB + 1` | autoindex as for MRI; **`II_CLEAR` if `CIFP`** at TP3 |
+| TS4 | autoindex write-back; `EA_ADDR ← MB`; next state EXECUTE | autoindex write-back; **`PC ← MB`; `DIF_TO_IF` and `CIFP_CLEAR` if `CIFP`**; **instruction boundary** |
 
-- JMP I's field change and `II_CLEAR` stay at TP3 of the instruction's last state, so an interrupt is recognized at the JMP I's end (gap L, KM8-E).
+- JMP I's `II_CLEAR` is at DEFER TP3, so an interrupt is recognized at the JMP I's end (gap L, KM8-E). Its field change and `CIFP_CLEAR` are at DEFER TP4: the autoindex write-back in DEFER TS4 addresses the pointer through IF, so IF must not change before it (found by lock-step, 2026-11-20).
 - `PC ← MB` waits for TP4 because autoindexing changes MB at TP3.
 - DEC: "JMP I: next cycle DEFER, which completes it" (KK8-E). Autoindexed DEFER is a slow cycle on the 8/E (section 8).
 
@@ -165,7 +165,7 @@ The page bits come from **MA** instead of PC (section 3.1). The unit stays combi
 | PC source `EA_FORMED` | `PC_SRC` 1 → 2 bits | 0: it already sits in a 2-bit shared group (`IOT_TRANSFER_VAL`, `L_OP`, `MB_SRC`, `PC_SRC`) |
 | IR from MDB | `IR_LOAD` unchanged, source wired | 0 |
 
-v1 uses 44 of 48 datapath bits. v2 needs **45 of 48 until slice C3, then about 42 of 48** once the OPR-only ALU encodings are removed (section 7). **No seventh datapath EEPROM is needed.** The packer confirms the sharing (phase 3 onward).
+v1 uses 44 of 48 datapath bits. The packer's result for slice B is **46 of 48**: direct JMP's FETCH TS3 word uses `PC_SRC`, `EA_ADDR_SRC`, `IF_SRC`, `CIFP_VAL`, and `II_VAL` together, which breaks two of v1's sharing groups. Removing the OPR-only ALU encodings after slice C3 (section 7) frees about 3 bits. **No seventh datapath EEPROM is needed.** The packer confirms the sharing (phase 3 onward).
 
 ### 5.2 Address formation outside EXECUTE (decision 2a)
 
@@ -226,7 +226,7 @@ The `IR_SEQ` meaning of `MAPR[7]` in EXECUTE TS3 (`IR_OPR_HLT`) is no longer nee
 | Mapping ROM address | IR 12 + TS 2 + `A0` = 0 | unchanged |
 | Mapping ROM output | 8 / 8 | 8 / 8 (sequencer decode bit used in TS4 only) |
 | Sequencer address | 12 of 15 used | 14 of 15 |
-| Sequencer output | 7 / 8 bits | **8 / 8**: the spare carries `INSTR_END` (decision 7, section 6.1) |
+| Sequencer output | 7 / 8 bits | 7 / 8 (`INSTR_END` is a gate decode, decision 7, section 6.1) |
 | Overlay | 4 groups × 5 | unchanged, plus a 3-bit `RUN` multiplexer on group 1 |
 
 ## 6. Sequencing and Interrupts
@@ -239,11 +239,13 @@ An instruction ends at the TP4 of its last major state: FETCH (classes 1, 3, 4, 
 - HLT (group 2, captured at FETCH TP3, halting at FETCH TP4); STOP; Single Instruction.
 - Controllers' `at_boundary` time base (simulator).
 
-`INSTR_END` is defined for hardware outside the sequencer (the DMA arbiter's re-enable). **It is a sequencer output (decision 7)**, the last spare bit of the sequencer word, asserted in the TS4 words that end an instruction. It is TP-qualified: its consumers sample it at TP4. Its meaning is
+`INSTR_END` is defined for hardware outside the sequencer (the DMA arbiter's re-enable). **It is decoded by gates from registered state (decision 7, revised 2026-11-20):**
 ```
-INSTR_END = TS4 AND MS ∈ {FETCH, DEFER, EXECUTE} AND NOT (MS_LOAD AND MS_NEXT ∈ {DEFER, EXECUTE})
+INSTR_END = TS4 AND ( MS_EFF = EXECUTE
+                      OR (MS_EFF = FETCH AND IR_NO_EXECUTE AND NOT IR_INDIRECT)
+                      OR (MS_EFF = DEFER AND IR_NO_EXECUTE) )
 ```
-and the packer can verify every sequencer word against that expression. The control store decides it, as it decides every other sequencing output, instead of gates re-deriving it from the sequencer word.
+A sequencer-slice output was first chosen, but it would form a loop within TS4: sequencer SRAM → `INSTR_END` → arbiter `DMA_ENABLE` → aggregate `/DMA_REQ` → sequencer address A4. An SRAM output is not held while an address bit changes (AS7C256C tOH 3 ns), so a glitch could re-trigger itself. Registered `MS_EFF`, TS, and IR change only at TPs, so the gate decode is glitch-free, as the arbiter's v1 "EXECUTE TS4" decode is. The tools check that the expression agrees with the sequencer's instruction-completion contexts. The sequencer output stays spare (7 / 8).
 
 **ION's one-instruction delay still works.** ION sets `II`, and the next instruction's FETCH TS1 clears it if `CIFP = 0`, so recognition is still inhibited at ION's own end.
 
@@ -316,7 +318,7 @@ Per [plan.md](plan.md):
 | 4 | Skip and interrupt at the same TP4 | No special case (section 6.2) | **decided 2026-11-20** |
 | 5 | v1 alongside v2 | Side by side, removable before merge | decided 2026-11-19 |
 | 6 | Overlay: `RUN` multiplexer on state-group bits 2 to 0 for `SKIP` (section 5.3) | Yes | **decided 2026-11-20** |
-| 7 | `INSTR_END`: gates from the sequencer word, or the spare sequencer output (section 6.1) | **Spare sequencer output** | **decided 2026-11-20** |
+| 7 | `INSTR_END`: gates or the spare sequencer output (section 6.1) | **Gates on registered state** (`MS_EFF`, TS, `IR_NO_EXECUTE`, `IR_INDIRECT`) | **decided 2026-11-20; revised the same day** from the spare sequencer output, which would form a loop through the DMA arbiter and `/DMA_REQ` |
 | 8 | Logic family per path | Mixed: ACT or F on the critical paths named in [timing.md](timing.md) §6. **The control-store address path must stay ACT**: with HCT there, the SRAM's gain is lost (timing.md §7.2) | **decided 2026-11-20** (timing.md rev. 2) |
 | 9 | PC as a synchronous counter (or a dedicated incrementer) instead of incrementing through the ALU | **No** (revised with decision 12): FETCH has 103 ns of margin with the ALU increment, which is what DEC's 8/E does (timing.md §4.3) | **decided 2026-11-20** (timing.md rev. 2) |
 | 10 | Drive AB from MA whenever the CPU owns the bus (not only while `/RD` or `/WR`), so the address leads `/RD` | **No** (revised with decision 12): the read already has 110 ns of margin | **decided 2026-11-20** (timing.md rev. 2) |

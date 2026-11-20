@@ -10,6 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from predicates import (  # noqa: E402
     DerivationError,
+    derivation_names,
     ir_derivation_table,
     parse_derivation,
     strip_derivation_comments,
@@ -124,6 +125,38 @@ class TableTests(unittest.TestCase):
     def test_value_must_fit_width(self) -> None:
         _, problems = table(field("F", "F = IR[2:0]", width=2))
         self.assertEqual(problems, [("F", "Derived value exceeds 2 bits.")])
+
+    def test_concatenation(self) -> None:
+        # IR-Derived Fields §1.1: {e2, e1, e0}, most significant first; the
+        # option 2 instruction class (IR_CLASS) is the motivating case.
+        values, problems = table(
+            field(
+                "IR_CLASS",
+                "IR_CLASS = {0, IR[11:9] = 101 AND IR[8], IR[11:9] = 101 AND NOT IR[8]}",
+                width=3,
+            ),
+            field("ONE", "ONE = {1, IR[0]}", width=2),
+        )
+        self.assertEqual(problems, [])
+        self.assertEqual(values["IR_CLASS"][0o5123], "001")   # JMP
+        self.assertEqual(values["IR_CLASS"][0o5523], "010")   # JMP I
+        self.assertEqual(values["IR_CLASS"][0o1523], "000")   # TAD I
+        self.assertEqual(values["IR_CLASS"][0o7000], "000")
+        self.assertEqual(values["ONE"][1], "11")
+        self.assertEqual(values["ONE"][0], "10")
+
+    def test_concatenation_errors(self) -> None:
+        _, problems = table(
+            field("SHORT", "SHORT = {IR[0], IR[1]}", width=3),     # width mismatch
+            field("LIT", "LIT = {2, IR[1]}", width=2),             # literal not 0 or 1
+            field("ONEEL", "ONEEL = {IR[0]}", width=1),            # one element
+            field("OPEN", "OPEN = {IR[0], IR[1]", width=2),        # unterminated
+            field("WIDE", "WIDE = {IR[1:0], IR[2]}", width=2),     # multi-bit element
+        )
+        self.assertEqual(sorted(name for name, _ in problems),
+                         ["LIT", "ONEEL", "OPEN", "SHORT", "WIDE"])
+        names = derivation_names(parse_derivation("X = {0, A AND NOT B, C}")[1])
+        self.assertEqual(names, ["A", "B", "C"])
 
 
 if __name__ == "__main__":

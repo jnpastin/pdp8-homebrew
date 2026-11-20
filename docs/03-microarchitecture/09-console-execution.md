@@ -451,6 +451,14 @@ FETCH → EXECUTE
 FETCH → DEFER → EXECUTE
 ```
 
+```text
+FETCH (direct JMP)
+```
+
+```text
+FETCH → DEFER (JMP I)
+```
+
 Single Instruction does not alter execution behavior.
 
 It only changes when execution halts.

@@ -56,14 +56,23 @@ def mapr_fields(mapr):
     return variant, sel, ir_seq
 
 
-def execute_selection(is_execute, mapr, ir_indirect):
-    """CSO §5.4.2: VARIANT, DP_OVL_SEL, IR_SEQ from MAPR in EXECUTE; 0, 1, IR_INDIRECT otherwise."""
+CLASS_WIDTH = 3   # IRD IR_CLASS; CSO §5.4.2: VARIANT = 00·IR_CLASS outside EXECUTE
+
+
+def execute_selection(is_execute, mapr, ir_indirect, non_execute_variant=0):
+    """CSO §5.4.2: VARIANT, DP_OVL_SEL, IR_SEQ from MAPR in EXECUTE; otherwise the design's
+    non-EXECUTE VARIANT (v2: 00·IR_CLASS; v1: 0), group 1, and IR_INDIRECT.
+
+    An undefined IR_CLASS gives a VARIANT whose class bits are undefined and whose two high
+    bits are the wired 0s, as a per-bit tuple (bit 0 first)."""
     if is_execute:
         variant, sel, ir_seq = mapr_fields(mapr)
         if variant is None:
             raise SpecViolation("MAPR is undefined in EXECUTE", "CSO §5.4.3")
         return variant, sel, ir_seq
-    return 0, 1, ir_indirect
+    if non_execute_variant is None:
+        non_execute_variant = (None,) * CLASS_WIDTH + (0,) * (5 - CLASS_WIDTH)
+    return non_execute_variant, 1, ir_indirect
 
 
 def overlay_bits(group_bits, value_of):
@@ -100,19 +109,22 @@ def datapath_address(mseff, tscode, variant, ovl):
     """CSO §5.5: A14..A12 MS_EFF, A11..A10 TS_CODE, A9..A5 VARIANT, A4..A0 DP_OVL."""
     fields = [(12 + k, (mseff >> k) & 1) for k in range(3)]
     fields += [(10 + k, (tscode >> k) & 1) for k in range(2)]
-    fields += [(5 + k, (variant >> k) & 1) for k in range(5)]
+    if isinstance(variant, tuple):                 # per-bit VARIANT (execute_selection)
+        fields += [(5 + k, variant[k]) for k in range(5)]
+    else:
+        fields += [(5 + k, (variant >> k) & 1) for k in range(5)]
     fields += [(k, ovl[k]) for k in range(5)]
     return _assemble(fields)
 
 
-def sequencer_address(mseff, tscode, hlt_req, fp_stop, seq_ovl, dma_req_n, ir_seq):
+def sequencer_address(mseff, tscode, hlt_req, fp_stop, seq_ovl, dma_req_n, ir_seq, a2=0):
     """CSO §5.6: A14..A12 MS_EFF, A11..A10 TS_CODE, A9 HLT_REQ, A8 FP_STOP, A7..A5 SEQ_OVL,
-    A4 /DMA_REQ, A3 IR_SEQ, A2..A0 = 0."""
+    A4 /DMA_REQ, A3 IR_SEQ, A2 the design's A2 decode (v2: IR_NO_EXECUTE; v1: 0), A1..A0 = 0."""
     fields = [(12 + k, (mseff >> k) & 1) for k in range(3)]
     fields += [(10 + k, (tscode >> k) & 1) for k in range(2)]
     fields += [(9, hlt_req), (8, fp_stop)]
     fields += [(5 + k, seq_ovl[k]) for k in range(3)]
-    fields += [(4, dma_req_n), (3, ir_seq)]
+    fields += [(4, dma_req_n), (3, ir_seq), (2, a2)]
     return _assemble(fields)
 
 

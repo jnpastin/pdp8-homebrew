@@ -81,8 +81,9 @@ class _Eval:
     def sel(self, name):
         """Read a select field that is being interpreted; reserved encodings are violations."""
         code = self.f[name]
-        if E.DATAPATH_FIELDS[name].is_reserved(code):
-            raise SpecViolation(f"{name} = {code:o} is reserved", E.DATAPATH_FIELDS[name].cite)
+        fd = E.datapath_fields(self.design.name)[name]
+        if fd.is_reserved(code):
+            raise SpecViolation(f"{name} = {code:o} is reserved", fd.cite)
         return code
 
     def asserted(self, name):
@@ -207,7 +208,8 @@ class _Eval:
                 raise SpecViolation("PC_INC without ALU_OP = INC and ALU_A_SRC = PC", "MCS PC_INC")
             fx.loads["PC"] = self.alu()[0]
         if f["PC_LOAD"]:
-            fx.loads["PC"] = self.idb() if self.sel("PC_SRC") == 0 else 0o0001
+            # MCS PC_SRC: 0 IDB, 1 constant 0001, 2 the IR address formation unit (IR_ADDR_TO_PC)
+            fx.loads["PC"] = {0: self.idb, 1: lambda: 0o0001, 2: self.ea_formed}[self.sel("PC_SRC")]()
         if f["MA_LOAD"]:
             fx.loads["MA"] = {0: st["PC"], 1: st["EA_ADDR"], 2: 0}[self.sel("MA_SRC")]
         if f["MB_LOAD"]:

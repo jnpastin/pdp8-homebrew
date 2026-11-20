@@ -41,12 +41,12 @@ Interrupt recognition and precedence are defined in [Interrupt Recognition and S
 
 ## 3. Entry Boundary
 
-Interrupt entry begins after CPU control recognizes a valid interrupt at EXECUTE TP4 and selects the INTERRUPT major state.
+Interrupt entry begins after CPU control recognizes a valid interrupt at [instruction-completion TP4](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#311-instruction-completion) and selects the INTERRUPT major state.
 
 Recognition and entry are separate:
 
 - recognition selects `MS_NEXT = INTERRUPT`
-- the major-state transition commits at EXECUTE TP4
+- the major-state transition commits at instruction-completion TP4
 - interrupt-entry state changes occur during the following INTERRUPT major state
 
 No interrupt-entry state change occurs directly as part of the recognition decision.
@@ -271,9 +271,9 @@ Interrupt entry exits unconditionally to FETCH before interrupt-service instruct
 
 DMA is not enabled or disabled by `IE`, `II`, or interrupt entry.
 
-After at least one interrupt-service instruction reaches EXECUTE TP4, an eligible aggregate DMA request may select the DMA major state according to [Interrupt Recognition and Sequencing](./02-interrupt-recognition-and-sequencing.md).
+After at least one interrupt-service instruction reaches instruction-completion TP4, an eligible aggregate DMA request may select the DMA major state according to [Interrupt Recognition and Sequencing](./02-interrupt-recognition-and-sequencing.md).
 
-A valid interrupt request takes precedence over DMA at an EXECUTE TP4 boundary. However, interrupt entry clears `IE`, so another interrupt is not eligible unless software has re-enabled interrupts.
+A valid interrupt request takes precedence over DMA at an instruction-completion TP4 boundary. However, interrupt entry clears `IE`, so another interrupt is not eligible unless software has re-enabled interrupts.
 
 ## 17. Software Responsibilities
 

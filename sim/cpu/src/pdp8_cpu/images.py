@@ -76,6 +76,7 @@ class ControlStore:
             g["code"]: [(b["bit"], b["signal"], b["width"]) for b in g["bits"]]
             for g in packing["overlay_groups"]
         }
+        self.fields = E.datapath_fields(design.name)   # this design's datapath field definitions
         self._dp_words: dict[int, dict] = {}     # decoded words, by address (the images never change)
         self._seq_words: dict[int, dict] = {}
         self._validate()
@@ -109,7 +110,7 @@ class ControlStore:
                 if name in seen:
                     problems.append(f"datapath field {name} appears in two slots")
                 seen[name] = slot
-                fd = E.DATAPATH_FIELDS.get(name)
+                fd = self.fields.get(name)
                 if fd is None:
                     problems.append(f"datapath layout names unknown field {name}")
                 elif fd.width > slot.width:
@@ -132,6 +133,11 @@ class ControlStore:
                 problems.append(f"mapping field {name} is {fields.get(name)}, CSO §5.4.1 gives {[offset, width]}")
         if self.packing.get("non_execute_overlay_group") != NON_EXECUTE_GROUP:
             problems.append("non-EXECUTE overlay group is not group 1 (CSO §5.4.2)")
+        for key, wired in (("non_execute_variant", self.design.non_execute_variant),
+                           ("sequencer_a2", self.design.sequencer_a2)):
+            if self.packing.get(key) != wired:
+                problems.append(f"{key} is {self.packing.get(key)!r} in the packing, "
+                                f"{wired!r} for design {self.design.name} (CSO §5.4.2, §5.6)")
         for code, bits in self.overlay_groups.items():
             used = set()
             for bit, _signal, width in bits:
@@ -161,7 +167,7 @@ class ControlStore:
         for slot in self.datapath_layout:
             raw = (word >> slot.offset) & ((1 << slot.width) - 1)
             for name in slot.fields:
-                out[name] = raw & ((1 << E.DATAPATH_FIELDS[name].width) - 1)
+                out[name] = raw & ((1 << self.fields[name].width) - 1)
         self._dp_words[address] = out
         return out
 

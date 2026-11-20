@@ -64,13 +64,13 @@ Signal flow:
 - `MS` and `RUN` form `MS_EFF`; `MS_EFF` is compared with EXECUTE to form `MS_EFF_IS_EXECUTE`.
 - The front-panel commands are encoded into `FP_CMD[2:0]`.
 - The mapping ROM reads `IR` and `TS` and produces the entry for the following TS of EXECUTE. `MAPR` captures it at each main-sequence TP, so during each TS `MAPR` holds the entry for that TS.
-- `MS_EFF_IS_EXECUTE` selects, for each of three fields, either the `MAPR` field or a fixed source (section 5.4). Each field is an address input of a different part of the control store:
+- `MS_EFF_IS_EXECUTE` selects, for each of three fields, either the `MAPR` field or a predecode source (section 5.4). Each field is an address input of a different part of the control store:
   - `VARIANT` → datapath slice
   - `IR_SEQ` → sequencer slice
   - `DP_OVL_SEL` → datapath overlay
 - The datapath overlay presents the runtime conditions or `FP_CMD` selected by `DP_OVL_SEL` on `DP_OVL[4:0]` (section 6).
 - The datapath slice reads `MS_EFF`, `TS`, `VARIANT`, and `DP_OVL[4:0]`.
-- The sequencer slice reads `MS_EFF`, `TS`, the sequencer inputs, `SEQ_OVL[2:0]`, and `IR_SEQ`.
+- The sequencer slice reads `MS_EFF`, `TS`, the sequencer inputs, `SEQ_OVL[2:0]`, `IR_SEQ`, and `IR_NO_EXECUTE`.
 
 No field of the mapping ROM's output reaches the datapath or the sequencing logic directly; every field is used only to address the slice ROMs or to select the overlay.
 
@@ -90,7 +90,7 @@ Fields:
 MS_NEXT, MS_LOAD, RUN_NEXT, HLT_REQ_NEXT, /INITIALIZE
 ```
 
-These fields depend on the same small set of inputs in every major state: run control, halt and front-panel inputs, the interrupt and DMA requests, and three instruction decodes. Separating them keeps those inputs out of the datapath slice address.
+These fields depend on the same small set of inputs in every major state: run control, halt and front-panel inputs, the interrupt and DMA requests, and the instruction decodes on `IR_SEQ` and A2. Separating them keeps those inputs out of the datapath slice address.
 
 Width: 7 bits, one device; one output is spare.
 
@@ -102,13 +102,13 @@ Fields: every other encoded field of the control word, grouped here by function.
 |---|---|---|
 | Memory interface | `/RD` (1), `/WR` (1), `AB_SRC` (1), `MFB_SRC` (1), `MDB_SRC` (2), `MA_LOAD` (1), `MA_SRC` (2), `MB_LOAD` (1), `MB_SRC` (2), `EA_ADDR_LOAD` (1), `EA_ADDR_SRC` (1) | 14 |
 | Internal data bus | `IDB_DRIVE` (1), `IDB_SRC` (3) | 4 |
-| Registers and ALU | `AC_LOAD` (1), `AC_SRC` (3), `L_LOAD` (1), `L_OP` (2), `MQ_LOAD` (1), `MQ_SRC` (1), `ALU_A_SRC` (2), `ALU_B_SRC` (2), `ALU_OP` (4), `IR_LOAD` (1), `PC_LOAD` (1), `PC_INC` (1), `PC_SRC` (1) | 21 |
+| Registers and ALU | `AC_LOAD` (1), `AC_SRC` (3), `L_LOAD` (1), `L_OP` (2), `MQ_LOAD` (1), `MQ_SRC` (1), `ALU_A_SRC` (2), `ALU_B_SRC` (2), `ALU_OP` (4), `IR_LOAD` (1), `PC_LOAD` (1), `PC_INC` (1), `PC_SRC` (2) | 22 |
 | Fields and interrupts | `IF_LOAD` (1), `IF_SRC` (2), `DF_LOAD` (1), `DF_SRC` (3), `DIF_LOAD` (1), `DIF_SRC` (3), `IB_LOAD` (1), `CIFP_LOAD` (1), `CIFP_VAL` (1), `IE_LOAD` (1), `IE_VAL` (1), `II_LOAD` (1), `II_VAL` (1) | 18 |
 | External IOT | `IOT_TRANSFER_LOAD` (1), `IOT_TRANSFER_VAL` (2), `/DB_READ` (1), `/DB_WRITE` (1) | 5 |
 
-The 43 fields total 62 bits; bit sharing packs them into 44 (section 7.2). Control-word fields that are derived or supplied from outside the control store (`/DMA_GRANT`, `IOT_ACTIVE`, `IOA[5:0]`, `IOP[2:0]`, `GTF_FLAGS`, `IF_DF_COMBINED`, `DB_INPUT`, `MDB_INPUT`) are not produced by either slice.
+The 43 fields total 63 bits; bit sharing packs them into 46 (section 7.2). Control-word fields that are derived or supplied from outside the control store (`/DMA_GRANT`, `IOT_ACTIVE`, `IOA[5:0]`, `IOP[2:0]`, `GTF_FLAGS`, `IF_DF_COMBINED`, `DB_INPUT`, `MDB_INPUT`) are not produced by either slice.
 
-Width: 44 bits after packing (section 7), six devices.
+Width: 46 bits after packing (section 7), six devices.
 
 ---
 
@@ -169,7 +169,7 @@ Console commands are accepted at most one at a time ([External Inputs §4.1](./1
 
 ![Control Store Mapping](../../diagrams/control/control-store-mapping/export/control-store-mapping.png)
 
-The diagram shows the mapping ROM (this section), `MAPR` and its clock (section 5.4.1), and the EXECUTE selection (section 5.4.2). Outside EXECUTE the multiplexers select the wired values and `IR_INDIRECT`; in EXECUTE they select `MAPR`. The 5-bit multiplexer with a wired 0 input is equivalent to the five AND gates of section 5.4.2.
+The diagram shows the mapping ROM (this section), `MAPR` and its clock (section 5.4.1), and the EXECUTE selection (section 5.4.2). Outside EXECUTE the multiplexers select `00·IR_CLASS`, the wired overlay group, and `IR_INDIRECT`; in EXECUTE they select `MAPR` (section 5.4.2).
 
 The mapping ROM ([Control Addressing §2.1](./02-control-addressing.md#21-partitioned-and-two-level-control-stores)) maps the instruction to the address information each slice needs in EXECUTE. It is evaluated one TS ahead: the entry at TS *n* is the entry for TS *n*+1, and the entry at TS4 is the entry for TS1.
 
@@ -219,17 +219,19 @@ The instruction-dependent conditions that select behavior within a case, such as
 
 #### 5.4.2 EXECUTE Selection
 
-The slice and overlay address inputs are formed from `MAPR` in EXECUTE and from fixed sources otherwise:
+The slice and overlay address inputs are formed from `MAPR` in EXECUTE and from predecode or fixed sources otherwise:
 
 | Signal | `MS_EFF_IS_EXECUTE = 1` | `MS_EFF_IS_EXECUTE = 0` |
 |---|---|---|
-| `VARIANT` | `MAPR[4:0]` | 0 |
+| `VARIANT` | `MAPR[4:0]` | `00·IR_CLASS` |
 | `DP_OVL_SEL` | `MAPR[6:5]` | 1 (the state group, section 6.1) |
 | `IR_SEQ` | `MAPR[7]` | `IR_INDIRECT` |
 
-`VARIANT` is formed by five AND gates; `DP_OVL_SEL` and `IR_SEQ` by three sections of a quad 2:1 multiplexer selected by `MS_EFF_IS_EXECUTE`. Like the `MS_EFF` and `SEQ_OVL` multiplexers, this is address formation: it selects which inputs reach the address and evaluates no condition.
+`VARIANT` is formed by a 5-bit 2:1 multiplexer; `DP_OVL_SEL` and `IR_SEQ` by three sections of a quad 2:1 multiplexer selected by `MS_EFF_IS_EXECUTE`. Like the `MS_EFF` and `SEQ_OVL` multiplexers, this is address formation: it selects which inputs reach the address and evaluates no condition.
 
 `IR_INDIRECT` is taken from its predecode gates on the live IR ([IR-Derived Fields](./10-control-input-definitions/02-ir-derived-fields.md#ir_indirect)), not from `MAPR`. Outside EXECUTE, `MAPR` holds entries for EXECUTE timing states, which carry no indirect decode; FETCH TS4, where the sequencer selects DEFER or EXECUTE, reads the live IR, valid from FETCH TP2.
+
+`IR_CLASS` is likewise taken from predecode gates on the live IR ([IR-Derived Fields](./10-control-input-definitions/02-ir-derived-fields.md#ir_class)) and is valid from FETCH TP2. It selects the instruction-dependent datapath words of FETCH TS3 and TS4 and of DEFER. In FETCH TS1 and TS2, INTERRUPT, DMA, and while halted, IR holds the previous instruction, or is undefined after power-on, so every datapath word in those contexts must be the same for all values of `IR_CLASS`; the packer verifies this (section 9).
 
 All contexts with `MS_EFF_IS_EXECUTE = 0` (FETCH, DEFER, INTERRUPT, DMA, and halted) therefore share one overlay group, wired as group 1. Its signals must fit `DP_OVL[4:0]`; the current group uses all five bits.
 
@@ -265,8 +267,11 @@ A8       = FP_STOP
 A7..A5   = SEQ_OVL[2:0]
 A4       = /DMA_REQ
 A3       = IR_SEQ
-A2..A0   = 0
+A2       = IR_NO_EXECUTE
+A1..A0   = 0
 ```
+
+`IR_NO_EXECUTE` is taken from predecode gates on the live IR ([IR-Derived Fields](./10-control-input-definitions/02-ir-derived-fields.md#ir_no_execute)). It decides only FETCH TS4 and DEFER TS4: with `IR_SEQ = IR_INDIRECT` it tells FETCH TS4 whether the instruction completes there or continues to DEFER, and it tells DEFER TS4 whether the instruction completes there. The sequencer word in every other context must not depend on it.
 
 `SEQ_OVL[2:0]` is a 3-bit 2:1 multiplexer selected by `RUN`:
 
@@ -339,16 +344,15 @@ Fields that never require a value in the same control word share device outputs 
 |---|---|
 | 4 | `ALU_OP`, `DF_SRC` |
 | 3 | `AC_SRC`, `DIF_SRC`, `MA_SRC` |
-| 2 | `ALU_A_SRC`, `IF_SRC` |
-| 2 | `ALU_B_SRC`, `CIFP_VAL` |
-| 2 | `IOT_TRANSFER_VAL`, `L_OP`, `MB_SRC`, `PC_SRC` |
-| 1 | `AB_SRC`, `IE_VAL` |
-| 1 | `EA_ADDR_SRC`, `II_VAL` |
-| 29 | the remaining 26 fields, unshared: `IDB_SRC` (3 bits), `MDB_SRC` (2 bits), and 24 one-bit fields |
+| 2 | `ALU_A_SRC`, `PC_SRC` |
+| 2 | `AB_SRC`, `IF_SRC`, `IOT_TRANSFER_VAL`, `L_OP` |
+| 2 | `IE_VAL`, `MB_SRC` |
+| 1 | `CIFP_VAL`, `MQ_SRC` |
+| 32 | the remaining 28 fields, unshared: `IDB_SRC` (3 bits), `ALU_B_SRC` (2 bits), `MDB_SRC` (2 bits), and 25 one-bit fields |
 
-Total: 44 bits in six devices, four bits spare.
+Total: 46 bits in six devices, two bits spare.
 
-Fields that share bits are aligned at the low-order end of the shared bits: a field of width *w* occupies the lowest *w* of them. A field narrower than its shared bits, such as `CIFP_VAL` in the two bits it shares with `ALU_B_SRC`, does not use the higher ones.
+Fields that share bits are aligned at the low-order end of the shared bits: a field of width *w* occupies the lowest *w* of them. A field narrower than its shared bits, such as `AB_SRC` in the two bits it shares with `IF_SRC`, `IOT_TRANSFER_VAL`, and `L_OP`, does not use the higher one.
 
 A field shares bits only through wiring. No decoder or gate follows the control store ([Control Addressing §2](./02-control-addressing.md#2-control-address-definition)).
 
@@ -367,11 +371,11 @@ A field shares bits only through wiring. No decoder or gate follows the control 
 | `TS_CODE` | two OR gates |
 | `/DMA_GRANT`, `IOT_ACTIVE` | comparator for the DMA code; one AND gate |
 | `MAPR` | 8-bit register |
-| EXECUTE selection | five AND gates for `VARIANT`; three sections of a quad 2:1 multiplexer for `DP_OVL_SEL` and `IR_SEQ` |
+| EXECUTE selection | a 5-bit 2:1 multiplexer for `VARIANT`; three sections of a quad 2:1 multiplexer for `DP_OVL_SEL` and `IR_SEQ` |
 | `FP_CMD` | 8-to-3 priority encoder |
 | Datapath overlay | five 4:1 multiplexers |
 
-Total: 8 EEPROMs, plus the register, multiplexers, gates, comparators, and encoder. The `IR_INDIRECT` predecode gates belong to predecode, not to the control store.
+Total: 8 EEPROMs, plus the register, multiplexers, gates, comparators, and encoder. The `IR_INDIRECT`, `IR_CLASS`, and `IR_NO_EXECUTE` predecode gates belong to predecode, and the `INSTR_END` gates to the DMA interface ([Architectural Control Signals §4.10](./20-control-output-definitions/02-architectural-control-signals.md#410-instruction-end-instr_end)), not to the control store.
 
 ---
 
@@ -383,9 +387,11 @@ The control-store packer (`tools/rom-generation/control-store-packer`) produces 
 - every field whose Value Required When condition holds has its required value after bit sharing is undone
 - no address bit carries an input that the address map does not assign to it in that context
 
+It also verifies that the derivation of `INSTR_END` ([Architectural Control Signals §4.10](./20-control-output-definitions/02-architectural-control-signals.md#410-instruction-end-instr_end)) holds exactly in the TS4 contexts whose sequencer word completes an instruction.
+
 Reachability is defined by the input constraints, IR derivations, timing constraints, and state invariants already used by the symbolic generator and the equivalence analyzer.
 
-The packer forms each address as the hardware does: in EXECUTE TS *n*, `MAPR` holds the mapping ROM image entry at TS *n*−1 (TS4 for TS1) and supplies `VARIANT`, `DP_OVL_SEL`, and `IR_SEQ`; outside EXECUTE, `VARIANT` is 0, `DP_OVL_SEL` is 1, and `IR_SEQ` is `IR_INDIRECT`; the overlay groups supply `DP_OVL`; `SEQ_OVL` follows `RUN`. It then reads the slice images and compares every field whose condition holds.
+The packer forms each address as the hardware does: in EXECUTE TS *n*, `MAPR` holds the mapping ROM image entry at TS *n*−1 (TS4 for TS1) and supplies `VARIANT`, `DP_OVL_SEL`, and `IR_SEQ`; outside EXECUTE, `VARIANT` is `00·IR_CLASS`, `DP_OVL_SEL` is 1, `IR_SEQ` is `IR_INDIRECT`, and A2 is `IR_NO_EXECUTE`; the overlay groups supply `DP_OVL`; `SEQ_OVL` follows `RUN`. It then reads the slice images and compares every field whose condition holds.
 
 ---
 

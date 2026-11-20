@@ -40,12 +40,15 @@ class PowerOnTests(unittest.TestCase):
     def test_undefined_address_inputs_are_enumerated(self):
         # While halted after power-on, the state overlay group carries CIFP and AUTO_INDEX_REQUIRED,
         # both undefined; every combination must give the same effect (CSO §5.7, §9).
+        # In v2, VARIANT outside EXECUTE is 00·IR_CLASS (CSO §5.4.2), so IR's three class bits
+        # are undefined too while IR is.
         cpu, rec = new_cpu()
+        classes = 1 if cpu.design.non_execute_variant is None else 8   # V1-ONLY: the 1
         load_address(cpu, 0o200)
-        self.assertEqual(len(rec[-1].dp_addresses), 4)
+        self.assertEqual(len(rec[-1].dp_addresses), 4 * classes)
         self.assertEqual(cpu.st["CIFP"], 0)          # defined from here on
         load_address(cpu, 0o200)
-        self.assertEqual(len(rec[-1].dp_addresses), 2)  # AUTO_INDEX_REQUIRED still depends on IR
+        self.assertEqual(len(rec[-1].dp_addresses), 2 * classes)  # AUTO_INDEX_REQUIRED still depends on IR
 
 
 class ConsoleTests(unittest.TestCase):

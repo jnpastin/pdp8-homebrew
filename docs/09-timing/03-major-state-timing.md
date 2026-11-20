@@ -260,16 +260,16 @@ At a terminating TP4:
 - the arbiter sets DMA_GRANT_ID to 15
 - CPU ownership resumes during the following FETCH TS1
 
-Aggregate `/DMA_REQ` remains deasserted throughout the intervening FETCH, optional DEFER, and EXECUTE major states while `DMA_ENABLE = 0`.
+Aggregate `/DMA_REQ` remains deasserted throughout the intervening FETCH, optional DEFER, and EXECUTE major states (EXECUTE is omitted for a JMP) while `DMA_ENABLE = 0`.
 
-During EXECUTE TS4:
+During the TS4 that completes the instruction, in which [`INSTR_END`](../04-control/20-control-output-definitions/02-architectural-control-signals.md#410-instruction-end-instr_end) is asserted:
 
 - controllers establish `/DMA_REQ[n]`
 - the arbiter asserts combinational `DMA_ENABLE`
 - separate combinational aggregation logic continuously derives aggregate `/DMA_REQ`
 - `/DMA_REQ[n]`, `DMA_ENABLE`, and aggregate `/DMA_REQ` settle before TP4
 
-At EXECUTE TP4, CPU control samples aggregate `/DMA_REQ` for the major-state transition decision.
+At that TP4, CPU control samples aggregate `/DMA_REQ` for the major-state transition decision.
 
 The transition decision uses the aggregate value established during TS4. No value committed at TP4 affects that same TP4 decision.
 
@@ -366,3 +366,9 @@ DEFER is entered only from FETCH TP4 when `IR_INDIRECT = 1`, and IR is loaded on
 `IOT_TRANSFER` records one direction, so at most one pending flag is set:
 
 - `IOT_WRITE_PENDING = 0 IF IOT_READ_PENDING = 1`
+
+### 9.3 A JMP Never Reaches EXECUTE
+
+EXECUTE is entered only from FETCH TP4 or DEFER TP4 when `IR_NO_EXECUTE = 0` ([Sequencing and Internal Control §3.2.2, §3.2.4](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#322-fetch-transition-without-indirection)), and IR is loaded only at FETCH TP2. IR therefore never holds a JMP in EXECUTE, including while halted in EXECUTE by Single Step:
+
+- `IR_NO_EXECUTE = 0 IF MS = EXECUTE`

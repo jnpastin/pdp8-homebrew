@@ -8,7 +8,7 @@
       "id": "fetch-defer:3.1",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 42
+        "line": 44
       },
       "execution_model": "major-state",
       "context": [
@@ -30,7 +30,7 @@
       "id": "fetch-defer:3.2",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 60
+        "line": 62
       },
       "execution_model": "major-state",
       "context": [
@@ -47,7 +47,7 @@
       "id": "fetch-defer:3.3",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 71
+        "line": 73
       },
       "execution_model": "major-state",
       "context": [
@@ -57,13 +57,30 @@
       "micro_operations": [
         "IR_ADDR_TO_EA_ADDR"
       ],
-      "conditional_micro_operations": []
+      "conditional_micro_operations": [
+        {
+          "predicate": "IR_CLASS = 001",
+          "micro_operation": "IR_ADDR_TO_PC"
+        },
+        {
+          "predicate": "IR_CLASS = 001 AND CIFP = 1",
+          "micro_operation": "DIF_TO_IF"
+        },
+        {
+          "predicate": "IR_CLASS = 001 AND CIFP = 1",
+          "micro_operation": "CIFP_CLEAR"
+        },
+        {
+          "predicate": "IR_CLASS = 001 AND CIFP = 1",
+          "micro_operation": "II_CLEAR"
+        }
+      ]
     },
     {
       "id": "fetch-defer:3.4",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 81
+        "line": 93
       },
       "execution_model": "major-state",
       "context": [
@@ -77,7 +94,7 @@
       "id": "fetch-defer:4.2",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 107
+        "line": 121
       },
       "execution_model": "major-state",
       "context": [
@@ -93,7 +110,7 @@
       "id": "fetch-defer:4.3",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 117
+        "line": 131
       },
       "execution_model": "major-state",
       "context": [
@@ -109,7 +126,7 @@
       "id": "fetch-defer:4.4",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 127
+        "line": 141
       },
       "execution_model": "major-state",
       "context": [
@@ -121,6 +138,10 @@
         {
           "predicate": "AUTO_INDEX_REQUIRED = 1",
           "micro_operation": "MB_INC"
+        },
+        {
+          "predicate": "IR_CLASS = 010 AND CIFP = 1",
+          "micro_operation": "II_CLEAR"
         }
       ]
     },
@@ -128,7 +149,7 @@
       "id": "fetch-defer:4.5",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 141
+        "line": 157
       },
       "execution_model": "major-state",
       "context": [
@@ -142,6 +163,18 @@
         {
           "predicate": "AUTO_INDEX_REQUIRED = 1",
           "micro_operation": "MEM_WRITE_FROM_MB"
+        },
+        {
+          "predicate": "IR_CLASS = 010",
+          "micro_operation": "MB_TO_PC"
+        },
+        {
+          "predicate": "IR_CLASS = 010 AND CIFP = 1",
+          "micro_operation": "DIF_TO_IF"
+        },
+        {
+          "predicate": "IR_CLASS = 010 AND CIFP = 1",
+          "micro_operation": "CIFP_CLEAR"
         }
       ]
     },
@@ -518,85 +551,6 @@
       "micro_operations": [
         "PC_INC"
       ],
-      "conditional_micro_operations": []
-    },
-    {
-      "id": "mri:3.6:ts1",
-      "source": {
-        "path": "docs/03-microarchitecture/05-mri-execution.md",
-        "line": 137
-      },
-      "execution_model": "major-state",
-      "context": [
-        "MS = EXECUTE",
-        "IR_IS_MRI = 1",
-        "IR_MRI_OPCODE = 101"
-      ],
-      "timing_state": 1,
-      "micro_operations": [],
-      "conditional_micro_operations": [
-        {
-          "predicate": "IF_CHANGE_PENDING = 1",
-          "micro_operation": "DIF_TO_IF"
-        },
-        {
-          "predicate": "CIFP = 1",
-          "micro_operation": "CIFP_CLEAR"
-        },
-        {
-          "predicate": "CIFP = 1",
-          "micro_operation": "II_CLEAR"
-        }
-      ]
-    },
-    {
-      "id": "mri:3.6:ts2",
-      "source": {
-        "path": "docs/03-microarchitecture/05-mri-execution.md",
-        "line": 137
-      },
-      "execution_model": "major-state",
-      "context": [
-        "MS = EXECUTE",
-        "IR_IS_MRI = 1",
-        "IR_MRI_OPCODE = 101"
-      ],
-      "timing_state": 2,
-      "micro_operations": [],
-      "conditional_micro_operations": []
-    },
-    {
-      "id": "mri:3.6:ts3",
-      "source": {
-        "path": "docs/03-microarchitecture/05-mri-execution.md",
-        "line": 137
-      },
-      "execution_model": "major-state",
-      "context": [
-        "MS = EXECUTE",
-        "IR_IS_MRI = 1",
-        "IR_MRI_OPCODE = 101"
-      ],
-      "timing_state": 3,
-      "micro_operations": [
-        "PC_LOAD_EA_ADDR"
-      ],
-      "conditional_micro_operations": []
-    },
-    {
-      "id": "mri:3.6:ts4",
-      "source": {
-        "path": "docs/03-microarchitecture/05-mri-execution.md",
-        "line": 137
-      },
-      "execution_model": "major-state",
-      "context": [
-        "MS = EXECUTE",
-        "IR_IS_MRI = 1",
-        "IR_MRI_OPCODE = 101"
-      ],
-      "timing_state": 4,
-      "micro_operations": [],
       "conditional_micro_operations": []
     },
     {
@@ -1590,7 +1544,7 @@
       "id": "console:15",
       "source": {
         "path": "docs/03-microarchitecture/09-console-execution.md",
-        "line": 547
+        "line": 555
       },
       "execution_model": "console-transaction",
       "context": [

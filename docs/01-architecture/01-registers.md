@@ -91,7 +91,7 @@ Constraints:
 
 Writers:
 - IOT execution (CIF, RMF, or RTF; CIFP_SET micro-operation)
-- MRI execution (JMP/JMS; CIFP_CLEAR micro-operation)
+- FETCH TP3 (direct JMP), DEFER TP4 (JMP I), and MRI execution TP1 (JMS); CIFP_CLEAR micro-operation
 - Interrupt entry (CIFP_CLEAR micro-operation)
 - Console Load Address (CIFP_CLEAR micro-operation)
 
@@ -137,7 +137,7 @@ Invariants:
 Constraints:
 - Loaded by CIF from IR, RMF from IB, RTF from AC[5:3], and Load Address from FP_IF
 - Cleared at interrupt entry
-- Applied to IF only at the JMP or JMS that concludes a pending deferred field change, at its EXECUTE TP1
+- Applied to IF only at the JMP or JMS that concludes a pending deferred field change: at FETCH TP3 of a direct JMP, DEFER TP4 of a JMP I, or EXECUTE TP1 of a JMS
 - Must not change during FETCH, DEFER, or EXECUTE except at the defined load, clear, and apply points  
 
 Writers:
@@ -288,11 +288,11 @@ Visibility: Global
 Invariants:
 - Supplies high-order bits of instruction fetch address
 - Supplies high-order bits for direct MRI access and indirect pointer access
-- Constant for the duration of an instruction cycle, except that a JMP or JMS applies a pending deferred field change at its EXECUTE TP1
+- Constant for the duration of an instruction cycle, except that a JMP or JMS applies a pending deferred field change: at FETCH TP3 of a direct JMP, DEFER TP4 of a JMP I, or EXECUTE TP1 of a JMS
 
 Constraints:
 - Modified only by field control instructions
-- Must not change during FETCH or DEFER, or during EXECUTE except at the EXECUTE TP1 of a JMP or JMS that applies a pending deferred field change
+- Must not change except where a JMP or JMS applies a pending deferred field change: at FETCH TP3 of a direct JMP, DEFER TP4 of a JMP I, or EXECUTE TP1 of a JMS
 
 Writers:
 - Field instruction control logic
@@ -313,12 +313,13 @@ Invariants:
 
 Constraints:
 - Set only by ION, CIF, RMF, and RTF instructions
-- Cleared during FETCH when no deferred instruction-field change is pending (CIFP = 0), and by the START console operation
+- Cleared during FETCH when no deferred instruction-field change is pending (CIFP = 0), when a JMP or JMS with a pending field change completes it (at FETCH TP3 of a direct JMP, DEFER TP3 of a JMP I, or EXECUTE TP1 of a JMS), and by the START console operation
 - Must not be directly modified by datapath logic  
 
 Writers:
 - IOT execution (ION, CIF, RMF, or RTF; II_SET micro-operation)
 - FETCH execution (II_CLEAR micro-operation)
+- JMP or JMS applying a pending field change (II_CLEAR micro-operation)
 - Console START (II_CLEAR micro-operation)
 
 ---
@@ -587,16 +588,17 @@ Invariants:
 
 Constraints:
 - Incremented at FETCH TP1; MA loads the pre-increment PC at the same TP
-- Modified during EXECUTE only by:
-  - Conditional skip (increment)
-  - JMP (load)
-  - JMS (store return address, then load)
-- Must not change during DEFER
+- After FETCH TP1, modified only by:
+  - Conditional skip (increment, EXECUTE)
+  - Direct JMP (load, FETCH TP3)
+  - JMP I (load, DEFER TP4)
+  - JMS (EXECUTE: store return address, then load)
+- Must not change during DEFER except at the TP4 of a JMP I
 - Update must complete before next FETCH TS1
 
 Writers:
 - PC + 1 increment path (ALU_RESULT loaded directly when PC_INC = 1; [PC_INC](../04-control/20-control-output-definitions/01-microarchitectural-control-signals.md#pc_inc))
-- Control flow load path (JMP/JMS)
+- Control flow load paths: the EA formation unit (direct JMP); the IDB, from MB (JMP I) or EA_ADDR (JMS)
 
 ---
 

@@ -15,12 +15,12 @@ The following conditions are illegal:
 - `MS = EXECUTE` at TP4, `INTERRUPT_REQUEST_VALID = 0`, aggregate `/DMA_REQ = 1`, and `MS_NEXT != FETCH`
 - `MS = INTERRUPT` at TP4 and `MS_NEXT != FETCH`
 - entry into `INTERRUPT` from a major state other than `EXECUTE`
-- interrupt recognition at a timing pulse other than EXECUTE TP4
+- interrupt recognition at a timing pulse other than an [instruction-completion TP4](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#311-instruction-completion)
 - any interrupt-entry state change before entry into the `INTERRUPT` major state
 - `CIFP = 1` and FETCH selecting `II_CLEAR`
 - a pending instruction-field change staged by CIF, RMF, or RTF being applied by an instruction other than JMP or JMS
 - a JMP or JMS applying a pending instruction-field change without clearing `CIFP`
-- interrupt recognition at the same EXECUTE TP4 that applies a pending instruction-field change
+- interrupt recognition at a TP that applies a pending instruction-field change
 
 ## 3. Illegal Interrupt-Entry and Return Conditions
 

@@ -16,7 +16,7 @@ The transfer itself is defined in:
 
 ## 2. Overview
 
-DMA is entered only from EXECUTE TP4, when no interrupt is taken and aggregate `/DMA_REQ` is asserted. Each DMA major state transfers at most one memory word.
+DMA is entered only at instruction completion (the TP4 of the instruction's last major state), when no interrupt is taken and aggregate `/DMA_REQ` is asserted. Each DMA major state transfers at most one memory word.
 
 Flow:
 
@@ -83,7 +83,7 @@ Description:
 
 ## 4. Halting Between DMA Cycles
 
-Single Step halts at the end of every major state, including DMA ([Console Execution §13](./09-console-execution.md#13-single-step-mode)). STOP, HLT, and Single Instruction halt only at EXECUTE TP4, so they never halt inside a burst.
+Single Step halts at the end of every major state, including DMA ([Console Execution §13](./09-console-execution.md#13-single-step-mode)). STOP, HLT, and Single Instruction halt only at instruction completion, so they never halt inside a burst.
 
 When Single Step halts at DMA TP4 while the burst continues, `MS` holds `DMA`:
 

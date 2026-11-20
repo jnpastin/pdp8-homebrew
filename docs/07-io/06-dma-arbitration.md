@@ -18,12 +18,12 @@ A distinct DMA arbiter subsystem selects the requesting controller. The architec
 
 ## 3. Major-State Visibility
 
-The CPU provides `MS[2:0]`, TS, and TP timing context to the DMA arbiter.
+The CPU provides `MS[2:0]`, TS, TP timing context, and [`INSTR_END`](../04-control/20-control-output-definitions/02-architectural-control-signals.md#410-instruction-end-instr_end) to the DMA arbiter.
 
 The arbiter uses this context to:
 
 - identify DMA TP3 for burst-termination state updates
-- identify EXECUTE TS4 for DMA reenable
+- use `INSTR_END` to identify the TS4 that ends an instruction, for DMA reenable
 - identify TP4 as the CPU sampling boundary for aggregate `/DMA_REQ`
 
 The DMA arbiter must not:
@@ -60,7 +60,7 @@ The retained DMA burst-enabled state:
 
 - remains set while the current DMA burst may continue
 - clears at DMA TP3 when the current burst terminates
-- sets at EXECUTE TP4
+- sets at the TP4 that ends an instruction (`INSTR_END` asserted)
 
 ---
 
@@ -68,7 +68,7 @@ The retained DMA burst-enabled state:
 
 `DMA_ENABLE` is a combinational arbiter output used by the aggregate DMA-request logic.
 
-During EXECUTE TS4:
+During a TS4 in which `INSTR_END` is asserted:
 
 ```text
 DMA_ENABLE = 1
@@ -80,13 +80,13 @@ During an active DMA burst:
 DMA_ENABLE = DMA_BURST_ENABLED
 ```
 
-During FETCH, DEFER, INTERRUPT, and non-TS4 portions of EXECUTE:
+In every other TS of FETCH, DEFER, EXECUTE, and INTERRUPT:
 
 ```text
 DMA_ENABLE = 0
 ```
 
-`DMA_ENABLE` does not itself contain state. It reflects the applicable retained arbiter state or the EXECUTE TS4 reenable condition.
+`DMA_ENABLE` does not itself contain state. It reflects the applicable retained arbiter state or the `INSTR_END` reenable condition.
 
 `DMA_ENABLE` must settle before TP4 whenever CPU control samples aggregate `/DMA_REQ`.
 
@@ -276,22 +276,22 @@ Execution then proceeds through:
 ```text
 FETCH
 -> DEFER, when required
--> EXECUTE
+-> EXECUTE, unless the instruction is a JMP
 ```
 
-`DMA_ENABLE` remains deasserted during FETCH, optional DEFER, and EXECUTE TS1 through TS3.
+`DMA_ENABLE` remains deasserted until the TS4 in which `INSTR_END` is asserted: EXECUTE TS4, FETCH TS4 of a direct JMP, or DEFER TS4 of a JMP I.
 
-During EXECUTE TS4:
+During that TS4:
 
 ```text
 DMA_ENABLE = 1
 ```
 
-Controllers may assert pending `/DMA_REQ[n]` lines during EXECUTE TS4. The combinational aggregation logic continuously derives aggregate `/DMA_REQ` from `DMA_ENABLE` and `/DMA_REQ[14:0]`.
+Controllers may assert pending `/DMA_REQ[n]` lines during that TS4. The combinational aggregation logic continuously derives aggregate `/DMA_REQ` from `DMA_ENABLE` and `/DMA_REQ[14:0]`.
 
 All inputs to the aggregation logic and the resulting aggregate `/DMA_REQ` must settle before TP4.
 
-At EXECUTE TP4:
+At that TP4:
 
 - CPU control samples aggregate `/DMA_REQ` for the major-state transition decision
 - the arbiter sets retained DMA burst-enabled state
@@ -346,19 +346,19 @@ Controllers deassert their `/DMA_REQ[n]` outputs at the same TP. A DMA major sta
 - Arbiter state changes only at TP events.
 - Retained DMA burst-enabled state clears at DMA TP3 when the current burst terminates.
 - Retained DMA burst-enabled state remains set at DMA TP3 when the current burst continues.
-- Retained DMA burst-enabled state sets at EXECUTE TP4.
+- Retained DMA burst-enabled state sets at a TP4 at which `INSTR_END` is asserted.
 - `DMA_ENABLE` is a combinational arbiter output, not stored state.
-- `DMA_ENABLE` is asserted during EXECUTE TS4.
-- `DMA_ENABLE` is deasserted during FETCH, DEFER, INTERRUPT, and EXECUTE TS1 through TS3.
+- `DMA_ENABLE` is asserted during a TS4 in which `INSTR_END` is asserted.
+- `DMA_ENABLE` is deasserted in every other TS outside DMA.
 - Aggregate `/DMA_REQ` is continuously derived from `DMA_ENABLE` and `/DMA_REQ[14:0]`.
 - Aggregate `/DMA_REQ` must settle before CPU control samples it at TP4.
 - CPU control uses the pre-TP4 aggregate `/DMA_REQ` value for the TP4 major-state transition.
 - Controller `/DMA_REQ[n]` lines may remain asserted while aggregate `/DMA_REQ` is deasserted.
-- A completed DMA burst cannot be followed by another DMA major state until one complete CPU instruction reaches EXECUTE TP4.
+- A completed DMA burst cannot be followed by another DMA major state until one complete CPU instruction reaches its completion TP4.
 - `MS` is visible to the DMA arbiter as a CPU-generated control field.
 - The DMA arbiter does not modify or participate in generating `MS`.
-- The DMA arbiter uses `MS = EXECUTE` and `TS4` to assert combinational `DMA_ENABLE`.
-- EXECUTE TP4 sets retained DMA burst-enabled state; it does not directly set `DMA_ENABLE`.
+- The DMA arbiter uses `INSTR_END` to assert combinational `DMA_ENABLE`.
+- The TP4 at which `INSTR_END` is asserted sets retained DMA burst-enabled state; it does not directly set `DMA_ENABLE`.
 - `MS = DMA` does not grant ownership unless `/DMA_GRANT` is also asserted.
 
 ---

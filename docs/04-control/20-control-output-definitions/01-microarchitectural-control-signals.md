@@ -969,6 +969,7 @@ Bits 5:0 are the save field held in IB, not the current IF and DF ([IOT Instruct
 - [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc) = 1
 - [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc) = 1
 - [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr) = 1
+- [MB_TO_PC](../../03-microarchitecture/02-micro-operations.md#mb_to_pc) = 1
 - [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 1
 - [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr) = 1
 - [PC_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_to_ea_addr) = 1
@@ -1024,6 +1025,7 @@ Bits 5:0 are the save field held in IB, not the current IF and DF ([IOT Instruct
 - [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc) = 4
 - [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc) = 7
 - [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr) = 2
+- [MB_TO_PC](../../03-microarchitecture/02-micro-operations.md#mb_to_pc) = 2
 - [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 7
 - [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr) = 5
 - [PC_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_to_ea_addr) = 1
@@ -1702,6 +1704,8 @@ memory bus value
 
 **Used by μops:**
 - [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc) = 1
+- [IR_ADDR_TO_PC](../../03-microarchitecture/02-micro-operations.md#ir_addr_to_pc) = 1
+- [MB_TO_PC](../../03-microarchitecture/02-micro-operations.md#mb_to_pc) = 1
 - [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr) = 1
 - [PC_SET_1](../../03-microarchitecture/02-micro-operations.md#pc_set_1) = 1
 
@@ -1712,7 +1716,7 @@ memory bus value
 **Mnemonic:** PC_SRC  
 **Name:** Program Counter Source Select  
 **Class:** Select  
-**Bit Width:** 1  
+**Bit Width:** 2  
 **Default Value:** 0  
 **Explicit Value Required:** Conditionally  
 **Value Required When:** PC_LOAD=1  
@@ -1723,6 +1727,8 @@ memory bus value
 ```
 0 → IDB
 1 → Constant 0001 (hardwired)
+2 → IR address formation unit
+3 → reserved
 ```
 
 **Constraints:**
@@ -1731,6 +1737,8 @@ memory bus value
 
 **Used by μops:**
 - [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc) = 0
+- [IR_ADDR_TO_PC](../../03-microarchitecture/02-micro-operations.md#ir_addr_to_pc) = 2
+- [MB_TO_PC](../../03-microarchitecture/02-micro-operations.md#mb_to_pc) = 0
 - [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr) = 0
 - [PC_SET_1](../../03-microarchitecture/02-micro-operations.md#pc_set_1) = 1
 ---
@@ -2529,6 +2537,7 @@ multiple conceptual sources active
 - [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb)
 - [PC_TO_MB](../../03-microarchitecture/02-micro-operations.md#pc_to_mb)
 - [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr)
+- [MB_TO_PC](../../03-microarchitecture/02-micro-operations.md#mb_to_pc)
 - [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac)
 
 ---

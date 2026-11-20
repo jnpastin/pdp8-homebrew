@@ -36,17 +36,17 @@ This document does not define:
 
 ## 3. Recognition Boundary
 
-Interrupt recognition occurs only at the EXECUTE TP4 major-state transition boundary.
+Interrupt recognition occurs only at the [instruction-completion TP4](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#311-instruction-completion) major-state transition boundary.
 
 An interrupt request must not cause entry into the INTERRUPT major state:
 
 - during FETCH
 - during DEFER
-- before the current instruction reaches EXECUTE TP4
+- before the current instruction reaches instruction-completion TP4
 - directly from a change in the aggregate interrupt request
 - directly from a controller state change
 
-An interrupt request that becomes valid before the EXECUTE TP4 sampling boundary may participate in that boundary's major-state transition decision, subject to the applicable setup and hold requirements.
+An interrupt request that becomes valid before the instruction-completion TP4 sampling boundary may participate in that boundary's major-state transition decision, subject to the applicable setup and hold requirements.
 
 An interrupt request that does not satisfy those requirements is not available for that decision and may be recognized at a later eligible boundary if it remains valid.
 
@@ -70,7 +70,7 @@ Those inputs are reduced to the existing derived flag before the major-state tra
 
 Interrupt recognition and interrupt entry are separate phases.
 
-At EXECUTE TP4:
+At instruction-completion TP4:
 
 - CPU control evaluates the available sequencing conditions.
 - A recognized interrupt selects `MS_NEXT = INTERRUPT`.
@@ -83,13 +83,13 @@ During the following INTERRUPT major state:
 - the return state is preserved
 - control is transferred to the interrupt service routine
 
-Recognition at EXECUTE TP4 does not itself perform any interrupt-entry micro-operation.
+Recognition at instruction-completion TP4 does not itself perform any interrupt-entry micro-operation.
 
 Interrupt-entry execution is defined in [Interrupt Execution](../03-microarchitecture/08-interrupt-execution.md).
 
 ## 6. Next-Major-State Selection
 
-At EXECUTE TP4, the next-major-state decision follows this precedence:
+At instruction-completion TP4, the next-major-state decision follows this precedence:
 
 1. A valid interrupt request selects `INTERRUPT`, except at the EXECUTE TP4 of CAF.
 2. Otherwise, an asserted aggregate DMA request selects `DMA`.
@@ -110,13 +110,13 @@ This expression defines the required sequencing result. Its implementation remai
 
 CAF's `/INITIALIZE` clears IE and every controller interrupt request at its TP4, so an interrupt recognized there would enter the service routine with no requesting device. CAF therefore never selects INTERRUPT. This matches the PDP-8/e, where CAF asserts INITIALIZE at TP3 and it clears the interrupt-enable, delay, and request-synchronizing flip-flops before TP4.
 
-The precedence above applies only to the next-major-state decision at EXECUTE TP4.
+The precedence above applies only to the next-major-state decision at instruction-completion TP4.
  
-At INTERRUPT TP4, `MS_NEXT` is unconditionally `FETCH`. Interrupt and DMA eligibility are not evaluated for that transition. Therefore, INTERRUPT cannot transition directly to another INTERRUPT or to DMA. A subsequent interrupt or DMA request may be recognized only after execution reaches a later EXECUTE TP4 boundary.
+At INTERRUPT TP4, `MS_NEXT` is unconditionally `FETCH`. Interrupt and DMA eligibility are not evaluated for that transition. Therefore, INTERRUPT cannot transition directly to another INTERRUPT or to DMA. A subsequent interrupt or DMA request may be recognized only after execution reaches a later instruction-completion TP4 boundary.
 
 ## 7. Interrupt Precedence over DMA
 
-When `INTERRUPT_REQUEST_VALID` is asserted and aggregate `/DMA_REQ` is also asserted for the same EXECUTE TP4 decision:
+When `INTERRUPT_REQUEST_VALID` is asserted and aggregate `/DMA_REQ` is also asserted for the same instruction-completion TP4 decision:
 
 - `MS_NEXT` must select `INTERRUPT`
 - `MS_NEXT` must not select `DMA`
@@ -140,7 +140,7 @@ When interrupt recognition prevents immediate DMA entry:
 
 - DMA-capable controllers retain their individual requests according to the [Controller Contract](../07-io/04-controller-contract.md)
 - the DMA arbiter and aggregation logic continue to follow the [DMA Arbitration](../07-io/06-dma-arbitration.md) contract
-- CPU control may select DMA at a later eligible EXECUTE TP4 boundary
+- CPU control may select DMA at a later eligible instruction-completion TP4 boundary
 
 Interrupt recognition does not guarantee that aggregate `/DMA_REQ` remains asserted throughout interrupt entry or interrupt-service execution.
 
@@ -158,9 +158,9 @@ Software must service, clear, disable, or otherwise remove the underlying contro
 
 ## 10. Same-Boundary Semantics
 
-The EXECUTE TP4 transition decision uses values available before the TP4 commit.
+The instruction-completion TP4 transition decision uses values available before the TP4 commit.
 
-A state change committed at EXECUTE TP4 must not affect another decision committed at that same TP4.
+A state change committed at instruction-completion TP4 must not affect another decision committed at that same TP4.
 
 Therefore:
 
@@ -173,7 +173,7 @@ Therefore:
 
 The following invariants apply:
 
-- Interrupt recognition occurs only at EXECUTE TP4.
+- Interrupt recognition occurs only at instruction-completion TP4.
 - Interrupt recognition depends on `INTERRUPT_REQUEST_VALID`.
 - CAF's EXECUTE TP4 never selects INTERRUPT.
 - Interrupt recognition does not directly evaluate unreduced processor state.
@@ -191,7 +191,7 @@ The following invariants apply:
 
 ## 12. Summary
 
-Interrupt recognition is a synchronous sequencing decision made at EXECUTE TP4.
+Interrupt recognition is a synchronous sequencing decision made at instruction-completion TP4.
 
 The decision uses the existing `INTERRUPT_REQUEST_VALID` derived flag. A valid interrupt request selects the INTERRUPT major state and takes precedence over an eligible DMA request. If no interrupt is valid, an asserted aggregate `/DMA_REQ` selects DMA. Otherwise, execution returns to FETCH.
 

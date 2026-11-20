@@ -101,6 +101,21 @@ Related definitions:
 - [Major State Model](../../03-microarchitecture/00-state-model.md)
 - [Control Constraints](../03-control-constraints.md)
 
+#### 3.1.1 Instruction Completion
+
+An instruction completes at the TP4 of its last major state: FETCH for a direct JMP, DEFER for a JMP I, and EXECUTE for every other instruction ([Major State Model](../../03-microarchitecture/00-state-model.md)). As a context, *instruction completion* is:
+
+```text
+TS = 4
+AND (
+    MS = EXECUTE
+    OR (MS = FETCH AND IR_NO_EXECUTE = 1 AND IR_INDIRECT = 0)
+    OR (MS = DEFER AND IR_NO_EXECUTE = 1)
+)
+```
+
+Each context below that applies at instruction completion writes this condition out in full. [INSTR_END](../20-control-output-definitions/02-architectural-control-signals.md#410-instruction-end-instr_end) decodes the same condition from registered state for the DMA arbiter; the two must agree.
+
 ---
 
 ### 3.2 Next Major State
@@ -140,6 +155,7 @@ RUN = 1
 MS = FETCH
 TS = 4
 IR_INDIRECT = 0
+IR_NO_EXECUTE = 0
 ```
 
 Assignment:
@@ -189,7 +205,7 @@ Source:
 
 ---
 
-#### 3.2.4 DEFER Completion
+#### 3.2.4 DEFER to EXECUTE
 
 Applicable context:
 
@@ -197,6 +213,7 @@ Applicable context:
 RUN = 1
 MS = DEFER
 TS = 4
+IR_NO_EXECUTE = 0
 ```
 
 Assignment:
@@ -217,14 +234,18 @@ Source:
 
 ---
 
-#### 3.2.5 EXECUTE Completion With Valid Interrupt
+#### 3.2.5 Instruction Completion With Valid Interrupt
 
 Applicable context:
 
 ```text
 RUN = 1
-MS = EXECUTE
 TS = 4
+AND (
+    MS = EXECUTE
+    OR (MS = FETCH AND IR_NO_EXECUTE = 1 AND IR_INDIRECT = 0)
+    OR (MS = DEFER AND IR_NO_EXECUTE = 1)
+)
 INTERRUPT_REQUEST_VALID = 1
 IR_IS_CAF = 0
 ```
@@ -253,14 +274,18 @@ Source:
 
 ---
 
-#### 3.2.6 EXECUTE Completion With DMA Request
+#### 3.2.6 Instruction Completion With DMA Request
 
 Applicable context:
 
 ```text
 RUN = 1
-MS = EXECUTE
 TS = 4
+AND (
+    MS = EXECUTE
+    OR (MS = FETCH AND IR_NO_EXECUTE = 1 AND IR_INDIRECT = 0)
+    OR (MS = DEFER AND IR_NO_EXECUTE = 1)
+)
 AND (
     INTERRUPT_REQUEST_VALID = 0
     OR IR_IS_CAF = 1
@@ -295,14 +320,18 @@ Sources:
 
 ---
 
-#### 3.2.7 EXECUTE Completion Without Interrupt or DMA
+#### 3.2.7 Instruction Completion Without Interrupt or DMA
 
 Applicable context:
 
 ```text
 RUN = 1
-MS = EXECUTE
 TS = 4
+AND (
+    MS = EXECUTE
+    OR (MS = FETCH AND IR_NO_EXECUTE = 1 AND IR_INDIRECT = 0)
+    OR (MS = DEFER AND IR_NO_EXECUTE = 1)
+)
 AND (
     INTERRUPT_REQUEST_VALID = 0
     OR IR_IS_CAF = 1
@@ -507,13 +536,25 @@ Applicable context:
 RUN = 1
 NOT (
     HLT_REQ = 1
-    AND MS = EXECUTE
-    AND TS = 4
+    AND (
+        TS = 4
+        AND (
+            MS = EXECUTE
+            OR (MS = FETCH AND IR_NO_EXECUTE = 1 AND IR_INDIRECT = 0)
+            OR (MS = DEFER AND IR_NO_EXECUTE = 1)
+        )
+    )
 )
 NOT (
     FP_SINGLE_INSTRUCTION = 1
-    AND MS = EXECUTE
-    AND TS = 4
+    AND (
+        TS = 4
+        AND (
+            MS = EXECUTE
+            OR (MS = FETCH AND IR_NO_EXECUTE = 1 AND IR_INDIRECT = 0)
+            OR (MS = DEFER AND IR_NO_EXECUTE = 1)
+        )
+    )
 )
 NOT (
     FP_SINGLE_STEP = 1
@@ -635,8 +676,12 @@ Applicable context:
 ```text
 RUN = 1
 HLT_REQ = 1
-MS = EXECUTE
 TS = 4
+AND (
+    MS = EXECUTE
+    OR (MS = FETCH AND IR_NO_EXECUTE = 1 AND IR_INDIRECT = 0)
+    OR (MS = DEFER AND IR_NO_EXECUTE = 1)
+)
 ```
 
 Assignments:
@@ -675,8 +720,12 @@ Applicable context:
 ```text
 RUN = 1
 FP_SINGLE_INSTRUCTION = 1
-MS = EXECUTE
 TS = 4
+AND (
+    MS = EXECUTE
+    OR (MS = FETCH AND IR_NO_EXECUTE = 1 AND IR_INDIRECT = 0)
+    OR (MS = DEFER AND IR_NO_EXECUTE = 1)
+)
 ```
 
 Assignment:
@@ -703,6 +752,16 @@ and:
 
 ```text
 FETCH -> DEFER -> EXECUTE
+```
+
+and, for JMP:
+
+```text
+FETCH
+```
+
+```text
+FETCH -> DEFER
 ```
 
 Constraints:
@@ -909,8 +968,12 @@ Applicable context:
 RUN = 1
 FP_STOP = 1
 NOT (
-    MS = EXECUTE
-    AND TS = 4
+    TS = 4
+    AND (
+        MS = EXECUTE
+        OR (MS = FETCH AND IR_NO_EXECUTE = 1 AND IR_INDIRECT = 0)
+        OR (MS = DEFER AND IR_NO_EXECUTE = 1)
+    )
 )
 ```
 
@@ -986,8 +1049,14 @@ Applicable context:
 HLT_REQ = 1
 NOT (
     RUN = 1
-    AND MS = EXECUTE
-    AND TS = 4
+    AND (
+        TS = 4
+        AND (
+            MS = EXECUTE
+            OR (MS = FETCH AND IR_NO_EXECUTE = 1 AND IR_INDIRECT = 0)
+            OR (MS = DEFER AND IR_NO_EXECUTE = 1)
+        )
+    )
 )
 ```
 
@@ -1025,8 +1094,12 @@ Applicable context:
 ```text
 RUN = 1
 HLT_REQ = 1
-MS = EXECUTE
 TS = 4
+AND (
+    MS = EXECUTE
+    OR (MS = FETCH AND IR_NO_EXECUTE = 1 AND IR_INDIRECT = 0)
+    OR (MS = DEFER AND IR_NO_EXECUTE = 1)
+)
 ```
 
 Assignments:

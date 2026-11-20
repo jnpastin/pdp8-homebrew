@@ -121,7 +121,7 @@ Electrically, the line is wired-AND because it is HIGH only when all controllers
 `DMA_ENABLE` is a combinational output from the DMA arbiter to the DMA-request aggregation logic.
 
 - It qualifies whether asserted controller `/DMA_REQ[n]` lines may contribute to aggregate `/DMA_REQ`.
-- It is asserted during EXECUTE TS4 so pending DMA requests may participate in the TP4 major-state transition decision.
+- It is asserted during the TS4 in which `INSTR_END` is asserted (an instruction's completion), so pending DMA requests may participate in the TP4 major-state transition decision.
 - It reflects retained arbiter burst state during DMA.
 - It is not a controller-facing request line.
 - It is not stored state.

@@ -31,6 +31,48 @@ Unchanged and verified: MB ↔ MDB (`2Ph0Qde3JH9-hkXoXRvS-151`, both arrowheads)
 
 ---
 
+## Slice B (phase 4): JMP completes in FETCH (direct) or DEFER (JMP I)
+
+### `diagrams/control/ms_next-flowchart/source/ms_next-flowchart.xml`
+
+| # | Current content (source) | Required change | Doc | Status |
+|---|---|---|---|---|
+| B1 | FETCH → "Indirect Addressing?" (`jyFapoluXV-c96oE9wt7-4`); Yes → DEFER (`-6`), No → Execute (`-8`). | Before or within the FETCH decision, a direct JMP (`IR_NO_EXECUTE = 1`, not indirect) goes to the instruction-completion decision ("Interrupt Request?"), not to Execute. | `04-fetch-defer.md` §3.4; direct-control §3.2.2, §3.2.5 to §3.2.7 | open |
+| B2 | DEFER → Execute (`jyFapoluXV-c96oE9wt7-9`), unconditional. | A JMP I (`IR_NO_EXECUTE = 1`) goes from DEFER to the instruction-completion decision ("Interrupt Request?"); other instructions go to Execute. | `04-fetch-defer.md` §4.5; direct-control §3.2.4 | open |
+
+Unchanged and verified: Execute → "Interrupt Request?" (`-11`) and the INTERRUPT, DMA, and FETCH edges after it.
+
+### `diagrams/control/control-store-mapping/source/control-store-mapping.xml`
+
+| # | Current content (source) | Required change | Doc | Status |
+|---|---|---|---|---|
+| B3 | "Wired 0 [5 Bits]" (`07B4lpnJHN1g52silYbh-50`) → "MUX [5 Bits]" (`-51`), the input selected outside EXECUTE. | Replace the wired 0 with `00·IR_CLASS` (IR_CLASS, 3 bits, from predecode; the two high bits 0). | CSO §5.3, §5.4.2 | open |
+
+Unchanged and verified: "IR_INDIRECT [1 Bit]" → "MUX [1 Bit]" (`-61`); "Wired 01 [2 Bits]" → "MUX [2 Bits]" (`-55`).
+
+### `diagrams/control/control-store-organization/source/control-store-organization.xml`
+
+| # | Current content (source) | Required change | Doc | Status |
+|---|---|---|---|---|
+| B4 | Sequencer Slice ROM inputs: TS, IR_SEQ, HLT_REQ, FP_STOP, /DMA_REQ, SEQ_OVL, MS_EFF (`Smnm8CKmp2vPJFrs1iI9-30` to `-36`); no A2 input. | Add `IR_NO_EXECUTE [1 Bit]` → Sequencer Slice ROM (address A2). | CSO §5.6 | open |
+| B5 | Node `Smnm8CKmp2vPJFrs1iI9-14` is labelled "Datapath SliceROM [45 Bits]". The v1 packing was 44 bits, so the label already differed from the docs before slice B. | Change the label to 46 bits (the packer's slice B result, CSO §4.2, §7.2). It changes again in slice C. | CSO §4.2 | open |
+
+### `diagrams/microarchitecture/cpu-architecture/source/CPU_Architecture.xml`
+
+| # | Current content (source) | Required change | Doc | Status |
+|---|---|---|---|---|
+| B6 | PC's load inputs: PC ↔ IDB (`2Ph0Qde3JH9-hkXoXRvS-125`, arrowheads at both ends) and Control ↔ PC (`…-181`). No path from the address formation to PC. | Add the formed address (IR[6:0], with the page from MA, as in A2) as a PC input (`PC_SRC` = 2, direct JMP). JMP I's `PC ← MB` uses the existing MB ↔ IDB and PC ↔ IDB edges. | `02-micro-operations.md` `IR_ADDR_TO_PC`; MCS `PC_SRC` | open |
+| B7 | Control's architectural outputs include "DMA Grant" (`Control -> DMA Grant`, `…-168`), Read, Write, and IOA; no instruction-end output. | Add an "Instruction End (INSTR_END)" output to the DMA arbiter, drawn like DMA Grant. It is a gate decode of MS_EFF, TS, `IR_NO_EXECUTE`, and `IR_INDIRECT`, not a control-store output. | ACS §4.10 | open |
+
+### Checked, no slice B change
+
+| Diagram | What the source contains | Why unchanged |
+|---|---|---|
+| `diagrams/io/dma_timing/source/dma_timing.json` | WaveDrom: MS goes from FETCH to DMA at the first TP4 (`data: [' FETCH', 'DMA']`) | In v1, DMA could follow only EXECUTE; in v2 a DMA state can follow FETCH after a direct JMP, so the label is now possible. No change required; whether it should name a specific state is your call |
+| `diagrams/timing/cpu-timing/source/cpu-timing-overview.json` | TS and TP waveform only | No boundary events |
+
+---
+
 ## Later slices
 
 Entries are added when each slice's docs are written, after reading the sources again. The spec's expected list ([spec.md](spec.md) §9) is a forecast, not yet checked against the sources.

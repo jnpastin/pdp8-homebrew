@@ -75,6 +75,8 @@ No intermediate state or flag storage is created.
 - [AC_BSW](#ac_bsw)
 
 ### 4.3 Control Flow
+- [IR_ADDR_TO_PC](#ir_addr_to_pc)
+- [MB_TO_PC](#mb_to_pc)
 - [PC_INC](#pc_inc)
 - [PC_LOAD_EA_ADDR](#pc_load_ea_addr)
 
@@ -1083,6 +1085,28 @@ IR, MA
 
 ---
 
+### IR_ADDR_TO_PC
+
+**Category:**  
+Control Flow
+
+**Description:**  
+Loads the program counter with the address formed from the instruction address field by the same page selection rules as IR_ADDR_TO_EA_ADDR. Used by a direct JMP at FETCH TP3, where EA_ADDR loads at the same TP and so cannot be the source.
+
+**Target:**  
+PC
+
+**Expression:**
+if IR_ZERO_PAGE == 1:
+    PC ← (0…0 || IR[6:0])
+else:
+    PC ← (MA[11:7] || IR[6:0])
+
+**Sources:**  
+IR, MA
+
+---
+
 ### IR_DF_TO_DF
 
 **Category:**  
@@ -1210,6 +1234,25 @@ EA_ADDR
 
 **Expression:**
 EA_ADDR ← MB
+
+**Sources:**  
+MB
+
+---
+
+### MB_TO_PC
+
+**Category:**  
+Control Flow
+
+**Description:**  
+Loads the program counter with the value in the memory buffer, through the IDB. Used by a JMP I at DEFER TP4, where MB holds the resolved pointer after any auto-index increment.
+
+**Target:**  
+PC
+
+**Expression:**  
+PC ← MB
 
 **Sources:**  
 MB

@@ -92,8 +92,19 @@ DATAPATH_FIELDS = {f.name: f for f in [
     _f("MQ_SRC", 1, {0: "IDB", 1: "AC"}, "MCS MQ_SRC"),
     _f("PC_INC", 1, {0: "no increment", 1: "increment"}, "MCS PC_INC"),
     _f("PC_LOAD", 1, LOAD, "MCS PC_LOAD"),
-    _f("PC_SRC", 1, {0: "IDB", 1: "Constant 0001 (hardwired)"}, "MCS PC_SRC"),
+    _f("PC_SRC", 2, {0: "IDB", 1: "Constant 0001 (hardwired)", 2: "IR address formation unit",
+                     3: "reserved"}, "MCS PC_SRC"),
 ]}
+
+# Fields whose definition differs by control design, keyed by design name (design.py).
+_DESIGN_OVERRIDES = {
+    "v1": {"PC_SRC": _f("PC_SRC", 1, {0: "IDB", 1: "Constant 0001 (hardwired)"}, "MCS PC_SRC")},  # V1-ONLY
+}
+
+
+def datapath_fields(design_name: str) -> dict:
+    """The datapath-slice field definitions of a control design."""
+    return {**DATAPATH_FIELDS, **_DESIGN_OVERRIDES.get(design_name, {})}
 
 # Sequencer-slice fields (CSO §4.1), encodings from SCS §4 and ACS §4.9.
 SEQUENCER_FIELDS = {f.name: f for f in [
@@ -133,8 +144,9 @@ def check_against_schema(schema_path: Path) -> list[str]:
     """Return every disagreement between these definitions and the control-word schema."""
     schema = json.loads(Path(schema_path).read_text(encoding="utf-8"))
     by_name = {f["name"]: f for f in schema["fields"] if f["control_word_role"] == "encoded"}
+    fields = {**datapath_fields(schema.get("control_design_version", "")), **SEQUENCER_FIELDS}
     problems = []
-    for name, fd in ALL_FIELDS.items():
+    for name, fd in fields.items():
         sf = by_name.get(name)
         if sf is None:
             problems.append(f"{name}: not an encoded field in the schema")
@@ -147,6 +159,6 @@ def check_against_schema(schema_path: Path) -> list[str]:
         ours = {c: _norm(m) for c, m in fd.values.items()}
         if theirs != ours:
             problems.append(f"{name}: encodings differ: here {ours}, schema {theirs}")
-    for name in by_name.keys() - ALL_FIELDS.keys():
+    for name in by_name.keys() - fields.keys():
         problems.append(f"{name}: encoded in the schema but not defined here")
     return problems

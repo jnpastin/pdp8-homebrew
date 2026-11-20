@@ -38,6 +38,7 @@ Each `**Derivation:**` block defines its signal as a combinational function of I
 | `x == b`, `x = b` | `x` equals the binary literal `b`, which has the width of `x` |
 | `IR[n]`, `NAME` used as a condition | the value is 1 |
 | `AND`, `OR`, `NOT`, `( )` | logic; `NOT` binds tightest, then `AND`, then `OR` |
+| `{e2, e1, e0}` | a multi-bit value whose bits are the listed 1-bit conditions or binary literals `0` or `1`, most significant first |
 | `NAME = expression` | defines `NAME`; a field-extraction signal is defined as `IR[h:l]` |
 | `//` | begins a comment; the rest of the line is ignored |
 
@@ -167,6 +168,13 @@ Expose raw IR fields:
 - IR_IOT_OP → IR[2:0]
 - IR_IF → IR[5:3]
 
+### 2.9 Instruction Class Signals
+
+Predecode the instruction's path through the major states. They are decoded by gates from the live IR and reach the control store outside EXECUTE, where the mapping register does not apply ([Control Store Organization §5.4.2](../08-control-store-organization.md#542-execute-selection), §5.6):
+
+- IR_CLASS → the datapath slice's VARIANT outside EXECUTE
+- IR_NO_EXECUTE → the sequencer slice's A2 input
+
 ---
 
 ## 3. Table of Contents
@@ -223,6 +231,10 @@ Expose raw IR fields:
 - [IR_IS_EXTERNAL_IOT](#ir_is_external_iot)
 - [IR_IS_MEMEXT_IOT](#ir_is_memext_iot)
 
+### Instruction Classes
+- [IR_CLASS](#ir_class)
+- [IR_NO_EXECUTE](#ir_no_execute)
+
 ### Fields
 - [IR_ADDR](#ir_addr)
 - [IR_DF](#ir_df)
@@ -255,6 +267,40 @@ IR_ADDR = IR[6:0]
 
 **Consumed By:**
 - [IR_ADDR_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#ir_addr_to_ea_addr)
+
+---
+
+### IR_CLASS
+
+**Mnemonic:** IR_CLASS  
+**Name:** Instruction Class  
+**Type:** Instruction Class  
+**Bit Width:** 3  
+
+**Purpose:** Classifies the instruction by the major states it completes in, so that FETCH and DEFER can select instruction-dependent datapath words outside EXECUTE.
+
+**Derivation:**
+
+```text
+IR_CLASS = {0, IR[11:9] = 101 AND IR[8], IR[11:9] = 101 AND NOT IR[8]}
+```
+
+**Value Encoding:**
+
+- `000` → not JMP: completes in EXECUTE
+- `001` → direct JMP: completes in FETCH
+- `010` → JMP I: completes in DEFER
+- `011` → reserved (OPR group classes)
+- `100` → reserved (OPR group classes)
+- `101` → reserved (OPR group classes)
+- `110` → reserved (OPR group classes)
+- `111` → reserved
+
+**Consumed By:**
+
+- [Fetch & Defer](../../03-microarchitecture/04-fetch-defer.md): FETCH TS3, DEFER TS3 and TS4
+
+**Realization:** Decoded by predecode gates from the live IR, valid from FETCH TP2. Whenever `MS_EFF_IS_EXECUTE = 0` it drives the datapath slice's `VARIANT[2:0]`, with `VARIANT[4:3] = 0` ([Control Store Organization §5.4.2](../08-control-store-organization.md#542-execute-selection)).
 
 ---
 
@@ -662,6 +708,34 @@ IR_MRI_OPCODE = IR[11:9]
 
 - MRI execution selection
 - `ISZ_SKIP_REQUIRED`
+
+---
+
+### IR_NO_EXECUTE
+
+**Mnemonic:** IR_NO_EXECUTE  
+**Name:** No EXECUTE State  
+**Type:** Instruction Class  
+**Bit Width:** 1  
+
+**Purpose:** Indicates that the instruction never enters EXECUTE: it completes at FETCH TP4 when direct, or at DEFER TP4 when indirect.
+
+**Derivation:**
+
+```text
+IR_NO_EXECUTE = IR[11:9] = 101   // JMP
+```
+
+**Value Encoding:**
+
+- 0 → the instruction completes in EXECUTE
+- 1 → the instruction completes in FETCH (`IR_INDIRECT = 0`) or DEFER (`IR_INDIRECT = 1`)
+
+**Consumed By:**
+
+- Sequencing at FETCH TS4 and DEFER TS4 ([Sequencing and Internal Control §3](../30-direct-control-definitions/01-sequencing-and-internal-control.md#3-sequencing-control))
+
+**Realization:** Decoded by predecode gates from the live IR. It drives the sequencer slice's A2 input whenever `MS_EFF_IS_EXECUTE = 0`; together with `IR_INDIRECT` on A3 it tells FETCH TS4 whether the instruction completes there or continues to DEFER ([Control Store Organization §5.6](../08-control-store-organization.md)).
 
 ---
 

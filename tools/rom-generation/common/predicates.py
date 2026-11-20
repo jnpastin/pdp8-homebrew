@@ -484,6 +484,9 @@ def can_hold_together(
 #   ("name", NAME)               another IR-derived input
 #   ("eq", operand, literal)     operand == binary literal
 #   ("not", x) / ("and", x, y) / ("or", x, y)
+#   ("concat", (e, ...))         {e2, e1, e0}: a multi-bit value, most
+#                                significant first; each element is a 1-bit
+#                                condition or ("const", 0 or 1)
 #
 # and evaluated for every IR value.
 # ---------------------------------------------------------------------------
@@ -491,7 +494,7 @@ def can_hold_together(
 IR_WIDTH = 12
 DERIVATION_COMMENT = "//"
 DERIVATION_TOKEN = re.compile(
-    r"\s*(?:(IR\[(\d+)(?::(\d+))?\])|(==|=)|([()])|(AND|OR|NOT)\b"
+    r"\s*(?:(IR\[(\d+)(?::(\d+))?\])|(==|=)|([()])|([{},])|(AND|OR|NOT)\b"
     r"|([01]+)\b|([A-Za-z_/][A-Za-z0-9_/]*))"
 )
 
@@ -519,7 +522,7 @@ def tokenize_derivation(text: str) -> list[tuple]:
                 f"Unexpected text {text[position:].strip()[:20]!r}."
             )
         position = match.end()
-        bits, high, low, compare, paren, logic, literal, name = match.groups()
+        bits, high, low, compare, paren, brace, logic, literal, name = match.groups()
         if bits:
             high_bit = int(high)
             low_bit = int(low) if low is not None else high_bit
@@ -530,6 +533,8 @@ def tokenize_derivation(text: str) -> list[tuple]:
             tokens.append(("compare", compare))
         elif paren:
             tokens.append(("paren", paren))
+        elif brace:
+            tokens.append(("brace", brace))
         elif logic:
             tokens.append(("logic", logic))
         elif literal:
@@ -603,7 +608,35 @@ def parse_derivation(text: str) -> tuple[str, tuple]:
             node = ("eq", node, take()[1])
         return node
 
-    expression = disjunction()
+    def concatenation() -> tuple:
+        take()                                    # "{"
+        elements = []
+        while True:
+            if (
+                peek("literal")
+                and position + 1 < len(tokens)
+                and tokens[position + 1][0] == "brace"
+            ):
+                literal = take()[1]
+                if literal not in ("0", "1"):
+                    raise DerivationError(
+                        f"A concatenation element literal must be 0 or 1, not {literal}."
+                    )
+                elements.append(("const", int(literal)))
+            else:
+                elements.append(disjunction())
+            if peek("brace", ","):
+                take()
+                continue
+            if peek("brace", "}"):
+                take()
+                break
+            raise DerivationError("Expected ',' or '}' in a concatenation.")
+        if len(elements) < 2:
+            raise DerivationError("A concatenation needs at least two elements.")
+        return ("concat", tuple(elements))
+
+    expression = concatenation() if peek("brace", "{") else disjunction()
     if position != len(tokens):
         raise DerivationError(f"Unexpected token {tokens[position][-1]!r}.")
     return tokens[0][1], expression
@@ -615,8 +648,10 @@ def derivation_names(expression: tuple) -> list[str]:
     kind = expression[0]
     if kind == "name":
         return [expression[1]]
-    if kind == "bits":
+    if kind in ("bits", "const"):
         return []
+    if kind == "concat":
+        return [name for element in expression[1] for name in derivation_names(element)]
     if kind in ("eq", "not"):
         return derivation_names(expression[1])
     return derivation_names(expression[1]) + derivation_names(expression[2])
@@ -733,6 +768,21 @@ def ir_derivation_table(
             irs = range(2**IR_WIDTH)
             if expression[0] in ("bits", "name"):
                 result = [operand(expression, ir)[0] for ir in irs]
+            elif expression[0] == "concat":
+                elements = expression[1]
+                if len(elements) != widths[name]:
+                    raise DerivationError(
+                        f"The concatenation has {len(elements)} elements; "
+                        f"{name} is {widths[name]} bits wide."
+                    )
+                result = [
+                    sum(
+                        (element[1] if element[0] == "const" else int(condition(element, ir)))
+                        << (len(elements) - 1 - index)
+                        for index, element in enumerate(elements)
+                    )
+                    for ir in irs
+                ]
             else:
                 result = [int(condition(expression, ir)) for ir in irs]
         finally:

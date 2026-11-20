@@ -15,8 +15,9 @@ Branch: `one-cycle-fetch`. This branch evaluates and, if the user approves, impl
 | 1: specification | **Done:** every decision in [option2/spec.md](option2/spec.md) §11 decided (2026-11-20); [option2/timing.md](option2/timing.md) revision 2 reviewed. |
 | Checkpoints 1 and 2 | **Approved** by the user (2026-11-20). |
 | 2: behavior-neutral groundwork | **Done:** steps 2.1 to 2.7, every suite green under both designs (section 2). |
-| 3: slice A | **Done, awaiting the user's check and commit** (section 1.2). |
-| 4 onward (slices B, D, C1 to C3) | Not started. |
+| 3: slice A | **Done** (section 1.2; committed `7758162`). |
+| 4: slice B | **Done, awaiting the user's check and commit** (section 1.3). |
+| 5 onward (slices D, C1 to C3) | Not started. |
 
 ### 1.2 Slice A (phase 3), 2026-11-20
 
@@ -27,6 +28,19 @@ IR loads from MDB at FETCH TP2 (`MDB_TO_IR`, replacing `MB_TO_IR`); PC increment
 - **Simulator:** `Design.ir_source` (MDB; v1 MB) and `Design.ea_page` (MA; v1 PC), used by `datapath.py`; v1 values marked `V1-ONLY`. Tests: datapath IR-from-MDB and EA-page tests, `sim/cpu/tests/test_fetch_slice_a.py` (end-of-page MRI, FETCH TP by TP, MAPR at TP2), `ImageTests` removed. Two Windows-only test bugs fixed (path separators in `test_design.py` and the pipeline's `test_run_pipeline.py`; both failed at HEAD).
 - **Verified (Windows, CPython 3.14; PyPy 3.12):** tools 17 suites OK; sim/cpu 71, memory 3, reference 18, io 29, system 77 (1 skipped) OK under v1 and v2; MAINDEC suite (seeds 1 and 2) under PyPy OK for both; D2AB timing test OK for both (halt at 2607 until slice D).
 - **Diagrams:** the running list is [option2/diagrams.md](option2/diagrams.md), read from the diagram sources. Slice A: CPU_Architecture.xml A1 (add MDB → IR; IR–IDB becomes IR → IDB only) and A2 (add MA → EA_ADDR).
+
+### 1.3 Slice B (phase 4), 2026-11-20
+
+Direct JMP completes in FETCH (`IR_ADDR_TO_PC` at TP3, field change and `II_CLEAR` at TP3); JMP I completes in DEFER (`MB_TO_PC` at TP4; `II_CLEAR` at DEFER TP3, `DIF_TO_IF` and `CIFP_CLEAR` at DEFER TP4). JMP is removed from EXECUTE.
+
+- **Decisions made during the slice:** sequencer A2 = one predecode `IR_NO_EXECUTE` (with A3 = `IR_INDIRECT`), not a state-dependent input; new μops `IR_ADDR_TO_PC`, `MB_TO_PC`; **decision 7 revised**: `INSTR_END` is a gate decode of registered `MS_EFF`, TS, `IR_NO_EXECUTE`, `IR_INDIRECT` (a sequencer output would loop through the DMA arbiter's `/DMA_REQ` into the sequencer address); boundary contexts written out in full in each direct control (§3.1.1 defines instruction completion).
+- **Found by lock-step:** JMP I's field change at DEFER TP3 made the autoindex write-back in DEFER TS4 use the new field (`MFB_SRC = IF`). Fixed by applying the field and clearing `CIFP` at DEFER TP4; `II` still clears at TP3, so gap L holds.
+- **Docs:** 01 registers; 03 state model, fetch-defer, MRI execution (JMP removed), μops, console, DMA execution; 04 IR-derived fields (`{…}` concatenation notation, `IR_CLASS`, `IR_NO_EXECUTE`), control outputs (`PC_SRC` 2 bits, `INSTR_END` in ACS §4.10), CSO §3 to §9 (class `VARIANT`, A2, packing 46 bits), direct-control §3.1.1 to §3.4; 08 interrupts ("instruction-completion TP4"); 09 timing (§9.3 invariant: a JMP never reaches EXECUTE); 07-io DMA arbitration (`INSTR_END`); 00 signal conventions.
+- **Tools:** `common/predicates.py` concatenation (tests); `common/design.py` per-design `non_execute_variant`, `sequencer_a2` (v1: none); packer: class `VARIANT` outside EXECUTE, A2, class-independence check outside FETCH TS3/TS4 and DEFER, `INSTR_END` agreement check; packer fixture now sequences FETCH/DEFER realistically; 5 new packer tests. **v1 packer output byte-identical.** Reviewed decisions set by the user: `INSTR_END` role `derived`; `IR_CLASS`, `IR_NO_EXECUTE` `control_uses` `["predicate"]`.
+- **Simulator:** `IR_CLASS`, `IR_NO_EXECUTE` decodes; `VARIANT = 00·IR_CLASS` outside EXECUTE (undefined IR gives three undefined class bits, high bits wired 0); A2; `PC_SRC` = 2; per-design field definitions (`encodings.datapath_fields`); packing cross-check of the two decodes; boundary rule `instr_end` (= `INSTR_END`) driving the DMA arbiter, `at_boundary`, lock-step, and reference costs (JMP 1 state, JMP I 2). Tests: `sim/cpu/tests/test_jmp_slice_b.py` (17: paths, autoindex JMP I, interrupt after JMP and JMP I, CIF then JMP with and without interrupt, CIF then autoindex JMP I, ION then JMP, DMA at FETCH TP4, Single Instruction and Single Step, STOP in a JMP loop, costs).
+- **Verified (Windows, CPython 3.14; PyPy 3.12):** tools 17 suites OK; sim/cpu 88, memory 3, reference 18, io 29, system 77 (1 skipped) OK under v1 and v2; MAINDEC suite (seeds 1 and 2) under PyPy OK for both; D2AB timing: v1 halt 2607, **v2 halt 2614** (too fast at the placeholder 1.2 µs states, as phase 0 predicted; expectation updated until slice D).
+- **Diagrams:** `option2/diagrams.md` B1 to B7 (MS_NEXT flowchart, mapping, organization, CPU architecture).
+- **STOP at an instruction-completion TS4 (closed 2026-11-20):** with `HLT_REQ = 0` and `FP_STOP = 1` there, no context assigns `HLT_REQ_NEXT` (default 0), so STOP is captured at the next TP. The user accepts this: STOP is a human key press, held far longer than a TS. Same as v1.
 
 ### 1.1 Commits on this branch
 
@@ -69,7 +83,7 @@ From [option2/spec.md](option2/spec.md) §11, each with a recommendation there:
 | 3' | TS-length mechanism: a small timing ROM with speed modes; TSTEP 50 ns or 25 ns | Timing ROM, **50 ns** (timing.md rev. 2) — **decided 2026-11-20** |
 | 4 | Skip and interrupt at the same FETCH TP4 | No special case (same programmer-visible result as DEC) — **decided 2026-11-20** |
 | 6 | `RUN` multiplexer on overlay group 1's low bits, to carry `SKIP` | Yes — **decided 2026-11-20** |
-| 7 | `INSTR_END`: gates or the spare sequencer output | Spare sequencer output — **decided 2026-11-20** |
+| 7 | `INSTR_END`: gates or the spare sequencer output | Gates on registered state — **decided 2026-11-20, revised the same day** (a sequencer output would loop through the DMA arbiter's `/DMA_REQ`; spec §6.1) |
 | 8 | Logic families | ACT/F on the paths in timing.md §6; **the control-store address path must stay ACT** (HCT there cancels the SRAM's gain) — **decided 2026-11-20** |
 | 9 | PC as a synchronous counter (or a dedicated incrementer) | **No** since decision 12: FETCH has 103 ns of margin with the ALU increment (as the 8/E) — **decided 2026-11-20** |
 | 10 | Drive AB from MA whenever the CPU owns the bus | **No** since decision 12: the read has 110 ns of margin — **decided 2026-11-20** |
@@ -88,7 +102,7 @@ Points raised in the review that the spec does not yet cover (resolve before or 
 1. **Group 3 MQL has no control input.** **Decided 2026-11-20: class 6 = group 3 with MQL** (fits, no new bits; spec §2). The spec loads MQ through `MQ_LOAD`, but `IR_CLASS` 5 does not distinguish MQL. Options: a sixth class (6 = group 3 with MQL), or gate `MQ_LOAD` from the IR bit like the rest of the pass unit.
 2. **Decided 2026-11-20: `OPR_PASS` is spare codes, not a new bit.** It can be a spare `AC_SRC` code (7) and the freed `L_OP` COMP code. With OR, NOT, and the rotates gone from `ALU_OP` (4 → 2 bits) and MQ and FP_SR gone from `ALU_B_SRC` (2 → 1 bit), the datapath word shrinks to about 42 of 48 bits instead of growing to 46.
 3. **Decided 2026-11-20: `EA_FORMED` at TP3.** Direct JMP's PC source: `EA_FORMED` at TP3 (spec, DEC's TS3) or `PC ← EA_ADDR` through the IDB at TP4 (no new PC source, no `PC_SRC` widening; not programmer-visible).
-4. **Decided 2026-11-20: `INSTR_END` is the spare sequencer output bit** (decision 7).
+4. **Decided 2026-11-20, then revised: `INSTR_END` is a gate decode of registered state** (decision 7; spec §6.1).
 5. **Decided 2026-11-20 (with decision 1), applied in slice C1. Design principle:** the OPR pass unit (IR bits gating the datapath) departs from `00-design-principles.md` §3.1 ("no hardwired control logic"); amend the principle explicitly.
 6. **`02-group2-execution.md`** says "No persistent flag state is introduced"; the SKIP register changes that. `SKIP_TAKEN` keeps its inputs and becomes SKIP's D input; group 3's `SKIP_TAKEN` overlay bit is freed.
 7. **timing.md revision 2 done** (2026-11-20, awaiting review): control-store SRAM AS7C256C-15PCN (PDIP; the B part is discontinued); `T_CW` 81 ns; proposed lengths FETCH/plain DEFER 5/8/6/5 = 24, EXECUTE/autoindex DEFER 6/9/7/6 = 28 (3a exactly), at least 50 ns margin per TS. Main memory left unchosen (the user's instruction): any part up to about 165 ns access fits (timing.md §4.4).
@@ -99,8 +113,9 @@ Notes for the review:
 
 ## 4. Next Steps
 
-1. **The user checks and commits slice A** (section 1.2).
-2. **Slice B** (plan phase 4): direct JMP completes in FETCH (`PC ← EA_FORMED` at TP3, field change and `II_CLEAR` at TP3), JMP I completes in DEFER; the class decode (decision 2a), `IR_ONE_STATE` and `IR_IS_JMP` sequencer inputs, and the boundary rule moving to FETCH TP4 / DEFER TP4 for JMP. Same slice pattern: docs interactively (searching every doc directory, including `04-control/30-direct-control-definitions`, for each affected register and TS), tools, the user runs the pipeline, simulator, verify. Add each slice's diagram changes to `option2/diagrams.md` from the diagram sources.
+1. **The user checks and commits slice B** (section 1.3).
+2. **Slice D** (plan phase 5): the TS-length table (decision 3a, timing.md rev. 2: FETCH and plain DEFER 5/8/6/5, EXECUTE and autoindex DEFER 6/9/7/6 at 50 ns) in the docs and the simulator's per-TS time base; acceptance is D2AB PRG0 routines 4 and 5 passing. Also decide where the SRAM shadow (decision 12) enters the hardware docs.
+3. (Done) **Slice B** (plan phase 4): direct JMP completes in FETCH (`PC ← EA_FORMED` at TP3, field change and `II_CLEAR` at TP3), JMP I completes in DEFER; the class decode (decision 2a), `IR_ONE_STATE` and `IR_IS_JMP` sequencer inputs, and the boundary rule moving to FETCH TP4 / DEFER TP4 for JMP. Same slice pattern: docs interactively (searching every doc directory, including `04-control/30-direct-control-definitions`, for each affected register and TS), tools, the user runs the pipeline, simulator, verify. Add each slice's diagram changes to `option2/diagrams.md` from the diagram sources.
 
 ## 5. Resuming on Another Machine
 

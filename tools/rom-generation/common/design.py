@@ -26,12 +26,18 @@ class Design:
     maintained: PurePosixPath    # promoted artifacts, relative to the repository root
     build: PurePosixPath         # tool outputs, relative to the repository root
     frozen: bool                 # packed from maintained artifacts only; not regenerated
+    # Control-store address formation outside EXECUTE (Control Store Organization §5.4.2,
+    # §5.6): the IR-derived decode that drives the datapath slice's VARIANT, and the one on
+    # the sequencer slice's A2. None: VARIANT = 0 and A2 = 0 (v1).
+    non_execute_variant: str | None = "IR_CLASS"
+    sequencer_a2: str | None = "IR_NO_EXECUTE"
 
 
 DESIGNS = {
     # V1-ONLY: v1 keeps its original paths, so v1 output is unchanged by the selection.
     "v1": Design("v1", PurePosixPath("rom/microcode/v1"),
-                 PurePosixPath("build/simulation_outputs/rom-generation"), frozen=True),
+                 PurePosixPath("build/simulation_outputs/rom-generation"), frozen=True,
+                 non_execute_variant=None, sequencer_a2=None),
     "v2": Design("v2", PurePosixPath("rom/microcode/v2"),
                  PurePosixPath("build/simulation_outputs/rom-generation-v2"), frozen=False),
 }

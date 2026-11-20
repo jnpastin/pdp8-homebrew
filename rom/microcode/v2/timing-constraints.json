@@ -96,6 +96,15 @@
         "path": "docs/09-timing/03-major-state-timing.md",
         "line": 368
       }
+    },
+    {
+      "id": "invariant:9.3.1",
+      "context": "(MS = EXECUTE)",
+      "requirement": "IR_NO_EXECUTE = 0",
+      "source": {
+        "path": "docs/09-timing/03-major-state-timing.md",
+        "line": 374
+      }
     }
   ],
   "diagnostics": []

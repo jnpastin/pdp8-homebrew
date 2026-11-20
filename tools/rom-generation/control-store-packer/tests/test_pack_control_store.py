@@ -17,6 +17,23 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 import pack_control_store as P  # noqa: E402
+from unittest import mock  # noqa: E402
+
+# The address-formation decodes outside EXECUTE come from the selected design
+# (common/design.py). Most tests use the v1 form (VARIANT = 0, A2 = 0) so that
+# they do not depend on PDP8_DESIGN; V2AddressFormationTests sets them.
+_PATCHES = [mock.patch.object(P, "NON_EXECUTE_VARIANT", None),
+            mock.patch.object(P, "SEQ_A2", None)]
+
+
+def setUpModule():
+    for patch in _PATCHES:
+        patch.start()
+
+
+def tearDownModule():
+    for patch in _PATCHES:
+        patch.stop()
 
 
 # ---------------------------------------------------------------------------
@@ -24,10 +41,11 @@ import pack_control_store as P  # noqa: E402
 # ---------------------------------------------------------------------------
 
 
-def make_input(name, derivation=None, domain="External Inputs"):
+def make_input(name, derivation=None, domain="External Inputs", width=1):
     return {
-        "name": name, "width": 1, "domain": domain,
-        "values": [{"value": "0"}, {"value": "1"}], "ranges": [], "constraints": [],
+        "name": name, "width": width, "domain": domain,
+        "values": ([{"value": "0"}, {"value": "1"}] if width == 1 else []),
+        "ranges": [], "constraints": [],
         "derivation": {"text": derivation} if derivation else None,
     }
 
@@ -45,7 +63,28 @@ MS_VALUES = [{"encoding": str(i), "meaning": m}
              for i, m in enumerate(("FETCH", "DEFER", "EXECUTE", "INTERRUPT", "DMA"))]
 
 
-def documents(execute_guards=None, extra_cases=(), timing=()):
+FETCH_TS4 = "(MS = FETCH AND RUN = 1) AND TS = 4"
+DEFER_TS4 = "(MS = DEFER AND RUN = 1) AND TS = 4"
+
+
+def sequencing(v2):
+    """FETCH and DEFER TS4 next states, as a real machine sequences them; with
+    v2, an IR_NO_EXECUTE instruction completes in FETCH (direct) or DEFER."""
+    if not v2:
+        return ({"MS_NEXT": [{"value": "1", "when": f"({FETCH_TS4} AND IR_INDIRECT = 1)"},
+                             {"value": "2", "when": f"({FETCH_TS4} AND IR_INDIRECT = 0)"}]},
+                {"MS_NEXT": [{"value": "2", "when": f"({DEFER_TS4})"}]})
+    return ({"MS_NEXT": [{"value": "1", "when": f"({FETCH_TS4} AND IR_INDIRECT = 1)"},
+                         {"value": "2", "when":
+                          f"({FETCH_TS4} AND IR_INDIRECT = 0 AND IR_NO_EXECUTE = 0)"},
+                         {"value": "0", "when":
+                          f"({FETCH_TS4} AND IR_INDIRECT = 0 AND IR_NO_EXECUTE = 1)"}],
+             "F": [{"value": "1", "when": "((MS = FETCH AND RUN = 1) AND TS = 3 AND IR_CLASS = 01)"}]},
+            {"MS_NEXT": [{"value": "2", "when": f"({DEFER_TS4} AND IR_NO_EXECUTE = 0)"},
+                         {"value": "0", "when": f"({DEFER_TS4} AND IR_NO_EXECUTE = 1)"}]})
+
+
+def documents(execute_guards=None, extra_cases=(), timing=(), v2=False, fetch_extra=None):
     ir = "IR-Derived Signals"
     inputs = [
         make_input("X", "X = IR[0]", ir),
@@ -58,6 +97,12 @@ def documents(execute_guards=None, extra_cases=(), timing=()):
         *[make_input(n) for n in P.SEQ_ALWAYS],
         *[make_input(n) for n in P.SEQ_RUNNING],
     ]
+    if v2:
+        inputs += [make_input("IR_CLASS", "IR_CLASS = {IR[5], IR[4]}", ir, width=2),
+                   make_input("IR_NO_EXECUTE", "IR_NO_EXECUTE = IR[4]", ir)]
+    fetch, defer = sequencing(v2)
+    if fetch_extra:
+        fetch = {**fetch, **fetch_extra}
     words = [
         make_field("F"),
         make_field("G", 2, care="F=1"),
@@ -67,10 +112,10 @@ def documents(execute_guards=None, extra_cases=(), timing=()):
         make_field("/INITIALIZE", default="1"),
     ]
     cases = []
-    for ms in ("FETCH", "DEFER", "INTERRUPT", "DMA"):
+    for ms, assignments in (("FETCH", fetch), ("DEFER", defer), ("INTERRUPT", {}), ("DMA", {})):
         cases.append({"execution_case_id": ms.lower(),
                       "base_context": f"(MS = {ms} AND RUN = 1)",
-                      "defaults": {}, "field_assignments": {}})
+                      "defaults": {}, "field_assignments": assignments})
     cases.append({
         "execution_case_id": "execute",
         "base_context": "(MS = EXECUTE AND RUN = 1)",
@@ -380,7 +425,7 @@ class EndToEndTests(unittest.TestCase):
     def test_main_writes_outputs(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            artifacts = root / "rom/microcode/v1"
+            artifacts = root / P.DEFAULT_ARTIFACT_DIRECTORY   # the selected design's
             artifacts.mkdir(parents=True)
             for key, name in P.INPUT_FILES.items():
                 (artifacts / name).write_text(json.dumps(documents()[key]), encoding="utf-8")
@@ -401,6 +446,68 @@ class EndToEndTests(unittest.TestCase):
             with redirect_stdout(io.StringIO()):
                 code = P.main(["--repo-root", directory])
             self.assertEqual(code, 1)
+
+
+class V2AddressFormationTests(unittest.TestCase):
+    """Option 2 (Control Store Organization §5.4.2, §5.6, §9): outside
+    EXECUTE, VARIANT = IR_CLASS and A2 = IR_NO_EXECUTE; INSTR_END agrees."""
+
+    JMP, JMP_I, OTHER = 1 << 4, (1 << 4) | (1 << 8), 0     # fixture: IR[4] = no EXECUTE
+
+    def setUp(self):
+        patches = [mock.patch.object(P, "NON_EXECUTE_VARIANT", "IR_CLASS"),
+                   mock.patch.object(P, "SEQ_A2", "IR_NO_EXECUTE")]
+        for patch in patches:
+            patch.start()
+            self.addCleanup(patch.stop)
+
+    def pack(self, **kwargs):
+        model, diagnostics = P.build_model(documents(v2=True, **kwargs))
+        self.assertEqual([d.code for d in diagnostics], [])
+        return P.pack(model)
+
+    def test_packs_and_verifies(self):
+        packing, diagnostics = self.pack()
+        self.assertEqual([d.code for d in diagnostics], [])
+        self.assertGreater(packing.checked, 0)
+
+    def test_variant_is_the_class_outside_execute(self):
+        packing, _ = self.pack()
+        self.assertEqual(P.slice_select(packing, False, self.JMP, 3) & 0b11111, 0b01)
+        self.assertEqual(P.slice_select(packing, False, self.OTHER, 3) & 0b11111, 0b00)
+        fetch = packing.model.ms_codes["FETCH"]
+
+        def f(variant):
+            group = packing.groups[P.NON_EXECUTE_GROUP]
+            word = packing.images["_datapath_words"][P.datapath_address(fetch, 3, variant, 0)]
+            return P.unpack(packing, word, "F")
+        self.assertEqual((f(0b01), f(0b00)), (1, 0))
+
+    def test_a2_selects_completion(self):
+        packing, _ = self.pack()
+        fetch = packing.model.ms_codes["FETCH"]
+        values = {"/DMA_REQ": "1"}
+
+        def next_state(irseq, a2):
+            word = packing.images["sequencer"][P.sequencer_address(fetch, 4, values, False,
+                                                                   irseq, a2)]
+            return P._seq_unpack(packing.model, word, "MS_NEXT")
+        self.assertEqual(next_state("0", "0"), 2)   # EXECUTE
+        self.assertEqual(next_state("0", "1"), 0)   # completes in FETCH
+        self.assertEqual(next_state("1", "1"), 1)   # JMP I: DEFER
+
+    def test_class_dependence_before_ir_loads_is_an_error(self):
+        early = {"F": [{"value": "1", "when": "((MS = FETCH AND RUN = 1) AND TS = 1 AND IR_CLASS = 01)"}]}
+        model, _ = P.build_model(documents(v2=True, fetch_extra=early))
+        _, diagnostics = P.pack(model)
+        self.assertIn("NON_EXECUTE_CLASS_DEPENDENCE", [d.code for d in diagnostics])
+
+    def test_instr_end_disagreement_is_an_error(self):
+        # A FETCH TS4 that completes without IR_NO_EXECUTE: the INSTR_END gates would miss it.
+        wrong = {"MS_NEXT": [{"value": "0", "when": f"({FETCH_TS4})"}]}
+        model, _ = P.build_model(documents(v2=True, fetch_extra=wrong))
+        _, diagnostics = P.pack(model)
+        self.assertIn("INSTR_END_DISAGREES", [d.code for d in diagnostics])
 
 
 if __name__ == "__main__":
