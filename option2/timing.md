@@ -2,7 +2,7 @@
 
 Status: **revision 2, draft for the user's review** (phase 1). Companion to [spec.md](spec.md) §8 and §11.1, and [plan.md](plan.md) (phase 0).
 
-Revision 2 (2026-11-20) assumes **decision 12: the control store runs from fast SRAM** shadowed from the EEPROMs at power-on ([spec.md](spec.md) §11.1). Revision 1 assumed the machine ran from the 150 ns EEPROMs; its figures are kept in section 7 for comparison.
+Revision 2 (2026-11-20; control-store part updated to the AS7C256C-15PCN) assumes **decision 12: the control store runs from fast SRAM** shadowed from the EEPROMs at power-on ([spec.md](spec.md) §11.1). Revision 1 assumed the machine ran from the 150 ns EEPROMs; its figures are kept in section 7 for comparison.
 
 Scope: levers 1 (per-TS lengths) and 2 (the FETCH/EXECUTE split) of the plan's "Timing budget". Logic is mixed: ACT on the critical paths named here, HCT elsewhere. The CPU spans several boards; memory and I/O connect through a backplane, and CPU-internal signals may cross between boards on a ribbon cable.
 
@@ -37,10 +37,11 @@ Maximum propagation delays, −40 to 85 °C, CL = 50 pF, VCC = 4.5 to 5.5 V, fro
 | Quad AND / OR | 74x08 / 32 | A→Y | 10 / 10 | — |
 | 4-bit adder | 74F283 (bipolar F) | A/B→C4 / C0→C4 / C0→Σ | 8.5 / 8.5 / 10.5 | HC283 C0→Σ0 40, C0→Σ1 45 |
 | EEPROM 32K×8 (control-store source only) | AT28C256-15 (Microchip, doc0006) | tACC / tOE | 150 / 70 | |
-| **Control-store SRAM 32K×8** | **AS7C256B-15** (Alliance; 5 V; 28-pin 300 mil PDIP) | **tAA / tOE** | **15 / 7** | |
+| **Control-store SRAM 32K×8** | **AS7C256C-15PCN** (Alliance Memory; 2.7 to 5.5 V; 28-pin 300 mil PDIP; datasheet Rev 1.0, June 2024) | **tAA / tOE** | **15 / 7** | |
 | Main-memory placeholder 32K×8 | AS6C62256-55 (Alliance) | tAA | 55 | tOE not verified (assumed 30) |
 
-- The AS7C256B-15 figures are taken from the AS7C256A datasheet's 15 ns grade (tAA 15, tOE 7); the B datasheet has not been read. Alliance lists the B part in 300 mil PDIP at 15 ns. The 10 and 12 ns grades exist only in SOJ and TSOP.
+- AS7C256C-15PCN, from its datasheet: tRC 15 min, tAA 15 max, tACE 15 max, tOE 7 max, tOH 3 min; write tWC 15, tWP 10, tAW 12, tDW 8, tDH 0. Inputs and outputs are TTL compatible (VOH 2.4 V at −4 mA), which ACT and HCT inputs accept. The B part (no longer available) had the same figures; the A part's faster grades are SOJ and TSOP only.
+- **Two differences from the logic figures above:** the C part is specified for **0 to 70 °C only** (commercial; no industrial grade), and its timing is specified into **CL = 30 pF + 1 TTL load**, lighter than the 50 pF used for the logic. A control-word bit that fans out across the ribbon to several boards may need a buffer at the SRAM, or a derating of tAA (section 8).
 - In normal running the control-store SRAMs have `/CE` and `/OE` held asserted and `/WE` deasserted, so **tAA** applies.
 - **Shadow address buffer:** each SRAM address is driven by the address-formation logic through a tri-state buffer, disabled while `LOADING` so that the copy counter can drive it ([spec.md](spec.md) §11.1). It adds **9 ns** to the address path. Making the last multiplexer stage a tri-state type (74x257) would remove it; this analysis keeps the buffer.
 - **12-bit ripple adder, three 74F283:** 8.5 + 8.5 + 10.5 = **27.5 ns**.
@@ -52,7 +53,7 @@ Maximum propagation delays, −40 to 85 °C, CL = 50 pF, VCC = 4.5 to 5.5 V, fro
 |---|---|---|
 | `T_addr`: address formation | Registered inputs (TS code, MS, `MAPR`, IR, flags) through the `MS_EFF` / `VARIANT` / overlay multiplexers | 22 to 52 (below) |
 | Shadow buffer | ACT244/541 | 9 |
-| `T_ROM` | AS7C256B-15 tAA | 15 |
+| `T_ROM` | AS7C256C-15PCN tAA | 15 |
 | Distribution | control word across the ribbon | 5 |
 | **`T_CW`** | **raw control-word outputs valid at their receivers** | **51 to 81** |
 | `T_dec` | where a field drives tri-state bus enables through a decoder (`IDB_SRC`: 138 + buffer OE) | +23 |
@@ -193,7 +194,7 @@ HCT `T_addr` ≈ 130 to 160 ns (revision 1), HCT541 buffer 29, SRAM 15, distribu
 
 ## 8. Open Items
 
-- The AS7C256B datasheet: confirm tAA and tOE for the 15 ns PDIP grade (figures here are the AS7C256A's).
+- Control-word fan-out: each AS7C256C output is specified into 30 pF + 1 TTL. Decide whether each control-word bit is buffered at the SRAM (an ACT244/541 adds 9 ns, keeping every TS within its margins) or derated, once the board split is known.
 - The backplane and ribbon crossing allowance (5 ns each): replace once the physical design exists (`docs/11`).
 - The ACT244/541 buffer delay is assumed equal to the ACT245's (9 ns).
 - Main memory: chosen later, within section 4.4's limits.

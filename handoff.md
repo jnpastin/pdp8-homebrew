@@ -80,7 +80,7 @@ Points raised in the review that the spec does not yet cover (resolve before or 
 4. **`INSTR_END`:** Claude now leans to the spare sequencer output bit (control decides) over gates.
 5. **Design principle:** the OPR pass unit (IR bits gating the datapath) departs from `00-design-principles.md` §3.1 ("no hardwired control logic"); amend the principle explicitly.
 6. **`02-group2-execution.md`** says "No persistent flag state is introduced"; the SKIP register changes that. `SKIP_TAKEN` keeps its inputs and becomes SKIP's D input; group 3's `SKIP_TAKEN` overlay bit is freed.
-7. **timing.md revision 2 done** (2026-11-20, awaiting review): control-store SRAM AS7C256B-15 (PDIP); `T_CW` 81 ns; proposed lengths FETCH/plain DEFER 5/8/6/5 = 24, EXECUTE/autoindex DEFER 6/9/7/6 = 28 (3a exactly), at least 50 ns margin per TS. Main memory left unchosen (the user's instruction): any part up to about 165 ns access fits (timing.md §4.4).
+7. **timing.md revision 2 done** (2026-11-20, awaiting review): control-store SRAM AS7C256C-15PCN (PDIP; the B part is discontinued); `T_CW` 81 ns; proposed lengths FETCH/plain DEFER 5/8/6/5 = 24, EXECUTE/autoindex DEFER 6/9/7/6 = 28 (3a exactly), at least 50 ns margin per TS. Main memory left unchosen (the user's instruction): any part up to about 165 ns access fits (timing.md §4.4).
 
 Notes for the review:
 - **Decision 9 is invisible to the timing-state simulator.** `PC_INC` already loads PC "through a dedicated increment path" (MCS `PC_INC`). It changes the docs' hardware description and timing, not the simulated behavior, so it does not block slices A to C.
