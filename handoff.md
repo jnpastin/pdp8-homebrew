@@ -12,7 +12,7 @@ Branch: `one-cycle-fetch`. This branch evaluates and, if the user approves, impl
 |---|---|
 | 0: baseline and feasibility | **Done.** Option 2 meets D2AB PRG0's timing only with 8/E-like state lengths (the ISZ + JMP loop at 3.75 to 3.85 µs; IOT cost irrelevant). Plan phase 0 has the results. |
 | Checkpoint 0 | **Decided:** option 2; decision 3a (8/E fast/slow lengths); OPR split by group (slices C1 to C3); state-length slice D before OPR. |
-| 1: specification | **Drafted, awaiting the user's review:** [option2/spec.md](option2/spec.md) and [option2/timing.md](option2/timing.md). |
+| 1: specification | **Complete, awaiting checkpoint 1:** every decision in [option2/spec.md](option2/spec.md) §11 is decided (2026-11-20); [option2/timing.md](option2/timing.md) revision 2 reviewed. Uncommitted until the user checks and commits. |
 | Checkpoint 1 | **Open:** the user approves the spec and the decisions in section 3, or stops the branch. |
 | 2: behavior-neutral groundwork | **Done:** steps 2.1 to 2.7, every suite green under both designs (section 2). |
 | 3 onward (slices A, B, D, C1 to C3) | Not started. Slice A needs checkpoint 1. |
@@ -53,16 +53,16 @@ From [option2/spec.md](option2/spec.md) §11, each with a recommendation there:
 
 | # | Decision | Recommendation |
 |---|---|---|
-| 1 | OPR controls hardwired from IR, enabled by one `OPR_PASS` select | Yes (DEC does this) |
-| 2 | FETCH TS3's control word: `VARIANT = IR_CLASS` outside EXECUTE (2a) or mapping ROM from MDB (2b) | 2a |
-| 3' | TS-length mechanism: a small timing ROM with speed modes; TSTEP 50 ns or 25 ns | Timing ROM, **50 ns** (timing.md rev. 2) |
-| 4 | Skip and interrupt at the same FETCH TP4 | No special case (same programmer-visible result as DEC) |
-| 6 | `RUN` multiplexer on overlay group 1's low bits, to carry `SKIP` | Yes |
-| 7 | `INSTR_END` decoded by gates from the sequencer word | Gates |
-| 8 | Logic families | ACT/F on the paths in timing.md §6; **the control-store address path must stay ACT** (HCT there cancels the SRAM's gain) |
-| 9 | PC as a synchronous counter (or a dedicated incrementer) | **No** since decision 12: FETCH has 103 ns of margin with the ALU increment (as the 8/E) |
-| 10 | Drive AB from MA whenever the CPU owns the bus | **No** since decision 12: the read has 110 ns of margin |
-| 11 | Register `MS_EFF_IS_EXECUTE` and overlay zero-detect conditions at the preceding TP | **Not required** since decision 12 |
+| 1 | OPR controls hardwired from IR, enabled by `OPR_PASS` (spare `AC_SRC` and `L_OP` codes) | Yes; amend design principle §3.1 in slice C1 — **decided 2026-11-20** |
+| 2 | FETCH TS3's control word: `VARIANT = IR_CLASS` outside EXECUTE (2a) or mapping ROM from MDB (2b) | 2a — **decided 2026-11-20** |
+| 3' | TS-length mechanism: a small timing ROM with speed modes; TSTEP 50 ns or 25 ns | Timing ROM, **50 ns** (timing.md rev. 2) — **decided 2026-11-20** |
+| 4 | Skip and interrupt at the same FETCH TP4 | No special case (same programmer-visible result as DEC) — **decided 2026-11-20** |
+| 6 | `RUN` multiplexer on overlay group 1's low bits, to carry `SKIP` | Yes — **decided 2026-11-20** |
+| 7 | `INSTR_END`: gates or the spare sequencer output | Spare sequencer output — **decided 2026-11-20** |
+| 8 | Logic families | ACT/F on the paths in timing.md §6; **the control-store address path must stay ACT** (HCT there cancels the SRAM's gain) — **decided 2026-11-20** |
+| 9 | PC as a synchronous counter (or a dedicated incrementer) | **No** since decision 12: FETCH has 103 ns of margin with the ALU increment (as the 8/E) — **decided 2026-11-20** |
+| 10 | Drive AB from MA whenever the CPU owns the bus | **No** since decision 12: the read has 110 ns of margin — **decided 2026-11-20** |
+| 11 | Register `MS_EFF_IS_EXECUTE` and overlay zero-detect conditions at the preceding TP | **Not required** since decision 12 — **decided 2026-11-20** |
 | 12 | **SRAM-shadowed control store** | **Decided 2026-11-20: yes, with option 2** (spec §11.1) |
 
 ### 3.1 Session of 2026-11-20 (Windows host)
@@ -74,11 +74,11 @@ Phase 0 rerun on this host (PyPy 3.12, scratch script, not committed):
 - **v1 cycle counts with uniform states** pass only at 0.937 to 0.962 µs per state (0.925: halt 2652; 0.975: halt 2650). v1 + SRAM at 19 × 50 ns would also have passed D2AB, but with per-class errors (OPR and JMP +58%, MRI −27% against the 8/E). The user chose option 2 for per-class fidelity.
 
 Points raised in the review that the spec does not yet cover (resolve before or during checkpoint 1):
-1. **Group 3 MQL has no control input.** The spec loads MQ through `MQ_LOAD`, but `IR_CLASS` 5 does not distinguish MQL. Options: a sixth class (6 = group 3 with MQL), or gate `MQ_LOAD` from the IR bit like the rest of the pass unit.
-2. **`OPR_PASS` need not be a new bit.** It can be a spare `AC_SRC` code (7) and the freed `L_OP` COMP code. With OR, NOT, and the rotates gone from `ALU_OP` (4 → 2 bits) and MQ and FP_SR gone from `ALU_B_SRC` (2 → 1 bit), the datapath word shrinks to about 42 of 48 bits instead of growing to 46.
-3. **Direct JMP's PC source:** `EA_FORMED` at TP3 (spec, DEC's TS3) or `PC ← EA_ADDR` through the IDB at TP4 (no new PC source, no `PC_SRC` widening; not programmer-visible).
-4. **`INSTR_END`:** Claude now leans to the spare sequencer output bit (control decides) over gates.
-5. **Design principle:** the OPR pass unit (IR bits gating the datapath) departs from `00-design-principles.md` §3.1 ("no hardwired control logic"); amend the principle explicitly.
+1. **Group 3 MQL has no control input.** **Decided 2026-11-20: class 6 = group 3 with MQL** (fits, no new bits; spec §2). The spec loads MQ through `MQ_LOAD`, but `IR_CLASS` 5 does not distinguish MQL. Options: a sixth class (6 = group 3 with MQL), or gate `MQ_LOAD` from the IR bit like the rest of the pass unit.
+2. **Decided 2026-11-20: `OPR_PASS` is spare codes, not a new bit.** It can be a spare `AC_SRC` code (7) and the freed `L_OP` COMP code. With OR, NOT, and the rotates gone from `ALU_OP` (4 → 2 bits) and MQ and FP_SR gone from `ALU_B_SRC` (2 → 1 bit), the datapath word shrinks to about 42 of 48 bits instead of growing to 46.
+3. **Decided 2026-11-20: `EA_FORMED` at TP3.** Direct JMP's PC source: `EA_FORMED` at TP3 (spec, DEC's TS3) or `PC ← EA_ADDR` through the IDB at TP4 (no new PC source, no `PC_SRC` widening; not programmer-visible).
+4. **Decided 2026-11-20: `INSTR_END` is the spare sequencer output bit** (decision 7).
+5. **Decided 2026-11-20 (with decision 1), applied in slice C1. Design principle:** the OPR pass unit (IR bits gating the datapath) departs from `00-design-principles.md` §3.1 ("no hardwired control logic"); amend the principle explicitly.
 6. **`02-group2-execution.md`** says "No persistent flag state is introduced"; the SKIP register changes that. `SKIP_TAKEN` keeps its inputs and becomes SKIP's D input; group 3's `SKIP_TAKEN` overlay bit is freed.
 7. **timing.md revision 2 done** (2026-11-20, awaiting review): control-store SRAM AS7C256C-15PCN (PDIP; the B part is discontinued); `T_CW` 81 ns; proposed lengths FETCH/plain DEFER 5/8/6/5 = 24, EXECUTE/autoindex DEFER 6/9/7/6 = 28 (3a exactly), at least 50 ns margin per TS. Main memory left unchosen (the user's instruction): any part up to about 165 ns access fits (timing.md §4.4).
 
@@ -122,7 +122,7 @@ The rules of `main`'s handoff apply, with these differences:
 - Keep v1 working beside v2 (`PDP8_DESIGN`), built to be removed: mark v1-only code and tests `# V1-ONLY`. Plan phase 10 removes them before the merge.
 - `docs/` describe v2 from slice A on. v1 is frozen: it is packed from `rom/microcode/v1/` and never regenerated.
 - Every claim about DEC behavior cites a DEC document (section 7). Where this design deliberately differs (IOT keeps EXECUTE), say so.
-- Stop and record in this handoff anything that needs the user's decision. Commit and push progress.
+- Stop and record in this handoff anything that needs the user's decision. **Do not commit or push unless the user says to; stop after each phase so the user can check and commit** (user instruction, 2026-11-20).
 
 ## 7. DEC Facts (verified)
 

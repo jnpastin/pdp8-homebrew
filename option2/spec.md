@@ -46,10 +46,13 @@ A new combinational **class decode** on the live IR produces `IR_CLASS[2:0]`:
 | 2 | JMP indirect | opcode 5, bit 3 = 1 | DEFER |
 | 3 | OPR group 1 | opcode 7, bit 3 = 0 | FETCH |
 | 4 | OPR group 2 | opcode 7, bit 3 = 1, bit 11 = 0 | FETCH |
-| 5 | OPR group 3 | opcode 7, bit 3 = 1, bit 11 = 1 | FETCH |
+| 5 | OPR group 3 without MQL | opcode 7, bit 3 = 1, bit 11 = 1, bit 7 = 0 | FETCH |
+| 6 | OPR group 3 with MQL (MQL, SWP, and their combinations) | opcode 7, bit 3 = 1, bit 11 = 1, bit 7 = 1 | FETCH |
+
+Code 7 is spare. Class 6 exists only so that the control store can assert `MQ_LOAD` for MQL; every other OPR function is selected by IR bits in the pass unit (section 4.1).
 
 Two further predecodes, from the same gates, feed the sequencer (section 6.2):
-- `IR_ONE_STATE = class 1, 3, 4, or 5`, meaning the instruction ends at FETCH TP4.
+- `IR_ONE_STATE = class 1, 3, 4, 5, or 6`, meaning the instruction ends at FETCH TP4.
 - `IR_OPR_HLT`, the group 2 HLT bit, which v1 already decodes, but through `MAPR`.
 
 During phases 6 to 8 (slices C1 to C3), a group that has not yet moved is decoded as class 0. It keeps EXECUTE, so each intermediate design is complete.
@@ -112,14 +115,14 @@ The four-step group 1 order (CLA/CLL; CMA/CML; IAC; rotates or BSW) is the order
 
 | Stage | Group 1 | Group 2 | Group 3 |
 |---|---|---|---|
-| A: zero gating of AC (12) and L (1) | CLA, CLL | CLA | CLA |
+| A: zero gating of AC (12) and L (1) | CLA, CLL | CLA | CLA, MQL |
 | B: OR inputs | — | OSR: OR SR | MQA: OR MQ |
 | C: true/complement of AC and L | CMA, CML | — | — |
 | D: increment (carry-in into a 13-bit incrementer; the carry out of AC bit 0 complements L) | IAC | — | — |
 | E: rotate/BSW multiplexer on the 13-bit L·AC ring | RAR, RAL, RTR, RTL, BSW | — | — |
 
 - **The stage controls are gated from IR, qualified by the class.** For example, CLA = IR bit 4 AND class ∈ {3, 4, 5}; complement = IR bit 6 AND class 3. With the pass not selected, AC and L do not load, so the gating has no effect.
-- **The control store supplies one new select, `OPR_PASS`,** which makes AC and L load from the pass unit in FETCH TS3 (section 5.1). MQ loads for MQL and SWP use the existing `MQ_LOAD` / `MQ_SRC = AC` path, also at TP3. SWP therefore exchanges in one TP, "two paths loaded at the same TP3" (KK8-E).
+- **The control store selects the pass with field codes, not a new bit** (section 5.1): `AC_SRC` = 7 (reserved in v1) loads AC from the pass unit, and `L_OP` = 1 (COMP in v1, used only by OPR's `L_COMP`) loads L from it, in FETCH TS3. "`OPR_PASS`" in this document means that pair of codes. MQ loads for MQL and SWP use the existing `MQ_LOAD` / `MQ_SRC = AC` path, also at TP3. The control store learns of MQL from class 6 (section 2; decided 2026-11-20), which fits the 3-bit class code and the 5-bit `VARIANT` with no new bits. MQL also clears AC (stage A gates AC to zero when MQL is set). SWP therefore exchanges in one TP, "two paths loaded at the same TP3" (KK8-E).
 - **RAR and RAL together** (and RTR with RTL) are treated as no rotate. DEC's behavior there is undocumented and is not replicated (main's handoff rules).
 - **Realization:**
   - stage A: 4 × quad AND;
@@ -155,12 +158,14 @@ The page bits come from **MA** instead of PC (section 3.1). The unit stays combi
 
 | Change | Field | Width effect |
 |---|---|---|
-| OPR pass select | new `OPR_PASS` | +1 |
+| OPR pass select | `AC_SRC` = 7 (reserved) and `L_OP` = 1 (freed COMP code) | 0 |
 | SKIP load | new `SKIP_LOAD` | +1 |
+| `ALU_OP`: OR, NOT, ROR, ROL, RTR, RTL, BSW used only by OPR | 4 → 2 bits (ADD, AND, INC, CLEAR) | −2, after slice C3 |
+| `ALU_B_SRC`: MQ and FP_SR used only by OPR | 2 → 1 bit (NONE, MB) | −1, after slice C3 |
 | PC source `EA_FORMED` | `PC_SRC` 1 → 2 bits | 0: it already sits in a 2-bit shared group (`IOT_TRANSFER_VAL`, `L_OP`, `MB_SRC`, `PC_SRC`) |
 | IR from MDB | `IR_LOAD` unchanged, source wired | 0 |
 
-v1 uses 44 of 48 datapath bits; v2 needs **46 of 48. No seventh datapath EEPROM is needed.** The packer confirms the sharing (phase 3 onward).
+v1 uses 44 of 48 datapath bits. v2 needs **45 of 48 until slice C3, then about 42 of 48** once the OPR-only ALU encodings are removed (section 7). **No seventh datapath EEPROM is needed.** The packer confirms the sharing (phase 3 onward).
 
 ### 5.2 Address formation outside EXECUTE (decision 2a)
 
@@ -215,13 +220,13 @@ The `IR_SEQ` meaning of `MAPR[7]` in EXECUTE TS3 (`IR_OPR_HLT`) is no longer nee
 
 | Resource | v1 | v2 |
 |---|---|---|
-| Datapath control word | 44 / 48 bits | 46 / 48 |
+| Datapath control word | 44 / 48 bits | 45 / 48, then about 42 after slice C3 |
 | Datapath address | 15 / 15 | 15 / 15 (same fields; `VARIANT` takes 3 class bits outside EXECUTE) |
-| Datapath variants used outside EXECUTE | 1 | 6 (the classes) |
+| Datapath variants used outside EXECUTE | 1 | 7 (the classes) |
 | Mapping ROM address | IR 12 + TS 2 + `A0` = 0 | unchanged |
 | Mapping ROM output | 8 / 8 | 8 / 8 (sequencer decode bit used in TS4 only) |
 | Sequencer address | 12 of 15 used | 14 of 15 |
-| Sequencer output | 7 / 8 bits | 7 / 8 (the spare could carry `INSTR_END`: section 6.1) |
+| Sequencer output | 7 / 8 bits | **8 / 8**: the spare carries `INSTR_END` (decision 7, section 6.1) |
 | Overlay | 4 groups × 5 | unchanged, plus a 3-bit `RUN` multiplexer on group 1 |
 
 ## 6. Sequencing and Interrupts
@@ -234,11 +239,11 @@ An instruction ends at the TP4 of its last major state: FETCH (classes 1, 3, 4, 
 - HLT (group 2, captured at FETCH TP3, halting at FETCH TP4); STOP; Single Instruction.
 - Controllers' `at_boundary` time base (simulator).
 
-`INSTR_END` is defined for hardware outside the sequencer (the DMA arbiter's re-enable):
+`INSTR_END` is defined for hardware outside the sequencer (the DMA arbiter's re-enable). **It is a sequencer output (decision 7)**, the last spare bit of the sequencer word, asserted in the TS4 words that end an instruction. It is TP-qualified: its consumers sample it at TP4. Its meaning is
 ```
 INSTR_END = TS4 AND MS ∈ {FETCH, DEFER, EXECUTE} AND NOT (MS_LOAD AND MS_NEXT ∈ {DEFER, EXECUTE})
 ```
-It is decoded from the sequencer word, so it is a consumer decode, not logic inside the control store. Recommendation: decode it with gates. The spare sequencer output is the alternative.
+and the packer can verify every sequencer word against that expression. The control store decides it, as it decides every other sequencing output, instead of gates re-deriving it from the sequencer word.
 
 **ION's one-instruction delay still works.** ION sets `II`, and the next instruction's FETCH TS1 clears it if `CIFP = 0`, so recognition is still inhibited at ION's own end.
 
@@ -281,7 +286,7 @@ Result of the per-TS analysis ([timing.md](timing.md) revision 2, §4), with the
 
 As handoff §6, with these resolutions:
 - §6.1 hardware: OPR pass unit (section 4.1), SKIP, IR source, `EA_FORMED` PC source, EA page from MA, the class decode, the group 1 `RUN` multiplexer, the timing ROM.
-- §6.2 control store: 46 / 48 datapath bits; mapping ROM `A0` not needed; sequencer A2 and A1 used.
+- §6.2 control store: 45 / 48 datapath bits (about 42 after slice C3); mapping ROM `A0` not needed; sequencer A2 and A1 used.
 - §6.3 sequencing: section 6.
 - §6.4 documentation and §6.5 simulator: as handoff, in the slice order of [plan.md](plan.md).
 
@@ -304,18 +309,18 @@ Per [plan.md](plan.md):
 
 | # | Decision | Recommendation | Status |
 |---|---|---|---|
-| 1 | OPR controls hardwired from IR bits, enabled by `OPR_PASS` | Yes (DEC does this; microcoding needs about 2^8 group 1 combinations) | **open** |
-| 2 | How FETCH TS3 gets its control word | **2a**: `VARIANT = IR_CLASS` outside EXECUTE (section 5.2) | **open** |
+| 1 | OPR controls hardwired from IR bits, enabled by `OPR_PASS` (the `AC_SRC` and `L_OP` codes, section 5.1) | Yes (DEC does this; microcoding needs about 2^8 group 1 combinations). **Amend `docs/00-overview/00-design-principles.md` §3.1** ("no hardwired control logic") in slice C1: the control store decides when the pass acts; IR bits select its function | **decided 2026-11-20** |
+| 2 | How FETCH TS3 gets its control word | **2a**: `VARIANT = IR_CLASS` outside EXECUTE (section 5.2) | **decided 2026-11-20** |
 | 3 | Variable TS lengths | 3a | decided 2026-11-19 |
-| 3' | TS-length mechanism: timing ROM with speed modes (section 8); TSTEP 50 ns, or finer | Timing ROM (shadowed in SRAM), **50 ns**: 3a's lengths are whole 50 ns steps ([timing.md](timing.md) §4.3) | **open** |
-| 4 | Skip and interrupt at the same TP4 | No special case (section 6.2) | **open** |
+| 3' | TS-length mechanism: timing ROM with speed modes (section 8); TSTEP 50 ns, or finer | Timing ROM (shadowed in SRAM), **50 ns**: 3a's lengths are whole 50 ns steps ([timing.md](timing.md) §4.3) | **decided 2026-11-20** (timing.md rev. 2) |
+| 4 | Skip and interrupt at the same TP4 | No special case (section 6.2) | **decided 2026-11-20** |
 | 5 | v1 alongside v2 | Side by side, removable before merge | decided 2026-11-19 |
-| 6 | Overlay: `RUN` multiplexer on state-group bits 2 to 0 for `SKIP` (section 5.3) | Yes | **open** |
-| 7 | `INSTR_END` decoded by gates from the sequencer word (section 6.1) | Gates | **open** |
-| 8 | Logic family per path | Mixed: ACT or F on the critical paths named in [timing.md](timing.md) §6. **The control-store address path must stay ACT**: with HCT there, the SRAM's gain is lost (timing.md §7.2) | **open** (user stated "mixed") |
-| 9 | PC as a synchronous counter (or a dedicated incrementer) instead of incrementing through the ALU | **No** (revised with decision 12): FETCH has 103 ns of margin with the ALU increment, which is what DEC's 8/E does (timing.md §4.3) | **open** |
-| 10 | Drive AB from MA whenever the CPU owns the bus (not only while `/RD` or `/WR`), so the address leads `/RD` | **No** (revised with decision 12): the read already has 110 ns of margin | **open** |
-| 11 | Register `MS_EFF_IS_EXECUTE` and the overlay's combinational conditions (zero detects) at the preceding TP | **Not required** (revised with decision 12): without it every TS still fits, with at least 50 ns of margin (timing.md §4.3, conclusion 5) | **open** |
+| 6 | Overlay: `RUN` multiplexer on state-group bits 2 to 0 for `SKIP` (section 5.3) | Yes | **decided 2026-11-20** |
+| 7 | `INSTR_END`: gates from the sequencer word, or the spare sequencer output (section 6.1) | **Spare sequencer output** | **decided 2026-11-20** |
+| 8 | Logic family per path | Mixed: ACT or F on the critical paths named in [timing.md](timing.md) §6. **The control-store address path must stay ACT**: with HCT there, the SRAM's gain is lost (timing.md §7.2) | **decided 2026-11-20** (timing.md rev. 2) |
+| 9 | PC as a synchronous counter (or a dedicated incrementer) instead of incrementing through the ALU | **No** (revised with decision 12): FETCH has 103 ns of margin with the ALU increment, which is what DEC's 8/E does (timing.md §4.3) | **decided 2026-11-20** (timing.md rev. 2) |
+| 10 | Drive AB from MA whenever the CPU owns the bus (not only while `/RD` or `/WR`), so the address leads `/RD` | **No** (revised with decision 12): the read already has 110 ns of margin | **decided 2026-11-20** (timing.md rev. 2) |
+| 11 | Register `MS_EFF_IS_EXECUTE` and the overlay's combinational conditions (zero detects) at the preceding TP | **Not required** (revised with decision 12): without it every TS still fits, with at least 50 ns of margin (timing.md §4.3, conclusion 5) | **decided 2026-11-20** (timing.md rev. 2) |
 | 12 | Control store shadowed in fast SRAM: the EEPROMs are copied into SRAM at power-on reset, and the machine runs from the SRAM | Yes | **decided 2026-11-20** (with option 2) |
 
 ### 11.1 Decision 12: SRAM-shadowed control store
