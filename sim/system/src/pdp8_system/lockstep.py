@@ -20,6 +20,7 @@ import copy
 from dataclasses import dataclass, field
 
 from pdp8_cpu import encodings as E
+from pdp8_cpu.design import major_states
 from pdp8_reference import KL8E as ReferenceKL8E
 from pdp8_reference import Reference, ReferenceError, disassemble
 
@@ -55,6 +56,8 @@ def reference_from(machine: Machine) -> Reference:
     ref.memory = [list(words) for words in machine.memory.words]
     ref.interrupt_pending = st["MS"] == E.INTERRUPT
     ref.timing = dict(machine.cpu.timing)
+    design = machine.cpu.design                  # the simulated control design's cycle counts
+    ref.instruction_states = lambda ir: major_states(design, ir)
     ref.elapsed_ns = machine.cpu.elapsed_ns
     ref.devices = [_reference_device(d) for d in machine.devices]
     arbiter = machine.dma
@@ -95,8 +98,8 @@ class Lockstep:
             record = cpu.step_ts()
             if record is None:
                 raise Divergence("the simulator is halted mid-instruction")
-            if record.kind == "TS" and record.ts == 4 and record.ms in (E.EXECUTE, E.INTERRUPT, E.DMA):
-                kind = {E.EXECUTE: "instruction", E.INTERRUPT: "interrupt", E.DMA: "dma"}[record.ms]
+            kind = cpu.boundary_kind(record)
+            if kind is not None:
                 b = Boundary(kind, list(self._records))
                 b.writes = [r.mem_write for r in b.records if r.mem_write]
                 b.halted = self.m.state["RUN"] == 0

@@ -11,12 +11,8 @@ import random
 from pdp8_cpu import encodings
 from pdp8_cpu.cpu import Cpu, TraceRecord
 from pdp8_cpu.errors import ImageError, SimError
-from pdp8_cpu.images import (
-    DEFAULT_IMAGE_DIR,
-    DEFAULT_PACKING,
-    DEFAULT_SCHEMA,
-    ControlStore,
-)
+from pdp8_cpu.design import select as select_design
+from pdp8_cpu.images import ControlStore
 from pdp8_io import KL8E, DmaArbiter, DmaTestMaster
 from pdp8_memory import Memory
 
@@ -25,14 +21,19 @@ __all__ = ["KL8E", "DmaArbiter", "DmaTestMaster", "Machine", "SimError", "TraceR
 _STORE_CACHE: dict = {}
 
 
-def load_store(image_dir=DEFAULT_IMAGE_DIR, packing=DEFAULT_PACKING, schema=DEFAULT_SCHEMA) -> ControlStore:
-    """Load and validate the control store once per (images, packing) pair."""
-    key = (str(image_dir), str(packing))
+def load_store(image_dir=None, packing=None, schema=None, design: str | None = None) -> ControlStore:
+    """Load and validate a control design's store once per (images, packing) pair.
+
+    design: "v1" or "v2" (pdp8_cpu/design.py; default: PDP8_DESIGN, else v1). The other arguments
+    override that design's paths."""
+    d = select_design(design)
+    image_dir, packing, schema = image_dir or d.image_dir, packing or d.packing, schema or d.schema
+    key = (d.name, str(image_dir), str(packing))
     if key not in _STORE_CACHE:
         problems = encodings.check_against_schema(schema)
         if problems:
             raise ImageError("field encodings disagree with the control-word schema: " + "; ".join(problems))
-        _STORE_CACHE[key] = ControlStore.load(image_dir, packing)
+        _STORE_CACHE[key] = ControlStore.load(image_dir, packing, d)
     return _STORE_CACHE[key]
 
 

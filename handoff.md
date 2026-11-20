@@ -14,7 +14,7 @@ Branch: `one-cycle-fetch`. This branch evaluates and, if the user approves, impl
 | Checkpoint 0 | **Decided:** option 2; decision 3a (8/E fast/slow lengths); OPR split by group (slices C1 to C3); state-length slice D before OPR. |
 | 1: specification | **Drafted, awaiting the user's review:** [option2/spec.md](option2/spec.md) and [option2/timing.md](option2/timing.md). |
 | Checkpoint 1 | **Open:** the user approves the spec and the decisions in section 3, or stops the branch. |
-| 2: behavior-neutral groundwork | **Steps 2.1 to 2.7 implemented** (section 2). |
+| 2: behavior-neutral groundwork | **Done:** steps 2.1 to 2.7, every suite green under both designs (section 2). |
 | 3 onward (slices A, B, D, C1 to C3) | Not started. Slice A needs checkpoint 1. |
 
 ### 1.1 Commits on this branch
@@ -35,7 +35,17 @@ Branch: `one-cycle-fetch`. This branch evaluates and, if the user approves, impl
 | 2.6 | The reference model charges `instruction_states(ir)`; lock-step sets it from `design.major_states`. | Reference suite; lock-step. |
 | 2.7 | `sim/run_all_tests.py` (`--design`, `--quick`, `--build`, `--no-tools`). `sim/system/tests/test_d2ab_timing.py` (`PDP8_LONG_TESTS=1`): the reference model alone runs D2AB PRG0 with the design's cycle counts; v1 and v2 expect the halt at 2607 until slice D. | v1 timing test passes under PyPy in 21 s (halt at 2607 reproduced). |
 
-**Full-suite results:** see section 5. The system suite under both designs was running when this handoff was written. The commit message for phase 2.3 to 2.7 records the outcome.
+**Full-suite results (CPython 3.14, macOS), checkpoint 2 criteria met:**
+
+| Suite | v1 | v2 |
+|---|---|---|
+| ROM-generation tools (17 suites, design-independent) | OK | OK |
+| `sim/cpu` | 61 OK | 61 OK |
+| `sim/memory`, `sim/reference`, `sim/io` | 3, 18, 29 OK | 3, 18, 29 OK |
+| `sim/system` | 77 OK, 1 skipped (D2AB timing; 930 s) | 77 OK, 1 skipped (618 s) |
+| D2AB timing, PyPy, `PDP8_LONG_TESTS=1` | OK: halt at 2607 (21 s) | OK: halt at 2607 (45 s) |
+
+Lock-step elapsed-time agreement held throughout, so `elapsed_ns` at every boundary is unchanged. **Checkpoint 2 needs only the user's review of the commits.**
 
 ## 3. Decisions the User Needs to Make (checkpoint 1)
 

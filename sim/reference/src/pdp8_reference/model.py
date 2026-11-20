@@ -65,6 +65,15 @@ class Reference:
         self.dma_pending = False       # a DMA word is the next step
         self.timing = {"FETCH": 1200, "DEFER": 1200, "EXECUTE": 1200, "INTERRUPT": 1200, "DMA": 1200}
         self.elapsed_ns = 0            # simulated time: the durations of the major states run
+        self.instruction_states = self.default_instruction_states   # ir -> its major states
+
+    @staticmethod
+    def default_instruction_states(ir: int) -> tuple:
+        """Every instruction runs FETCH and EXECUTE, and an indirect MRI also DEFER (the v1
+        major-state sequence). Lock-step replaces `instruction_states` with the simulated
+        control design's sequence (pdp8_cpu.design.major_states)."""
+        indirect = ir >> 9 <= 0o5 and (ir >> 8) & 1
+        return ("FETCH", "DEFER", "EXECUTE") if indirect else ("FETCH", "EXECUTE")
 
     # -- memory -----------------------------------------------------------------------------
 
@@ -104,11 +113,9 @@ class Reference:
         # INH §12: a JMP or JMS applies a pending field change and clears the inhibit, so only
         # another instruction is inhibited by a change pending at its start.
         cifp_at_start = self.staged_if is not None and ir >> 9 not in (0o4, 0o5)
-        # Every instruction runs FETCH and EXECUTE, and an indirect MRI also DEFER (the major-state
-        # sequence of docs/03-microarchitecture).
-        indirect = ir >> 9 <= 0o5 and (ir >> 8) & 1
+        # The instruction's major states (docs/03-microarchitecture), each charged its duration.
         t = self.timing
-        self.elapsed_ns += t["FETCH"] + (t["DEFER"] if indirect else 0) + t["EXECUTE"]
+        self.elapsed_ns += sum(t[state] for state in self.instruction_states(ir))
         result = StepResult("instruction", pc, f, ir)
         inhibit = self._execute(ir, pc, result) or cifp_at_start
         result.writes = self._writes

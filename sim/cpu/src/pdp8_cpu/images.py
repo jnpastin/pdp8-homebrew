@@ -15,14 +15,16 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
+from . import design as D
 from . import encodings as E
 from .errors import ImageError
 
-REPO_ROOT = Path(__file__).resolve().parents[4]
-PACKER_OUT = REPO_ROOT / "build" / "simulation_outputs" / "rom-generation" / "control-store-packer"
-DEFAULT_IMAGE_DIR = PACKER_OUT / "images"
-DEFAULT_PACKING = PACKER_OUT / "control-store-packing.json"
-DEFAULT_SCHEMA = REPO_ROOT / "rom" / "microcode" / "v1" / "control-word-schema.json"
+REPO_ROOT = D.REPO_ROOT
+# The selected design's packer outputs and schema (design.py; PDP8_DESIGN, default v1).
+DEFAULT_DESIGN = D.select()
+DEFAULT_IMAGE_DIR = DEFAULT_DESIGN.image_dir
+DEFAULT_PACKING = DEFAULT_DESIGN.packing
+DEFAULT_SCHEMA = DEFAULT_DESIGN.schema
 
 IMAGE_DEPTH = 1 << 15  # 28C256: 15 address bits (CSO §2)
 DATAPATH_DEVICES = 6  # CSO §4.2
@@ -60,7 +62,8 @@ def read_hex_image(path: Path) -> list[int]:
 class ControlStore:
     """The mapping ROM, the six datapath devices, and the sequencer device, with their wiring."""
 
-    def __init__(self, mapping, datapath, sequencer, packing):
+    def __init__(self, mapping, datapath, sequencer, packing, design: D.Design = DEFAULT_DESIGN):
+        self.design = design      # the control design these images belong to (design.py)
         self.mapping = mapping
         self.datapath = datapath  # 48-bit words
         self.sequencer = sequencer
@@ -78,8 +81,13 @@ class ControlStore:
         self._validate()
 
     @classmethod
-    def load(cls, image_dir: Path = DEFAULT_IMAGE_DIR, packing_path: Path = DEFAULT_PACKING):
-        image_dir, packing_path = Path(image_dir), Path(packing_path)
+    def load(cls, image_dir: Path | None = None, packing_path: Path | None = None,
+             design: D.Design | None = None):
+        """Load `design`'s images (default: the selected design); `image_dir` and
+        `packing_path` override its paths."""
+        design = design or DEFAULT_DESIGN
+        image_dir = Path(image_dir or design.image_dir)
+        packing_path = Path(packing_path or design.packing)
         if not packing_path.exists():
             raise ImageError(f"packing description not found: {packing_path}",
                              "run tools/rom-generation/pipeline to create it")
@@ -89,7 +97,7 @@ class ControlStore:
         devices = [read_hex_image(image_dir / f"datapath-{n}.hex") for n in range(DATAPATH_DEVICES)]
         datapath = [sum(devices[n][a] << (8 * n) for n in range(DATAPATH_DEVICES))
                     for a in range(IMAGE_DEPTH)]
-        return cls(mapping, datapath, sequencer, packing)
+        return cls(mapping, datapath, sequencer, packing, design)
 
     # -- validation against the documentation ---------------------------------------------
 

@@ -56,18 +56,21 @@ class DmaArbiter:
 
     # -- combinational outputs -----------------------------------------------------------------
 
-    def dma_enable(self, in_execute: bool, in_dma: bool, ts: int) -> bool:
-        """ARB §5: 1 in EXECUTE TS4; the retained burst-enabled state in DMA; otherwise 0."""
-        if in_execute and ts == 4:
+    def dma_enable(self, in_last_state: bool, in_dma: bool, ts: int) -> bool:
+        """ARB §5: 1 in EXECUTE TS4; the retained burst-enabled state in DMA; otherwise 0.
+
+        `in_last_state`: the CPU is in an instruction's last major state, EXECUTE in v1 (ARB §5);
+        in option 2 also FETCH or DEFER for the instructions that end there (option2/spec.md §6.1)."""
+        if in_last_state and ts == 4:
             return True
         if in_dma:
             return self.burst_enabled
         return False
 
-    def aggregate_n(self, in_execute: bool, in_dma: bool, ts: int) -> int:
+    def aggregate_n(self, in_last_state: bool, in_dma: bool, ts: int) -> int:
         """ARB §7: /DMA_REQ = NOT (DMA_ENABLE AND any /DMA_REQ[n] asserted)."""
         requested = any(c.dma_request() for c in self.controllers)
-        return 0 if self.dma_enable(in_execute, in_dma, ts) and requested else 1
+        return 0 if self.dma_enable(in_last_state, in_dma, ts) and requested else 1
 
     def operation(self):
         """DMA §6.3: the transfer the selected controller presents during DMA TS2, or None."""
@@ -76,7 +79,7 @@ class DmaArbiter:
 
     # -- TP commits ------------------------------------------------------------------------------
 
-    def commit(self, tp, in_execute: bool, in_dma: bool, initialize: bool, transferred=None):
+    def commit(self, tp, in_last_state: bool, in_dma: bool, initialize: bool, transferred=None):
         """Commit at a main-sequence TP (`tp` = 1..4) or the console TP (`tp` = "C").
 
         `transferred` is the value of the word transferred at DMA TP2 (None for none)."""
@@ -104,7 +107,7 @@ class DmaArbiter:
                 self.grant_id = NO_CONTROLLER
                 self.burst_count = 0
                 self._terminating = False
-        elif in_execute and tp == 4:                     # ARB §4, §12: reenable at EXECUTE TP4
+        elif in_last_state and tp == 4:                  # ARB §4, §12: reenable at EXECUTE TP4
             self.burst_enabled = True
 
 

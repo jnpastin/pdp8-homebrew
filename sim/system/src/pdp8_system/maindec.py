@@ -13,7 +13,6 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from pdp8_cpu import encodings as E
 
 from .lockstep import Lockstep, disassemble
 from .machine import KL8E, Machine, load_store
@@ -254,6 +253,7 @@ class _SimStepper:
             record = cpu.step_ts()
             if record is None:
                 raise RuntimeError("the simulator is halted mid-instruction")
-            if record.kind == "TS" and record.ts == 4 and record.ms in (E.EXECUTE, E.INTERRUPT):
-                return st["RUN"] == 0, pc, (ir if ms == E.EXECUTE else None)
+            kind = cpu.boundary_kind(record)
+            if kind in ("instruction", "interrupt"):
+                return st["RUN"] == 0, pc, (ir if kind == "instruction" else None)
         raise RuntimeError(f"no instruction boundary within {max_ts} timing states")

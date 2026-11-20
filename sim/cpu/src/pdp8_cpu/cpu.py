@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 
 from . import address as A
 from . import derived as D
+from . import design as DS
 from . import encodings as E
 from .console import COMMANDS, FrontPanel
 from .datapath import evaluate
@@ -55,34 +56,64 @@ class TraceRecord:
 # Simulated duration of each major state, in ns: the PDP-8/E's 1.2 µs memory cycle by default. The
 # documentation does not yet fix this machine's cycle time (TSTEP counts are an open item); time is
 # simulated only so that controllers can model real-time behavior such as Teletype character times.
-DEFAULT_TIMING = {"FETCH": 1200, "DEFER": 1200, "EXECUTE": 1200, "INTERRUPT": 1200, "DMA": 1200}
+# The design's per-TS table (design.py) is the source; this is its per-state view.
+DEFAULT_TIMING = DS.select("v1").state_ns()  # V1-ONLY: the v1 time base, for callers that name it
 
 
 class Cpu:
     def __init__(self, store: ControlStore, memory, panel: FrontPanel | None = None,
-                 ext: ExternalInputs | None = None, trace=None, devices=(), dma=None, timing=None):
+                 ext: ExternalInputs | None = None, trace=None, devices=(), dma=None, timing=None, ts_ns=None):
         """ext: test stimulus for the external inputs (for example /INT_REQ); controllers in
         `devices` contribute their own responses each TS. A controller provides present(bus),
         commit(bus, tp, db_write, initialize), initialize(), and optionally at_boundary().
 
         dma: the DMA arbiter (docs/07-io/06-dma-arbitration.md), which supplies aggregate
         /DMA_REQ and, while /DMA_GRANT is asserted, the selected controller's memory transfer:
-        aggregate_n(in_execute, in_dma, ts), operation(), and
-        commit(tp, in_execute, in_dma, initialize, transferred).
+        aggregate_n(in_last_state, in_dma, ts), operation(), and
+        commit(tp, in_last_state, in_dma, initialize, transferred), where in_last_state is true in
+        the instruction's last major state (design.is_last_state; v1: EXECUTE).
 
-        timing: the simulated duration of each major state in ns (DEFAULT_TIMING); `elapsed_ns`
-        accumulates it at every main-sequence TP4 and is passed to `at_boundary(now_ns)`."""
+        timing: the simulated duration of each major state in ns, overriding the design's; that
+        state's whole duration is then charged at its TP4.
+        ts_ns: the duration of each timing state, per major state (default: the design's table,
+        design.py). `elapsed_ns` advances by each TS's duration at its main-sequence TP, so at an
+        instruction boundary it has the sum of the major states run; it is passed to
+        `at_boundary(now_ns)`."""
         self.store = store
         self.memory = memory
         self.panel = panel or FrontPanel()
         self.ext = ext or ExternalInputs()
         self.devices = list(devices)
         self.dma = dma
-        self.timing = dict(DEFAULT_TIMING, **(timing or {}))
+        self.design = getattr(store, "design", None) or DS.select()
+        table = dict(ts_ns or self.design.ts_ns)
+        if timing:
+            table.update(DS.ts_table_from_states(timing))
+        self.ts_ns = table
         self.elapsed_ns = 0
         self.st = CpuState()
         self.trace = trace          # optional callable(TraceRecord)
         self.last_record: TraceRecord | None = None
+
+    def last_state(self, ms: int, ir) -> bool:
+        """Whether major state `ms`, running `ir`, ends the instruction (design.is_last_state)."""
+        return DS.is_last_state(self.design, E.MS_NAMES.get(ms, ms), ir)
+
+    def boundary_kind(self, record) -> str | None:
+        """For the TS just committed: "instruction", "interrupt" (entry), or "dma" (one cycle) if
+        its TP4 ended one of these, else None."""
+        if record.kind != "TS" or record.ts != 4:
+            return None
+        if record.ms == E.INTERRUPT:
+            return "interrupt"
+        if record.ms == E.DMA:
+            return "dma"
+        return "instruction" if self.last_state(record.ms, record.ir) else None
+
+    @property
+    def timing(self) -> dict:
+        """The duration of each major state, in ns: the sum of its timing states."""
+        return {ms: sum(t) for ms, t in self.ts_ns.items()}
 
     # -- lifecycle ---------------------------------------------------------------------------
 
@@ -142,7 +173,8 @@ class Cpu:
         ext.__dict__.update(self.ext.__dict__)
         if self.dma is not None:                      # ARB §7: the arbiter's aggregate /DMA_REQ
             st = self.st
-            ext.dma_req_n &= self.dma.aggregate_n(st["MS"] == E.EXECUTE, st["MS"] == E.DMA, st.ts)
+            ext.dma_req_n &= self.dma.aggregate_n(self.last_state(st["MS"], st["IR"]), st["MS"] == E.DMA,
+                                                  st.ts)
         for device in self.devices:
             r = device.present(bus)
             ext.io_read_req |= r.io_read_req
@@ -215,10 +247,11 @@ class Cpu:
         for device in self.devices:
             device.commit(bus, "C" if console else ts, effects.db_write, initialize)
         if self.dma is not None:
-            self.dma.commit("C" if console else ts, ms == E.EXECUTE, ms == E.DMA, initialize, dma_value)
-        if not console and ts == 4:                  # a major state completes
-            self.elapsed_ns += self.timing[E.MS_NAMES[ms]]
-        if not console and ts == 4 and ms in (E.EXECUTE, E.INTERRUPT):
+            self.dma.commit("C" if console else ts, self.last_state(ms, context["IR"]), ms == E.DMA,
+                            initialize, dma_value)
+        if not console:                              # this TS's duration (design.py)
+            self.elapsed_ns += self.ts_ns[E.MS_NAMES[ms]][ts - 1]
+        if not console and ts == 4 and (ms == E.INTERRUPT or self.last_state(ms, context["IR"])):
             for device in self.devices:              # an instruction boundary (see KL8E model)
                 getattr(device, "at_boundary", lambda now_ns: None)(self.elapsed_ns)
 
