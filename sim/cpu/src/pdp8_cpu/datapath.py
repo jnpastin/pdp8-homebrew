@@ -69,9 +69,9 @@ def alu(op, a, b, lin):
 
 
 class _Eval:
-    def __init__(self, f, st, ext, panel, memory, cond, mseff):
+    def __init__(self, f, st, ext, panel, memory, cond, mseff, design):
         self.f, self.st, self.ext, self.panel, self.memory = f, st, ext, panel, memory
-        self.cond, self.mseff = cond, mseff
+        self.cond, self.mseff, self.design = cond, mseff, design
         self.fx = Effects()
         self._alu = None
         self._mdb = None
@@ -133,7 +133,7 @@ class _Eval:
         return False, None
 
     def mdb(self):
-        """The value on MDB this TS, for a consumer that loads it (MB_SRC = MDB)."""
+        """The value on MDB this TS, for a consumer that loads it (MB_SRC = MDB, or IR in v2)."""
         if self._mdb is None:
             cpu_drives, cpu_value = self.cpu_mdb_drive()
             if self.asserted("/RD"):
@@ -143,7 +143,8 @@ class _Eval:
             elif cpu_drives:
                 self._mdb = ("cpu", cpu_value)
             else:
-                raise SpecViolation("MB loads from MDB, but nothing drives MDB", "MEM §12, MCS MB_SRC")
+                raise SpecViolation("a register loads from MDB, but nothing drives MDB",
+                                    "MEM §12, MCS MB_SRC, MCS IR_LOAD")
         return self._mdb[1]
 
     # -- evaluation --------------------------------------------------------------------------
@@ -198,7 +199,7 @@ class _Eval:
         if f["MQ_LOAD"]:
             fx.loads["MQ"] = self.idb() if self.sel("MQ_SRC") == 0 else st["AC"]
         if f["IR_LOAD"]:
-            fx.loads["IR"] = st["MB"]                      # MB_TO_IR: IR <- MB
+            fx.loads["IR"] = IR_SOURCES[self.design.ir_source](self)
         if f["PC_INC"] and f["PC_LOAD"]:
             raise SpecViolation("PC_INC and PC_LOAD asserted together", "MCS PC_INC, PC_LOAD")
         if f["PC_INC"]:
@@ -275,15 +276,23 @@ class _Eval:
         return bit(self.st["AC"], 11)
 
     def ea_formed(self):
-        """IR_ADDR_TO_EA_ADDR: zero page (0 || IR[6:0]) or current page (PC[11:7] || IR[6:0])."""
-        ir, pc = self.st["IR"], self.st["PC"]
+        """IR_ADDR_TO_EA_ADDR: zero page (0 || IR[6:0]) or current page (page || IR[6:0]), the
+        page being bits 11:7 of the design's page register: MA (v2) or PC (v1)."""
+        ir, page_reg = self.st["IR"], self.st[self.design.ea_page]
         zero_page = self.cond.get("IR_ZERO_PAGE")
         if ir is None or zero_page is None:
             return None
         if zero_page == 1:
             return ir & 0o177
-        return u(lambda p: (p & 0o7600) | (ir & 0o177), pc)
+        return u(lambda p: (p & 0o7600) | (ir & 0o177), page_reg)
 
 
-def evaluate(fields, st, ext, panel, memory, cond, mseff) -> Effects:
-    return _Eval(fields, st, ext, panel, memory, cond, mseff).run()
+# IR's wired load input (MCS IR_LOAD; docs/01-architecture/01-registers.md, IR).
+IR_SOURCES = {
+    "MDB": lambda ev: ev.mdb(),          # MDB_TO_IR: IR <- MDB, with MB, during the FETCH read
+    "MB": lambda ev: ev.st["MB"],        # V1-ONLY: MB_TO_IR: IR <- MB
+}
+
+
+def evaluate(fields, st, ext, panel, memory, cond, mseff, design) -> Effects:
+    return _Eval(fields, st, ext, panel, memory, cond, mseff, design).run()

@@ -1153,26 +1153,7 @@ Selection of a memory micro-operation does not by itself define `AB_SRC`.
 
 `AB_SRC = PC` applies in the following documented CPU-owned memory-access cases.
 
-#### 4.2.1 Instruction Fetch
-
-Applicable context:
-
-```text
-MS = FETCH
-TS = 2
-```
-
-Assignment:
-
-```text
-AB_SRC = PC
-```
-
-Sources:
-
-- [Fetch & Defer](../../03-microarchitecture/04-fetch-defer.md)
-
-#### 4.2.2 Console Examine
+#### 4.2.1 Console Examine
 
 Applicable context:
 
@@ -1191,7 +1172,7 @@ Sources:
 
 - [Console Execution](../../03-microarchitecture/09-console-execution.md#7-examine-operation)
 
-#### 4.2.3 Console Deposit
+#### 4.2.2 Console Deposit
 
 Applicable context:
 
@@ -1219,7 +1200,28 @@ Constraints:
 
 `AB_SRC = MA` applies in the following documented CPU-owned memory-access cases.
 
-#### 4.3.1 DEFER Pointer Read
+#### 4.3.1 Instruction Fetch
+
+Applicable context:
+
+```text
+MS = FETCH
+TS = 2
+```
+
+Assignment:
+
+```text
+AB_SRC = MA
+```
+
+MA holds the instruction's address from FETCH TP1; PC has already advanced at the same TP.
+
+Sources:
+
+- [Fetch & Defer](../../03-microarchitecture/04-fetch-defer.md)
+
+#### 4.3.2 DEFER Pointer Read
 
 Applicable context:
 
@@ -1235,7 +1237,7 @@ Assignment:
 AB_SRC = MA
 ```
 
-#### 4.3.2 DEFER Auto-Index Writeback
+#### 4.3.3 DEFER Auto-Index Writeback
 
 Applicable context:
 
@@ -1252,7 +1254,7 @@ Assignment:
 AB_SRC = MA
 ```
 
-#### 4.3.3 MRI Memory Read
+#### 4.3.4 MRI Memory Read
 
 Applicable context:
 
@@ -1290,7 +1292,7 @@ Assignment:
 AB_SRC = MA
 ```
 
-#### 4.3.4 ISZ Writeback
+#### 4.3.5 ISZ Writeback
 
 Applicable context:
 
@@ -1308,7 +1310,7 @@ Assignment:
 AB_SRC = MA
 ```
 
-#### 4.3.5 DCA Write
+#### 4.3.6 DCA Write
 
 Applicable context:
 
@@ -1326,7 +1328,7 @@ Assignment:
 AB_SRC = MA
 ```
 
-#### 4.3.6 JMS Write
+#### 4.3.7 JMS Write
 
 Applicable context:
 
@@ -1344,7 +1346,7 @@ Assignment:
 AB_SRC = MA
 ```
 
-#### 4.3.7 Interrupt Return-Address Write
+#### 4.3.8 Interrupt Return-Address Write
 
 Applicable context:
 

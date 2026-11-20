@@ -3,6 +3,7 @@ import unittest
 import _paths  # noqa: F401
 from _paths import blank_fields
 from pdp8_cpu import derived as D
+from pdp8_cpu import design as DS
 from pdp8_cpu import encodings as E
 from pdp8_cpu.console import FrontPanel
 from pdp8_cpu.datapath import alu, evaluate
@@ -97,9 +98,11 @@ class DatapathTests(unittest.TestCase):
         self.panel = FrontPanel()
         self.ext = ExternalInputs()
 
-    def run_word(self, **fields):
+    def run_word(self, design=None, **fields):
+        """Evaluate one word; `design` names the wiring (default: PDP8_DESIGN)."""
         cond = Conditions(self.st, self.ext, self.panel)
-        return evaluate(blank_fields(**fields), self.st, self.ext, self.panel, self.mem, cond, E.FETCH)
+        return evaluate(blank_fields(**fields), self.st, self.ext, self.panel, self.mem, cond, E.FETCH,
+                        DS.select(design))
 
     def test_memory_read_into_mb(self):
         self.mem.preload(0, 0o100, [0o4321])
@@ -144,13 +147,40 @@ class DatapathTests(unittest.TestCase):
         with self.assertRaises(SpecViolation):
             self.run_word(AC_LOAD=1, AC_SRC=0, IDB_DRIVE=1, IDB_SRC=7, ALU_OP=E.ADD, ALU_B_SRC=0)
 
-    def test_ea_formation(self):
+    def test_ea_formation_page_from_ma(self):
+        # v2: the page is MA[11:7], the instruction's address; PC has already advanced at FETCH TP1
+        # (02-micro-operations.md IR_ADDR_TO_EA_ADDR). An instruction at the last word of a page
+        # shows the difference: PC is on the next page.
+        self.st["IR"], self.st["MA"], self.st["PC"] = 0o1300, 0o4777, 0o5000   # TAD, current page, offset 100
+        fx = self.run_word("v2", EA_ADDR_LOAD=1, EA_ADDR_SRC=1)
+        self.assertEqual(fx.loads["EA_ADDR"], 0o4700)
+        self.st["IR"] = 0o1177                               # zero page
+        fx = self.run_word("v2", EA_ADDR_LOAD=1, EA_ADDR_SRC=1)
+        self.assertEqual(fx.loads["EA_ADDR"], 0o0177)
+
+    def test_ea_formation_page_from_pc(self):  # V1-ONLY
         self.st["IR"], self.st["PC"] = 0o1377, 0o4777        # TAD, current page, offset 177
-        fx = self.run_word(EA_ADDR_LOAD=1, EA_ADDR_SRC=1)
+        fx = self.run_word("v1", EA_ADDR_LOAD=1, EA_ADDR_SRC=1)
         self.assertEqual(fx.loads["EA_ADDR"], 0o4777)
         self.st["IR"] = 0o1177                               # zero page
-        fx = self.run_word(EA_ADDR_LOAD=1, EA_ADDR_SRC=1)
+        fx = self.run_word("v1", EA_ADDR_LOAD=1, EA_ADDR_SRC=1)
         self.assertEqual(fx.loads["EA_ADDR"], 0o0177)
+
+    def test_ir_loads_from_mdb_with_mb(self):
+        # v2 MDB_TO_IR with MEM_READ_TO_MB: IR and MB load the same word at the same TP, one read.
+        self.mem.preload(0, 0o100, [0o4321])
+        fx = self.run_word("v2", **{"/RD": 0, "MB_LOAD": 1, "MB_SRC": 1, "IR_LOAD": 1})
+        self.assertEqual(fx.loads, {"MB": 0o4321, "IR": 0o4321})
+        self.assertEqual(fx.mem_read, (0, 0o100))
+
+    def test_ir_load_needs_a_read(self):
+        # v2 MCS IR_LOAD: requires a memory read in the same TS (IR's input is MDB).
+        with self.assertRaises(SpecViolation):
+            self.run_word("v2", IR_LOAD=1)
+
+    def test_ir_loads_from_mb(self):  # V1-ONLY
+        fx = self.run_word("v1", IR_LOAD=1)
+        self.assertEqual(fx.loads, {"IR": 0o1234})
 
     def test_field_merges(self):
         self.st["AC"], self.st["IF"], self.st["DF"], self.st["IB"] = 0o0001, 5, 3, 0o72

@@ -229,7 +229,7 @@ The slice and overlay address inputs are formed from `MAPR` in EXECUTE and from 
 
 `VARIANT` is formed by five AND gates; `DP_OVL_SEL` and `IR_SEQ` by three sections of a quad 2:1 multiplexer selected by `MS_EFF_IS_EXECUTE`. Like the `MS_EFF` and `SEQ_OVL` multiplexers, this is address formation: it selects which inputs reach the address and evaluates no condition.
 
-`IR_INDIRECT` is taken from its predecode gates on the live IR ([IR-Derived Fields](./10-control-input-definitions/02-ir-derived-fields.md#ir_indirect)), not from `MAPR`. FETCH TS4, where the sequencer selects DEFER or EXECUTE from it, is the one TS whose lookahead entry was formed before IR was loaded at FETCH TP3.
+`IR_INDIRECT` is taken from its predecode gates on the live IR ([IR-Derived Fields](./10-control-input-definitions/02-ir-derived-fields.md#ir_indirect)), not from `MAPR`. Outside EXECUTE, `MAPR` holds entries for EXECUTE timing states, which carry no indirect decode; FETCH TS4, where the sequencer selects DEFER or EXECUTE, reads the live IR, valid from FETCH TP2.
 
 All contexts with `MS_EFF_IS_EXECUTE = 0` (FETCH, DEFER, INTERRUPT, DMA, and halted) therefore share one overlay group, wired as group 1. Its signals must fit `DP_OVL[4:0]`; the current group uses all five bits.
 
@@ -237,7 +237,7 @@ All contexts with `MS_EFF_IS_EXECUTE = 0` (FETCH, DEFER, INTERRUPT, DMA, and hal
 
 The lookahead entry is correct whenever it is used:
 
-- IR is loaded only at FETCH TP3 ([Major State Timing §9.1](../09-timing/03-major-state-timing.md#91-defer-follows-an-indirect-mri)), and TS always advances from TS *n* to TS *n*+1, so the entry captured at TP *n*−1 is the entry for the current IR and TS. Every EXECUTE TS1 follows a TP4 whose IR is the instruction's IR, whether it was entered from FETCH, DEFER, or a held state.
+- IR is loaded only at FETCH TP2 ([Major State Timing §9.1](../09-timing/03-major-state-timing.md#91-defer-follows-an-indirect-mri)). The entry `MAPR` captures at that TP is formed from the previous IR, and no TS uses it, because FETCH TS3 is outside EXECUTE. From TP3 on, every entry is the current IR's: the mapping ROM has all of TS3 to settle on the new IR. TS always advances from TS *n* to TS *n*+1, so the entry captured at TP *n*−1 is the entry for the current IR and TS. Every EXECUTE TS1 follows a TP4 whose IR is the instruction's IR, whether it was entered from FETCH, DEFER, or a held state.
 - A halt commits only at TP4, and while halted TS is held at TS1 and IR is not loaded ([Major State Timing §8.1](../09-timing/03-major-state-timing.md#81-main-timing-while-halted)). `MAPR` therefore holds the TS1 entry of the held instruction until CONTINUE resumes it. Single Step and Single Instruction halt at TP4, so they are covered by the same rule. `MAPR` must not load at TPC, because the held TS is TS1 and an entry captured there would be the TS2 entry.
 - `/IO_WAIT` holds only non-TP TSTEPs, so it never loads `MAPR`.
 - `MAPR`'s power-on value is undefined. It is not used before the first EXECUTE, which always follows a FETCH TP4, because the power-on reset leaves the processor halted in FETCH ([Timing Terminology §3.4](../09-timing/01-terminology.md#34-power-on-reset)).

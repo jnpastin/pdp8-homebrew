@@ -1388,7 +1388,7 @@
       "notes": []
     },
     {
-      "micro_operation": "MB_TO_IR",
+      "micro_operation": "MDB_TO_IR",
       "assignments": [
         {
           "field": "IR_LOAD",
@@ -1397,7 +1397,7 @@
       ],
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
-        "section": "MB_TO_IR",
+        "section": "MDB_TO_IR",
         "line": 1219
       },
       "notes": []
@@ -1425,7 +1425,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "MEM_READ_TO_MB",
-        "line": 1238
+        "line": 1243
       },
       "notes": [
         "AB_SRC and MFB_SRC are supplied by the applicable control case."
@@ -1446,7 +1446,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "MEM_WRITE_FROM_MB",
-        "line": 1264
+        "line": 1269
       },
       "notes": [
         "AB_SRC and MFB_SRC are supplied by the applicable control case."
@@ -1467,7 +1467,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "MEM_WRITE_FROM_FP_SR",
-        "line": 1291
+        "line": 1296
       },
       "notes": [
         "AB_SRC and MFB_SRC are supplied by the applicable control case."
@@ -1508,7 +1508,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "MQ_CLEAR",
-        "line": 1323
+        "line": 1328
       },
       "notes": []
     },
@@ -1535,7 +1535,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "PC_INC",
-        "line": 1342
+        "line": 1347
       },
       "notes": []
     },
@@ -1562,7 +1562,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "PC_LOAD_EA_ADDR",
-        "line": 1361
+        "line": 1366
       },
       "notes": []
     },
@@ -1581,7 +1581,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "PC_SET_1",
-        "line": 1380
+        "line": 1385
       },
       "notes": []
     },
@@ -1608,7 +1608,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "PC_TO_EA_ADDR",
-        "line": 1399
+        "line": 1404
       },
       "notes": []
     },
@@ -1627,7 +1627,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "PC_TO_MA",
-        "line": 1418
+        "line": 1423
       },
       "notes": []
     },
@@ -1654,7 +1654,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "PC_TO_MB",
-        "line": 1437
+        "line": 1442
       },
       "notes": []
     }

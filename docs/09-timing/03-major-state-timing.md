@@ -17,9 +17,10 @@ All state changes occur exclusively at TP.
 
 ### 3.1 TS1 — Address Setup
 - MA_SRC = PC (PC selected as MA input)
+- ALU forms PC + 1
 
 ### 3.2 TP1
-- MA loaded from PC
+- MA loaded from PC; PC loaded with PC + 1 (MA receives the pre-increment PC)
 
 ### 3.3 TS2 — Memory Access
 - MA drives AB
@@ -27,18 +28,17 @@ All state changes occur exclusively at TP.
 - Memory drives MDB
 
 ### 3.4 TP2
-- MB loaded from MDB
+- MB loaded from MDB; IR loaded from MDB
 
-### 3.5 TS3 — Instruction Preparation
-- MB stable
+### 3.5 TS3 — Address Formation
+- EA formation from IR[6:0] and the page of MA
 
 ### 3.6 TP3
-- IR loaded from MB
+- EA_ADDR loaded
 
 ### 3.7 TS4 — Finalization
 
 ### 3.8 TP4
-- PC increment
 - MS transition decision
 
 ---
@@ -353,7 +353,7 @@ Each invariant is written `REQUIREMENT IF CONDITION`: whenever the condition hol
 
 ### 9.1 DEFER Follows an Indirect MRI
 
-DEFER is entered only from FETCH TP4 when `IR_INDIRECT = 1`, and IR is loaded only at FETCH TP3. IR therefore stays indirect throughout DEFER, including while halted in DEFER by Single Step:
+DEFER is entered only from FETCH TP4 when `IR_INDIRECT = 1`, and IR is loaded only at FETCH TP2. IR therefore stays indirect throughout DEFER, including while halted in DEFER by Single Step:
 
 - `IR_INDIRECT = 1 IF MS = DEFER`
 

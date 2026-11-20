@@ -101,13 +101,41 @@
         ],
         "MB_LOAD": [],
         "MQ_LOAD": [],
-        "PC_INC": [],
+        "PC_INC": [
+          {
+            "value": "1",
+            "when": "((MS = FETCH AND TS = 1) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "PC_INC"
+          }
+        ],
         "PC_LOAD": [],
         "AB_SRC": [],
         "AC_SRC": [],
-        "ALU_A_SRC": [],
-        "ALU_B_SRC": [],
-        "ALU_OP": [],
+        "ALU_A_SRC": [
+          {
+            "value": "2",
+            "when": "((MS = FETCH AND TS = 1) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "PC_INC"
+          }
+        ],
+        "ALU_B_SRC": [
+          {
+            "value": "0",
+            "when": "((MS = FETCH AND TS = 1) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "PC_INC"
+          }
+        ],
+        "ALU_OP": [
+          {
+            "value": "4",
+            "when": "((MS = FETCH AND TS = 1) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "PC_INC"
+          }
+        ],
         "DF_SRC": [],
         "DIF_SRC": [],
         "EA_ADDR_SRC": [],
@@ -183,6 +211,7 @@
       },
       "selected_micro_operations": {
         "II_CLEAR": "(((MS = FETCH AND TS = 1) AND RUN = 1) AND CIFP = 0)",
+        "PC_INC": "((MS = FETCH AND TS = 1) AND RUN = 1)",
         "PC_TO_MA": "((MS = FETCH AND TS = 1) AND RUN = 1)"
       },
       "applicable_direct_control_definitions": [
@@ -201,7 +230,7 @@
       "execution_case_id": "fetch-defer:3.2",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 59
+        "line": 60
       },
       "base_context": "((MS = FETCH AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -266,7 +295,14 @@
         "IF_LOAD": [],
         "II_LOAD": [],
         "IOT_TRANSFER_LOAD": [],
-        "IR_LOAD": [],
+        "IR_LOAD": [
+          {
+            "value": "1",
+            "when": "((MS = FETCH AND TS = 2) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "MDB_TO_IR"
+          }
+        ],
         "L_LOAD": [],
         "MA_LOAD": [],
         "MB_LOAD": [
@@ -282,10 +318,10 @@
         "PC_LOAD": [],
         "AB_SRC": [
           {
-            "value": "1",
+            "value": "0",
             "when": "(((MS = FETCH AND TS = 2) AND RUN = 1) AND ((MS = FETCH AND TS = 2) AND RUN = 1))",
             "origin": "direct-control definition",
-            "source": "01:4.2.1"
+            "source": "01:4.3.1"
           }
         ],
         "AC_SRC": [],
@@ -380,6 +416,7 @@
         "MS_LOAD": []
       },
       "selected_micro_operations": {
+        "MDB_TO_IR": "((MS = FETCH AND TS = 2) AND RUN = 1)",
         "MEM_READ_TO_MB": "((MS = FETCH AND TS = 2) AND RUN = 1)"
       },
       "applicable_direct_control_definitions": [
@@ -387,7 +424,7 @@
         "01:3.4.2",
         "01:3.4.3",
         "01:3.4.5",
-        "01:4.2.1",
+        "01:4.3.1",
         "01:4.5.1",
         "02:4.2",
         "02:5.3",
@@ -400,9 +437,178 @@
       "execution_case_id": "fetch-defer:3.3",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 69
+        "line": 71
       },
       "base_context": "((MS = FETCH AND TS = 3) AND RUN = 1)",
+      "defaults": {
+        "AC_LOAD": "0",
+        "CIFP_LOAD": "0",
+        "DF_LOAD": "0",
+        "DIF_LOAD": "0",
+        "EA_ADDR_LOAD": "0",
+        "IB_LOAD": "0",
+        "IDB_DRIVE": "0",
+        "IE_LOAD": "0",
+        "IF_LOAD": "0",
+        "II_LOAD": "0",
+        "IOT_TRANSFER_LOAD": "0",
+        "IR_LOAD": "0",
+        "L_LOAD": "0",
+        "MA_LOAD": "0",
+        "MB_LOAD": "0",
+        "MQ_LOAD": "0",
+        "PC_INC": "0",
+        "PC_LOAD": "0",
+        "AB_SRC": "0",
+        "AC_SRC": "0",
+        "ALU_A_SRC": "0",
+        "ALU_B_SRC": "0",
+        "ALU_OP": "0",
+        "DF_SRC": "0",
+        "DIF_SRC": "0",
+        "EA_ADDR_SRC": "0",
+        "IF_SRC": "0",
+        "IDB_SRC": "0",
+        "L_OP": "0",
+        "MA_SRC": "0",
+        "MB_SRC": "0",
+        "MDB_SRC": "0",
+        "MFB_SRC": "0",
+        "MQ_SRC": "0",
+        "PC_SRC": "0",
+        "CIFP_VAL": "0",
+        "IE_VAL": "0",
+        "II_VAL": "0",
+        "IOT_TRANSFER_VAL": "0",
+        "/RD": "1",
+        "/WR": "1",
+        "/DB_READ": "1",
+        "/DB_WRITE": "1",
+        "/INITIALIZE": "1",
+        "MS_NEXT": "0",
+        "RUN_NEXT": "1",
+        "HLT_REQ_NEXT": "0",
+        "MS_LOAD": "0"
+      },
+      "field_assignments": {
+        "AC_LOAD": [],
+        "CIFP_LOAD": [],
+        "DF_LOAD": [],
+        "DIF_LOAD": [],
+        "EA_ADDR_LOAD": [
+          {
+            "value": "1",
+            "when": "((MS = FETCH AND TS = 3) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "IR_ADDR_TO_EA_ADDR"
+          }
+        ],
+        "IB_LOAD": [],
+        "IDB_DRIVE": [],
+        "IE_LOAD": [],
+        "IF_LOAD": [],
+        "II_LOAD": [],
+        "IOT_TRANSFER_LOAD": [],
+        "IR_LOAD": [],
+        "L_LOAD": [],
+        "MA_LOAD": [],
+        "MB_LOAD": [],
+        "MQ_LOAD": [],
+        "PC_INC": [],
+        "PC_LOAD": [],
+        "AB_SRC": [],
+        "AC_SRC": [],
+        "ALU_A_SRC": [],
+        "ALU_B_SRC": [],
+        "ALU_OP": [],
+        "DF_SRC": [],
+        "DIF_SRC": [],
+        "EA_ADDR_SRC": [
+          {
+            "value": "1",
+            "when": "((MS = FETCH AND TS = 3) AND RUN = 1)",
+            "origin": "micro-operation mapping",
+            "source": "IR_ADDR_TO_EA_ADDR"
+          }
+        ],
+        "IF_SRC": [],
+        "IDB_SRC": [],
+        "L_OP": [],
+        "MA_SRC": [],
+        "MB_SRC": [],
+        "MDB_SRC": [],
+        "MFB_SRC": [],
+        "MQ_SRC": [],
+        "PC_SRC": [],
+        "CIFP_VAL": [],
+        "IE_VAL": [],
+        "II_VAL": [],
+        "IOT_TRANSFER_VAL": [],
+        "/RD": [],
+        "/WR": [],
+        "/DB_READ": [],
+        "/DB_WRITE": [],
+        "/INITIALIZE": [
+          {
+            "value": "1",
+            "when": "(((MS = FETCH AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
+            "origin": "direct-control definition",
+            "source": "02:8.4"
+          }
+        ],
+        "MS_NEXT": [],
+        "RUN_NEXT": [
+          {
+            "value": "1",
+            "when": "(((MS = FETCH AND TS = 3) AND RUN = 1) AND (((RUN = 1 AND NOT (((HLT_REQ = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT (((FP_SINGLE_INSTRUCTION = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT ((FP_SINGLE_STEP = 1 AND TS = 4))))",
+            "origin": "direct-control definition",
+            "source": "01:3.3.2"
+          }
+        ],
+        "HLT_REQ_NEXT": [
+          {
+            "value": "0",
+            "when": "(((MS = FETCH AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "origin": "direct-control definition",
+            "source": "01:3.4.2"
+          },
+          {
+            "value": "1",
+            "when": "(((MS = FETCH AND TS = 3) AND RUN = 1) AND ((RUN = 1 AND FP_STOP = 1) AND NOT ((MS = EXECUTE AND TS = 4))))",
+            "origin": "direct-control definition",
+            "source": "01:3.4.3"
+          },
+          {
+            "value": "1",
+            "when": "(((MS = FETCH AND TS = 3) AND RUN = 1) AND (HLT_REQ = 1 AND NOT (((RUN = 1 AND MS = EXECUTE) AND TS = 4))))",
+            "origin": "direct-control definition",
+            "source": "01:3.4.5"
+          }
+        ],
+        "MS_LOAD": []
+      },
+      "selected_micro_operations": {
+        "IR_ADDR_TO_EA_ADDR": "((MS = FETCH AND TS = 3) AND RUN = 1)"
+      },
+      "applicable_direct_control_definitions": [
+        "01:3.3.2",
+        "01:3.4.2",
+        "01:3.4.3",
+        "01:3.4.5",
+        "02:4.5",
+        "02:5.3",
+        "02:6.1",
+        "02:7.3",
+        "02:8.4"
+      ]
+    },
+    {
+      "execution_case_id": "fetch-defer:3.4",
+      "source": {
+        "path": "docs/03-microarchitecture/04-fetch-defer.md",
+        "line": 81
+      },
+      "base_context": "((MS = FETCH AND TS = 4) AND RUN = 1)",
       "defaults": {
         "AC_LOAD": "0",
         "CIFP_LOAD": "0",
@@ -465,14 +671,7 @@
         "IF_LOAD": [],
         "II_LOAD": [],
         "IOT_TRANSFER_LOAD": [],
-        "IR_LOAD": [
-          {
-            "value": "1",
-            "when": "((MS = FETCH AND TS = 3) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "MB_TO_IR"
-          }
-        ],
+        "IR_LOAD": [],
         "L_LOAD": [],
         "MA_LOAD": [],
         "MB_LOAD": [],
@@ -487,203 +686,6 @@
         "DF_SRC": [],
         "DIF_SRC": [],
         "EA_ADDR_SRC": [],
-        "IF_SRC": [],
-        "IDB_SRC": [],
-        "L_OP": [],
-        "MA_SRC": [],
-        "MB_SRC": [],
-        "MDB_SRC": [],
-        "MFB_SRC": [],
-        "MQ_SRC": [],
-        "PC_SRC": [],
-        "CIFP_VAL": [],
-        "IE_VAL": [],
-        "II_VAL": [],
-        "IOT_TRANSFER_VAL": [],
-        "/RD": [],
-        "/WR": [],
-        "/DB_READ": [],
-        "/DB_WRITE": [],
-        "/INITIALIZE": [
-          {
-            "value": "1",
-            "when": "(((MS = FETCH AND TS = 3) AND RUN = 1) AND (NOT (((MS = EXECUTE AND TS = 4) AND IR_IS_CAF = 1)) AND NOT ((RUN = 0 AND FP_CLEAR = 1))))",
-            "origin": "direct-control definition",
-            "source": "02:8.4"
-          }
-        ],
-        "MS_NEXT": [],
-        "RUN_NEXT": [
-          {
-            "value": "1",
-            "when": "(((MS = FETCH AND TS = 3) AND RUN = 1) AND (((RUN = 1 AND NOT (((HLT_REQ = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT (((FP_SINGLE_INSTRUCTION = 1 AND MS = EXECUTE) AND TS = 4))) AND NOT ((FP_SINGLE_STEP = 1 AND TS = 4))))",
-            "origin": "direct-control definition",
-            "source": "01:3.3.2"
-          }
-        ],
-        "HLT_REQ_NEXT": [
-          {
-            "value": "0",
-            "when": "(((MS = FETCH AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
-            "origin": "direct-control definition",
-            "source": "01:3.4.2"
-          },
-          {
-            "value": "1",
-            "when": "(((MS = FETCH AND TS = 3) AND RUN = 1) AND ((RUN = 1 AND FP_STOP = 1) AND NOT ((MS = EXECUTE AND TS = 4))))",
-            "origin": "direct-control definition",
-            "source": "01:3.4.3"
-          },
-          {
-            "value": "1",
-            "when": "(((MS = FETCH AND TS = 3) AND RUN = 1) AND (HLT_REQ = 1 AND NOT (((RUN = 1 AND MS = EXECUTE) AND TS = 4))))",
-            "origin": "direct-control definition",
-            "source": "01:3.4.5"
-          }
-        ],
-        "MS_LOAD": []
-      },
-      "selected_micro_operations": {
-        "MB_TO_IR": "((MS = FETCH AND TS = 3) AND RUN = 1)"
-      },
-      "applicable_direct_control_definitions": [
-        "01:3.3.2",
-        "01:3.4.2",
-        "01:3.4.3",
-        "01:3.4.5",
-        "02:4.5",
-        "02:5.3",
-        "02:6.1",
-        "02:7.3",
-        "02:8.4"
-      ]
-    },
-    {
-      "execution_case_id": "fetch-defer:3.4",
-      "source": {
-        "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 79
-      },
-      "base_context": "((MS = FETCH AND TS = 4) AND RUN = 1)",
-      "defaults": {
-        "AC_LOAD": "0",
-        "CIFP_LOAD": "0",
-        "DF_LOAD": "0",
-        "DIF_LOAD": "0",
-        "EA_ADDR_LOAD": "0",
-        "IB_LOAD": "0",
-        "IDB_DRIVE": "0",
-        "IE_LOAD": "0",
-        "IF_LOAD": "0",
-        "II_LOAD": "0",
-        "IOT_TRANSFER_LOAD": "0",
-        "IR_LOAD": "0",
-        "L_LOAD": "0",
-        "MA_LOAD": "0",
-        "MB_LOAD": "0",
-        "MQ_LOAD": "0",
-        "PC_INC": "0",
-        "PC_LOAD": "0",
-        "AB_SRC": "0",
-        "AC_SRC": "0",
-        "ALU_A_SRC": "0",
-        "ALU_B_SRC": "0",
-        "ALU_OP": "0",
-        "DF_SRC": "0",
-        "DIF_SRC": "0",
-        "EA_ADDR_SRC": "0",
-        "IF_SRC": "0",
-        "IDB_SRC": "0",
-        "L_OP": "0",
-        "MA_SRC": "0",
-        "MB_SRC": "0",
-        "MDB_SRC": "0",
-        "MFB_SRC": "0",
-        "MQ_SRC": "0",
-        "PC_SRC": "0",
-        "CIFP_VAL": "0",
-        "IE_VAL": "0",
-        "II_VAL": "0",
-        "IOT_TRANSFER_VAL": "0",
-        "/RD": "1",
-        "/WR": "1",
-        "/DB_READ": "1",
-        "/DB_WRITE": "1",
-        "/INITIALIZE": "1",
-        "MS_NEXT": "0",
-        "RUN_NEXT": "1",
-        "HLT_REQ_NEXT": "0",
-        "MS_LOAD": "0"
-      },
-      "field_assignments": {
-        "AC_LOAD": [],
-        "CIFP_LOAD": [],
-        "DF_LOAD": [],
-        "DIF_LOAD": [],
-        "EA_ADDR_LOAD": [
-          {
-            "value": "1",
-            "when": "((MS = FETCH AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "IR_ADDR_TO_EA_ADDR"
-          }
-        ],
-        "IB_LOAD": [],
-        "IDB_DRIVE": [],
-        "IE_LOAD": [],
-        "IF_LOAD": [],
-        "II_LOAD": [],
-        "IOT_TRANSFER_LOAD": [],
-        "IR_LOAD": [],
-        "L_LOAD": [],
-        "MA_LOAD": [],
-        "MB_LOAD": [],
-        "MQ_LOAD": [],
-        "PC_INC": [
-          {
-            "value": "1",
-            "when": "((MS = FETCH AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "PC_INC"
-          }
-        ],
-        "PC_LOAD": [],
-        "AB_SRC": [],
-        "AC_SRC": [],
-        "ALU_A_SRC": [
-          {
-            "value": "2",
-            "when": "((MS = FETCH AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "PC_INC"
-          }
-        ],
-        "ALU_B_SRC": [
-          {
-            "value": "0",
-            "when": "((MS = FETCH AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "PC_INC"
-          }
-        ],
-        "ALU_OP": [
-          {
-            "value": "4",
-            "when": "((MS = FETCH AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "PC_INC"
-          }
-        ],
-        "DF_SRC": [],
-        "DIF_SRC": [],
-        "EA_ADDR_SRC": [
-          {
-            "value": "1",
-            "when": "((MS = FETCH AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "IR_ADDR_TO_EA_ADDR"
-          }
-        ],
         "IF_SRC": [],
         "IDB_SRC": [],
         "L_OP": [],
@@ -766,10 +768,7 @@
           }
         ]
       },
-      "selected_micro_operations": {
-        "IR_ADDR_TO_EA_ADDR": "((MS = FETCH AND TS = 4) AND RUN = 1)",
-        "PC_INC": "((MS = FETCH AND TS = 4) AND RUN = 1)"
-      },
+      "selected_micro_operations": {},
       "applicable_direct_control_definitions": [
         "01:3.2.2",
         "01:3.2.3",
@@ -790,7 +789,7 @@
       "execution_case_id": "fetch-defer:4.2",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 108
+        "line": 107
       },
       "base_context": "((MS = DEFER AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -959,7 +958,7 @@
       "execution_case_id": "fetch-defer:4.3",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 118
+        "line": 117
       },
       "base_context": "((MS = DEFER AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -1043,7 +1042,7 @@
             "value": "0",
             "when": "(((MS = DEFER AND TS = 2) AND RUN = 1) AND ((RUN = 1 AND MS = DEFER) AND TS = 2))",
             "origin": "direct-control definition",
-            "source": "01:4.3.1"
+            "source": "01:4.3.2"
           }
         ],
         "AC_SRC": [],
@@ -1145,7 +1144,7 @@
         "01:3.4.2",
         "01:3.4.3",
         "01:3.4.5",
-        "01:4.3.1",
+        "01:4.3.2",
         "01:4.5.3",
         "02:4.2",
         "02:5.3",
@@ -1158,7 +1157,7 @@
       "execution_case_id": "fetch-defer:4.4",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 128
+        "line": 127
       },
       "base_context": "((MS = DEFER AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -1362,7 +1361,7 @@
       "execution_case_id": "fetch-defer:4.5",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 142
+        "line": 141
       },
       "base_context": "((MS = DEFER AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -1453,7 +1452,7 @@
             "value": "0",
             "when": "(((MS = DEFER AND TS = 4) AND RUN = 1) AND (((RUN = 1 AND MS = DEFER) AND TS = 4) AND AUTO_INDEX_REQUIRED = 1))",
             "origin": "direct-control definition",
-            "source": "01:4.3.2"
+            "source": "01:4.3.3"
           }
         ],
         "AC_SRC": [],
@@ -1586,7 +1585,7 @@
         "01:3.4.2",
         "01:3.4.3",
         "01:3.4.5",
-        "01:4.3.2",
+        "01:4.3.3",
         "01:4.5.4",
         "02:4.3",
         "02:4.5",
@@ -1853,7 +1852,7 @@
             "value": "0",
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 2) AND RUN = 1) AND ((((((RUN = 1 AND MS = EXECUTE) AND TS = 2) AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) OR ((((RUN = 1 AND MS = EXECUTE) AND TS = 2) AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001)) OR ((((RUN = 1 AND MS = EXECUTE) AND TS = 2) AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010)))",
             "origin": "direct-control definition",
-            "source": "01:4.3.3"
+            "source": "01:4.3.4"
           }
         ],
         "AC_SRC": [],
@@ -1961,7 +1960,7 @@
         "01:3.4.2",
         "01:3.4.3",
         "01:3.4.5",
-        "01:4.3.3",
+        "01:4.3.4",
         "01:4.5.2.1",
         "01:4.5.5.1",
         "02:4.2",
@@ -2641,7 +2640,7 @@
             "value": "0",
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 2) AND RUN = 1) AND ((((((RUN = 1 AND MS = EXECUTE) AND TS = 2) AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) OR ((((RUN = 1 AND MS = EXECUTE) AND TS = 2) AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001)) OR ((((RUN = 1 AND MS = EXECUTE) AND TS = 2) AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010)))",
             "origin": "direct-control definition",
-            "source": "01:4.3.3"
+            "source": "01:4.3.4"
           }
         ],
         "AC_SRC": [],
@@ -2749,7 +2748,7 @@
         "01:3.4.2",
         "01:3.4.3",
         "01:3.4.5",
-        "01:4.3.3",
+        "01:4.3.4",
         "01:4.5.2.1",
         "01:4.5.5.1",
         "02:4.2",
@@ -3443,7 +3442,7 @@
             "value": "0",
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 2) AND RUN = 1) AND ((((((RUN = 1 AND MS = EXECUTE) AND TS = 2) AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) OR ((((RUN = 1 AND MS = EXECUTE) AND TS = 2) AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001)) OR ((((RUN = 1 AND MS = EXECUTE) AND TS = 2) AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010)))",
             "origin": "direct-control definition",
-            "source": "01:4.3.3"
+            "source": "01:4.3.4"
           }
         ],
         "AC_SRC": [],
@@ -3551,7 +3550,7 @@
         "01:3.4.2",
         "01:3.4.3",
         "01:3.4.5",
-        "01:4.3.3",
+        "01:4.3.4",
         "01:4.5.2.1",
         "01:4.5.5.1",
         "02:4.2",
@@ -3853,7 +3852,7 @@
             "value": "0",
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 4) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 4) AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010))",
             "origin": "direct-control definition",
-            "source": "01:4.3.4"
+            "source": "01:4.3.5"
           }
         ],
         "AC_SRC": [],
@@ -4032,7 +4031,7 @@
         "01:3.3.8",
         "01:3.4.2",
         "01:3.4.6",
-        "01:4.3.4",
+        "01:4.3.5",
         "01:4.5.2.2",
         "01:4.5.5.2",
         "02:4.3",
@@ -4475,7 +4474,7 @@
             "value": "0",
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 3) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 3) AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011))",
             "origin": "direct-control definition",
-            "source": "01:4.3.5"
+            "source": "01:4.3.6"
           }
         ],
         "AC_SRC": [],
@@ -4576,7 +4575,7 @@
         "01:3.4.2",
         "01:3.4.3",
         "01:3.4.5",
-        "01:4.3.5",
+        "01:4.3.6",
         "01:4.5.2.3",
         "01:4.5.5.3",
         "02:4.3",
@@ -5338,7 +5337,7 @@
             "value": "0",
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 3) AND RUN = 1) AND ((((RUN = 1 AND MS = EXECUTE) AND TS = 3) AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100))",
             "origin": "direct-control definition",
-            "source": "01:4.3.6"
+            "source": "01:4.3.7"
           }
         ],
         "AC_SRC": [],
@@ -5454,7 +5453,7 @@
         "01:3.4.2",
         "01:3.4.3",
         "01:3.4.5",
-        "01:4.3.6",
+        "01:4.3.7",
         "01:4.5.2.3",
         "01:4.5.5.4",
         "02:4.3",
@@ -14459,7 +14458,7 @@
             "value": "0",
             "when": "(((MS = INTERRUPT AND TS = 3) AND RUN = 1) AND ((RUN = 1 AND MS = INTERRUPT) AND TS = 3))",
             "origin": "direct-control definition",
-            "source": "01:4.3.7"
+            "source": "01:4.3.8"
           }
         ],
         "AC_SRC": [],
@@ -14554,7 +14553,7 @@
         "01:3.4.2",
         "01:3.4.3",
         "01:3.4.5",
-        "01:4.3.7",
+        "01:4.3.8",
         "01:4.5.6",
         "02:4.3",
         "02:5.3",
@@ -15768,7 +15767,7 @@
             "value": "1",
             "when": "((RUN = 0 AND FP_EXAMINE = 1) AND (RUN = 0 AND FP_EXAMINE = 1))",
             "origin": "direct-control definition",
-            "source": "01:4.2.2"
+            "source": "01:4.2.1"
           }
         ],
         "AC_SRC": [],
@@ -15908,7 +15907,7 @@
         "01:3.3.10",
         "01:3.4.2",
         "01:3.4.5",
-        "01:4.2.2",
+        "01:4.2.1",
         "01:4.5.7",
         "02:4.2",
         "02:5.3",
@@ -16033,7 +16032,7 @@
             "value": "1",
             "when": "((RUN = 0 AND FP_DEPOSIT = 1) AND (RUN = 0 AND FP_DEPOSIT = 1))",
             "origin": "direct-control definition",
-            "source": "01:4.2.3"
+            "source": "01:4.2.2"
           }
         ],
         "AC_SRC": [],
@@ -16174,7 +16173,7 @@
         "01:3.3.10",
         "01:3.4.2",
         "01:3.4.5",
-        "01:4.2.3",
+        "01:4.2.2",
         "01:4.5.8",
         "02:4.4",
         "02:5.3",

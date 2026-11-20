@@ -6,16 +6,27 @@ Branch: `one-cycle-fetch`. This branch evaluates and, if the user approves, impl
 
 **The branch is disposable.** The user may decide not to adopt option 2. Then the branch is deleted and work resumes on `main`. `main` is expected to stay mostly still meanwhile; rebase onto it before any merge.
 
-## 1. Where Things Stand (2026-11-19)
+## 1. Where Things Stand (2026-11-20)
 
 | Phase ([option2/plan.md](option2/plan.md)) | Status |
 |---|---|
 | 0: baseline and feasibility | **Done.** Option 2 meets D2AB PRG0's timing only with 8/E-like state lengths (the ISZ + JMP loop at 3.75 to 3.85 µs; IOT cost irrelevant). Plan phase 0 has the results. |
 | Checkpoint 0 | **Decided:** option 2; decision 3a (8/E fast/slow lengths); OPR split by group (slices C1 to C3); state-length slice D before OPR. |
-| 1: specification | **Complete, awaiting checkpoint 1:** every decision in [option2/spec.md](option2/spec.md) §11 is decided (2026-11-20); [option2/timing.md](option2/timing.md) revision 2 reviewed. Uncommitted until the user checks and commits. |
-| Checkpoint 1 | **Open:** the user approves the spec and the decisions in section 3, or stops the branch. |
+| 1: specification | **Done:** every decision in [option2/spec.md](option2/spec.md) §11 decided (2026-11-20); [option2/timing.md](option2/timing.md) revision 2 reviewed. |
+| Checkpoints 1 and 2 | **Approved** by the user (2026-11-20). |
 | 2: behavior-neutral groundwork | **Done:** steps 2.1 to 2.7, every suite green under both designs (section 2). |
-| 3 onward (slices A, B, D, C1 to C3) | Not started. Slice A needs checkpoint 1. |
+| 3: slice A | **Done, awaiting the user's check and commit** (section 1.2). |
+| 4 onward (slices B, D, C1 to C3) | Not started. |
+
+### 1.2 Slice A (phase 3), 2026-11-20
+
+IR loads from MDB at FETCH TP2 (`MDB_TO_IR`, replacing `MB_TO_IR`); PC increments at FETCH TP1; EA formation moves to FETCH TS3 with the page from MA; FETCH TS4 only sequences.
+
+- **Docs** (v2): `01-registers.md`, `02-dataflow-and-bus-model.md`, `02-micro-operations.md`, `04-fetch-defer.md`, `01-microarchitectural-control-signals.md` (`IR_LOAD`, `EA_ADDR_SRC` purpose, a stale `MB_TO_IR` entry removed from §9.4), `08-control-store-organization.md` §5.4.2 and §5.4.3, `02-ir-derived-fields.md` (`IR_INDIRECT`), `09-timing/03-major-state-timing.md` §3 and §9.1, and **direct-control §4.2.1 → §4.3.1: the instruction fetch drives AB from MA, not PC** (found by the simulator: with PC incremented at TP1, `AB_SRC = PC` fetched the next word).
+- **Tools:** no change needed. The user promoted the v2 pipeline twice (the second for the direct-control fix).
+- **Simulator:** `Design.ir_source` (MDB; v1 MB) and `Design.ea_page` (MA; v1 PC), used by `datapath.py`; v1 values marked `V1-ONLY`. Tests: datapath IR-from-MDB and EA-page tests, `sim/cpu/tests/test_fetch_slice_a.py` (end-of-page MRI, FETCH TP by TP, MAPR at TP2), `ImageTests` removed. Two Windows-only test bugs fixed (path separators in `test_design.py` and the pipeline's `test_run_pipeline.py`; both failed at HEAD).
+- **Verified (Windows, CPython 3.14; PyPy 3.12):** tools 17 suites OK; sim/cpu 71, memory 3, reference 18, io 29, system 77 (1 skipped) OK under v1 and v2; MAINDEC suite (seeds 1 and 2) under PyPy OK for both; D2AB timing test OK for both (halt at 2607 until slice D).
+- **Diagrams:** the running list is [option2/diagrams.md](option2/diagrams.md), read from the diagram sources. Slice A: CPU_Architecture.xml A1 (add MDB → IR; IR–IDB becomes IR → IDB only) and A2 (add MA → EA_ADDR).
 
 ### 1.1 Commits on this branch
 
@@ -88,9 +99,8 @@ Notes for the review:
 
 ## 4. Next Steps
 
-1. **The user reviews** spec.md and timing.md and decides section 3. Until then, do not change `docs/`, `rom/microcode/v2/` (except through the pipeline), or the simulator's v2 behavior.
-2. After approval: **slice A** (plan phase 3): IR loaded at TP2, PC increment in FETCH TS1, EA page from MA. v2 only; v1 frozen. Follow the slice pattern in the plan: docs, interactively; tools; the user runs the pipeline and promotes; simulator; verify.
-3. After slice A diverges, `sim/cpu/tests/test_design.py::ImageTests` (v1 = v2 images) must be removed; its docstring says so.
+1. **The user checks and commits slice A** (section 1.2).
+2. **Slice B** (plan phase 4): direct JMP completes in FETCH (`PC ← EA_FORMED` at TP3, field change and `II_CLEAR` at TP3), JMP I completes in DEFER; the class decode (decision 2a), `IR_ONE_STATE` and `IR_IS_JMP` sequencer inputs, and the boundary rule moving to FETCH TP4 / DEFER TP4 for JMP. Same slice pattern: docs interactively (searching every doc directory, including `04-control/30-direct-control-definitions`, for each affected register and TS), tools, the user runs the pipeline, simulator, verify. Add each slice's diagram changes to `option2/diagrams.md` from the diagram sources.
 
 ## 5. Resuming on Another Machine
 

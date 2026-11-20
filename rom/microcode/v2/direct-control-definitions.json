@@ -885,42 +885,11 @@
     },
     {
       "id": "01:4.2.1",
-      "title": "4.2.1 Instruction Fetch",
+      "title": "4.2.1 Console Examine",
       "group": "4.2 Program-Counter Address Context",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
         "line": 1156
-      },
-      "applicable_context": [
-        "MS = FETCH\nTS = 2"
-      ],
-      "direct_assignments": [
-        "AB_SRC = PC"
-      ],
-      "control_supplied_values": [],
-      "micro_operation_assignments": [],
-      "state_commits": [],
-      "value_relationships": [],
-      "widths": [],
-      "constraints": [],
-      "sources": [
-        {
-          "label": "Fetch & Defer",
-          "target": "../../03-microarchitecture/04-fetch-defer.md"
-        }
-      ],
-      "drive_states": [],
-      "external_ownership": [],
-      "memory_behavior": [],
-      "derived_values": []
-    },
-    {
-      "id": "01:4.2.2",
-      "title": "4.2.2 Console Examine",
-      "group": "4.2 Program-Counter Address Context",
-      "source": {
-        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1175
       },
       "applicable_context": [
         "RUN = 0\nFP_EXAMINE = 1"
@@ -946,12 +915,12 @@
       "derived_values": []
     },
     {
-      "id": "01:4.2.3",
-      "title": "4.2.3 Console Deposit",
+      "id": "01:4.2.2",
+      "title": "4.2.2 Console Deposit",
       "group": "4.2 Program-Counter Address Context",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1194
+        "line": 1175
       },
       "applicable_context": [
         "RUN = 0\nFP_DEPOSIT = 1"
@@ -981,11 +950,42 @@
     },
     {
       "id": "01:4.3.1",
-      "title": "4.3.1 DEFER Pointer Read",
+      "title": "4.3.1 Instruction Fetch",
       "group": "4.3 Memory-Address Register Context",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1222
+        "line": 1203
+      },
+      "applicable_context": [
+        "MS = FETCH\nTS = 2"
+      ],
+      "direct_assignments": [
+        "AB_SRC = MA"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [],
+      "sources": [
+        {
+          "label": "Fetch & Defer",
+          "target": "../../03-microarchitecture/04-fetch-defer.md"
+        }
+      ],
+      "drive_states": [],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "01:4.3.2",
+      "title": "4.3.2 DEFER Pointer Read",
+      "group": "4.3 Memory-Address Register Context",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
+        "line": 1224
       },
       "applicable_context": [
         "RUN = 1\nMS = DEFER\nTS = 2"
@@ -1006,12 +1006,12 @@
       "derived_values": []
     },
     {
-      "id": "01:4.3.2",
-      "title": "4.3.2 DEFER Auto-Index Writeback",
+      "id": "01:4.3.3",
+      "title": "4.3.3 DEFER Auto-Index Writeback",
       "group": "4.3 Memory-Address Register Context",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1238
+        "line": 1240
       },
       "applicable_context": [
         "RUN = 1\nMS = DEFER\nTS = 4\nAUTO_INDEX_REQUIRED = 1"
@@ -1032,12 +1032,12 @@
       "derived_values": []
     },
     {
-      "id": "01:4.3.3",
-      "title": "4.3.3 MRI Memory Read",
+      "id": "01:4.3.4",
+      "title": "4.3.4 MRI Memory Read",
       "group": "4.3 Memory-Address Register Context",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1255
+        "line": 1257
       },
       "applicable_context": [
         "RUN = 1\nMS = EXECUTE\nTS = 2\nIR_IS_MRI = 1\nIR_MRI_OPCODE = 000",
@@ -1060,12 +1060,12 @@
       "derived_values": []
     },
     {
-      "id": "01:4.3.4",
-      "title": "4.3.4 ISZ Writeback",
+      "id": "01:4.3.5",
+      "title": "4.3.5 ISZ Writeback",
       "group": "4.3 Memory-Address Register Context",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1293
+        "line": 1295
       },
       "applicable_context": [
         "RUN = 1\nMS = EXECUTE\nTS = 4\nIR_IS_MRI = 1\nIR_MRI_OPCODE = 010"
@@ -1086,12 +1086,12 @@
       "derived_values": []
     },
     {
-      "id": "01:4.3.5",
-      "title": "4.3.5 DCA Write",
+      "id": "01:4.3.6",
+      "title": "4.3.6 DCA Write",
       "group": "4.3 Memory-Address Register Context",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1311
+        "line": 1313
       },
       "applicable_context": [
         "RUN = 1\nMS = EXECUTE\nTS = 3\nIR_IS_MRI = 1\nIR_MRI_OPCODE = 011"
@@ -1112,12 +1112,12 @@
       "derived_values": []
     },
     {
-      "id": "01:4.3.6",
-      "title": "4.3.6 JMS Write",
+      "id": "01:4.3.7",
+      "title": "4.3.7 JMS Write",
       "group": "4.3 Memory-Address Register Context",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1329
+        "line": 1331
       },
       "applicable_context": [
         "RUN = 1\nMS = EXECUTE\nTS = 3\nIR_IS_MRI = 1\nIR_MRI_OPCODE = 100"
@@ -1138,12 +1138,12 @@
       "derived_values": []
     },
     {
-      "id": "01:4.3.7",
-      "title": "4.3.7 Interrupt Return-Address Write",
+      "id": "01:4.3.8",
+      "title": "4.3.8 Interrupt Return-Address Write",
       "group": "4.3 Memory-Address Register Context",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1347
+        "line": 1349
       },
       "applicable_context": [
         "RUN = 1\nMS = INTERRUPT\nTS = 3"
@@ -1185,7 +1185,7 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1407
+        "line": 1409
       },
       "applicable_context": [
         "MS = FETCH\nTS = 2"
@@ -1216,7 +1216,7 @@
       "group": "4.5.2 Direct MRI Access",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1451
+        "line": 1453
       },
       "applicable_context": [
         "MS = EXECUTE\nTS = 2\nIR_IS_MRI = 1\nIR_INDIRECT = 0\nAND (\n    IR_MRI_OPCODE = 000\n    OR IR_MRI_OPCODE = 001\n    OR IR_MRI_OPCODE = 010\n)"
@@ -1242,7 +1242,7 @@
       "group": "4.5.2 Direct MRI Access",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1473
+        "line": 1475
       },
       "applicable_context": [
         "MS = EXECUTE\nTS = 4\nIR_IS_MRI = 1\nIR_INDIRECT = 0\nIR_MRI_OPCODE = 010"
@@ -1268,7 +1268,7 @@
       "group": "4.5.2 Direct MRI Access",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1491
+        "line": 1493
       },
       "applicable_context": [
         "MS = EXECUTE\nTS = 3\nIR_IS_MRI = 1\nIR_INDIRECT = 0\nAND (\n    IR_MRI_OPCODE = 011\n    OR IR_MRI_OPCODE = 100\n)"
@@ -1294,7 +1294,7 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1516
+        "line": 1518
       },
       "applicable_context": [
         "MS = DEFER\nTS = 2\nIR_IS_MRI = 1"
@@ -1332,7 +1332,7 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1546
+        "line": 1548
       },
       "applicable_context": [
         "MS = DEFER\nTS = 4\nAUTO_INDEX_REQUIRED = 1"
@@ -1370,7 +1370,7 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1599
+        "line": 1601
       },
       "applicable_context": [
         "RUN = 1\nMS = EXECUTE\nTS = 2\nIR_IS_MRI = 1\nIR_INDIRECT = 1\nAND (\n    IR_MRI_OPCODE = 000\n    OR IR_MRI_OPCODE = 001\n    OR IR_MRI_OPCODE = 010\n)"
@@ -1396,7 +1396,7 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1622
+        "line": 1624
       },
       "applicable_context": [
         "RUN = 1\nMS = EXECUTE\nTS = 4\nIR_IS_MRI = 1\nIR_INDIRECT = 1\nIR_MRI_OPCODE = 010"
@@ -1422,7 +1422,7 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1641
+        "line": 1643
       },
       "applicable_context": [
         "RUN = 1\nMS = EXECUTE\nTS = 3\nIR_IS_MRI = 1\nIR_INDIRECT = 1\nIR_MRI_OPCODE = 011"
@@ -1448,7 +1448,7 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1660
+        "line": 1662
       },
       "applicable_context": [
         "RUN = 1\nMS = EXECUTE\nTS = 3\nIR_IS_MRI = 1\nIR_INDIRECT = 1\nIR_MRI_OPCODE = 100"
@@ -1474,7 +1474,7 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1683
+        "line": 1685
       },
       "applicable_context": [
         "RUN = 1\nMS = INTERRUPT\nTS = 3"
@@ -1505,7 +1505,7 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1707
+        "line": 1709
       },
       "applicable_context": [
         "RUN = 0\nFP_EXAMINE = 1"
@@ -1536,7 +1536,7 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1730
+        "line": 1732
       },
       "applicable_context": [
         "RUN = 0\nFP_DEPOSIT = 1"
@@ -1567,7 +1567,7 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1753
+        "line": 1755
       },
       "applicable_context": [
         "MS = DMA"
@@ -1602,7 +1602,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1887
+        "line": 1889
       },
       "applicable_context": [
         "IR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_READ_REQ = 1"
@@ -1648,7 +1648,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1916
+        "line": 1918
       },
       "applicable_context": [
         "IR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_WRITE_REQ = 1"
@@ -1694,7 +1694,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1945
+        "line": 1947
       },
       "applicable_context": [
         "(\n    IOT_READ_PENDING = 1\n    OR IOT_WRITE_PENDING = 1\n)\nIR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_READ_REQ = 0\nIO_WRITE_REQ = 0"
@@ -1740,7 +1740,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1982
+        "line": 1984
       },
       "applicable_context": [
         "(\n    IOT_READ_PENDING = 1\n    OR IOT_WRITE_PENDING = 1\n)\nIR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_READ_REQ = 1"
@@ -1787,7 +1787,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 2019
+        "line": 2021
       },
       "applicable_context": [
         "(\n    IOT_READ_PENDING = 1\n    OR IOT_WRITE_PENDING = 1\n)\nIR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_WRITE_REQ = 1"

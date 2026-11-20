@@ -111,7 +111,7 @@ No intermediate state or flag storage is created.
 - [IR_DF_TO_DF](#ir_df_to_df)
 - [IR_IF_TO_DIF](#ir_if_to_dif)
 - [MB_TO_EA_ADDR](#mb_to_ea_addr)
-- [MB_TO_IR](#mb_to_ir)
+- [MDB_TO_IR](#mdb_to_ir)
 - [PC_TO_EA_ADDR](#pc_to_ea_addr)
 - [PC_TO_MA](#pc_to_ma)
 - [PC_TO_MB](#pc_to_mb)
@@ -1067,7 +1067,7 @@ IOT_TRANSFER <- NONE
 Address Formation
 
 **Description:**  
-Constructs the base effective address from the instruction address field using page selection rules.
+Constructs the base effective address from the instruction address field using page selection rules. MA holds the instruction's address throughout FETCH.
 
 **Target:**  
 EA_ADDR
@@ -1076,10 +1076,10 @@ EA_ADDR
 if IR_ZERO_PAGE == 1:
     EA_ADDR ← (0…0 || IR[6:0])
 else:
-    EA_ADDR ← (PC[11:7] || IR[6:0])
+    EA_ADDR ← (MA[11:7] || IR[6:0])
 
 **Sources:**  
-IR, PC
+IR, MA
 
 ---
 
@@ -1216,22 +1216,27 @@ MB
 
 ---
 
-### MB_TO_IR
+### MDB_TO_IR
 
 **Category:**  
 Register Transfer
 
 **Description:**  
-Loads the instruction register with the value currently held in the memory buffer.
+Loads the instruction register with the instruction word on MDB during an instruction-fetch memory read, at the same TP at which MEM_READ_TO_MB loads MB.
 
 **Target:**  
 IR
 
 **Expression:**  
-IR ← MB
+IR ← MDB
 
 **Sources:**  
-MB
+MDB
+
+**Constraints:**
+
+- Selected only in the same TS as `MEM_READ_TO_MB` (MDB carries memory data only during a read).
+- Selected only in FETCH.
 
 ---
 

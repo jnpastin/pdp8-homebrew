@@ -8,6 +8,11 @@ can be removed before the merge. A `Design` names everything that differs betwee
   advances by the duration of each TS at its TP (docs/09-timing; option2/timing.md).
 - `boundary_rule`: which major state is an instruction's last, so that its TP4 is the
   instruction boundary (`is_last_state`; option2/spec.md §6.1).
+- `ir_source`: IR's wired load input, "MDB" (v2: IR loads at FETCH TP2 with MB) or "MB" (v1:
+  IR <- MB at FETCH TP3). docs/01-architecture/01-registers.md, IR.
+- `ea_page`: the register whose bits 11:7 give the current page in EA formation, "MA" (v2: the
+  instruction's address, because PC has already advanced at FETCH TP1) or "PC" (v1).
+  docs/03-microarchitecture/02-micro-operations.md, IR_ADDR_TO_EA_ADDR.
 
 `PDP8_DESIGN` selects the design (default v1), as for the ROM-generation tools
 (tools/rom-generation/common/design.py).
@@ -37,6 +42,8 @@ class Design:
     schema: Path                      # the maintained control-word schema
     ts_ns: dict = field(default_factory=lambda: dict(UNIFORM_1200))
     boundary_rule: str = "execute"    # see is_last_state
+    ir_source: str = "MDB"            # IR's load input (slice A)
+    ea_page: str = "MA"               # EA formation's page source (slice A)
 
     @property
     def image_dir(self) -> Path:
@@ -56,7 +63,8 @@ _ROM_BUILD = REPO_ROOT / "build" / "simulation_outputs"
 DESIGNS = {
     # V1-ONLY
     "v1": Design("v1", _ROM_BUILD / "rom-generation",
-                 REPO_ROOT / "rom" / "microcode" / "v1" / "control-word-schema.json"),
+                 REPO_ROOT / "rom" / "microcode" / "v1" / "control-word-schema.json",
+                 ir_source="MB", ea_page="PC"),                       # V1-ONLY
     "v2": Design("v2", _ROM_BUILD / "rom-generation-v2",
                  REPO_ROOT / "rom" / "microcode" / "v2" / "control-word-schema.json"),
 }

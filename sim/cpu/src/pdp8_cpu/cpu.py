@@ -285,7 +285,7 @@ class Cpu:
         for addr in addresses:
             fields = self.store.decode_datapath(addr)
             results.append((addr, fields, evaluate(fields, self.st, ext, self.panel,
-                                                   self.memory, cond, mseff)))
+                                                   self.memory, cond, mseff, self.design)))
         keys = {fx.key() for _, _, fx in results}
         if len(keys) > 1:
             names = [self._dp_bit_name(p, group) for p in undefined]

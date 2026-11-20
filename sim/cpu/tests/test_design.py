@@ -27,21 +27,7 @@ class SelectionTests(unittest.TestCase):
         v1, v2 = D.select("v1"), D.select("v2")
         self.assertNotEqual(v1.image_dir, v2.image_dir)
         self.assertNotEqual(v1.schema, v2.schema)
-        self.assertTrue(str(v2.image_dir).endswith("rom-generation-v2/control-store-packer/images"))
-
-
-class ImageTests(unittest.TestCase):
-    """Phase 2.2: v2 starts as a copy of v1, so both designs' images agree word for word. This test
-    is expected to change once v2's documentation diverges (slice A); remove it then."""
-
-    def test_v1_and_v2_images_identical_until_slice_a(self):
-        v1 = ControlStore.load(design=D.select("v1"))
-        v2 = ControlStore.load(design=D.select("v2"))
-        self.assertEqual(v1.design.name, "v1")
-        self.assertEqual(v2.design.name, "v2")
-        self.assertEqual(v1.mapping, v2.mapping)
-        self.assertEqual(v1.sequencer, v2.sequencer)
-        self.assertEqual(v1.datapath, v2.datapath)
+        self.assertTrue(v2.image_dir.as_posix().endswith("rom-generation-v2/control-store-packer/images"))
 
 
 class TimeBaseTests(unittest.TestCase):

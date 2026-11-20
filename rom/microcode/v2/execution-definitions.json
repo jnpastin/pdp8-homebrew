@@ -16,7 +16,8 @@
       ],
       "timing_state": 1,
       "micro_operations": [
-        "PC_TO_MA"
+        "PC_TO_MA",
+        "PC_INC"
       ],
       "conditional_micro_operations": [
         {
@@ -29,7 +30,7 @@
       "id": "fetch-defer:3.2",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 59
+        "line": 60
       },
       "execution_model": "major-state",
       "context": [
@@ -37,7 +38,8 @@
       ],
       "timing_state": 2,
       "micro_operations": [
-        "MEM_READ_TO_MB"
+        "MEM_READ_TO_MB",
+        "MDB_TO_IR"
       ],
       "conditional_micro_operations": []
     },
@@ -45,7 +47,7 @@
       "id": "fetch-defer:3.3",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 69
+        "line": 71
       },
       "execution_model": "major-state",
       "context": [
@@ -53,7 +55,7 @@
       ],
       "timing_state": 3,
       "micro_operations": [
-        "MB_TO_IR"
+        "IR_ADDR_TO_EA_ADDR"
       ],
       "conditional_micro_operations": []
     },
@@ -61,24 +63,21 @@
       "id": "fetch-defer:3.4",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 79
+        "line": 81
       },
       "execution_model": "major-state",
       "context": [
         "MS = FETCH"
       ],
       "timing_state": 4,
-      "micro_operations": [
-        "PC_INC",
-        "IR_ADDR_TO_EA_ADDR"
-      ],
+      "micro_operations": [],
       "conditional_micro_operations": []
     },
     {
       "id": "fetch-defer:4.2",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 108
+        "line": 107
       },
       "execution_model": "major-state",
       "context": [
@@ -94,7 +93,7 @@
       "id": "fetch-defer:4.3",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 118
+        "line": 117
       },
       "execution_model": "major-state",
       "context": [
@@ -110,7 +109,7 @@
       "id": "fetch-defer:4.4",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 128
+        "line": 127
       },
       "execution_model": "major-state",
       "context": [
@@ -129,7 +128,7 @@
       "id": "fetch-defer:4.5",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 142
+        "line": 141
       },
       "execution_model": "major-state",
       "context": [

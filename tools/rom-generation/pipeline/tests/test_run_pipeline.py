@@ -244,9 +244,9 @@ class StageTableTests(unittest.TestCase):
     def test_stages_follow_the_design(self) -> None:
         stages = P.stages_for(P.select("v2"))
         self.assertEqual(len(stages), len(P.STAGES))
-        self.assertTrue(all(str(s.report).startswith("build/simulation_outputs/rom-generation-v2/")
+        self.assertTrue(all(Path(s.report).as_posix().startswith("build/simulation_outputs/rom-generation-v2/")
                             for s in stages))
-        self.assertTrue(all(str(s.maintained).startswith("rom/microcode/v2/")
+        self.assertTrue(all(Path(s.maintained).as_posix().startswith("rom/microcode/v2/")
                             for s in stages if s.maintained))
         self.assertEqual(P.runnable(P.select("v2"), stages), stages)
 

@@ -177,7 +177,7 @@ Constraints:
 - Must not change during EXECUTE
 
 Writers:
-- Address calculation logic
+- Address calculation logic: IR[6:0], with the page from MA[11:7] or zero (FETCH TS3)
 - Indirect resolution path
 
 ---
@@ -382,14 +382,14 @@ Visibility: Control-visible
 
 Invariants:
 - Contains the instruction for decode and execution
-- Stable from end of FETCH through EXECUTE
+- Valid from FETCH TP2; stable from FETCH TP2 through the instruction's last major state
 
 Constraints:
-- Loaded only during FETCH
+- Loaded only at FETCH TP2
 - Must not change after decode begins
 
 Writers:
-- Memory read path (via MB)
+- Memory data bus (MDB), at FETCH TP2, in parallel with MB
 
 ---
 
@@ -447,6 +447,10 @@ Writers:
 - PC path (instruction fetch)
 - EA path (operand access)
 - Address formation logic (page/indirect resolution)
+
+Consumers:
+- AB (the memory address)
+- The EA formation unit: MA[11:7] supplies the current page. MA holds the instruction's address from FETCH TP1 until DEFER or EXECUTE TS1 reloads it
 
 ---
 
@@ -515,9 +519,11 @@ Writers:
 - CPU internal bus (store operations)
 
 Consumers:
-- CPU datapath (instruction load, operand use)
+- CPU datapath (operand use)
 - Memory system (write cycles)
 - DMA logic
+
+Note: during instruction fetch, IR captures MDB at the same TP as MB, and MB still holds the instruction word.
 
 ---
 
@@ -576,11 +582,11 @@ Visibility: Global
 Invariants:
 - Forms the instruction fetch address when combined with IF
 - Represents the next sequential instruction unless modified by control flow
-- Stable from address issue through FETCH completion
+- Incremented at FETCH TP1. From then on it holds the address of the next sequential instruction
 - Always contains a valid address within the current instruction field
 
 Constraints:
-- Incremented during FETCH after address is issued
+- Incremented at FETCH TP1; MA loads the pre-increment PC at the same TP
 - Modified during EXECUTE only by:
   - Conditional skip (increment)
   - JMP (load)

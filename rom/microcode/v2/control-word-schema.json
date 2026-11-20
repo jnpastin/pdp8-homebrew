@@ -1210,7 +1210,7 @@
       ],
       "constraints": [
         {
-          "text": "Requires valid instruction present in MB",
+          "text": "Requires a memory read in the same TS (IR's input is MDB)",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
             "line": 1316
@@ -1219,7 +1219,7 @@
       ],
       "used_by_micro_operations": [
         {
-          "micro_operation": "MB_TO_IR",
+          "micro_operation": "MDB_TO_IR",
           "value": "1",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
@@ -3166,7 +3166,7 @@
         "mnemonic": "EA_ADDR_SRC",
         "display_name": "EA_ADDR Source Select",
         "signal_class": "Select",
-        "purpose": "Selects the source input for EA_ADDR."
+        "purpose": "Selects the source input for EA_ADDR. The IR address formation unit forms IR[6:0] with the page from MA[11:7], or zero."
       },
       "values": [
         {

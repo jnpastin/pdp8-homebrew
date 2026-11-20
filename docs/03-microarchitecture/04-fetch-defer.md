@@ -43,6 +43,7 @@ Responsibilities:
 
 μops:
 - PC_TO_MA
+- PC_INC
 
 Conditional μops:
 
@@ -51,7 +52,7 @@ CIFP = 0 -> II_CLEAR
 ```
 
 Description:
-- Places the instruction address in MA for memory access.
+- Places the instruction address in MA and advances PC; MA receives the pre-increment PC at the same TP.
 - Clears the Interrupt Inhibit register, unless a deferred instruction field change is pending (CIFP = 1), in which case the inhibit is held until the pending field is applied at the next JMP/JMS
 
 ---
@@ -60,27 +61,27 @@ Description:
 
 μops:
 - MEM_READ_TO_MB
+- MDB_TO_IR
 
 Description:
-- Reads instruction word from memory into MB.
+- Reads the instruction word from memory into MB and IR.
 
 ---
 
 ### 3.3 TS3
 
 μops:
-- MB_TO_IR
+- IR_ADDR_TO_EA_ADDR
 
 Description:
-- Loads IR with fetched instruction.
+- Forms the base EA from IR and the page of MA (the instruction's address).
 
 ---
 
 ### 3.4 TS4
 
 μops:
-- PC_INC
-- IR_ADDR_TO_EA_ADDR
+- (no μops)
 
 Control Decisions:
 
@@ -90,9 +91,7 @@ Control Decisions:
         MS_next ← EXECUTE
 
 Description:
-- Advances PC
-- Forms base EA
-- Determines next major state
+- Determines the next major state
 
 ---
 
@@ -162,7 +161,8 @@ Description:
 
 ## 5. Invariants
 
-- IR is valid after TP3 of FETCH
+- IR is valid after TP2 of FETCH
+- PC is incremented at FETCH TP1
 - PC is incremented exactly once per instruction
 - EA is fully resolved before EXECUTE
 - All state changes occur at TP

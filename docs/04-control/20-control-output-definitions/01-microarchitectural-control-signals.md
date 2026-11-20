@@ -839,7 +839,7 @@ external bus value
 **Explicit Value Required:** Conditionally  
 **Value Required When:** EA_ADDR_LOAD=1  
 
-**Purpose:** Selects the source input for EA_ADDR.
+**Purpose:** Selects the source input for EA_ADDR. The IR address formation unit forms IR[6:0] with the page from MA[11:7], or zero.
 
 **Encoding:**
 ```
@@ -1313,10 +1313,10 @@ IF_DF_COMBINED[5:3]=IF
 ```
 
 **Constraints:**
-- Requires valid instruction present in MB
+- Requires a memory read in the same TS (IR's input is MDB)
 
 **Used by μops:**
-- [MB_TO_IR](../../03-microarchitecture/02-micro-operations.md#mb_to_ir) = 1
+- [MDB_TO_IR](../../03-microarchitecture/02-micro-operations.md#mdb_to_ir) = 1
 
 ---
 
@@ -2529,7 +2529,6 @@ multiple conceptual sources active
 - [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb)
 - [PC_TO_MB](../../03-microarchitecture/02-micro-operations.md#pc_to_mb)
 - [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr)
-- [MB_TO_IR](../../03-microarchitecture/02-micro-operations.md#mb_to_ir)
 - [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac)
 
 ---

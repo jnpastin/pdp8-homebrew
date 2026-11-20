@@ -331,7 +331,7 @@ IR_INDIRECT = IR_IS_MRI AND IR[8]
 **Consumed By:**
 - [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr)
 
-**Realization:** Unlike the other IR-derived fields, which reach the control store only through the mapping ROM, `IR_INDIRECT` is also decoded by predecode gates from the live IR and drives the sequencer slice's `IR_SEQ` input directly whenever `MS_EFF_IS_EXECUTE = 0`. FETCH TS4 selects DEFER or EXECUTE from it in the TS after IR is loaded, before a mapping-register entry for the new IR exists ([Control Store Organization §5.4.2](../08-control-store-organization.md#542-execute-selection)).
+**Realization:** Unlike the other IR-derived fields, which reach the control store only through the mapping ROM, `IR_INDIRECT` is also decoded by predecode gates from the live IR and drives the sequencer slice's `IR_SEQ` input directly whenever `MS_EFF_IS_EXECUTE = 0`. FETCH TS4 selects DEFER or EXECUTE from it; outside EXECUTE, the mapping register holds EXECUTE entries, which carry no indirect decode ([Control Store Organization §5.4.2](../08-control-store-organization.md#542-execute-selection)).
 
 ---
 
