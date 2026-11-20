@@ -316,3 +316,20 @@ Per [plan.md](plan.md):
 | 9 | PC as a synchronous counter (or a dedicated incrementer) instead of incrementing through the ALU | Yes: without it FETCH needs 25 steps and 3a is not reachable ([timing.md](timing.md) §4.3) | **open** |
 | 10 | Drive AB from MA whenever the CPU owns the bus (not only while `/RD` or `/WR`), so the address leads `/RD` | Yes, if the memory-board design allows; it shortens TS2 reads | **open** |
 | 11 | Register `MS_EFF_IS_EXECUTE` and the overlay's combinational conditions (zero detects) at the preceding TP | Yes: keeps `T_addr` ≤ 52 ns ([timing.md](timing.md) §3) | **open** |
+| 12 | Control store shadowed in fast SRAM: the EEPROMs are copied into SRAM at power-on reset, and the machine runs from the SRAM | Yes | **decided 2026-11-20** (with option 2) |
+
+### 11.1 Decision 12: SRAM-shadowed control store
+
+Decided 2026-11-20: option 2 **and** an SRAM shadow, for per-class fidelity (option 2) and timing slack (SRAM).
+
+- Every control-store EEPROM (mapping, datapath slices, sequencer, and the timing ROM) gets a 5 V 32K × 8 SRAM of 10 to 15 ns. `T_CW` falls from about 202 ns to about 65 ns, so 3a's 24/28 steps gain large slack.
+- **Copy:** at power-on reset only, from a supply supervisor. A 15-bit copy counter drives every SRAM's address through tri-state buffers (about 7 ns in the address path), the EEPROM outputs drive the SRAM data pins, and all devices copy in parallel (about 7 ms).
+- **Never at `/INITIALIZE`:** CAF and front-panel CLEAR assert it while running from the control store.
+- **Write protection:**
+  - only the `LOADING` flip-flop and the copy strobe reach the SRAM `/WE`, which has a pull-up;
+  - no control-word field and no bus reaches it, and the control store is not in the memory address space;
+  - while `LOADING`, TSEQ is held in reset, `CW_VALID` is low, and `/INITIALIZE` is asserted, so no partial control word acts;
+  - the EEPROMs' `/WE` is tied high.
+- **Optional:** a front-panel RELOAD accepted only while `RUN = 0` (as every console command), and a verify pass with a fault lamp.
+- **DEC precedent:** the KL10's microcode was loaded into control RAM by its front-end PDP-11 at boot; the VAX-11/780 loaded writable-control-store patches from its console floppy. The PDP-8/E itself is hardwired, so there is no 8-family precedent.
+- **Effect on other decisions, to be re-evaluated in a revised [timing.md](timing.md):** decision 9 (counter PC) and decision 10 (early AB) are probably no longer needed for 3a; decision 8's "the control-store address path must be ACT" probably relaxes; decision 3' (TSTEP) is still open.

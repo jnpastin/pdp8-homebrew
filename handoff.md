@@ -63,6 +63,24 @@ From [option2/spec.md](option2/spec.md) §11, each with a recommendation there:
 | 9 | **PC as a synchronous counter** (or a dedicated incrementer) | **Yes. Without it FETCH needs 25 steps; 3a exactly (24/28) is unreachable, and the fallback (25/26) has no slack.** |
 | 10 | Drive AB from MA whenever the CPU owns the bus | Yes, if the memory-board design allows |
 | 11 | Register `MS_EFF_IS_EXECUTE` and overlay zero-detect conditions at the preceding TP | Yes |
+| 12 | **SRAM-shadowed control store** | **Decided 2026-11-20: yes, with option 2** (spec §11.1) |
+
+### 3.1 Session of 2026-11-20 (Windows host)
+
+The user reviewed the spec with questions and decided **option 2 + SRAM shadow** (decision 12, spec §11.1).
+
+Phase 0 rerun on this host (PyPy 3.12, scratch script, not committed):
+- v1 today: halt at 2607; option 2 with 3a lengths: PASS. Both match the macOS runs exactly.
+- **v1 cycle counts with uniform states** pass only at 0.937 to 0.962 µs per state (0.925: halt 2652; 0.975: halt 2650). v1 + SRAM at 19 × 50 ns would also have passed D2AB, but with per-class errors (OPR and JMP +58%, MRI −27% against the 8/E). The user chose option 2 for per-class fidelity.
+
+Points raised in the review that the spec does not yet cover (resolve before or during checkpoint 1):
+1. **Group 3 MQL has no control input.** The spec loads MQ through `MQ_LOAD`, but `IR_CLASS` 5 does not distinguish MQL. Options: a sixth class (6 = group 3 with MQL), or gate `MQ_LOAD` from the IR bit like the rest of the pass unit.
+2. **`OPR_PASS` need not be a new bit.** It can be a spare `AC_SRC` code (7) and the freed `L_OP` COMP code. With OR, NOT, and the rotates gone from `ALU_OP` (4 → 2 bits) and MQ and FP_SR gone from `ALU_B_SRC` (2 → 1 bit), the datapath word shrinks to about 42 of 48 bits instead of growing to 46.
+3. **Direct JMP's PC source:** `EA_FORMED` at TP3 (spec, DEC's TS3) or `PC ← EA_ADDR` through the IDB at TP4 (no new PC source, no `PC_SRC` widening; not programmer-visible).
+4. **`INSTR_END`:** Claude now leans to the spare sequencer output bit (control decides) over gates.
+5. **Design principle:** the OPR pass unit (IR bits gating the datapath) departs from `00-design-principles.md` §3.1 ("no hardwired control logic"); amend the principle explicitly.
+6. **`02-group2-execution.md`** says "No persistent flag state is introduced"; the SKIP register changes that. `SKIP_TAKEN` keeps its inputs and becomes SKIP's D input; group 3's `SKIP_TAKEN` overlay bit is freed.
+7. **timing.md must be redone** with SRAM figures (spec §11.1).
 
 Notes for the review:
 - **Decision 9 is invisible to the timing-state simulator.** `PC_INC` already loads PC "through a dedicated increment path" (MCS `PC_INC`). It changes the docs' hardware description and timing, not the simulated behavior, so it does not block slices A to C.
