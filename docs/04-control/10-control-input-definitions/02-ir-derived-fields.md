@@ -282,15 +282,17 @@ IR_ADDR = IR[6:0]
 **Derivation:**
 
 ```text
-IR_CLASS = {0, IR[11:9] = 101 AND IR[8], IR[11:9] = 101 AND NOT IR[8]}
+IR_CLASS = {0,
+            (IR[11:9] = 101 AND IR[8]) OR IR_OPR_GROUP1,
+            (IR[11:9] = 101 AND NOT IR[8]) OR IR_OPR_GROUP1}
 ```
 
 **Value Encoding:**
 
-- `000` → not JMP: completes in EXECUTE
+- `000` → neither JMP nor Group 1 OPR: completes in EXECUTE
 - `001` → direct JMP: completes in FETCH
 - `010` → JMP I: completes in DEFER
-- `011` → reserved (OPR group classes)
+- `011` → Group 1 OPR: completes in FETCH
 - `100` → reserved (OPR group classes)
 - `101` → reserved (OPR group classes)
 - `110` → reserved (OPR group classes)
@@ -298,7 +300,7 @@ IR_CLASS = {0, IR[11:9] = 101 AND IR[8], IR[11:9] = 101 AND NOT IR[8]}
 
 **Consumed By:**
 
-- [Fetch & Defer](../../03-microarchitecture/04-fetch-defer.md): FETCH TS3, DEFER TS3 and TS4
+- [Fetch & Defer](../../03-microarchitecture/04-fetch-defer.md): FETCH TS3 (including `OPR_PASS`), DEFER TS3 and TS4
 
 **Realization:** Decoded by predecode gates from the live IR, valid from FETCH TP2. Whenever `MS_EFF_IS_EXECUTE = 0` it drives the datapath slice's `VARIANT[2:0]`, with `VARIANT[4:3] = 0` ([Control Store Organization §5.4.2](../08-control-store-organization.md#542-execute-selection)).
 
@@ -628,15 +630,9 @@ IR_IS_OPR = (IR[11:9] == 111)
 **Consumed By:**
 
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
-- [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp)
-- [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
+- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
 - [L_CLEAR](../../03-microarchitecture/02-micro-operations.md#l_clear)
-- [L_COMP](../../03-microarchitecture/02-micro-operations.md#l_comp)
-- [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral)
-- [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar)
-- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl)
-- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr)
-- [AC_BSW](../../03-microarchitecture/02-micro-operations.md#ac_bsw)
+- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
 - [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr)
 - [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
@@ -718,12 +714,12 @@ IR_MRI_OPCODE = IR[11:9]
 **Type:** Instruction Class  
 **Bit Width:** 1  
 
-**Purpose:** Indicates that the instruction never enters EXECUTE: it completes at FETCH TP4 when direct, or at DEFER TP4 when indirect.
+**Purpose:** Indicates that the instruction never enters EXECUTE: a JMP completes at FETCH TP4 when direct, or at DEFER TP4 when indirect; a Group 1 OPR completes at FETCH TP4.
 
 **Derivation:**
 
 ```text
-IR_NO_EXECUTE = IR[11:9] = 101   // JMP
+IR_NO_EXECUTE = IR[11:9] = 101 OR IR_OPR_GROUP1   // JMP; Group 1 OPR
 ```
 
 **Value Encoding:**
@@ -766,9 +762,7 @@ IR_OPR_BSW = IR_OPR_GROUP1 AND IR[1]
 - 1 → modifier active  
 
 **Consumed By:**
-- [AC_BSW](../../03-microarchitecture/02-micro-operations.md#ac_bsw)
-- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl)
-- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr)
+- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
 
 
 ---
@@ -841,7 +835,7 @@ IR_OPR_CMA = IR_OPR_GROUP1 AND IR[5]
 - 1 → complement AC  
 
 **Consumed By:**
-- [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp)
+- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
 
 ---
 
@@ -865,7 +859,7 @@ IR_OPR_CML = IR_OPR_GROUP1 AND IR[4]
 - 1 → complement Link  
 
 **Consumed By:**
-- [L_COMP](../../03-microarchitecture/02-micro-operations.md#l_comp)
+- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
 
 ---
 
@@ -891,15 +885,9 @@ IR_OPR_GROUP1 = IR_IS_OPR AND (IR[8] == 0)
 **Consumed By:**
 
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
-- [AC_COMP](../../03-microarchitecture/02-micro-operations.md#ac_comp)
-- [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
+- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
 - [L_CLEAR](../../03-microarchitecture/02-micro-operations.md#l_clear)
-- [L_COMP](../../03-microarchitecture/02-micro-operations.md#l_comp)
-- [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral)
-- [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar)
-- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl)
-- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr)
-- [AC_BSW](../../03-microarchitecture/02-micro-operations.md#ac_bsw)
+- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
 
 
 ---
@@ -1005,7 +993,7 @@ IR_OPR_IAC = IR_OPR_GROUP1 AND IR[0]
 
 **Consumed By:**
 
-- [AC_INC](../../03-microarchitecture/02-micro-operations.md#ac_inc)
+- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
 
 ---
 
@@ -1106,8 +1094,7 @@ IR_OPR_RAL = IR_OPR_GROUP1 AND IR[2]
 **Consumed By:**
 
 
-- [AC_RAL](../../03-microarchitecture/02-micro-operations.md#ac_ral)
-- [AC_RTL](../../03-microarchitecture/02-micro-operations.md#ac_rtl)
+- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
 
 ---
 
@@ -1132,8 +1119,7 @@ IR_OPR_RAR = IR_OPR_GROUP1 AND IR[3]
 
 **Consumed By:**
 
-- [AC_RAR](../../03-microarchitecture/02-micro-operations.md#ac_rar)
-- [AC_RTR](../../03-microarchitecture/02-micro-operations.md#ac_rtr)
+- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
 
 ---
 

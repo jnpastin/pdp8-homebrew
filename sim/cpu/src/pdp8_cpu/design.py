@@ -60,6 +60,7 @@ class Design:
     ea_page: str = "MA"               # EA formation's page source (slice A)
     non_execute_variant: str | None = "IR_CLASS"      # slice B
     sequencer_a2: str | None = "IR_NO_EXECUTE"        # slice B
+    opr_pass: bool = True             # AC_SRC 7 and L_OP 1 select the OPR pass unit (slice C1)
 
     @property
     def image_dir(self) -> Path:
@@ -82,7 +83,8 @@ DESIGNS = {
                  REPO_ROOT / "rom" / "microcode" / "v1" / "control-word-schema.json",
                  ts_ns=dict(UNIFORM_1200),
                  ir_source="MB", ea_page="PC", boundary_rule="execute",
-                 non_execute_variant=None, sequencer_a2=None),        # V1-ONLY
+                 non_execute_variant=None, sequencer_a2=None,
+                 opr_pass=False),                                     # V1-ONLY
     "v2": Design("v2", _ROM_BUILD / "rom-generation-v2",
                  REPO_ROOT / "rom" / "microcode" / "v2" / "control-word-schema.json"),
 }

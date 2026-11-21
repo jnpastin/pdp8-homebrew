@@ -53,17 +53,18 @@ Visibility: Global
 Invariants:
 - Holds the canonical 12-bit result of the last completed operation
 - Forms a composite 13-bit value with L for arithmetic and shifts
-- Stable outside EXECUTE, except when cleared by the START or CLEAR console operation while halted
+- Stable outside EXECUTE, except at the FETCH TP3 of a Group 1 OPR and when cleared by the START or CLEAR console operation while halted
 
 Constraints:
-- Modified only during EXECUTE, or by the START or CLEAR console operation while halted
-- Must not be written during FETCH or DEFER
+- Modified only during EXECUTE, at the FETCH TP3 of a Group 1 OPR (`OPR_PASS`), or by the START or CLEAR console operation while halted
+- Must not be written during DEFER, or during FETCH except at that TP3
 - All operations affecting AC must define L behavior if carry/borrow arises
 
 Writers:
 - ALU result path
+- OPR pass unit (Group 1 OPR: CLA, CMA, IAC, rotates, BSW; [Group 1 Execution](../03-microarchitecture/07-opr/01-group1-execution.md))
 - Shift/rotate network (AC:L)
-- OPR control operations (CLA, CMA, IAC)
+- OPR control operations (Group 2 and 3 CLA)
 - MQ transfer path
 - IOT execution (GTF)
 - System initialization (CAF, front-panel CLEAR; AC_CLEAR micro-operation)
@@ -404,10 +405,10 @@ Visibility: Global
 Invariants:
 - Represents the 13th bit of AC:L during arithmetic
 - Always defined after any instruction that targets it
-- Stable outside EXECUTE, except when cleared by the START or CLEAR console operation while halted
+- Stable outside EXECUTE, except at the FETCH TP3 of a Group 1 OPR and when cleared by the START or CLEAR console operation while halted
 
 Constraints:
-- Modified only during EXECUTE, or by the START or CLEAR console operation while halted
+- Modified only during EXECUTE, at the FETCH TP3 of a Group 1 OPR (`OPR_PASS`), or by the START or CLEAR console operation while halted
 - May be updated by:
   - ALU carry (a carry out of the most significant AC bit complements L)
   - Rotate operations
@@ -419,8 +420,8 @@ Constraints:
 - Multiple updates must follow defined micro-op ordering
 
 Writers:
-- ALU link output (ADD, INC, and rotates; [ALU Evaluation](../04-control/20-control-output-definitions/01-microarchitectural-control-signals.md#731-alu-evaluation))
-- OPR control logic
+- ALU link output (ADD and INC; [ALU Evaluation](../04-control/20-control-output-definitions/01-microarchitectural-control-signals.md#731-alu-evaluation))
+- OPR pass unit link output (Group 1 OPR: CLL, CML, IAC carry, rotates)
 - IOT execution (RTF; AC_TO_L)
 - System initialization (CAF, front-panel CLEAR; L_CLEAR micro-operation)
 - Console START (L_CLEAR micro-operation)

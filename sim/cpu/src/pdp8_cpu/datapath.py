@@ -257,6 +257,8 @@ class _Eval:
             return u(lambda a, b: a | b, ac, st["IB"])
         if src == 5:                                     # AC_MQ_SWAP: AC <- MQ
             return st["MQ"]
+        if src == 7:                                     # OPR_PASS: AC <- the OPR pass unit
+            return self.opr_pass()[0]
         return u(lambda a, g: a | g, ac, self.gtf_flags())  # GTF_FLAGS_TO_AC: AC <- AC OR GTF_FLAGS
 
     def gtf_flags(self):
@@ -271,11 +273,49 @@ class _Eval:
         op = self.sel("L_OP")
         if op == 0:
             return 0
-        if op == 1:
+        if op == 1 and self.design.opr_pass:            # OPR_PASS: L <- the pass unit's link
+            return self.opr_pass()[1]
+        if op == 1:                                      # V1-ONLY: L_COMP
             return u(lambda l: 1 - l, self.st["L"])
         if op == 2:
             return self.alu()[1]
         return bit(self.st["AC"], 11)
+
+    def opr_pass(self):
+        """The OPR pass unit (docs/03-microarchitecture/07-opr/01-group1-execution.md §4): the
+        13-bit L·AC result of one pass, stages A (CLA, CLL), C (CMA, CML), D (IAC), E (rotate or
+        BSW), each selected by its IR bit qualified by IR_CLASS = 011. Returns (AC, L)."""
+        st, d = self.st, self.cond
+        ac, link = st["AC"], st["L"]
+        cls = d.get("IR_CLASS")
+        if cls is None or ac is None or link is None:
+            return None, None
+        if cls != 0b011:                     # no stage selected: the unit passes AC and L through
+            return ac, link
+        on = lambda name: d.get(name) == 1
+        if on("IR_OPR_CLA"):
+            ac = 0
+        if on("IR_OPR_CLL"):
+            link = 0
+        if on("IR_OPR_CMA"):
+            ac ^= 0o7777
+        if on("IR_OPR_CML"):
+            link ^= 1
+        if on("IR_OPR_IAC"):                 # 13-bit increment: a carry out of AC complements L
+            ac += 1
+            link ^= ac >> 12
+            ac &= 0o7777
+        rar, ral, bsw = on("IR_OPR_RAR"), on("IR_OPR_RAL"), on("IR_OPR_BSW")
+        if rar and ral:                      # Group 1 ISA note 4: no rotate or swap
+            return ac, link
+        if rar or ral:
+            v = (link << 12) | ac
+            for _ in range(2 if bsw else 1):
+                v = ((v & 1) << 12) | (v >> 1) if rar else ((v << 1) & 0o17777) | (v >> 12)
+            return v & 0o7777, v >> 12
+        if bsw:
+            return ((ac & 0o77) << 6) | (ac >> 6), link
+        return ac, link
 
     def ea_formed(self):
         """IR_ADDR_TO_EA_ADDR: zero page (0 || IR[6:0]) or current page (page || IR[6:0]), the

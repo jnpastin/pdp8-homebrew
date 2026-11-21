@@ -91,6 +91,22 @@ No diagram exists for the timing ROM, the TSEQ counter, or the shadow-copy logic
 
 ---
 
+## Slice C1 (phase 6): OPR Group 1 completes in FETCH through the OPR pass unit
+
+### `diagrams/microarchitecture/cpu-architecture/source/CPU_Architecture.xml`
+
+| # | Current content (source) | Required change | Doc | Status |
+|---|---|---|---|---|
+| C1-1 | AC's drawn connections: AC → ALU A (`cX9REWVKWh3u19Wi5yly-14`, ending at (530, 990) on "ALU A B"), AC → ALU B (`2Ph0Qde3JH9-hkXoXRvS-142`, (670, 990)), AC – IDB (`…-129`), AC → DB (`cX9REWVKWh3u19Wi5yly-15`), and DF, IB, IF, MQ → AC (`-19`, `-20`, `-21`, `-27`). L: L → ALU (`2Ph0Qde3JH9-hkXoXRvS-136`, `-143`), L – ALU top (`-133`). No OPR pass unit. | Add the OPR pass unit: inputs AC and L, stage controls from IR (the Group 1 bits, qualified by `IR_CLASS = 011`), outputs to AC (`AC_SRC` = 7) and to L (`L_OP` = 1). The ALU paths stay (MRIs, ISZ, PC increment). | `07-opr/01-group1-execution.md` §4; `02-micro-operations.md` `OPR_PASS`; MCS `AC_SRC`, `L_OP` | open |
+
+### `diagrams/control/ms_next-flowchart/source/ms_next-flowchart.xml`
+
+| # | Current content (source) | Required change | Doc | Status |
+|---|---|---|---|---|
+| C1-2 | As B1: FETCH → "Indirect Addressing?" → DEFER or Execute. | With B1's change, the FETCH completion path covers Group 1 OPR as well as direct JMP (`IR_NO_EXECUTE = 1`, not indirect). If B1 is drawn with a "JMP?" decision, it becomes "JMP or Group 1 OPR?" (or "IR_NO_EXECUTE?"). | `04-fetch-defer.md` §3.4 | open |
+
+---
+
 ## Later slices
 
 Entries are added when each slice's docs are written, after reading the sources again. The spec's expected list ([spec.md](spec.md) §9) is a forecast, not yet checked against the sources.

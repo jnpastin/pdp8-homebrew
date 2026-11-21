@@ -165,7 +165,7 @@ The page bits come from **MA** instead of PC (section 3.1). The unit stays combi
 | PC source `EA_FORMED` | `PC_SRC` 1 → 2 bits | 0: it already sits in a 2-bit shared group (`IOT_TRANSFER_VAL`, `L_OP`, `MB_SRC`, `PC_SRC`) |
 | IR from MDB | `IR_LOAD` unchanged, source wired | 0 |
 
-v1 uses 44 of 48 datapath bits. The packer's result for slice B is **46 of 48**: direct JMP's FETCH TS3 word uses `PC_SRC`, `EA_ADDR_SRC`, `IF_SRC`, `CIFP_VAL`, and `II_VAL` together, which breaks two of v1's sharing groups. Removing the OPR-only ALU encodings after slice C3 (section 7) frees about 3 bits. **No seventh datapath EEPROM is needed.** The packer confirms the sharing (phase 3 onward).
+v1 uses 44 of 48 datapath bits. The packer's result was **46 of 48** after slice B and **45 of 48** after slice C1: direct JMP's FETCH TS3 word uses `PC_SRC`, `EA_ADDR_SRC`, `IF_SRC`, `CIFP_VAL`, and `II_VAL` together, which breaks two of v1's sharing groups. Removing the OPR-only ALU encodings after slice C3 (section 7) frees about 3 bits. **No seventh datapath EEPROM is needed.** The packer confirms the sharing (phase 3 onward).
 
 ### 5.2 Address formation outside EXECUTE (decision 2a)
 

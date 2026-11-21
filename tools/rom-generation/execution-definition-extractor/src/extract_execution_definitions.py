@@ -177,6 +177,10 @@ CONSOLE_EXECUTION_MODEL = "single TS-equivalent console transaction"
 
 # OPR: the section holding the per-TS operation bullets.
 OPR_DEFINITION_SECTION = "Instruction Definition"
+# A group performed in one pass of the OPR pass unit (option 2: Group 1 in FETCH TS3) defines
+# its stages in this section instead and has no EXECUTE cases; the pass is selected by a
+# conditional μop in Fetch & Defer.
+OPR_PASS_SECTION = "OPR Pass"
 
 # ---------------------------------------------------------------------------
 # Markdown syntax
@@ -299,6 +303,17 @@ class Findings:
     ) -> None:
         self.diagnostics.append(
             Diagnostic(ERROR, code, message, self.path, line, case_id)
+        )
+
+    def info(
+        self,
+        code: str,
+        message: str,
+        line: int | None = None,
+        case_id: str | None = None,
+    ) -> None:
+        self.diagnostics.append(
+            Diagnostic(INFO, code, message, self.path, line, case_id)
         )
 
 
@@ -859,6 +874,15 @@ def parse_opr(
 
     context = ["MS = EXECUTE", *opr_scope(document, findings)]
     section = document.section(2, OPR_DEFINITION_SECTION)
+    pass_section = document.section(2, OPR_PASS_SECTION)
+    if section is None and pass_section is not None:
+        findings.info(
+            "OPR_PASS_GROUP",
+            "The group is performed in one pass of the OPR pass unit, "
+            "selected in Fetch & Defer; it has no EXECUTE cases.",
+            pass_section.line,
+        )
+        return []
     if section is None:
         missing_section(findings, OPR_DEFINITION_SECTION)
         return []

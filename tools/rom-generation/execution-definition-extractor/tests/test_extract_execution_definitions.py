@@ -955,6 +955,19 @@ class OprTests(unittest.TestCase):
 
         self.assertEqual(codes(diagnostics), ["MISSING_TIMING_STATE"])
 
+    def test_pass_group_has_no_execute_cases(self) -> None:
+        # Option 2: Group 1 is one pass of the OPR pass unit in FETCH TS3.
+        document = (
+            "# Group 1\n\n## 2. Scope\n\nApplies when:\n\n"
+            + code("IR_IS_OPR = 1", "IR_OPR_GROUP1 = 1")
+            + "\n## 4. OPR Pass\n\n| Stage | Function |\n|---|---|\n"
+        )
+        cases, diagnostics = parse(parse_opr, document, 1)
+
+        self.assertEqual(cases, [])
+        self.assertEqual(codes(diagnostics), ["OPR_PASS_GROUP"])
+        self.assertEqual(diagnostics[0].severity, "INFO")
+
 
 # ---------------------------------------------------------------------------
 # Validation and extraction

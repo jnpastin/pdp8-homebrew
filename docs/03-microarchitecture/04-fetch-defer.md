@@ -20,7 +20,7 @@ Execution begins in FETCH for every instruction.
 
 Flow:
 
-    FETCH → (DEFER if indirect) → (EXECUTE unless JMP)
+    FETCH → (DEFER if indirect) → (EXECUTE unless JMP or Group 1 OPR)
 
 Responsibilities:
 
@@ -28,7 +28,7 @@ Responsibilities:
   - load IR
   - increment PC
   - form EA_ADDR
-  - complete a direct JMP
+  - complete a direct JMP or a Group 1 OPR
   - determine next MS
 
 - DEFER:
@@ -79,6 +79,7 @@ Conditional μops:
 
 ```text
 IR_CLASS = 001 -> IR_ADDR_TO_PC
+IR_CLASS = 011 -> OPR_PASS
 IR_CLASS = 001 AND CIFP = 1 -> DIF_TO_IF
 IR_CLASS = 001 AND CIFP = 1 -> CIFP_CLEAR
 IR_CLASS = 001 AND CIFP = 1 -> II_CLEAR
@@ -86,6 +87,7 @@ IR_CLASS = 001 AND CIFP = 1 -> II_CLEAR
 
 Description:
 - Forms the base EA from IR and the page of MA (the instruction's address).
+- A Group 1 OPR (`IR_CLASS = 011`) loads AC and L from the OPR pass unit, which performs the whole instruction in one pass ([Group 1 Execution](./07-opr/01-group1-execution.md)); the formed EA_ADDR is unused.
 - A direct JMP (`IR_CLASS = 001`) loads PC with the same formed address and applies a pending instruction-field change. The same TP3 clears `II`, so an interrupt may be recognized at this instruction's completion ([Interrupt Enable and Inhibit §12](../08-interrupts-and-skip/03-interrupt-enable-and-inhibit.md#12-deferred-field-application)); the KM8-E negates INT INHIBIT at TP3 of a JMP or JMS.
 
 ---
@@ -98,7 +100,7 @@ Description:
 Control Decisions:
 
     if IR_NO_EXECUTE == 1 and IR_INDIRECT == 0:
-        instruction completion (direct JMP): MS_next per the instruction-completion rules
+        instruction completion (direct JMP, Group 1 OPR): MS_next per the instruction-completion rules
     else if IR_INDIRECT == 1:
         MS_next ← DEFER
     else:

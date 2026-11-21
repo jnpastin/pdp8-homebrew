@@ -139,7 +139,9 @@ class DivergenceDetection(unittest.TestCase):
         ls.ref.ac = 0o0100                                # make the reference disagree
         with self.assertRaises(Divergence) as caught:
             ls.step()
-        self.assertIn("AC: simulator 1, reference 101 (last committed at EXECUTE TP3)", str(caught.exception))
+        # Group 1 IAC commits at EXECUTE TP3 in v1 and at FETCH TP3 in v2 (OPR pass, slice C1).
+        where = "FETCH TP3" if m.cpu.design.opr_pass else "EXECUTE TP3"   # V1-ONLY: the EXECUTE
+        self.assertIn(f"AC: simulator 1, reference 101 (last committed at {where})", str(caught.exception))
 
 
 if __name__ == "__main__":

@@ -65,14 +65,7 @@ No intermediate state or flag storage is created.
 - [AC_OR_MQ](#ac_or_mq)
 - [AC_OR_FP_SR](#ac_or_fp_sr)
 - [ADD_AC_MB](#add_ac_mb)
-
-#### 4.2.1 Bit Operations
-
-- [AC_RAR](#ac_rar)
-- [AC_RAL](#ac_ral)
-- [AC_RTR](#ac_rtr)
-- [AC_RTL](#ac_rtl)
-- [AC_BSW](#ac_bsw)
+- [OPR_PASS](#opr_pass)
 
 ### 4.3 Control Flow
 - [IR_ADDR_TO_PC](#ir_addr_to_pc)
@@ -120,8 +113,6 @@ No intermediate state or flag storage is created.
 
 ### 4.7 State Manipulation
 - [AC_CLEAR](#ac_clear)
-- [AC_COMP](#ac_comp)
-- [AC_INC](#ac_inc)
 - [CIFP_CLEAR](#cifp_clear)
 - [CIFP_SET](#cifp_set)
 - [DF_CLEAR](#df_clear)
@@ -134,7 +125,6 @@ No intermediate state or flag storage is created.
 - [IOT_TRANSFER_CAPTURE](#iot_transfer_capture)
 - [IOT_TRANSFER_CLEAR](#iot_transfer_clear)
 - [L_CLEAR](#l_clear)
-- [L_COMP](#l_comp)
 - [MA_CLEAR](#ma_clear)
 - [MB_INC](#mb_inc)
 - [MQ_CLEAR](#mq_clear)
@@ -165,24 +155,6 @@ AC, MB
 
 ---
 
-### AC_BSW
-  
-**Category:** Bit Operations  
-
-**Description:**  
-Swaps the high and low 6-bit halves of the accumulator.  
-
-**Target:**  
-AC  
-
-**Expression:**  
-AC ← swap_halves(AC)  
-
-**Sources:**  
-AC 
-
----
-
 ### AC_CLEAR
 
 **Category:**  
@@ -199,45 +171,6 @@ AC ← 0
 
 **Sources:**  
 none
-
----
-
-### AC_COMP
-
-**Category:**  
-State Manipulation
-
-**Description:**  
-Performs a bitwise inversion of the accumulator value.
-
-**Target:**  
-AC
-
-**Expression:**  
-AC ← NOT AC
-
-**Sources:**  
-AC
-
----
-
-### AC_INC
-
-**Category:**  
-State Manipulation
-
-**Description:**  
-Increments the accumulator by one. A carry out of the most significant bit complements the Link register.
-
-**Target:**  
-AC, L
-
-**Expression:**  
-AC ← (AC + 1) mod 4096  
-L ← L XOR carry
-
-**Sources:**  
-AC, L
 
 ---
 
@@ -296,82 +229,6 @@ AC ← AC OR FP_SR
 
 **Sources:** 
 AC, FP_SR
-
----
-
-### AC_RAR
-  
-**Category:** 
-Bit Operations  
-
-**Description:**  
-Rotates the combined L and AC register right by one bit.  
-
-**Target:**  
-AC, L  
-
-**Expression:**  
-(L, AC) ← rotate_right(L, AC, 1)  
-
-**Sources:**  
-AC, L  
-
----
-
-### AC_RAL
-  
-**Category:** 
-Bit Operations  
-
-**Description:**  
-Rotates the combined L and AC register left by one bit.  
-
-**Target:**  
-AC, L  
-
-**Expression:**  
-(L, AC) ← rotate_left(L, AC, 1)  
-
-**Sources:**  
-AC, L  
-
----
-
-### AC_RTR
-  
-**Category:** 
-Bit Operations  
-
-**Description:**  
-Rotates the combined L and AC register right by two bits.  
-
-**Target:**  
-AC, L  
-
-**Expression:**  
-(L, AC) ← rotate_right(L, AC, 2)  
-
-**Sources:**  
-AC, L  
-
----
-
-### AC_RTL
-  
-**Category:** 
-Bit Operations  
-
-**Description:**  
-Rotates the combined L and AC register left by two bits.  
-
-**Target:**  
-AC, L  
-
-**Expression:**  
-(L, AC) ← rotate_left(L, AC, 2)  
-
-**Sources:**  
-AC, L  
 
 ---
 
@@ -1164,25 +1021,6 @@ none
 
 ---
 
-### L_COMP
-  
-**Category:**
-State Manipulation
-
-**Description:**  
-Computes the complement of the link register.  
-
-**Target:**  
-L  
-
-**Expression:**  
-L ← NOT L  
-
-**Sources:**  
-L  
-
----
-
 ### MA_CLEAR
 
 **Category:**  
@@ -1384,6 +1222,25 @@ MQ ← 0
 
 **Sources:**  
 (none)
+
+---
+
+### OPR_PASS
+
+**Category:**
+Arithmetic / Logical
+
+**Description:**
+Loads AC and L from the OPR pass unit, which performs a whole Group 1 OPR instruction in one pass. The pass unit's stage functions are selected directly by IR bits ([Group 1 Execution §4](./07-opr/01-group1-execution.md#4-opr-pass)); this μop selects only that AC and L load from it. Selected in FETCH TS3 when `IR_CLASS = 011`.
+
+**Target:**
+AC, L
+
+**Expression:**
+(L, AC) ← OPR_PASS(L, AC, IR)
+
+**Sources:**
+AC, L, IR
 
 ---
 

@@ -131,9 +131,9 @@ class DatapathTests(unittest.TestCase):
             self.run_word(AC_LOAD=1, AC_SRC=0, IDB_DRIVE=0)
 
     def test_reserved_select_only_matters_when_used(self):
-        self.run_word(AC_LOAD=0, AC_SRC=7)                # not consumed: no effect (Control Word §5.6)
+        self.run_word(MA_LOAD=0, MA_SRC=3)                # not consumed: no effect (Control Word §5.6)
         with self.assertRaises(SpecViolation):
-            self.run_word(AC_LOAD=1, AC_SRC=7)
+            self.run_word(MA_LOAD=1, MA_SRC=3)            # MA_SRC 3 is reserved in both designs
 
     def test_pc_inc_rules(self):
         fx = self.run_word(PC_INC=1, ALU_OP=E.INC, ALU_A_SRC=2)

@@ -1,6 +1,6 @@
 # Group 1 OPR Encoding Model
 
-Each of the lower 8 bits of the instruction are flags for a specific operation.  If multiple flags are selected, they will all be executed.  Each operation occurs at a specific time during EXECUTE, this is fixed and must be taken into consideration when combining instructions.
+Each of the lower 8 bits of the instruction are flags for a specific operation.  If multiple flags are selected, they will all be executed.  The operations take effect in a fixed order, which must be taken into consideration when combining them: CLA and CLL; then CMA and CML; then IAC; then RAR, RAL, RTR, RTL, or BSW.
 
 ```
 ┌────┬────┬─────┬────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
@@ -55,4 +55,4 @@ NOP:
 
 All Group 1 operations can be combined with others into a single instruction.  This allows significant speedup by combining multiple operations, skipping additional FETCH and EXECUTE states.  For example, `CLA` and `CLL` can be combined to clear both AC and L, or `CLA` and `IAC` can be combined to clear then increment the AC, setting it to `0001`.
 
-However, it is critical to understand the timing.  For example, if AC is `1354`, a `CMA IAC` will happen with the `CMA` at TP2 and the `IAC` at TP3.  This will complement first (AC = `6423`) then increment (AC = `6424`).  It will **NOT** happen in the opposite order, incrementing and then complementing (AC = `6422`)
+However, it is critical to understand the order.  For example, if AC is `1354`, a `CMA IAC` complements first (AC = `6423`) and then increments (AC = `6424`).  It will **NOT** happen in the opposite order, incrementing and then complementing (AC = `6422`)

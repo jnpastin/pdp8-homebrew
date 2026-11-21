@@ -17,8 +17,9 @@ Branch: `one-cycle-fetch`. This branch evaluates and, if the user approves, impl
 | 2: behavior-neutral groundwork | **Done:** steps 2.1 to 2.7, every suite green under both designs (section 2). |
 | 3: slice A | **Done** (section 1.2; committed `7758162`). |
 | 4: slice B | **Done** (section 1.3; committed `a7ca584`). |
-| 5: slice D | **Done, awaiting the user's check and commit** (section 1.4). |
-| 6 onward (slices C1 to C3) | Not started. |
+| 5: slice D | **Done** (section 1.4; committed `75a4460`). |
+| 6: slice C1 | **Done, awaiting the user's check and commit** (section 1.5). |
+| 7 onward (slices C2, C3) | Not started. |
 
 ### 1.2 Slice A (phase 3), 2026-11-20
 
@@ -53,6 +54,17 @@ State lengths (decision 3a) and the SRAM-shadowed control store (decision 12) in
 - **Acceptance:** D2AB PRG0 under v2 (reference model with v2's cycle counts and durations, PyPy): **PASS**, routines 4 and 5 included. **Full lock-step run (simulator against the reference model, all routines, PyPy): PASS for seeds 1 and 2**, the end-of-program halt after 46,987,641 instructions each (2,265 s and 2,546 s, run in parallel).
 - **Verified (Windows, CPython 3.14; PyPy 3.12):** tools 17 suites OK; sim/cpu 95, memory 3, reference 18, io 29, system 77 (1 skipped) OK under v1 and v2; MAINDEC suite (seeds 1 and 2) under PyPy OK for both; D2AB timing: v1 halt 2607, v2 pass.
 - **Diagrams:** `option2/diagrams.md` D1 (timing overview: add the fast state), D2 (optional device labels).
+
+### 1.5 Slice C1 (phase 6), 2026-11-21
+
+OPR Group 1 completes in FETCH: `OPR_PASS` at FETCH TS3 loads AC and L from the OPR pass unit, whose stages (CLA/CLL, CMA/CML, IAC, rotate/BSW) are selected by IR bits qualified by `IR_CLASS = 011`.
+
+- **Decisions (user, 2026-11-21):** μop name `OPR_PASS` (`AC_SRC` = 7, `L_OP` = 1); the group-1-only μops (`AC_COMP`, `AC_INC`, `AC_RAR`, `AC_RAL`, `AC_RTR`, `AC_RTL`, `AC_BSW`, `L_COMP`) removed (ALU encodings kept until C3); `07-opr/01-group1-execution.md` becomes an "OPR Pass" stage definition; `02-isa/01-group-1.md` reworded from EXECUTE TPs to order only (same semantics); design principle §3.1 amended.
+- **Docs:** design principles; registers (AC, L); ISA group 1 wording; state model; μop catalog; fetch-defer §3.3, §3.4; group 1 execution (rewritten, KK8-E one-pass OPR cited); IR-derived fields (`IR_CLASS` class `011`, `IR_NO_EXECUTE` = JMP or Group 1); control outputs (`AC_SRC` 7, `L_OP` 1, used-by lists); CSO packing 45 bits; §9.3 generalized ("an `IR_NO_EXECUTE` instruction never reaches EXECUTE").
+- **Tools:** execution-definition extractor: an OPR document with an "OPR Pass" section yields no EXECUTE cases and an INFO (`OPR_PASS_GROUP`), with a test. Packer unchanged. Pipeline promoted twice by the user (the stale-mapping diagnostics record).
+- **Simulator:** decodes; `Design.opr_pass` (v1 False, `V1-ONLY`); `AC_SRC` 7 and `L_OP` 1 through the hand-written pass unit (`datapath.opr_pass`); per-design `AC_SRC`, `L_OP` definitions. Tests: `sim/cpu/tests/test_opr_group1_slice_c1.py` (exhaustive: all 256 Group 1 encodings × 10 AC edge values × L 0/1 against the reference model's Group 1, each completing in one FETCH; targeted CIA, IAC overflow, BSW, rotates through L, RAR with RAL, CLA IAC; cost 1.2 µs). Adjusted: two reserved-code tests (`MA_SRC` 3 instead of `AC_SRC` 7), slice B tests that used NOP as an EXECUTE instruction, and the lock-step divergence-message test (IAC commits at FETCH TP3 in v2).
+- **Verified (Windows, CPython 3.14; PyPy 3.12):** tools 17 suites OK; sim/cpu 103, memory 3, reference 18, io 29, system 77 (1 skipped) OK under v1 and v2; MAINDEC suite (seeds 1 and 2) under PyPy OK for both; D2AB timing: v1 halt 2607, v2 pass. Full lock-step D2AB PRG0 under v2 (PyPy): seeds 1 and 2 PASS, 46,988,029 instructions each, no divergence.
+- **Diagrams:** `option2/diagrams.md` C1-1 (the OPR pass unit), C1-2 (MS_NEXT flowchart).
 
 ### 1.1 Commits on this branch
 
@@ -125,8 +137,9 @@ Notes for the review:
 
 ## 4. Next Steps
 
-1. **The user checks and commits slice D** (section 1.4).
-2. **Slice C1** (plan phase 6): OPR group 1 in FETCH through the OPR pass unit (decision 1; `OPR_PASS` as `AC_SRC` = 7 and `L_OP` = 1; class 3; `IR_NO_EXECUTE` gains OPR; amend design principle §3.1). Exhaustive test of the 256 group 1 encodings.
+1. **The user checks and commits slice C1** (section 1.5).
+2. **Slice C2** (plan phase 7): OPR Group 2 in FETCH: the SKIP register (loaded at FETCH TP3 from `SKIP_TAKEN`; `SKIP_LOAD`), the `RUN` multiplexer on overlay group 1 (decision 6), CLA and OSR through the pass unit (stage B), PC increment at FETCH TS4 on SKIP, HLT captured at FETCH TP3 (sequencer A1 = `IR_OPR_HLT`), class `100`; skip and interrupt at the same TP4 (decision 4); 08/05-skip-model's EXECUTE TP4 wording. Exhaustive test of the Group 2 encodings.
+3. (Done) **Slice C1** (plan phase 6): OPR group 1 in FETCH through the OPR pass unit (decision 1; `OPR_PASS` as `AC_SRC` = 7 and `L_OP` = 1; class 3; `IR_NO_EXECUTE` gains OPR; amend design principle §3.1). Exhaustive test of the 256 group 1 encodings.
 3. (Done) **Slice D** (plan phase 5): the TS-length table (decision 3a, timing.md rev. 2: FETCH and plain DEFER 5/8/6/5, EXECUTE and autoindex DEFER 6/9/7/6 at 50 ns) in the docs and the simulator's per-TS time base; acceptance is D2AB PRG0 routines 4 and 5 passing. Also decide where the SRAM shadow (decision 12) enters the hardware docs.
 3. (Done) **Slice B** (plan phase 4): direct JMP completes in FETCH (`PC ← EA_FORMED` at TP3, field change and `II_CLEAR` at TP3), JMP I completes in DEFER; the class decode (decision 2a), `IR_ONE_STATE` and `IR_IS_JMP` sequencer inputs, and the boundary rule moving to FETCH TP4 / DEFER TP4 for JMP. Same slice pattern: docs interactively (searching every doc directory, including `04-control/30-direct-control-definitions`, for each affected register and TS), tools, the user runs the pipeline, simulator, verify. Add each slice's diagram changes to `option2/diagrams.md` from the diagram sources.
 

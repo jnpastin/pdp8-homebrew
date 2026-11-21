@@ -51,13 +51,13 @@ def ir_decodes(ir) -> dict:
     hi6 = bits(ir, 11, 6)
     memext_6x = eq(hi6, 0o62)  # IR[11:6] == 110010
     jmp = eq(op, 0o5)
-    class_jmp_i = t_and(jmp, bit(ir, 8))
-    class_jmp = t_and(jmp, t_not(bit(ir, 8)))
+    class_b1 = t_or(t_and(jmp, bit(ir, 8)), g1)
+    class_b0 = t_or(t_and(jmp, t_not(bit(ir, 8))), g1)
     return {
-        # IRD IR_CLASS = {0, IR[11:9] = 101 AND IR[8], IR[11:9] = 101 AND NOT IR[8]}
-        "IR_CLASS": None if class_jmp_i is None or class_jmp is None
-        else (class_jmp_i << 1) | class_jmp,
-        "IR_NO_EXECUTE": jmp,                                         # IRD IR_NO_EXECUTE (JMP)
+        # IRD IR_CLASS = {0, (IR[11:9] = 101 AND IR[8]) OR IR_OPR_GROUP1,
+        #                    (IR[11:9] = 101 AND NOT IR[8]) OR IR_OPR_GROUP1}
+        "IR_CLASS": None if class_b1 is None or class_b0 is None else (class_b1 << 1) | class_b0,
+        "IR_NO_EXECUTE": t_or(jmp, g1),                               # IRD IR_NO_EXECUTE
         "IR_IS_MRI": is_mri,
         "IR_IS_IOT": is_iot,
         "IR_IS_OPR": is_opr,

@@ -63,6 +63,10 @@
           "micro_operation": "IR_ADDR_TO_PC"
         },
         {
+          "predicate": "IR_CLASS = 011",
+          "micro_operation": "OPR_PASS"
+        },
+        {
           "predicate": "IR_CLASS = 001 AND CIFP = 1",
           "micro_operation": "DIF_TO_IF"
         },
@@ -80,7 +84,7 @@
       "id": "fetch-defer:3.4",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 93
+        "line": 95
       },
       "execution_model": "major-state",
       "context": [
@@ -94,7 +98,7 @@
       "id": "fetch-defer:4.2",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 121
+        "line": 123
       },
       "execution_model": "major-state",
       "context": [
@@ -110,7 +114,7 @@
       "id": "fetch-defer:4.3",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 131
+        "line": 133
       },
       "execution_model": "major-state",
       "context": [
@@ -126,7 +130,7 @@
       "id": "fetch-defer:4.4",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 141
+        "line": 143
       },
       "execution_model": "major-state",
       "context": [
@@ -149,7 +153,7 @@
       "id": "fetch-defer:4.5",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 157
+        "line": 159
       },
       "execution_model": "major-state",
       "context": [
@@ -1559,114 +1563,6 @@
       "timing_state": null,
       "micro_operations": [],
       "conditional_micro_operations": []
-    },
-    {
-      "id": "opr1:ts1",
-      "source": {
-        "path": "docs/03-microarchitecture/07-opr/01-group1-execution.md",
-        "line": 52
-      },
-      "execution_model": "major-state",
-      "context": [
-        "MS = EXECUTE",
-        "IR_IS_OPR = 1",
-        "IR_OPR_GROUP1 = 1"
-      ],
-      "timing_state": 1,
-      "micro_operations": [],
-      "conditional_micro_operations": [
-        {
-          "predicate": "IR_OPR_CLA = 1",
-          "micro_operation": "AC_CLEAR"
-        },
-        {
-          "predicate": "IR_OPR_CLL = 1",
-          "micro_operation": "L_CLEAR"
-        }
-      ]
-    },
-    {
-      "id": "opr1:ts2",
-      "source": {
-        "path": "docs/03-microarchitecture/07-opr/01-group1-execution.md",
-        "line": 56
-      },
-      "execution_model": "major-state",
-      "context": [
-        "MS = EXECUTE",
-        "IR_IS_OPR = 1",
-        "IR_OPR_GROUP1 = 1"
-      ],
-      "timing_state": 2,
-      "micro_operations": [],
-      "conditional_micro_operations": [
-        {
-          "predicate": "IR_OPR_CMA = 1",
-          "micro_operation": "AC_COMP"
-        },
-        {
-          "predicate": "IR_OPR_CML = 1",
-          "micro_operation": "L_COMP"
-        }
-      ]
-    },
-    {
-      "id": "opr1:ts3",
-      "source": {
-        "path": "docs/03-microarchitecture/07-opr/01-group1-execution.md",
-        "line": 60
-      },
-      "execution_model": "major-state",
-      "context": [
-        "MS = EXECUTE",
-        "IR_IS_OPR = 1",
-        "IR_OPR_GROUP1 = 1"
-      ],
-      "timing_state": 3,
-      "micro_operations": [],
-      "conditional_micro_operations": [
-        {
-          "predicate": "IR_OPR_IAC = 1",
-          "micro_operation": "AC_INC"
-        }
-      ]
-    },
-    {
-      "id": "opr1:ts4",
-      "source": {
-        "path": "docs/03-microarchitecture/07-opr/01-group1-execution.md",
-        "line": 63
-      },
-      "execution_model": "major-state",
-      "context": [
-        "MS = EXECUTE",
-        "IR_IS_OPR = 1",
-        "IR_OPR_GROUP1 = 1"
-      ],
-      "timing_state": 4,
-      "micro_operations": [],
-      "conditional_micro_operations": [
-        {
-          "predicate": "IR_OPR_RAR = 1 AND IR_OPR_RAL = 0 AND IR_OPR_BSW = 0",
-          "micro_operation": "AC_RAR"
-        },
-        {
-          "predicate": "IR_OPR_RAL = 1 AND IR_OPR_RAR = 0 AND IR_OPR_BSW = 0",
-          "micro_operation": "AC_RAL"
-        },
-        {
-          "predicate": "IR_OPR_RAR = 1 AND IR_OPR_RAL = 0 AND IR_OPR_BSW = 1",
-          "micro_operation": "AC_RTR"
-        },
-        {
-          "predicate": "IR_OPR_RAL = 1 AND IR_OPR_RAR = 0 AND IR_OPR_BSW = 1",
-          "micro_operation": "AC_RTL"
-        },
-        {
-          "predicate": "IR_OPR_RAR = 0 AND IR_OPR_RAL = 0 AND IR_OPR_BSW = 1",
-          "micro_operation": "AC_BSW"
-        }
-      ]
     },
     {
       "id": "opr2:ts1",

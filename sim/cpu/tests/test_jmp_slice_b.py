@@ -88,7 +88,7 @@ class JmpPaths(unittest.TestCase):
         self.assertEqual(cpu.st["PC"], 0o501)                           # HLT at 0500 ran
 
     def test_other_instructions_still_enter_execute(self):
-        cpu = machine({0o200: NOP, 0o201: HLT})
+        cpu = machine({0o200: 0o1050, 0o201: HLT, 0o50: 1})              # TAD 0050
         self.assertEqual(states(run(cpu))[:2], ["FETCH", "EXECUTE"])
 
 
@@ -197,7 +197,7 @@ class Costs(unittest.TestCase):
         self.assertEqual(D.major_states(d, JMP_300), ("FETCH",))
         self.assertEqual(D.major_states(d, JMP_I_50), ("FETCH", "DEFER"))
         self.assertEqual(D.major_states(d, 0o1450), ("FETCH", "DEFER", "EXECUTE"))  # TAD I
-        self.assertEqual(D.major_states(d, NOP), ("FETCH", "EXECUTE"))     # OPR until slice C1
+        self.assertEqual(D.major_states(d, HLT), ("FETCH", "EXECUTE"))     # group 2 OPR until slice C2
 
     def test_last_state_is_instr_end(self):
         d = D.select("v2")

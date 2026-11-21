@@ -107,9 +107,9 @@ Fields: every other encoded field of the control word, grouped here by function.
 | Fields and interrupts | `IF_LOAD` (1), `IF_SRC` (2), `DF_LOAD` (1), `DF_SRC` (3), `DIF_LOAD` (1), `DIF_SRC` (3), `IB_LOAD` (1), `CIFP_LOAD` (1), `CIFP_VAL` (1), `IE_LOAD` (1), `IE_VAL` (1), `II_LOAD` (1), `II_VAL` (1) | 18 |
 | External IOT | `IOT_TRANSFER_LOAD` (1), `IOT_TRANSFER_VAL` (2), `/DB_READ` (1), `/DB_WRITE` (1) | 5 |
 
-The 43 fields total 63 bits; bit sharing packs them into 46 (section 7.2). Control-word fields that are derived or supplied from outside the control store (`/DMA_GRANT`, `IOT_ACTIVE`, `IOA[5:0]`, `IOP[2:0]`, `GTF_FLAGS`, `IF_DF_COMBINED`, `DB_INPUT`, `MDB_INPUT`) are not produced by either slice.
+The 43 fields total 63 bits; bit sharing packs them into 45 (section 7.2). Control-word fields that are derived or supplied from outside the control store (`/DMA_GRANT`, `IOT_ACTIVE`, `IOA[5:0]`, `IOP[2:0]`, `GTF_FLAGS`, `IF_DF_COMBINED`, `DB_INPUT`, `MDB_INPUT`) are not produced by either slice.
 
-Width: 46 bits after packing (section 7), six devices.
+Width: 45 bits after packing (section 7), six devices.
 
 ---
 
@@ -345,15 +345,16 @@ Fields that never require a value in the same control word share device outputs 
 |---|---|
 | 4 | `ALU_OP`, `DF_SRC` |
 | 3 | `AC_SRC`, `DIF_SRC`, `MA_SRC` |
-| 2 | `ALU_A_SRC`, `PC_SRC` |
-| 2 | `AB_SRC`, `IF_SRC`, `IOT_TRANSFER_VAL`, `L_OP` |
-| 2 | `IE_VAL`, `MB_SRC` |
+| 2 | `ALU_A_SRC`, `IF_SRC` |
+| 2 | `ALU_B_SRC`, `PC_SRC` |
+| 2 | `IOT_TRANSFER_VAL`, `L_OP`, `MB_SRC` |
+| 1 | `AB_SRC`, `IE_VAL` |
 | 1 | `CIFP_VAL`, `MQ_SRC` |
-| 32 | the remaining 28 fields, unshared: `IDB_SRC` (3 bits), `ALU_B_SRC` (2 bits), `MDB_SRC` (2 bits), and 25 one-bit fields |
+| 30 | the remaining 27 fields, unshared: `IDB_SRC` (3 bits), `MDB_SRC` (2 bits), and 25 one-bit fields |
 
-Total: 46 bits in six devices, two bits spare.
+Total: 45 bits in six devices, three bits spare.
 
-Fields that share bits are aligned at the low-order end of the shared bits: a field of width *w* occupies the lowest *w* of them. A field narrower than its shared bits, such as `AB_SRC` in the two bits it shares with `IF_SRC`, `IOT_TRANSFER_VAL`, and `L_OP`, does not use the higher one.
+Fields that share bits are aligned at the low-order end of the shared bits: a field of width *w* occupies the lowest *w* of them. A field narrower than its shared bits, such as `MA_SRC` in the three bits it shares with `AC_SRC` and `DIF_SRC`, does not use the highest one.
 
 A field shares bits only through wiring. No decoder or gate follows the control store ([Control Addressing §2](./02-control-addressing.md#2-control-address-definition)).
 

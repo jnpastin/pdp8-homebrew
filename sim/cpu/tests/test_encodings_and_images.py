@@ -22,8 +22,10 @@ class EncodingTests(unittest.TestCase):
         self.assertEqual(E.check_against_schema(DEFAULT_SCHEMA), [])
 
     def test_reserved_detection(self):
-        self.assertTrue(E.DATAPATH_FIELDS["AC_SRC"].is_reserved(7))
+        self.assertFalse(E.DATAPATH_FIELDS["AC_SRC"].is_reserved(7))   # v2: the OPR pass unit
+        self.assertTrue(E.datapath_fields("v1")["AC_SRC"].is_reserved(7))  # V1-ONLY
         self.assertFalse(E.DATAPATH_FIELDS["AC_SRC"].is_reserved(6))
+        self.assertTrue(E.DATAPATH_FIELDS["MA_SRC"].is_reserved(3))
         self.assertTrue(E.DATAPATH_FIELDS["ALU_OP"].is_reserved(0o13))
         self.assertTrue(E.DATAPATH_FIELDS["IOT_TRANSFER_VAL"].is_reserved(3))
         self.assertTrue(E.SEQUENCER_FIELDS["MS_NEXT"].is_reserved(5))
