@@ -73,6 +73,24 @@ Unchanged and verified: "IR_INDIRECT [1 Bit]" → "MUX [1 Bit]" (`-61`); "Wired 
 
 ---
 
+## Slice D (phase 5): state lengths (timing ROM), SRAM-shadowed control store
+
+### `diagrams/timing/cpu-timing/source/cpu-timing-overview.json`
+
+| # | Current content (source) | Required change | Doc | Status |
+|---|---|---|---|---|
+| D1 | WaveDrom, `CLK - 20MHz`, 30 steps: TS1 `01.....0…` (6 steps), TS2 9 steps, TS3 7 steps, TS4 6 steps, a TP pulse (`Hl`) at the end of each; one waveform, the slow lengths. | Show both lengths of Timing Architecture §5.1: the slow state (6/9/7/6, as drawn) and the fast state (5/8/6/5) for FETCH and non-autoindex DEFER, for example as a second group or a second diagram. The doc §5.1 links this diagram as "See:". | `09-timing/02-timing-architecture.md` §5.1 | open |
+
+### `diagrams/control/control-store-organization/source/control-store-organization.xml`
+
+| # | Current content (source) | Required change | Doc | Status |
+|---|---|---|---|---|
+| D2 | Nodes "Sequencer Slice ROM [7 Bits]" (`Smnm8CKmp2vPJFrs1iI9-13`) and "Datapath SliceROM [45 Bits]" (`-14`); no device technology shown. | Optional: if the diagram should show the devices, the slices are EEPROMs copied into shadow SRAMs at power-on (CSO §8.1). No change is required for the address formation it draws. | CSO §2, §8, §8.1 | open (optional) |
+
+No diagram exists for the timing ROM, the TSEQ counter, or the shadow-copy logic; the docs describe them in text (Timing Terminology §3.5, CSO §8.1). Whether to draw them is the user's call.
+
+---
+
 ## Later slices
 
 Entries are added when each slice's docs are written, after reading the sources again. The spec's expected list ([spec.md](spec.md) §9) is a forecast, not yet checked against the sources.

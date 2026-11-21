@@ -322,7 +322,7 @@ Sequence:
 ```text
 accepted command latched
     →
-console transaction timer runs for the TS2 duration
+console transaction timer runs for the slow TS2 duration (9 TSTEPs)
     →
 TPC
     →
@@ -334,7 +334,7 @@ Properties:
 - The console transaction is the single TS-equivalent evaluation window for the command.
 - The latched command is stable from the start of the transaction through TPC.
 - The control word is evaluated from the latched command for the whole transaction.
-- The transaction duration equals the TS2 duration, so a console memory access meets the same timing as a main-sequence memory access.
+- The transaction duration equals the slow TS2 duration (9 TSTEPs, [Timing Architecture §5.1](./02-timing-architecture.md#51-structure)), so a console memory access meets the same timing as the longest main-sequence memory access.
 - A console memory read drives AB and MFB for the whole transaction, and MB captures MDB at TPC, matching TS2 and TP2.
 - A console memory write commits at TPC, matching TP2.
 - TPC commits every control-word result that a main-sequence TP commits, including `RUN_NEXT`, `HLT_REQ_NEXT`, and, when `MS_LOAD = 1`, `MS_NEXT`.

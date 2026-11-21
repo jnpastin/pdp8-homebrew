@@ -4,8 +4,10 @@ The branch `one-cycle-fetch` keeps the v1 and v2 control designs side by side, b
 can be removed before the merge. A `Design` names everything that differs between them:
 
 - the packed images, the packing description, and the control-word schema;
-- `ts_ns`: the simulated duration of each timing state, per major state, in ns. `elapsed_ns`
-  advances by the duration of each TS at its TP (docs/09-timing; option2/timing.md).
+- `ts_ns`: the simulated duration of each timing state, per timing context, in ns: each major
+  state, and `DEFER_AUTOINDEX`, a DEFER with AUTO_INDEX_REQUIRED = 1, which the timing ROM
+  gives the slow lengths (docs/09-timing/02-timing-architecture.md §5.1; 01-terminology.md
+  §3.5). `elapsed_ns` advances by the duration of each TS at its TP.
 - `boundary_rule`: which major state is an instruction's last, so that its TP4 is the
   instruction boundary (`is_last_state`; option2/spec.md §6.1).
 - `ir_source`: IR's wired load input, "MDB" (v2: IR loads at FETCH TP2 with MB) or "MB" (v1:
@@ -32,10 +34,19 @@ ENVIRONMENT_VARIABLE = "PDP8_DESIGN"
 DEFAULT = "v1"  # V1-ONLY: becomes the surviving design's name at cleanup
 
 MAJOR_STATES = ("FETCH", "DEFER", "EXECUTE", "INTERRUPT", "DMA")
+DEFER_AUTOINDEX = "DEFER_AUTOINDEX"     # timing context: a DEFER with AUTO_INDEX_REQUIRED = 1
+TIMING_CONTEXTS = MAJOR_STATES + (DEFER_AUTOINDEX,)
 
 # Every timing state 300 ns, 1.2 us per major state: the placeholder time base used since phase 2
 # of the simulator. The per-state totals are what devices and the reference model see.
-UNIFORM_1200 = {ms: (300, 300, 300, 300) for ms in MAJOR_STATES}
+UNIFORM_1200 = {ms: (300, 300, 300, 300) for ms in TIMING_CONTEXTS}  # V1-ONLY
+
+# Timing Architecture §5.1, TIMING_MODE 0 (optimized), TSTEP = 50 ns: fast 5/8/6/5 TSTEPs
+# (1.2 us) for FETCH and non-autoindex DEFER; slow 6/9/7/6 (1.4 us) for every other state.
+FAST = (250, 400, 300, 250)
+SLOW = (300, 450, 350, 300)
+MODE_0 = {"FETCH": FAST, "DEFER": FAST, DEFER_AUTOINDEX: SLOW, "EXECUTE": SLOW,
+          "INTERRUPT": SLOW, "DMA": SLOW}
 
 
 @dataclass(frozen=True)
@@ -43,7 +54,7 @@ class Design:
     name: str
     build: Path                       # the ROM-generation build directory for this design
     schema: Path                      # the maintained control-word schema
-    ts_ns: dict = field(default_factory=lambda: dict(UNIFORM_1200))
+    ts_ns: dict = field(default_factory=lambda: dict(MODE_0))
     boundary_rule: str = "instr_end"  # see is_last_state
     ir_source: str = "MDB"            # IR's load input (slice A)
     ea_page: str = "MA"               # EA formation's page source (slice A)
@@ -69,6 +80,7 @@ DESIGNS = {
     # V1-ONLY
     "v1": Design("v1", _ROM_BUILD / "rom-generation",
                  REPO_ROOT / "rom" / "microcode" / "v1" / "control-word-schema.json",
+                 ts_ns=dict(UNIFORM_1200),
                  ir_source="MB", ea_page="PC", boundary_rule="execute",
                  non_execute_variant=None, sequencer_a2=None),        # V1-ONLY
     "v2": Design("v2", _ROM_BUILD / "rom-generation-v2",

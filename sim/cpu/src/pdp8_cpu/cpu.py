@@ -227,6 +227,12 @@ class Cpu:
                 cond.get("IR_IS_CAF"), ms, ts, run, self.panel.command_asserted("CLEAR")))
             seq_loads = sequencer_loads(seq, main_sequence=not console, ts=ts)
 
+            # Timing Terminology §3.5: the timing ROM's context, from pre-TP state: the major
+            # state, or the slow DEFER when AUTO_INDEX_REQUIRED = 1.
+            timing_context = E.MS_NAMES.get(ms, ms)
+            if (timing_context == "DEFER" and DS.DEFER_AUTOINDEX in self.ts_ns
+                    and cond.get("AUTO_INDEX_REQUIRED") == 1):
+                timing_context = DS.DEFER_AUTOINDEX
             mapr_next = None
             if not console:  # CSO §5.4.1: MAPR loads at every main-sequence TP, never at TPC
                 m_addr = A.mapping_address(st["IR"], ts)
@@ -254,7 +260,7 @@ class Cpu:
             self.dma.commit("C" if console else ts, self.last_state(ms, context["IR"]), ms == E.DMA,
                             initialize, dma_value)
         if not console:                              # this TS's duration (design.py)
-            self.elapsed_ns += self.ts_ns[E.MS_NAMES[ms]][ts - 1]
+            self.elapsed_ns += self.ts_ns[timing_context][ts - 1]
         if not console and ts == 4 and (ms == E.INTERRUPT or self.last_state(ms, context["IR"])):
             for device in self.devices:              # an instruction boundary (see KL8E model)
                 getattr(device, "at_boundary", lambda now_ns: None)(self.elapsed_ns)

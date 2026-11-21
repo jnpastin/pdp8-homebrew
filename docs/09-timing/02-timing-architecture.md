@@ -53,7 +53,7 @@ The timing diagrams show the actual electrical levels of both signal classes.
 
 On each rising edge of TCLK:
 
-- TSTEP advances to the next position unless a defined timing rule holds an eligible setup position.
+- TSTEP advances to the next step of the current TS, or after the TS's last step (its TP) to step 1 of the next TS, unless a defined timing rule holds an eligible setup position.
 - Exactly one TSTEP remains active.
 - A TP position cannot be held by `/IO_WAIT`.
 
@@ -61,9 +61,9 @@ On each rising edge of TCLK:
 
 ### 4.2 Timing Pulses
 
-Each TSTEP generates a corresponding TP:
+Each TS's last TSTEP is its TP:
 
-TPn = active when TSTEPn is active
+TPn = active when TSn's step N is active ([Timing Terminology §3.5](./01-terminology.md#35-timing-rom))
 
 TP is:
 - one timing step wide
@@ -76,14 +76,18 @@ TP is:
 
 ### 5.1 Structure
 
-Timing States are defined as ranges of timing steps:
+Each timing state is a run of N timing steps, N read from the timing ROM ([Timing Terminology §3.5](./01-terminology.md#35-timing-rom)). TSTEP is 50 ns (TCLK = 20 MHz). The lengths, in TSTEPs (TS1/TS2/TS3/TS4):
 
-TS1 = TSTEP range  
-TS2 = TSTEP range  
-TS3 = TSTEP range  
-TS4 = TSTEP range  
+| Context | Mode 0 (optimized) | Mode 1 (uniform slow) |
+|---|---|---|
+| FETCH; DEFER with `AUTO_INDEX_REQUIRED = 0` | **5/8/6/5 = 24 (1.20 µs)** | 6/9/7/6 = 28 (1.40 µs) |
+| DEFER with `AUTO_INDEX_REQUIRED = 1`; EXECUTE; INTERRUPT; DMA | **6/9/7/6 = 28 (1.40 µs)** | 6/9/7/6 = 28 (1.40 µs) |
 
-TS ranges are based on DEC timing reference diagrams. TS2 is intentionally the long cycle to accommodate memory access timing, following DEC's slow-cycle design. Short-cycle support is planned for a future implementation phase.
+`TIMING_MODE` codes 2 and 3 are reserved. Mode 0 is the normal mode; mode 1 is for hardware bring-up.
+
+The two lengths follow the PDP-8/E's fast and slow memory cycles (KK8-E; M8330): FETCH and non-autoindex DEFER are fast, EXECUTE and autoindex DEFER slow. The slow cycle lengthens the TSs of a state that writes memory, or may write it (the auto-index write-back, the MRI and interrupt writes, a DMA transfer). Under mode 0 a memory-reference instruction takes 2.6 µs, as on the PDP-8/E, and the ISZ + JMP loop of a timing routine takes 2 × 24 + 28 = 76 TSTEPs = 3.80 µs, the PDP-8/E figure that MAINDEC-8E-D2AB checks.
+
+Each length is the TS's longest critical path, from its control word and memory access to the setup of its TP, rounded up to whole TSTEPs and padded to these totals; [option2/timing.md](../../option2/timing.md) §4 gives the paths and margins. TS2 is the longest, to accommodate the memory access.
 
 See: [cpu-timing-overview](../../diagrams/timing/cpu-timing/export/cpu-timing-overview.png)
 
@@ -196,12 +200,12 @@ Major State changes occur at defined TP events.
 
 ### 9.1 Mechanism
 
-Timing speed is controlled by modifying TSTEP progression.
+Timing speed is controlled by the length of each TS, read from the timing ROM ([Timing Terminology §3.5](./01-terminology.md#35-timing-rom)).
 
-- Slow: all steps executed
-- Fast: some steps skipped
+- Fast: a FETCH or non-autoindex DEFER (5/8/6/5 TSTEPs, mode 0)
+- Slow: every other major state (6/9/7/6 TSTEPs)
 
-The fast/slow mechanism will be modeled after DEC's timing design. The specific implementation (which steps are eligible for skipping, control mechanism, static vs dynamic selection) is not yet defined.
+The selection is dynamic, by major state and `AUTO_INDEX_REQUIRED`, within the static `TIMING_MODE` (section 5.1).
 
 ---
 
@@ -282,7 +286,7 @@ An immediate-effect signal must depend only on MS, RUN, TS, IR, registered state
 
 ### 11.3 Validity Windows
 
-- `CW_VALID` opens a fixed number of TSTEPs into each TS, at least `T_CS` after the TS begins, and closes after the TP TSTEP. Signals whose receiver captures them at the TP stay valid through that TP.
+- `CW_VALID` opens a fixed number of TSTEPs into each TS, at least `T_CS` after the TS begins, and closes after the TP TSTEP. It opens 150 ns (three TSTEPs) into every TS: the control word and its bus-enable decodes settle within about 104 ns ([option2/timing.md](../../option2/timing.md) §3.1). Signals whose receiver captures them at the TP stay valid through that TP.
 - `WR_VALID` closes one TSTEP earlier. Memory stores a word when `/WR` deasserts, so `/WR` must end while address and data are still stable; ending at the TP itself would race the registers that change at that TP.
 - Both windows are produced by flip-flops clocked by TCLK, so their edges are fixed TSTEP positions.
 

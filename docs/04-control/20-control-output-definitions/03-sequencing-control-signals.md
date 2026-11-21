@@ -86,7 +86,7 @@ No ambiguity is permitted.
 Sequencing signals:
 
 - do not control TS progression
-- do not interact with the shift register
+- do not interact with the TSEQ counter
 - do not depend on timing generation mechanisms
 
 TS/TP behavior is defined in:
@@ -262,7 +262,7 @@ Defined in:
 
 Timing State (TS):
 
-- is derived from a one-hot shift register
+- is a 2-bit code advanced at each TP by the TSEQ counter ([Timing Terminology §5.2](../../09-timing/01-terminology.md#52-implementation))
 - is not controlled by sequencing logic
 - is treated as an input to control
 
@@ -369,7 +369,7 @@ External signals (EXT):
 Sequencing signals must not interact with:
 
 - clock gating
-- shift register control
+- TSEQ counter control
 - external bus ownership mechanisms
 
 Those are defined in:

@@ -16,8 +16,9 @@ Branch: `one-cycle-fetch`. This branch evaluates and, if the user approves, impl
 | Checkpoints 1 and 2 | **Approved** by the user (2026-11-20). |
 | 2: behavior-neutral groundwork | **Done:** steps 2.1 to 2.7, every suite green under both designs (section 2). |
 | 3: slice A | **Done** (section 1.2; committed `7758162`). |
-| 4: slice B | **Done, awaiting the user's check and commit** (section 1.3). |
-| 5 onward (slices D, C1 to C3) | Not started. |
+| 4: slice B | **Done** (section 1.3; committed `a7ca584`). |
+| 5: slice D | **Done, awaiting the user's check and commit** (section 1.4). |
+| 6 onward (slices C1 to C3) | Not started. |
 
 ### 1.2 Slice A (phase 3), 2026-11-20
 
@@ -41,6 +42,17 @@ Direct JMP completes in FETCH (`IR_ADDR_TO_PC` at TP3, field change and `II_CLEA
 - **Verified (Windows, CPython 3.14; PyPy 3.12):** tools 17 suites OK; sim/cpu 88, memory 3, reference 18, io 29, system 77 (1 skipped) OK under v1 and v2; MAINDEC suite (seeds 1 and 2) under PyPy OK for both; D2AB timing: v1 halt 2607, **v2 halt 2614** (too fast at the placeholder 1.2 µs states, as phase 0 predicted; expectation updated until slice D).
 - **Diagrams:** `option2/diagrams.md` B1 to B7 (MS_NEXT flowchart, mapping, organization, CPU architecture).
 - **STOP at an instruction-completion TS4 (closed 2026-11-20):** with `HLT_REQ = 0` and `FP_STOP = 1` there, no context assigns `HLT_REQ_NEXT` (default 0), so STOP is captured at the next TP. The user accepts this: STOP is a human key press, held far longer than a TS. Same as v1.
+
+### 1.4 Slice D (phase 5), 2026-11-20
+
+State lengths (decision 3a) and the SRAM-shadowed control store (decision 12) in the docs; v2's per-TS time base in the simulator.
+
+- **Decisions (user, 2026-11-20):** INTERRUPT and DMA use the slow lengths; `TIMING_MODE` 0 (optimized) and 1 (uniform slow, bring-up), 2 and 3 reserved; the timing ROM's autoindex input is `AUTO_INDEX_REQUIRED`; decision 12 enters the hardware docs in this slice.
+- **Docs:** `09-timing/01-terminology.md` (TSTEP counted within each TS; TSEQ progression; TP = a TS's last step; TS code; new §3.5 Timing ROM, addressed by `MS_EFF`, TS, `AUTO_INDEX_REQUIRED`, `TIMING_MODE`; power-on reset runs the shadow copy); `02-timing-architecture.md` §4, §5.1 (the length table: fast 5/8/6/5, slow 6/9/7/6 at 50 ns), §9 (fast/slow by timing ROM), §11.3 (`CW_VALID` at 150 ns); `03-major-state-timing.md` §8 (console transaction = slow TS2, 9 TSTEPs); `03-sequencing-control-signals.md` (TSEQ counter, not a shift register); CSO §1.1, §2, §8, new §8.1 Shadow Copy, §10. No pipeline artifact changed.
+- **Simulator:** `Design.ts_ns` for v2 = mode 0 (`FAST`, `SLOW`, timing context `DEFER_AUTOINDEX`); v1 keeps the uniform 1.2 µs (`V1-ONLY`). The CPU charges `DEFER_AUTOINDEX` when `AUTO_INDEX_REQUIRED = 1` (pre-TP); the reference model charges it for an indirect MRI through 0010 to 0017. Tests: `sim/cpu/tests/test_timing_slice_d.py` (7: the table, MRI 2.6 µs, JMP 1.2, JMP I 2.4, autoindex DEFER slow, indirect MRI 3.8, ISZ + JMP loop 3.8 µs). `test_d2ab_timing.py`: v2 expects the end-of-program halt.
+- **Acceptance:** D2AB PRG0 under v2 (reference model with v2's cycle counts and durations, PyPy): **PASS**, routines 4 and 5 included. **Full lock-step run (simulator against the reference model, all routines, PyPy): PASS for seeds 1 and 2**, the end-of-program halt after 46,987,641 instructions each (2,265 s and 2,546 s, run in parallel).
+- **Verified (Windows, CPython 3.14; PyPy 3.12):** tools 17 suites OK; sim/cpu 95, memory 3, reference 18, io 29, system 77 (1 skipped) OK under v1 and v2; MAINDEC suite (seeds 1 and 2) under PyPy OK for both; D2AB timing: v1 halt 2607, v2 pass.
+- **Diagrams:** `option2/diagrams.md` D1 (timing overview: add the fast state), D2 (optional device labels).
 
 ### 1.1 Commits on this branch
 
@@ -113,8 +125,9 @@ Notes for the review:
 
 ## 4. Next Steps
 
-1. **The user checks and commits slice B** (section 1.3).
-2. **Slice D** (plan phase 5): the TS-length table (decision 3a, timing.md rev. 2: FETCH and plain DEFER 5/8/6/5, EXECUTE and autoindex DEFER 6/9/7/6 at 50 ns) in the docs and the simulator's per-TS time base; acceptance is D2AB PRG0 routines 4 and 5 passing. Also decide where the SRAM shadow (decision 12) enters the hardware docs.
+1. **The user checks and commits slice D** (section 1.4).
+2. **Slice C1** (plan phase 6): OPR group 1 in FETCH through the OPR pass unit (decision 1; `OPR_PASS` as `AC_SRC` = 7 and `L_OP` = 1; class 3; `IR_NO_EXECUTE` gains OPR; amend design principle §3.1). Exhaustive test of the 256 group 1 encodings.
+3. (Done) **Slice D** (plan phase 5): the TS-length table (decision 3a, timing.md rev. 2: FETCH and plain DEFER 5/8/6/5, EXECUTE and autoindex DEFER 6/9/7/6 at 50 ns) in the docs and the simulator's per-TS time base; acceptance is D2AB PRG0 routines 4 and 5 passing. Also decide where the SRAM shadow (decision 12) enters the hardware docs.
 3. (Done) **Slice B** (plan phase 4): direct JMP completes in FETCH (`PC ← EA_FORMED` at TP3, field change and `II_CLEAR` at TP3), JMP I completes in DEFER; the class decode (decision 2a), `IR_ONE_STATE` and `IR_IS_JMP` sequencer inputs, and the boundary rule moving to FETCH TP4 / DEFER TP4 for JMP. Same slice pattern: docs interactively (searching every doc directory, including `04-control/30-direct-control-definitions`, for each affected register and TS), tools, the user runs the pipeline, simulator, verify. Add each slice's diagram changes to `option2/diagrams.md` from the diagram sources.
 
 ## 5. Resuming on Another Machine

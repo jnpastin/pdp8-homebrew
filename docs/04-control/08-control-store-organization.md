@@ -36,6 +36,7 @@ The logical control word, the control inputs, and the behavior they select are d
 | `SEQ_OVL[2:0]` | the sequencer slice's 3-bit overlay field: the running-only sequencer inputs while running, `FP_CMD[2:0]` while halted (section 5.6) |
 | `IR_SEQ` | the 1-bit sequencer address input carrying the one instruction decode the sequencer slice needs in the current TS (section 5.4) |
 | 28C256 | a parallel EEPROM with 15 address bits and 8 data bits (32K × 8) |
+| shadow SRAM | an AS7C256C-15 32K × 8 static RAM loaded from a 28C256 at power-on; the control store is read from it (section 8.1) |
 
 Status: the slice structure, device technology, and packing rules are design decisions. The specific address-bit assignments, variant counts, and overlay groups are the current proposal, measured from the maintained specifications; the packing tool will finalize and verify them.
 
@@ -46,7 +47,7 @@ Status: the slice structure, device technology, and packing rules are design dec
 | Constraint | Consequence |
 |---|---|
 | Control logic is discrete: memory devices and standard discrete logic only; no PAL, GAL, CPLD, or FPGA | Every function wider than a few gates is a ROM lookup; glue is limited to multiplexers, encoders, and latches |
-| Control-store devices are parallel EEPROMs (28C256 class: 15 address bits, 8 data bits) | Each slice address is at most 15 bits; each device supplies 8 control-word bits |
+| Each control-store device is a 28C256-class EEPROM shadowed by a 32K × 8 SRAM; the slices, the mapping ROM, and the timing ROM are read from the SRAMs (section 8.1) | Each slice address is at most 15 bits; each device supplies 8 control-word bits |
 | Device count matters but is not the primary concern | Control-word width, not address depth, sets the device count; width is reduced where it costs no logic |
 
 The control store is sparse: most addresses are unreachable or repeat another address's word. Sparsity is permitted ([Control Addressing §7.2](./02-control-addressing.md#72-sparsity)).
@@ -362,9 +363,11 @@ A field shares bits only through wiring. No decoder or gate follows the control 
 
 | Function | Devices |
 |---|---|
-| Mapping ROM | 1 × 28C256 |
-| Datapath slice | 6 × 28C256 |
-| Sequencer slice | 1 × 28C256 |
+| Mapping ROM | 1 × 28C256 + 1 × AS7C256C shadow SRAM |
+| Datapath slice | 6 × 28C256 + 6 × AS7C256C |
+| Sequencer slice | 1 × 28C256 + 1 × AS7C256C |
+| Timing ROM ([Timing Terminology §3.5](../09-timing/01-terminology.md#35-timing-rom)) | 1 × 28C256 + 1 × AS7C256C |
+| Shadow copy (section 8.1) | 15-bit copy counter; tri-state address buffers for each SRAM; `LOADING` flip-flop and write-strobe logic |
 | `MS_EFF` select | 3-bit 2:1 multiplexer |
 | `SEQ_OVL` select | 3-bit 2:1 multiplexer |
 | `MS_EFF_IS_EXECUTE` | comparator for the EXECUTE code |
@@ -375,7 +378,21 @@ A field shares bits only through wiring. No decoder or gate follows the control 
 | `FP_CMD` | 8-to-3 priority encoder |
 | Datapath overlay | five 4:1 multiplexers |
 
-Total: 8 EEPROMs, plus the register, multiplexers, gates, comparators, and encoder. The `IR_INDIRECT`, `IR_CLASS`, and `IR_NO_EXECUTE` predecode gates belong to predecode, and the `INSTR_END` gates to the DMA interface ([Architectural Control Signals §4.10](./20-control-output-definitions/02-architectural-control-signals.md#410-instruction-end-instr_end)), not to the control store.
+Total: 9 EEPROMs and 9 shadow SRAMs, plus the copy logic, register, multiplexers, gates, comparators, and encoder. The `IR_INDIRECT`, `IR_CLASS`, and `IR_NO_EXECUTE` predecode gates belong to predecode, and the `INSTR_END` gates to the DMA interface ([Architectural Control Signals §4.10](./20-control-output-definitions/02-architectural-control-signals.md#410-instruction-end-instr_end)), not to the control store.
+
+### 8.1 Shadow Copy
+
+The control store and the timing ROM run from fast SRAMs. Each SRAM is loaded from its EEPROM during the power-on reset ([Timing Terminology §3.4](../09-timing/01-terminology.md#34-power-on-reset)):
+
+- A 15-bit copy counter drives every SRAM's address through tri-state buffers, which are disabled after the copy so that the address formation drives the address. Each EEPROM, addressed by the same counter, drives its SRAM's data pins. All nine devices copy in parallel, about 7 ms in all.
+- The copy runs only during the power-on reset, from the supply supervisor. It never runs at `/INITIALIZE`: CAF and front-panel CLEAR assert `/INITIALIZE` while the machine is running from the SRAMs.
+- Only the `LOADING` flip-flop and the copy write strobe reach an SRAM's `/WE`, which has a pull-up. No control-word field and no bus reaches it, and the control store is not in the memory address space.
+- While `LOADING` is set, TSEQ is held, `CW_VALID` is deasserted, and `/INITIALIZE` is asserted, so no control word from a partly loaded SRAM acts.
+- Each EEPROM's `/WE` is tied high, so it cannot be written in circuit.
+
+In normal running each SRAM has `/CE` and `/OE` asserted and `/WE` deasserted, so its address access time (15 ns) applies; the address buffer adds 9 ns ([option2/timing.md](../../option2/timing.md) §2, §3).
+
+DEC precedent: the KL10 processor loaded its microcode into control RAM from its front-end PDP-11 at power-up. The PDP-8/E's control is hardwired and has no control store.
 
 ---
 
@@ -397,6 +414,6 @@ The packer forms each address as the hardware does: in EXECUTE TS *n*, `MAPR` ho
 
 ## 10. Open Items
 
-- **Timing:** one slice-ROM access plus the address-formation and overlay logic make up `T_CS`, which must fit within the TS evaluation window ([Timing Architecture §11](../09-timing/02-timing-architecture.md#11-control-word-settling)); the mapping ROM is off this path (section 5.4.3). The control word passes through no pipeline register; immediate-effect signals are windowed by `CW_VALID` and `WR_VALID`. The TSTEP counts per TS are to be set once the parts are chosen.
+- **Timing:** one slice-ROM access plus the address-formation and overlay logic make up `T_CS`, which must fit within the TS evaluation window ([Timing Architecture §11](../09-timing/02-timing-architecture.md#11-control-word-settling)); the mapping ROM is off this path (section 5.4.3). The control word passes through no pipeline register; immediate-effect signals are windowed by `CW_VALID` and `WR_VALID`. The TSTEP counts per TS are set in [Timing Architecture §5.1](../09-timing/02-timing-architecture.md#51-structure), from the critical paths in [option2/timing.md](../../option2/timing.md).
 - **Datapath diagrams:** datapath diagrams that show a control-supplied input on the IF, MA, or PC source multiplexers must show the hardwired constants instead.
 - **Group assignments:** the overlay groups, pin assignments, variant counts, and bit sharing in sections 5 to 7 are the packer's current result. They change when the specifications do; the packer reports them on every run.

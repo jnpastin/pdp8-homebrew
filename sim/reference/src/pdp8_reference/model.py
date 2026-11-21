@@ -115,7 +115,10 @@ class Reference:
         cifp_at_start = self.staged_if is not None and ir >> 9 not in (0o4, 0o5)
         # The instruction's major states (docs/03-microarchitecture), each charged its duration.
         t = self.timing
-        self.elapsed_ns += sum(t[state] for state in self.instruction_states(ir))
+        states = self.instruction_states(ir)
+        if "DEFER_AUTOINDEX" in t and self._autoindexed(ir, pc):   # the slow DEFER (timing ROM)
+            states = tuple("DEFER_AUTOINDEX" if s == "DEFER" else s for s in states)
+        self.elapsed_ns += sum(t[state] for state in states)
         result = StepResult("instruction", pc, f, ir)
         inhibit = self._execute(ir, pc, result) or cifp_at_start
         result.writes = self._writes
@@ -191,6 +194,15 @@ class Reference:
             return self._iot(ir)
         self._opr(ir, result)
         return False
+
+    @staticmethod
+    def _autoindexed(ir, pc):
+        """EA §8.2: an indirect MRI whose pointer is in 0010 to 0017 (page zero)."""
+        if ir >> 9 > 0o5 or not ir & 0o400:
+            return False
+        offset = ir & 0o177
+        base = (pc & 0o7600) | offset if ir & 0o200 else offset
+        return 0o010 <= base <= 0o017
 
     def _effective_address(self, ir, pc):
         """EA §6-§8, ADR §7: base address in IF; indirect pointer in IF with autoindex; the final

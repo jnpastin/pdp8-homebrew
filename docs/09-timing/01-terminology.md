@@ -46,7 +46,7 @@ A single position in the timing sequence.
 
 Properties:
 
-- One-hot encoded.
+- Counted within each TS: TSTEP 1 to N, where N is the length of the current TS given by the timing ROM (section 3.5).
 - Exactly one TSTEP is active at a time.
 - TSTEP normally advances on each TCLK rising edge.
 - During an external IOT, `/IO_WAIT` may hold an eligible non-TP setup TSTEP.
@@ -61,7 +61,9 @@ Properties:
 
 The ordered progression of timing steps:
 
-TSTEP0 → TSTEP1 → … → TSTEPN → repeat
+TS1 step 1 → … → step N₁ → TS2 step 1 → … → step N₂ → TS3 … → TS4 step N₄ → repeat
+
+where N₁ to N₄ are the lengths of the four timing states of the current major state (section 3.5).
 
 TSEQ is the fundamental timebase of the system.
 
@@ -94,9 +96,25 @@ While the power-on reset is active:
 - TSEQ is held at the first TSTEP of TS1
 - `RUN = 0`, `MS = FETCH`, `HLT_REQ = 0`, and `IOT_TRANSFER` is `NONE`
 - the console command latch holds no command
+- the control store and the timing ROM are copied from their EEPROMs into their shadow SRAMs (about 7 ms); the reset ends only after the copy completes ([Control Store Organization §8.1](../04-control/08-control-store-organization.md#81-shadow-copy))
 - AC, L, and IE are cleared directly by the power-on reset, and `/INITIALIZE` is asserted so that each I/O controller is in its initialized state when the reset ends ([System Initialization](../04-control/20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize))
 
 When it ends, the processor is halted in FETCH and waits for a console command. Every other register is undefined, including PC, IF, DF, MQ, and `MAPR`; the operator sets the start address with LOAD ADDRESS. This matches the PDP-8/e, which comes up halted after a power-on initialization.
+
+### 3.5 Timing ROM
+
+The length N of each TS, in TSTEPs, is read from the timing ROM, a 32K × 8 device of which 8 address bits are used, the others tied low:
+
+| Address input | Width | Meaning |
+|---|---|---|
+| `MS_EFF` | 3 | the current major state (`MS` changes only at TP4, so during each TS it names the state whose TS is running) |
+| TS code | 2 | the current timing state |
+| `AUTO_INDEX_REQUIRED` | 1 | selects the slow DEFER (Timing Architecture §5.1) |
+| `TIMING_MODE[1:0]` | 2 | the speed mode, set by a board jumper (Timing Architecture §5.1) |
+
+The output is N. TSEQ counts the TSTEPs of the current TS and compares the count with N; step N is the TS's TP, after which the count restarts at step 1 of the next TS. Every input is registered state or a static jumper, so N is stable from the start of each TS; the ROM settles within about 60 ns, before the earliest TP ([option2/timing.md](../../option2/timing.md) §3). Like the control store, the timing ROM is an EEPROM shadowed in SRAM at power-on ([Control Store Organization §8](../04-control/08-control-store-organization.md#8-device-summary)).
+
+`TIMING_MODE` follows the precedent of the PDP-8/E's M8330 timing generator, whose slow-cycle jumper selects its cycle lengths. It is static: it does not change while the processor runs.
 
 ---
 
@@ -106,7 +124,7 @@ When it ends, the processor is halted in FETCH and waits for a console command. 
 
 A Timing Pulse corresponds to a specific timing step:
 
-TPn = (TSTEP == n)
+TPn is the last TSTEP (step N) of TSn
 
 ---
 
@@ -142,11 +160,9 @@ TS1, TS2, TS3, TS4
 
 ### 5.2 Implementation
 
-Each TS is defined as a group of timing steps:
+Each TS is a run of N consecutive timing steps, N from the timing ROM (section 3.5). The current TS is held as a 2-bit TS code that advances at each TP, from TS4 back to TS1.
 
-TSn = decode(TSTEP range)
-
-TS ranges are based on DEC timing reference diagrams. See [cpu-timing-overview](../../diagrams/timing/cpu-timing/export/cpu-timing-overview.png) for the current TSTEP assignments. TS2 is intentionally the long cycle to accommodate memory access timing, following DEC's slow-cycle design. Short-cycle support is planned for a future implementation phase.
+The lengths are defined in [Timing Architecture §5.1](./02-timing-architecture.md#51-structure): TS2 is the longest, to accommodate the memory access, following DEC's fast- and slow-cycle design.
 
 ---
 
