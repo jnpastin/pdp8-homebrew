@@ -198,7 +198,7 @@ class _Eval:
         if f["L_LOAD"]:
             fx.loads["L"] = self.l_input()
         if f["MQ_LOAD"]:
-            fx.loads["MQ"] = self.idb() if self.sel("MQ_SRC") == 0 else st["AC"]
+            fx.loads["MQ"] = self.idb() if self.sel("MQ_SRC") == 0 else self.mq_input()
         if f["IR_LOAD"]:
             fx.loads["IR"] = IR_SOURCES[self.design.ir_source](self)
         if f["PC_INC"] and f["PC_LOAD"]:
@@ -283,18 +283,39 @@ class _Eval:
             return self.alu()[1]
         return bit(self.st["AC"], 11)
 
+    def mq_input(self):
+        """MCS MQ_SRC = 1: the OPR pass unit's MQ output (OPR_PASS_TO_MQ), or AC in v1."""
+        if not self.design.opr_pass:                     # V1-ONLY: MQ <- AC
+            return self.st["AC"]
+        return self.opr_pass_mq()
+
+    def opr_pass_mq(self):
+        """The OPR pass unit's MQ output (docs/03-microarchitecture/07-opr/03-group3-execution.md
+        §4): with MQL (qualified by IR_CLASS = 101), the AC after stage A's CLA gating; otherwise
+        MQ, so the load leaves MQ unchanged."""
+        st, d = self.st, self.cond
+        if d.get("IR_CLASS") == 0b101 and d.get("IR_OPR_MQL") == 1:
+            return 0 if d.get("IR_OPR_CLA") == 1 else st["AC"]
+        return st["MQ"]
+
     def opr_pass(self):
         """The OPR pass unit (docs/03-microarchitecture/07-opr/01-group1-execution.md §4,
-        02-group2-execution.md §4): the 13-bit L·AC result of one pass, stages A (CLA, CLL),
-        B (OSR), C (CMA, CML), D (IAC), E (rotate or BSW), each selected by its IR bit qualified
-        by the class: CLA by IR_CLASS = 011 or 100, OSR by 100, the others by 011. Returns
-        (AC, L)."""
+        02-group2-execution.md §4, 03-group3-execution.md §4): the 13-bit L·AC result of one
+        pass, stages A (CLA, CLL, MQL), B (OSR, MQA), C (CMA, CML), D (IAC), E (rotate or BSW),
+        each selected by its IR bit qualified by the class: CLA by IR_CLASS = 011, 100, or 101,
+        OSR by 100, MQA and MQL by 101, the others by 011. Returns (AC, L)."""
         st, d = self.st, self.cond
         ac, link = st["AC"], st["L"]
         cls = d.get("IR_CLASS")
         if cls is None or ac is None or link is None:
             return None, None
         on = lambda name: d.get(name) == 1
+        if cls == 0b101:                     # Group 3: stage A (CLA, MQL), then stage B (MQA)
+            if on("IR_OPR_CLA") or on("IR_OPR_MQL"):
+                ac = 0
+            if on("IR_OPR_MQA"):
+                ac = u(lambda a, m: a | m, ac, st["MQ"])
+            return ac, link
         if cls == 0b100:                     # Group 2: stage A (CLA), then stage B (OSR)
             if on("IR_OPR_CLA"):
                 ac = 0

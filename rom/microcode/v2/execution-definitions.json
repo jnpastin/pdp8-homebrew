@@ -63,12 +63,16 @@
           "micro_operation": "IR_ADDR_TO_PC"
         },
         {
-          "predicate": "IR_CLASS = 011 OR IR_CLASS = 100",
+          "predicate": "IR_CLASS = 011 OR IR_CLASS = 100 OR IR_CLASS = 101",
           "micro_operation": "OPR_PASS"
         },
         {
           "predicate": "IR_CLASS = 100",
           "micro_operation": "OPR_SKIP_REQ_TO_SKIP"
+        },
+        {
+          "predicate": "IR_CLASS = 101",
+          "micro_operation": "OPR_PASS_TO_MQ"
         },
         {
           "predicate": "IR_CLASS = 001 AND CIFP = 1",
@@ -88,7 +92,7 @@
       "id": "fetch-defer:3.4",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 97
+        "line": 99
       },
       "execution_model": "major-state",
       "context": [
@@ -107,7 +111,7 @@
       "id": "fetch-defer:4.2",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 132
+        "line": 134
       },
       "execution_model": "major-state",
       "context": [
@@ -123,7 +127,7 @@
       "id": "fetch-defer:4.3",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 142
+        "line": 144
       },
       "execution_model": "major-state",
       "context": [
@@ -139,7 +143,7 @@
       "id": "fetch-defer:4.4",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 152
+        "line": 154
       },
       "execution_model": "major-state",
       "context": [
@@ -162,7 +166,7 @@
       "id": "fetch-defer:4.5",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 168
+        "line": 170
       },
       "execution_model": "major-state",
       "context": [
@@ -1570,88 +1574,6 @@
         "FP_DEPOSIT = 0"
       ],
       "timing_state": null,
-      "micro_operations": [],
-      "conditional_micro_operations": []
-    },
-    {
-      "id": "opr3:ts1",
-      "source": {
-        "path": "docs/03-microarchitecture/07-opr/03-group3-execution.md",
-        "line": 51
-      },
-      "execution_model": "major-state",
-      "context": [
-        "MS = EXECUTE",
-        "IR_IS_OPR = 1",
-        "IR_OPR_GROUP3 = 1"
-      ],
-      "timing_state": 1,
-      "micro_operations": [],
-      "conditional_micro_operations": [
-        {
-          "predicate": "IR_OPR_CLA = 1",
-          "micro_operation": "AC_CLEAR"
-        }
-      ]
-    },
-    {
-      "id": "opr3:ts2",
-      "source": {
-        "path": "docs/03-microarchitecture/07-opr/03-group3-execution.md",
-        "line": 57
-      },
-      "execution_model": "major-state",
-      "context": [
-        "MS = EXECUTE",
-        "IR_IS_OPR = 1",
-        "IR_OPR_GROUP3 = 1"
-      ],
-      "timing_state": 2,
-      "micro_operations": [],
-      "conditional_micro_operations": [
-        {
-          "predicate": "IR_OPR_MQA = 1 AND IR_OPR_MQL = 0",
-          "micro_operation": "AC_OR_MQ"
-        },
-        {
-          "predicate": "IR_OPR_MQL = 1 AND IR_OPR_MQA = 0",
-          "micro_operation": "AC_TO_MQ_AND_CLEAR_AC"
-        },
-        {
-          "predicate": "IR_OPR_MQA = 1 AND IR_OPR_MQL = 1",
-          "micro_operation": "AC_MQ_SWAP"
-        }
-      ]
-    },
-    {
-      "id": "opr3:ts3",
-      "source": {
-        "path": "docs/03-microarchitecture/07-opr/03-group3-execution.md",
-        "line": 65
-      },
-      "execution_model": "major-state",
-      "context": [
-        "MS = EXECUTE",
-        "IR_IS_OPR = 1",
-        "IR_OPR_GROUP3 = 1"
-      ],
-      "timing_state": 3,
-      "micro_operations": [],
-      "conditional_micro_operations": []
-    },
-    {
-      "id": "opr3:ts4",
-      "source": {
-        "path": "docs/03-microarchitecture/07-opr/03-group3-execution.md",
-        "line": 71
-      },
-      "execution_model": "major-state",
-      "context": [
-        "MS = EXECUTE",
-        "IR_IS_OPR = 1",
-        "IR_OPR_GROUP3 = 1"
-      ],
-      "timing_state": 4,
       "micro_operations": [],
       "conditional_micro_operations": []
     }

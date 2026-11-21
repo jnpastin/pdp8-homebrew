@@ -282,20 +282,20 @@ IR_ADDR = IR[6:0]
 **Derivation:**
 
 ```text
-IR_CLASS = {IR_OPR_GROUP2,
+IR_CLASS = {IR_OPR_GROUP2 OR IR_OPR_GROUP3,
             (IR[11:9] = 101 AND IR[8]) OR IR_OPR_GROUP1,
-            (IR[11:9] = 101 AND NOT IR[8]) OR IR_OPR_GROUP1}
+            (IR[11:9] = 101 AND NOT IR[8]) OR IR_OPR_GROUP1 OR IR_OPR_GROUP3}
 ```
 
 **Value Encoding:**
 
-- `000` → none of JMP, Group 1 OPR, Group 2 OPR: completes in EXECUTE
+- `000` → neither JMP nor OPR: completes in EXECUTE
 - `001` → direct JMP: completes in FETCH
 - `010` → JMP I: completes in DEFER
 - `011` → Group 1 OPR: completes in FETCH
 - `100` → Group 2 OPR: completes in FETCH
-- `101` → reserved (OPR group classes)
-- `110` → reserved (OPR group classes)
+- `101` → Group 3 OPR: completes in FETCH
+- `110` → reserved
 - `111` → reserved
 
 **Consumed By:**
@@ -633,7 +633,6 @@ IR_IS_OPR = (IR[11:9] == 111)
 - [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
 - [L_CLEAR](../../03-microarchitecture/02-micro-operations.md#l_clear)
 - [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
-- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
 - [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
 
 ---
@@ -713,12 +712,12 @@ IR_MRI_OPCODE = IR[11:9]
 **Type:** Instruction Class  
 **Bit Width:** 1  
 
-**Purpose:** Indicates that the instruction never enters EXECUTE: a JMP completes at FETCH TP4 when direct, or at DEFER TP4 when indirect; a Group 1 or Group 2 OPR completes at FETCH TP4.
+**Purpose:** Indicates that the instruction never enters EXECUTE: a JMP completes at FETCH TP4 when direct, or at DEFER TP4 when indirect; an OPR completes at FETCH TP4.
 
 **Derivation:**
 
 ```text
-IR_NO_EXECUTE = IR[11:9] = 101 OR IR_OPR_GROUP1 OR IR_OPR_GROUP2   // JMP; Group 1 OPR; Group 2 OPR
+IR_NO_EXECUTE = IR[11:9] = 101 OR IR_IS_OPR   // JMP; OPR
 ```
 
 **Value Encoding:**
@@ -940,9 +939,8 @@ IR_OPR_GROUP3 = IR_IS_OPR AND IR[8] AND IR[0]
 
 **Consumed By:**
 
-- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
-- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
-- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac)
+- [IR_CLASS](#ir_class)
+- the Group 3 bit decodes (`IR_OPR_MQA`, `IR_OPR_MQL`)
 
 
 ---
@@ -1019,7 +1017,7 @@ IR_OPR_MQA = IR_OPR_GROUP3 AND IR[6]
 
 **Consumed By:**
 
-- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
+- [OPR pass unit](../../03-microarchitecture/07-opr/03-group3-execution.md#4-opr-pass) (stage B)
 
 ---
 
@@ -1040,11 +1038,11 @@ IR_OPR_MQL = IR_OPR_GROUP3 AND IR[4]
 **Value Encoding:**
 
 - 0 → inactive  
-- 1 → Load MQ into AC and clear AC  
+- 1 → Load AC into MQ and clear AC  
 
 **Consumed By:**
 
-- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac)
+- [OPR pass unit](../../03-microarchitecture/07-opr/03-group3-execution.md#4-opr-pass) (stage A and the MQ output)
 
 ---
 

@@ -46,13 +46,12 @@ A new combinational **class decode** on the live IR produces `IR_CLASS[2:0]`:
 | 2 | JMP indirect | opcode 5, bit 3 = 1 | DEFER |
 | 3 | OPR group 1 | opcode 7, bit 3 = 0 | FETCH |
 | 4 | OPR group 2 | opcode 7, bit 3 = 1, bit 11 = 0 | FETCH |
-| 5 | OPR group 3 without MQL | opcode 7, bit 3 = 1, bit 11 = 1, bit 7 = 0 | FETCH |
-| 6 | OPR group 3 with MQL (MQL, SWP, and their combinations) | opcode 7, bit 3 = 1, bit 11 = 1, bit 7 = 1 | FETCH |
+| 5 | OPR group 3 | opcode 7, bit 3 = 1, bit 11 = 1 | FETCH |
 
-Code 7 is spare. Class 6 exists only so that the control store can assert `MQ_LOAD` for MQL; every other OPR function is selected by IR bits in the pass unit (section 4.1).
+Codes 6 and 7 are spare. Every OPR function is selected by IR bits in the pass unit (section 4.1); a Group 3 OPR always loads MQ, and the pass unit's MQ output returns MQ unchanged when MQL is not set (revised 2026-11-21, slice C3: the earlier class 6, Group 3 with MQL, existed only to assert `MQ_LOAD` for MQL).
 
 Two further predecodes, from the same gates, feed the sequencer (section 6.2):
-- `IR_ONE_STATE = class 1, 3, 4, 5, or 6`, meaning the instruction ends at FETCH TP4.
+- `IR_ONE_STATE = class 1, 3, 4, or 5`, meaning the instruction ends at FETCH TP4.
 - `IR_OPR_HLT`, the group 2 HLT bit, which v1 already decodes, but through `MAPR`.
 
 During phases 6 to 8 (slices C1 to C3), a group that has not yet moved is decoded as class 0. It keeps EXECUTE, so each intermediate design is complete.
@@ -122,7 +121,7 @@ The four-step group 1 order (CLA/CLL; CMA/CML; IAC; rotates or BSW) is the order
 | E: rotate/BSW multiplexer on the 13-bit L·AC ring | RAR, RAL, RTR, RTL, BSW | — | — |
 
 - **The stage controls are gated from IR, qualified by the class.** For example, CLA = IR bit 4 AND class ∈ {3, 4, 5}; complement = IR bit 6 AND class 3. With the pass not selected, AC and L do not load, so the gating has no effect.
-- **The control store selects the pass with field codes, not a new bit** (section 5.1): `AC_SRC` = 7 (reserved in v1) loads AC from the pass unit, and `L_OP` = 1 (COMP in v1, used only by OPR's `L_COMP`) loads L from it, in FETCH TS3. "`OPR_PASS`" in this document means that pair of codes. MQ loads for MQL and SWP use the existing `MQ_LOAD` / `MQ_SRC = AC` path, also at TP3. The control store learns of MQL from class 6 (section 2; decided 2026-11-20), which fits the 3-bit class code and the 5-bit `VARIANT` with no new bits. MQL also clears AC (stage A gates AC to zero when MQL is set). SWP therefore exchanges in one TP, "two paths loaded at the same TP3" (KK8-E).
+- **The control store selects the pass with field codes, not a new bit** (section 5.1): `AC_SRC` = 7 (reserved in v1) loads AC from the pass unit, and `L_OP` = 1 (COMP in v1, used only by OPR's `L_COMP`) loads L from it, in FETCH TS3. "`OPR_PASS`" in this document means that pair of codes. MQ loads from the pass unit's **MQ output** (`MQ_SRC` = 1, AC in v1, used only by Group 3) at the same TP3, on every Group 3 OPR (class 5): with MQL, the output is AC after stage A's CLA gating (0 if CLA, else AC), so `CLA MQL` and `CLA SWP` leave MQ = 0; without MQL, it is MQ, which reloads unchanged (revised 2026-11-21, slice C3: the earlier `MQ_SRC = AC` path would have loaded the AC from before CLA, and class 6 is no longer needed). MQL also clears AC (stage A gates AC to zero when MQL is set). SWP therefore exchanges in one TP, "two paths loaded at the same TP3" (KK8-E).
 - **RAR and RAL together** (and RTR with RTL) are treated as no rotate. DEC's behavior there is undocumented and is not replicated (main's handoff rules).
 - **Realization:**
   - stage A: 4 × quad AND;
@@ -312,7 +311,7 @@ Per [plan.md](plan.md):
 | # | Decision | Recommendation | Status |
 |---|---|---|---|
 | 1 | OPR controls hardwired from IR bits, enabled by `OPR_PASS` (the `AC_SRC` and `L_OP` codes, section 5.1) | Yes (DEC does this; microcoding needs about 2^8 group 1 combinations). **Amend `docs/00-overview/00-design-principles.md` §3.1** ("no hardwired control logic") in slice C1: the control store decides when the pass acts; IR bits select its function | **decided 2026-11-20** |
-| 2 | How FETCH TS3 gets its control word | **2a**: `VARIANT = IR_CLASS` outside EXECUTE (section 5.2) | **decided 2026-11-20** |
+| 2 | How FETCH TS3 gets its control word | **2a**: `VARIANT = IR_CLASS` outside EXECUTE (section 5.2) | **decided 2026-11-20**; Group 3 uses one class, with MQ reloaded through the pass unit's MQ output (revised 2026-11-21) |
 | 3 | Variable TS lengths | 3a | decided 2026-11-19 |
 | 3' | TS-length mechanism: timing ROM with speed modes (section 8); TSTEP 50 ns, or finer | Timing ROM (shadowed in SRAM), **50 ns**: 3a's lengths are whole 50 ns steps ([timing.md](timing.md) §4.3) | **decided 2026-11-20** (timing.md rev. 2) |
 | 4 | Skip and interrupt at the same TP4 | No special case (section 6.2) | **decided 2026-11-20** |

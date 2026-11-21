@@ -148,6 +148,28 @@ The five 4:1 multiplexers, read from the edges: `m7rejeYPD5JNTGzo8jMm-1` → DP_
 
 ---
 
+## Slice C3 (phase 8): OPR Group 3 completes in FETCH (MQ output of the pass unit)
+
+### `diagrams/microarchitecture/cpu-architecture/source/CPU_Architecture.xml`
+
+| # | Current content (source) | Required change | Doc | Status |
+|---|---|---|---|---|
+| C3-1 | MQ (`cX9REWVKWh3u19Wi5yly-26`) has three edges: MQ → AC (`cX9REWVKWh3u19Wi5yly-27`, v1's `AC_SRC` = 5 for SWP), MQ → ALU B (`2Ph0Qde3JH9-hkXoXRvS-141`, free end at (670, 990) on "ALU A B", v1's MQA through the ALU), and MQ – IDB (`2Ph0Qde3JH9-hkXoXRvS-124`, free end at (210, 1070), at the same x as the AC – IDB edge `-129` and the MB – IDB edge `cX9REWVKWh3u19Wi5yly-25`). No AC → MQ edge and no pass-unit connection. | Add MQ → the OPR pass unit (stage B, MQA) and the pass unit's MQ output → MQ (`MQ_SRC` = 1; MQL, SWP). MQ → AC and MQ → ALU B are no longer used in v2; remove them with the encodings in phase 9, or now, your call. MQ – IDB stays (`MQ_CLEAR`, `IDB_SRC` = MQ). | `07-opr/03-group3-execution.md` §4; MCS `MQ_SRC`; `01-registers.md` MQ | open |
+
+### `diagrams/control/ms_next-flowchart/source/ms_next-flowchart.xml`
+
+| # | Current content (source) | Required change | Doc | Status |
+|---|---|---|---|---|
+| C3-2 | As C1-2 and C2-8: FETCH (`jyFapoluXV-c96oE9wt7-1`) → "Indirect Addressing?" (`-3`) → DEFER or Execute. | The FETCH completion path covers every OPR: "JMP or OPR?" (or "IR_NO_EXECUTE?"). Supersedes C1-2 and C2-8. | `04-fetch-defer.md` §3.4 | open |
+
+### Checked, no slice C3 change
+
+| Diagram | Why unchanged |
+|---|---|
+| `control-store-overlay.xml`, `control-store-organization.xml`, `control-store-mapping.xml`, `control-store-address-formation.xml` | The packing is unchanged from slice C2 (46 bits, the same overlay groups and pins); the class decode's new code is not drawn |
+
+---
+
 ## Later slices
 
 Entries are added when each slice's docs are written, after reading the sources again. The spec's expected list ([spec.md](spec.md) §9) is a forecast, not yet checked against the sources.

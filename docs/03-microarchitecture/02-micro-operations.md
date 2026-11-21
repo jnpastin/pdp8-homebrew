@@ -62,9 +62,9 @@ No intermediate state or flag storage is created.
 
 ### 4.2 Arithmetic / Logical
 - [AC_AND_MB](#ac_and_mb)
-- [AC_OR_MQ](#ac_or_mq)
 - [ADD_AC_MB](#add_ac_mb)
 - [OPR_PASS](#opr_pass)
+- [OPR_PASS_TO_MQ](#opr_pass_to_mq)
 
 ### 4.3 Control Flow
 - [IR_ADDR_TO_PC](#ir_addr_to_pc)
@@ -86,9 +86,7 @@ No intermediate state or flag storage is created.
 - [AC_TO_DF](#ac_to_df)
 - [AC_TO_DIF](#ac_to_dif)
 - [AC_TO_L](#ac_to_l)
-- [AC_MQ_SWAP](#ac_mq_swap)
 - [AC_TO_MB](#ac_to_mb)
-- [AC_TO_MQ_AND_CLEAR_AC](#ac_to_mq_and_clear_ac)
 - [DF_TO_AC](#df_to_ac)
 - [EA_ADDR_TO_MA](#ea_addr_to_ma)
 - [DIF_TO_IF](#dif_to_if)
@@ -174,45 +172,6 @@ none
 
 ---
 
-### AC_MQ_SWAP
-
-**Category:** 
-Register Transfer  
-
-**Description:** 
-Exchanges the accumulator and the multiplier quotient register. Both registers receive the other's prior value in a single atomic transformation.
-
-**Target:** 
-AC, MQ  
-
-**Expression:** 
-AC ← MQ  
-MQ ← AC  
-
-**Sources:** 
-AC, MQ
-
----
-
-### AC_OR_MQ
-  
-**Category:** 
-Arithmetic / Logical  
-
-**Description:** 
-Performs a bitwise OR between the accumulator and the multiplier quotient register, storing the result in the accumulator.  
-
-**Target:** 
-AC  
-
-**Expression:** 
-AC ← AC OR MQ  
-
-**Sources:** 
-AC, MQ
-
----
-
 ### AC_TO_DF
   
 **Category:** 
@@ -286,26 +245,6 @@ MB ← AC
 
 **Sources:** 
 AC  
-
----
-
-### AC_TO_MQ_AND_CLEAR_AC
-  
-**Category:** 
-Register Transfer  
-
-**Description:** 
-Transfers the value of the accumulator into the multiplier quotient register and clears the accumulator. Both results are committed simultaneously as a single atomic transformation.  
-
-**Target:** 
-MQ, AC  
-
-**Expression:**  
-MQ ← AC  
-AC ← 0  
-
-**Sources:**
-AC
 
 ---
 
@@ -1212,16 +1151,35 @@ MQ ← 0
 Arithmetic / Logical
 
 **Description:**
-Loads AC and L from the OPR pass unit, which performs the AC and L operations of a whole Group 1 or Group 2 OPR instruction in one pass. The pass unit's stage functions are selected directly by IR bits ([Group 1 Execution §4](./07-opr/01-group1-execution.md#4-opr-pass), [Group 2 Execution §4](./07-opr/02-group2-execution.md#4-opr-pass)); this μop selects only that AC and L load from it. Selected in FETCH TS3 when `IR_CLASS` = 011 or 100.
+Loads AC and L from the OPR pass unit, which performs the AC and L operations of a whole OPR instruction in one pass. The pass unit's stage functions are selected directly by IR bits ([Group 1 Execution §4](./07-opr/01-group1-execution.md#4-opr-pass), [Group 2 Execution §4](./07-opr/02-group2-execution.md#4-opr-pass), [Group 3 Execution §4](./07-opr/03-group3-execution.md#4-opr-pass)); this μop selects only that AC and L load from it. Selected in FETCH TS3 when `IR_CLASS` = 011, 100, or 101.
 
 **Target:**
 AC, L
 
 **Expression:**
-(L, AC) ← OPR_PASS(L, AC, FP_SR, IR)
+(L, AC) ← OPR_PASS(L, AC, MQ, FP_SR, IR)
 
 **Sources:**
-AC, L, FP_SR, IR
+AC, L, MQ, FP_SR, IR
+
+---
+
+### OPR_PASS_TO_MQ
+
+**Category:**
+Arithmetic / Logical
+
+**Description:**
+Loads MQ from the OPR pass unit's MQ output: with MQL, the AC after CLA; without MQL, MQ itself, so MQ is reloaded unchanged ([Group 3 Execution §4](./07-opr/03-group3-execution.md#4-opr-pass)). Selected in FETCH TS3 when `IR_CLASS = 101`, at the same TP as `OPR_PASS`, so SWP exchanges AC and MQ.
+
+**Target:**
+MQ
+
+**Expression:**
+MQ ← OPR_PASS_MQ(AC, MQ, IR)
+
+**Sources:**
+AC, MQ, IR
 
 ---
 

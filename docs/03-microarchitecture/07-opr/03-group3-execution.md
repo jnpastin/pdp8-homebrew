@@ -1,23 +1,26 @@
 # Group 3 Execution
 
 ## 1. Purpose
-  
-Defines execution behavior for OPR Group 3 instructions.  
+
+Defines execution behavior for OPR Group 3 instructions.
+
 This document specifies:
-- IR bit to μop mapping
-- TS assignment of μops
-- composition constraints  
+
+- the Group 3 stages of the OPR pass unit (CLA, MQA, MQL, SWP) and its MQ output
+- when the pass acts
 
 Instruction semantics and encoding details are defined in:
-- [Group 3 ISA](../../02-isa/03-group-3.md)  
+
+- [Group 3 ISA](../../02-isa/03-group-3.md)
 
 Execution behavior follows:
+
 - [Execution Model](../01-execution-model.md)
 
 ---
 
 ## 2. Scope
-  
+
 Applies when:
 
 ```text
@@ -28,76 +31,54 @@ IR_OPR_GROUP3 = 1
 ---
 
 ## 3. Execution Model
-  
-Group 3 instructions are composed of:
-- optional state modification operations across TS1–TS2
 
-Properties:
-- Each IR bit independently enables a μop
-- Multiple μops may be selected in a single instruction
-- μops execute concurrently within a TS
-- μops across TS execute in TS order  
+A Group 3 instruction completes in FETCH and does not enter EXECUTE (`IR_CLASS = 101`, `IR_NO_EXECUTE = 1`).
 
-All μop selection is derived directly from IR bits.
+- In FETCH TS3 ([Fetch & Defer §3.3](../04-fetch-defer.md#33-ts3)):
+  - the control store selects `OPR_PASS`, which loads AC from the OPR pass unit at TP3 (section 4); L is reloaded unchanged
+  - `OPR_PASS_TO_MQ` loads MQ from the pass unit's MQ output at the same TP3; without MQL, the MQ output is MQ itself, so MQ is reloaded unchanged
+- The instruction completes at FETCH TP4 ([Sequencing and Internal Control §3.1.1](../../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#311-instruction-completion)).
+
+This follows the KK8-E: MQA is an OR in the data-line multiplexer, and SWP uses two paths loaded at the same TP3.
 
 ---
 
-## 4. Instruction Definition
+## 4. OPR Pass
 
-### 4.1 IR[11:9] = 111 (Group 3)
+A Group 3 instruction selects these functions of the OPR pass unit ([Group 1 Execution §4](./01-group1-execution.md#4-opr-pass)):
 
----
+| Stage | Function | Selected by |
+|---|---|---|
+| A: zero gating (AC path) | AC ← 0 | `IR_OPR_CLA` or `IR_OPR_MQL` |
+| B: OR inputs | AC ← AC OR MQ | `IR_OPR_MQA` |
+| MQ output | with MQL: the AC after CLA (0 if CLA, else AC); without MQL: MQ | `IR_OPR_MQL`, `IR_OPR_CLA` |
 
-### 4.2 TS1 — AC Modification
+Each control is qualified by `IR_CLASS = 101`. Every input is the value held before TP3, so the two loads at TP3 exchange values when both are selected:
 
-- if IR_OPR_CLA = 1: AC_CLEAR
+| Instruction | AC after | MQ after |
+|---|---|---|
+| CLA | 0 | MQ |
+| MQA | AC OR MQ | MQ |
+| CLA MQA | MQ | MQ |
+| MQL | 0 | AC |
+| CLA MQL | 0 | 0 |
+| SWP (MQA MQL) | MQ | AC |
+| CLA SWP | MQ | 0 |
 
----
-
-### 4.3 TS2 — Register Transfer and Logical Operations
-
-- if IR_OPR_MQA = 1 AND IR_OPR_MQL = 0: AC_OR_MQ
-- if IR_OPR_MQL = 1 AND IR_OPR_MQA = 0: AC_TO_MQ_AND_CLEAR_AC
-- if IR_OPR_MQA = 1 AND IR_OPR_MQL = 1: AC_MQ_SWAP
-
----
-
-### 4.4 TS3
-
-- (no μops)
-
----
-
-### 4.5 TS4
-
-- (no μops)
+L passes through the unit unchanged. IR bits 5, 3, 2, and 1 (the EAE SCA and operation-code bits) select nothing ([Group 3 ISA](../../02-isa/03-group-3.md)).
 
 ---
 
 ## 5. Composition Rules
 
-### 5.1 TS Ordering
-- TS1 executes before TS2
-- Effects of TS1 are visible to TS2
-
-### 5.2 Concurrency
-- μops within a TS execute concurrently
-- No ordering exists within a TS
-
-### 5.3 Register Conflicts
-- No two μops may write the same register in the same TS
-
-### 5.4 Group 3 Constraints
-- When IR_OPR_MQA and IR_OPR_MQL are both 1, the combination selects AC_MQ_SWAP (the SWP instruction), which exchanges AC and MQ as a single operation
-- TS2 must resolve to at most one μop
-- This mirrors the Group 1 rotate/BSW decode, where two otherwise-conflicting bits select a single combined operation
+- All functions act in one pass, at FETCH TP3; CLA acts before MQA, MQL, and SWP
+- AC, L, and MQ are each loaded once, at that TP
+- No two μops write the same register in the same TS
 
 ---
 
 ## 6. Notes
-- All behavior is expressed using IR bit selection and μops
+
+- The stage controls come from IR bits; the control word carries only `OPR_PASS` (`AC_SRC` = OPR pass unit, `L_OP` = OPR pass unit link) and `OPR_PASS_TO_MQ` (`MQ_SRC` = OPR pass unit MQ output)
 - No symbolic instruction interpretation is used
 - No memory or I/O interaction occurs
-- No control-level operations are defined in this group
-- No persistent flag state is introduced
-- IR bits 5, 3, 2, and 1 (the EAE SCA and operation-code bits) select no μop ([Group 3 ISA](../../02-isa/03-group-3.md))

@@ -198,7 +198,8 @@ class Costs(unittest.TestCase):
         self.assertEqual(D.major_states(d, JMP_I_50), ("FETCH", "DEFER"))
         self.assertEqual(D.major_states(d, 0o1450), ("FETCH", "DEFER", "EXECUTE"))  # TAD I
         self.assertEqual(D.major_states(d, HLT), ("FETCH",))               # group 2 OPR (slice C2)
-        self.assertEqual(D.major_states(d, 0o7421), ("FETCH", "EXECUTE"))  # group 3 OPR until C3
+        self.assertEqual(D.major_states(d, 0o7421), ("FETCH",))            # group 3 OPR (slice C3)
+        self.assertEqual(D.major_states(d, ION), ("FETCH", "EXECUTE"))     # IOT keeps EXECUTE
 
     def test_last_state_is_instr_end(self):
         d = D.select("v2")

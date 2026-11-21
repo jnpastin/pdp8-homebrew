@@ -54,19 +54,17 @@ Visibility: Global
 Invariants:
 - Holds the canonical 12-bit result of the last completed operation
 - Forms a composite 13-bit value with L for arithmetic and shifts
-- Stable outside EXECUTE, except at the FETCH TP3 of a Group 1 or Group 2 OPR and when cleared by the START or CLEAR console operation while halted
+- Stable outside EXECUTE, except at the FETCH TP3 of an OPR and when cleared by the START or CLEAR console operation while halted
 
 Constraints:
-- Modified only during EXECUTE, at the FETCH TP3 of a Group 1 or Group 2 OPR (`OPR_PASS`), or by the START or CLEAR console operation while halted
+- Modified only during EXECUTE, at the FETCH TP3 of an OPR (`OPR_PASS`), or by the START or CLEAR console operation while halted
 - Must not be written during DEFER, or during FETCH except at that TP3
 - All operations affecting AC must define L behavior if carry/borrow arises
 
 Writers:
 - ALU result path
-- OPR pass unit (Group 1 OPR: CLA, CMA, IAC, rotates, BSW, [Group 1 Execution](../03-microarchitecture/07-opr/01-group1-execution.md); Group 2 OPR: CLA, OSR, [Group 2 Execution](../03-microarchitecture/07-opr/02-group2-execution.md))
+- OPR pass unit (Group 1 OPR: CLA, CMA, IAC, rotates, BSW, [Group 1 Execution](../03-microarchitecture/07-opr/01-group1-execution.md); Group 2 OPR: CLA, OSR, [Group 2 Execution](../03-microarchitecture/07-opr/02-group2-execution.md); Group 3 OPR: CLA, MQA, MQL, SWP, [Group 3 Execution](../03-microarchitecture/07-opr/03-group3-execution.md))
 - Shift/rotate network (AC:L)
-- OPR control operations (Group 3 CLA)
-- MQ transfer path
 - IOT execution (GTF)
 - System initialization (CAF, front-panel CLEAR; AC_CLEAR micro-operation)
 - Console START (AC_CLEAR micro-operation)
@@ -406,7 +404,7 @@ Visibility: Global
 Invariants:
 - Represents the 13th bit of AC:L during arithmetic
 - Always defined after any instruction that targets it
-- Stable outside EXECUTE, except at the FETCH TP3 of a Group 1 OPR (a Group 2 OPR reloads L unchanged at its FETCH TP3) and when cleared by the START or CLEAR console operation while halted
+- Stable outside EXECUTE, except at the FETCH TP3 of a Group 1 OPR (a Group 2 or Group 3 OPR reloads L unchanged at its FETCH TP3) and when cleared by the START or CLEAR console operation while halted
 
 Constraints:
 - Modified only during EXECUTE, at the FETCH TP3 of a Group 1 OPR (`OPR_PASS`), or by the START or CLEAR console operation while halted
@@ -562,7 +560,7 @@ Visibility: Global
 
 Invariants:
 - Holds operand or intermediate state during extended arithmetic
-- Remains unchanged when not explicitly used
+- Remains unchanged when not explicitly used; a Group 3 OPR without MQL reloads it unchanged at its FETCH TP3
 
 Constraints:
 - Modified only by defined instructions, or by the START console operation while halted
@@ -570,7 +568,7 @@ Constraints:
 
 Writers:
 - Multiply/divide microcode path
-- AC transfer path
+- OPR pass unit MQ output (Group 3 OPR at FETCH TP3: MQL, SWP; OPR_PASS_TO_MQ micro-operation)
 - Console START (MQ_CLEAR micro-operation)
 
 ---

@@ -79,8 +79,9 @@ Conditional μops:
 
 ```text
 IR_CLASS = 001 -> IR_ADDR_TO_PC
-IR_CLASS = 011 OR IR_CLASS = 100 -> OPR_PASS
+IR_CLASS = 011 OR IR_CLASS = 100 OR IR_CLASS = 101 -> OPR_PASS
 IR_CLASS = 100 -> OPR_SKIP_REQ_TO_SKIP
+IR_CLASS = 101 -> OPR_PASS_TO_MQ
 IR_CLASS = 001 AND CIFP = 1 -> DIF_TO_IF
 IR_CLASS = 001 AND CIFP = 1 -> CIFP_CLEAR
 IR_CLASS = 001 AND CIFP = 1 -> II_CLEAR
@@ -90,6 +91,7 @@ Description:
 - Forms the base EA from IR and the page of MA (the instruction's address).
 - A Group 1 OPR (`IR_CLASS = 011`) loads AC and L from the OPR pass unit, which performs the whole instruction in one pass ([Group 1 Execution](./07-opr/01-group1-execution.md)); the formed EA_ADDR is unused.
 - A Group 2 OPR (`IR_CLASS = 100`) loads AC from the OPR pass unit (CLA, OSR) and loads `SKIP` with its skip decision, made from the AC and L held before this TP ([Group 2 Execution](./07-opr/02-group2-execution.md)); a HLT sets `HLT_REQ` at this TP ([Sequencing and Internal Control §3.4.4](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#344-hlt-instruction-request-capture)); the formed EA_ADDR is unused.
+- A Group 3 OPR (`IR_CLASS = 101`) loads AC and MQ from the OPR pass unit (CLA, MQA, MQL, SWP) ([Group 3 Execution](./07-opr/03-group3-execution.md)); the formed EA_ADDR is unused.
 - A direct JMP (`IR_CLASS = 001`) loads PC with the same formed address and applies a pending instruction-field change. The same TP3 clears `II`, so an interrupt may be recognized at this instruction's completion ([Interrupt Enable and Inhibit §12](../08-interrupts-and-skip/03-interrupt-enable-and-inhibit.md#12-deferred-field-application)); the KM8-E negates INT INHIBIT at TP3 of a JMP or JMS.
 
 ---
@@ -108,7 +110,7 @@ IR_CLASS = 100 AND SKIP = 1 -> PC_INC
 Control Decisions:
 
     if IR_NO_EXECUTE == 1 and IR_INDIRECT == 0:
-        instruction completion (direct JMP, Group 1 and Group 2 OPR): MS_next per the instruction-completion rules
+        instruction completion (direct JMP, OPR): MS_next per the instruction-completion rules
     else if IR_INDIRECT == 1:
         MS_next ← DEFER
     else:

@@ -199,7 +199,7 @@ The sequencer decode carries a different decode in different timing states of EX
 | 4 | `IR_IS_CAF` | CAF system initialization |
 | other | 0 | the sequencer word depends on no instruction decode |
 
-Two IR values share a variant only when they produce the same datapath words for every condition value in that TS. The current specification needs 8, 26, 11, and 12 variants in EXECUTE TS1 to TS4, within the 32 that `VARIANT` allows. A single variant code shared by all four timing states would need far more than 32 values, which is why the mapping ROM is indexed by TS.
+Two IR values share a variant only when they produce the same datapath words for every condition value in that TS. The current specification needs 4, 19, 8, and 7 variants in EXECUTE TS1 to TS4, within the 32 that `VARIANT` allows. A single variant code shared by all four timing states would need far more than 32 values, which is why the mapping ROM is indexed by TS.
 
 The instruction-dependent conditions that select behavior within a case, such as OPR micro-operation bits and memory-extension decodes, are absorbed into the variant. Only runtime conditions reach the address through the overlay.
 

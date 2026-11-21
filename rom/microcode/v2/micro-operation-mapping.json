@@ -43,7 +43,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "AC_AND_MB",
-        "line": 140
+        "line": 138
       },
       "notes": []
     },
@@ -82,81 +82,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "AC_CLEAR",
-        "line": 158
-      },
-      "notes": []
-    },
-    {
-      "micro_operation": "AC_MQ_SWAP",
-      "assignments": [
-        {
-          "field": "AC_LOAD",
-          "value": "1"
-        },
-        {
-          "field": "IDB_DRIVE",
-          "value": "1"
-        },
-        {
-          "field": "MQ_LOAD",
-          "value": "1"
-        },
-        {
-          "field": "AC_SRC",
-          "value": "5"
-        },
-        {
-          "field": "IDB_SRC",
-          "value": "0"
-        },
-        {
-          "field": "MQ_SRC",
-          "value": "1"
-        }
-      ],
-      "source": {
-        "document": "docs/03-microarchitecture/02-micro-operations.md",
-        "section": "AC_MQ_SWAP",
-        "line": 177
-      },
-      "notes": []
-    },
-    {
-      "micro_operation": "AC_OR_MQ",
-      "assignments": [
-        {
-          "field": "AC_LOAD",
-          "value": "1"
-        },
-        {
-          "field": "IDB_DRIVE",
-          "value": "1"
-        },
-        {
-          "field": "AC_SRC",
-          "value": "0"
-        },
-        {
-          "field": "ALU_A_SRC",
-          "value": "0"
-        },
-        {
-          "field": "ALU_B_SRC",
-          "value": "2"
-        },
-        {
-          "field": "ALU_OP",
-          "value": "2"
-        },
-        {
-          "field": "IDB_SRC",
-          "value": "7"
-        }
-      ],
-      "source": {
-        "document": "docs/03-microarchitecture/02-micro-operations.md",
-        "section": "AC_OR_MQ",
-        "line": 197
+        "line": 156
       },
       "notes": []
     },
@@ -175,7 +101,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "AC_TO_DF",
-        "line": 216
+        "line": 175
       },
       "notes": []
     },
@@ -194,7 +120,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "AC_TO_DIF",
-        "line": 235
+        "line": 194
       },
       "notes": []
     },
@@ -213,7 +139,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "AC_TO_L",
-        "line": 254
+        "line": 213
       },
       "notes": []
     },
@@ -240,54 +166,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "AC_TO_MB",
-        "line": 273
-      },
-      "notes": []
-    },
-    {
-      "micro_operation": "AC_TO_MQ_AND_CLEAR_AC",
-      "assignments": [
-        {
-          "field": "AC_LOAD",
-          "value": "1"
-        },
-        {
-          "field": "IDB_DRIVE",
-          "value": "1"
-        },
-        {
-          "field": "MQ_LOAD",
-          "value": "1"
-        },
-        {
-          "field": "AC_SRC",
-          "value": "0"
-        },
-        {
-          "field": "ALU_A_SRC",
-          "value": "0"
-        },
-        {
-          "field": "ALU_B_SRC",
-          "value": "0"
-        },
-        {
-          "field": "ALU_OP",
-          "value": "12"
-        },
-        {
-          "field": "IDB_SRC",
-          "value": "7"
-        },
-        {
-          "field": "MQ_SRC",
-          "value": "1"
-        }
-      ],
-      "source": {
-        "document": "docs/03-microarchitecture/02-micro-operations.md",
-        "section": "AC_TO_MQ_AND_CLEAR_AC",
-        "line": 292
+        "line": 232
       },
       "notes": []
     },
@@ -334,7 +213,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "ADD_AC_MB",
-        "line": 312
+        "line": 251
       },
       "notes": []
     },
@@ -353,7 +232,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "CIFP_CLEAR",
-        "line": 332
+        "line": 271
       },
       "notes": []
     },
@@ -372,7 +251,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "CIFP_SET",
-        "line": 351
+        "line": 290
       },
       "notes": []
     },
@@ -395,7 +274,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "DB_READ_TO_AC",
-        "line": 370
+        "line": 309
       },
       "notes": []
     },
@@ -410,7 +289,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "DB_WRITE_FROM_AC",
-        "line": 398
+        "line": 337
       },
       "notes": []
     },
@@ -429,7 +308,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "DF_CLEAR",
-        "line": 423
+        "line": 362
       },
       "notes": []
     },
@@ -448,7 +327,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "DIF_CLEAR",
-        "line": 442
+        "line": 381
       },
       "notes": []
     },
@@ -467,7 +346,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "DF_TO_AC",
-        "line": 461
+        "line": 400
       },
       "notes": []
     },
@@ -486,7 +365,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "DIF_TO_IF",
-        "line": 481
+        "line": 420
       },
       "notes": []
     },
@@ -505,7 +384,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "EA_ADDR_TO_MA",
-        "line": 500
+        "line": 439
       },
       "notes": []
     },
@@ -524,7 +403,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "FP_DF_TO_DF",
-        "line": 519
+        "line": 458
       },
       "notes": []
     },
@@ -543,7 +422,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "FP_IF_TO_DIF",
-        "line": 538
+        "line": 477
       },
       "notes": []
     },
@@ -562,7 +441,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "FP_IF_TO_IF",
-        "line": 557
+        "line": 496
       },
       "notes": []
     },
@@ -581,7 +460,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "FP_SR_TO_MB",
-        "line": 576
+        "line": 515
       },
       "notes": []
     },
@@ -608,7 +487,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "FP_SR_TO_PC",
-        "line": 595
+        "line": 534
       },
       "notes": []
     },
@@ -627,7 +506,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "GTF_FLAGS_TO_AC",
-        "line": 614
+        "line": 553
       },
       "notes": []
     },
@@ -646,7 +525,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "IB_TO_AC",
-        "line": 649
+        "line": 588
       },
       "notes": []
     },
@@ -665,7 +544,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "IB_TO_DF",
-        "line": 670
+        "line": 609
       },
       "notes": []
     },
@@ -684,7 +563,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "IB_TO_DIF",
-        "line": 689
+        "line": 628
       },
       "notes": []
     },
@@ -703,7 +582,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "IE_CLEAR",
-        "line": 708
+        "line": 647
       },
       "notes": []
     },
@@ -722,7 +601,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "IE_SET",
-        "line": 727
+        "line": 666
       },
       "notes": []
     },
@@ -741,7 +620,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "IF_CLEAR",
-        "line": 746
+        "line": 685
       },
       "notes": []
     },
@@ -756,7 +635,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "IF_DF_TO_IB",
-        "line": 765
+        "line": 704
       },
       "notes": []
     },
@@ -775,7 +654,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "IF_TO_AC",
-        "line": 788
+        "line": 727
       },
       "notes": []
     },
@@ -794,7 +673,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "II_CLEAR",
-        "line": 808
+        "line": 747
       },
       "notes": []
     },
@@ -813,7 +692,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "II_SET",
-        "line": 827
+        "line": 766
       },
       "notes": []
     },
@@ -828,7 +707,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "IOT_TRANSFER_CAPTURE",
-        "line": 846
+        "line": 785
       },
       "notes": [
         "IOT_TRANSFER_VAL is supplied by the applicable control case from the accepted IO_READ_REQ or IO_WRITE_REQ."
@@ -849,7 +728,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "IOT_TRANSFER_CLEAR",
-        "line": 880
+        "line": 819
       },
       "notes": []
     },
@@ -868,7 +747,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "IR_ADDR_TO_EA_ADDR",
-        "line": 904
+        "line": 843
       },
       "notes": []
     },
@@ -887,7 +766,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "IR_ADDR_TO_PC",
-        "line": 926
+        "line": 865
       },
       "notes": []
     },
@@ -906,7 +785,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "IR_DF_TO_DF",
-        "line": 948
+        "line": 887
       },
       "notes": [
         "DF_VAL is supplied by the applicable control case."
@@ -927,7 +806,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "IR_IF_TO_DIF",
-        "line": 967
+        "line": 906
       },
       "notes": []
     },
@@ -946,7 +825,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "L_CLEAR",
-        "line": 986
+        "line": 925
       },
       "notes": []
     },
@@ -965,7 +844,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "MA_CLEAR",
-        "line": 1005
+        "line": 944
       },
       "notes": []
     },
@@ -1004,7 +883,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "MB_INC",
-        "line": 1024
+        "line": 963
       },
       "notes": []
     },
@@ -1031,7 +910,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "MB_TO_EA_ADDR",
-        "line": 1043
+        "line": 982
       },
       "notes": []
     },
@@ -1058,7 +937,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "MB_TO_PC",
-        "line": 1062
+        "line": 1001
       },
       "notes": []
     },
@@ -1073,7 +952,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "MDB_TO_IR",
-        "line": 1081
+        "line": 1020
       },
       "notes": []
     },
@@ -1100,7 +979,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "MEM_READ_TO_MB",
-        "line": 1105
+        "line": 1044
       },
       "notes": [
         "AB_SRC and MFB_SRC are supplied by the applicable control case."
@@ -1121,7 +1000,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "MEM_WRITE_FROM_MB",
-        "line": 1131
+        "line": 1070
       },
       "notes": [
         "AB_SRC and MFB_SRC are supplied by the applicable control case."
@@ -1142,7 +1021,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "MEM_WRITE_FROM_FP_SR",
-        "line": 1158
+        "line": 1097
       },
       "notes": [
         "AB_SRC and MFB_SRC are supplied by the applicable control case."
@@ -1183,7 +1062,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "MQ_CLEAR",
-        "line": 1190
+        "line": 1129
       },
       "notes": []
     },
@@ -1210,7 +1089,26 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "OPR_PASS",
-        "line": 1209
+        "line": 1148
+      },
+      "notes": []
+    },
+    {
+      "micro_operation": "OPR_PASS_TO_MQ",
+      "assignments": [
+        {
+          "field": "MQ_LOAD",
+          "value": "1"
+        },
+        {
+          "field": "MQ_SRC",
+          "value": "1"
+        }
+      ],
+      "source": {
+        "document": "docs/03-microarchitecture/02-micro-operations.md",
+        "section": "OPR_PASS_TO_MQ",
+        "line": 1167
       },
       "notes": []
     },
@@ -1225,7 +1123,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "OPR_SKIP_REQ_TO_SKIP",
-        "line": 1228
+        "line": 1186
       },
       "notes": []
     },
@@ -1252,7 +1150,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "PC_INC",
-        "line": 1247
+        "line": 1205
       },
       "notes": []
     },
@@ -1279,7 +1177,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "PC_LOAD_EA_ADDR",
-        "line": 1266
+        "line": 1224
       },
       "notes": []
     },
@@ -1298,7 +1196,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "PC_SET_1",
-        "line": 1285
+        "line": 1243
       },
       "notes": []
     },
@@ -1325,7 +1223,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "PC_TO_EA_ADDR",
-        "line": 1304
+        "line": 1262
       },
       "notes": []
     },
@@ -1344,7 +1242,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "PC_TO_MA",
-        "line": 1323
+        "line": 1281
       },
       "notes": []
     },
@@ -1371,7 +1269,7 @@
       "source": {
         "document": "docs/03-microarchitecture/02-micro-operations.md",
         "section": "PC_TO_MB",
-        "line": 1342
+        "line": 1300
       },
       "notes": []
     }

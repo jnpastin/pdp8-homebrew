@@ -16,9 +16,9 @@ Prior to the PDP-8/E, any instruction that had bit 8 and bit 0 set was reserved 
 
 ## 1. Flag Definition and Timing
 
-Each flag performs a single operation, these actions will occur at a defined TP during EXECUTE.
+Each flag performs a single operation. The operations take effect in a fixed order: CLA; then MQA, MQL, or SWP.
 
-| Mnemonic | TP | Operation |
+| Mnemonic | Order | Operation |
 |---|---|---|
 | CLA | 1 | Clear AC |
 | MQA | 2 | Logical OR AC and MQ, with result in AC.  MQ is not affected |
@@ -32,6 +32,6 @@ Bits 5, 3, 2, and 1 are the SCA and operation-code bits of the KE8-E Extended Ar
 
 ## 2. Combining Operations
 
- Similar to Group 1, combined operations that happen at different TPs will happen in that order.  `CLA MQL` will clear AC and then move that into MQ, effectively clearing both.  Conversely `CLA MQA` will clear the AC, then OR the MQ into the AC, resulting in AC = MQ.
+ Similar to Group 1, combined operations take effect in their order.  `CLA MQL` will clear AC and then move that into MQ, effectively clearing both.  Conversely `CLA MQA` will clear the AC, then OR the MQ into the AC, resulting in AC = MQ.
  
- `MQA` and `MQL` combined form `SWP` (7521), which exchanges AC and MQ. This parallels the Group 1 rotate encoding, where two bits that would otherwise conflict select a single combined operation. `SWP` may still be combined with `CLA`: since `CLA` clears AC at TP1 and the exchange occurs at TP2, `CLA SWP` (7721) results in AC = old MQ and MQ = 0.
+ `MQA` and `MQL` combined form `SWP` (7521), which exchanges AC and MQ. This parallels the Group 1 rotate encoding, where two bits that would otherwise conflict select a single combined operation. `SWP` may still be combined with `CLA`: since `CLA` acts before the exchange, `CLA SWP` (7721) results in AC = old MQ and MQ = 0.

@@ -369,9 +369,6 @@ All numeric encodings in this section are octal unless otherwise noted.
 - [OPR_PASS](../../03-microarchitecture/02-micro-operations.md#opr_pass) = 1
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 1
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 1
-- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap) = 1
-- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 1
-- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 1
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 1
 - [DB_READ_TO_AC](../../03-microarchitecture/02-micro-operations.md#db_read_to_ac) = 1
 - [DF_TO_AC](../../03-microarchitecture/02-micro-operations.md#df_to_ac) = 1
@@ -403,7 +400,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 4 → IB (field-merge)
 5 → MQ
 6 → GTF_FLAGS
-7 → OPR pass unit (Group 1 and Group 2 OPR)
+7 → OPR pass unit (OPR)
 ```
 
 **Constraints:**
@@ -412,16 +409,13 @@ All numeric encodings in this section are octal unless otherwise noted.
 - Field-merge encodings OR the selected field into its DEC-defined AC bit positions and preserve all other AC bits:
   - IF, DF → AC[5:3]
   - IB → AC[5:3] (saved IF), AC[2:0] (saved DF)
-- MQ replaces AC in full (AC ← MQ), not a merge or OR; used by AC_MQ_SWAP
+- MQ replaces AC in full (AC ← MQ), not a merge or OR; no μop selects it (OPR moved to the OPR pass unit; the encoding is kept until the phase 9 cleanup)
 - GTF_FLAGS is ORed into AC and is used only after AC_CLEAR has committed at the preceding TP.
 
 **Used by μops:**
 - [OPR_PASS](../../03-microarchitecture/02-micro-operations.md#opr_pass) = 7
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 0
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 0
-- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap) = 5
-- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 0
-- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 0
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 0
 - [DB_READ_TO_AC](../../03-microarchitecture/02-micro-operations.md#db_read_to_ac) = 1
 - [DF_TO_AC](../../03-microarchitecture/02-micro-operations.md#df_to_ac) = 3
@@ -459,8 +453,6 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Used by μops:**
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 0
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 0
-- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 0
-- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 0
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 0
 - [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc) = 1
 - [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 0
@@ -496,8 +488,6 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Used by μops:**
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 1
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 0
-- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 2
-- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 0
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 1
 - [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc) = 0
 - [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 0
@@ -543,8 +533,6 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Used by μops:**
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 1
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 12
-- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 2
-- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 12
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 0
 - [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc) = 4
 - [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 12
@@ -916,10 +904,7 @@ Bits 5:0 are the save field held in IB, not the current IF and DF ([IOT Instruct
 **Used by μops:**
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 1
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 1
-- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap) = 1
-- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 1
 - [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb) = 1
-- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 1
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 1
 - [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc) = 1
 - [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc) = 1
@@ -964,10 +949,7 @@ Bits 5:0 are the save field held in IB, not the current IF and DF ([IOT Instruct
 **Used by μops:**
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 7
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 7
-- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap) = 0
-- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 7
 - [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb) = 0
-- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 7
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 7
 - [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc) = 4
 - [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc) = 7
@@ -1313,7 +1295,7 @@ IF_DF_COMBINED[5:3]=IF
 **Encoding:**
 ```
 0 → CLEAR
-1 → OPR pass unit link (Group 1 and Group 2 OPR)
+1 → OPR pass unit link (OPR)
 2 → ALU_LINK
 3 → AC[11]
 ```
@@ -1554,8 +1536,7 @@ memory bus value
 - Requires a valid source 
 
 **Used by μops:**
-- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap) = 1
-- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 1
+- [OPR_PASS_TO_MQ](../../03-microarchitecture/02-micro-operations.md#opr_pass_to_mq) = 1
 - [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 1
 
 ---
@@ -1575,14 +1556,13 @@ memory bus value
 **Encoding:**
 ```
 0 → IDB
-1 → AC
+1 → OPR pass unit MQ output
 ```
 
 **Constraints:**  
 
 **Used by μops:**
-- [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap) = 1
-- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 1
+- [OPR_PASS_TO_MQ](../../03-microarchitecture/02-micro-operations.md#opr_pass_to_mq) = 1
 - [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 0
 
 ---
@@ -2502,7 +2482,6 @@ multiple conceptual sources active
 - [PC_TO_MB](../../03-microarchitecture/02-micro-operations.md#pc_to_mb)
 - [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr)
 - [MB_TO_PC](../../03-microarchitecture/02-micro-operations.md#mb_to_pc)
-- [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac)
 
 ---
 
@@ -2552,7 +2531,6 @@ ALU_B_SRC ≠ NONE
 **Used by μops:**
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb)
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb)
-- [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
 
 ---
 

@@ -49,9 +49,10 @@ The pass unit computes the 13-bit L·AC result from the pre-TP3 L and AC. Its st
 
 | Stage | Function | Selected by |
 |---|---|---|
-| A: zero gating | AC ← 0 | `IR_OPR_CLA` |
+| A: zero gating | AC ← 0 | `IR_OPR_CLA`; also `IR_OPR_MQL` (Group 3) |
 | A: zero gating | L ← 0 | `IR_OPR_CLL` |
-| B: OR inputs | AC ← AC OR FP_SR (Group 2 OSR, [Group 2 Execution](./02-group2-execution.md)); Group 3's MQA is added in a later slice | `IR_OPR_OSR` |
+| B: OR inputs | AC ← AC OR FP_SR (Group 2 OSR, [Group 2 Execution](./02-group2-execution.md)) | `IR_OPR_OSR` |
+| B: OR inputs | AC ← AC OR MQ (Group 3 MQA, [Group 3 Execution](./03-group3-execution.md)) | `IR_OPR_MQA` |
 | C: true/complement | AC ← NOT AC | `IR_OPR_CMA` |
 | C: true/complement | L ← NOT L | `IR_OPR_CML` |
 | D: increment | L·AC ← L·AC + 1, as a 13-bit increment: a carry out of AC bit 11 complements L | `IR_OPR_IAC` |
@@ -69,7 +70,7 @@ Stage E's selection follows the [Group 1 ISA](../../02-isa/01-group-1.md) notes 
 | 0 | 0 | 1 | BSW |
 | 1 | 1 | either | none (note 4: no rotate or swap; the other stages still act) |
 
-Each stage's control is its IR bit qualified by the class: `IR_OPR_CLA` by `IR_CLASS` = 011 or 100, `IR_OPR_OSR` by 100, and the others by 011. Stage B (the OR inputs) belongs to Groups 2 and 3 and is not selected by a Group 1 instruction.
+Each stage's control is its IR bit qualified by the class: `IR_OPR_CLA` by `IR_CLASS` = 011, 100, or 101, `IR_OPR_OSR` by 100, `IR_OPR_MQA` and `IR_OPR_MQL` by 101, and the others by 011. The unit also has an MQ output, used only by Group 3 ([Group 3 Execution §4](./03-group3-execution.md#4-opr-pass)). Stage B (the OR inputs) belongs to Groups 2 and 3 and is not selected by a Group 1 instruction.
 
 When `OPR_PASS` is not selected, AC and L do not load from the pass unit, so its output has no effect.
 

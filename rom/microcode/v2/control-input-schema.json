@@ -1337,19 +1337,11 @@
           }
         },
         {
-          "text": "AC_OR_MQ",
-          "target": "../../03-microarchitecture/02-micro-operations.md#ac_or_mq",
-          "source": {
-            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 636
-          }
-        },
-        {
           "text": "PC_INC",
           "target": "../../03-microarchitecture/02-micro-operations.md#pc_inc",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 637
+            "line": 636
           }
         }
       ],
@@ -1389,7 +1381,7 @@
           "meaning": "AND",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 689
+            "line": 688
           }
         },
         {
@@ -1397,7 +1389,7 @@
           "meaning": "TAD",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 690
+            "line": 689
           }
         },
         {
@@ -1405,7 +1397,7 @@
           "meaning": "ISZ",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 691
+            "line": 690
           }
         },
         {
@@ -1413,7 +1405,7 @@
           "meaning": "DCA",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 692
+            "line": 691
           }
         },
         {
@@ -1421,7 +1413,7 @@
           "meaning": "JMS",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 693
+            "line": 692
           }
         },
         {
@@ -1429,7 +1421,7 @@
           "meaning": "JMP",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 694
+            "line": 693
           }
         },
         {
@@ -1437,7 +1429,7 @@
           "meaning": "not MRI",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 695
+            "line": 694
           }
         },
         {
@@ -1445,7 +1437,7 @@
           "meaning": "not MRI",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 696
+            "line": 695
           }
         }
       ],
@@ -1455,7 +1447,7 @@
         "text": "IR_MRI_OPCODE = IR[11:9]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 681
+          "line": 680
         }
       },
       "constraints": [
@@ -1463,7 +1455,7 @@
           "text": "IR_MRI_OPCODE selects MRI behavior only when IR_IS_MRI = 1.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 700
+            "line": 699
           }
         }
       ],
@@ -1473,7 +1465,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 704
+            "line": 703
           }
         },
         {
@@ -1481,7 +1473,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 705
+            "line": 704
           }
         }
       ],
@@ -1492,7 +1484,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 672,
+          "line": 671,
           "heading": "IR_MRI_OPCODE"
         }
       }
@@ -1665,7 +1657,7 @@
           "meaning": "not RTF",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 659
+            "line": 658
           }
         },
         {
@@ -1673,7 +1665,7 @@
           "meaning": "RTF",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 660
+            "line": 659
           }
         }
       ],
@@ -1683,7 +1675,7 @@
         "text": "IR_IS_RTF =\nIR_IS_IOT\nAND (IR_IOA == 000000)\nAND (IR[2:0] == 101)",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 649
+          "line": 648
         }
       },
       "constraints": [],
@@ -1693,7 +1685,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ac_to_df",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 663
+            "line": 662
           }
         },
         {
@@ -1701,7 +1693,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ac_to_dif",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 664
+            "line": 663
           }
         },
         {
@@ -1709,7 +1701,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ac_to_l",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 665
+            "line": 664
           }
         },
         {
@@ -1717,7 +1709,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#cifp_set",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 666
+            "line": 665
           }
         },
         {
@@ -1725,7 +1717,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ie_set",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 667
+            "line": 666
           }
         },
         {
@@ -1733,7 +1725,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ii_set",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 668
+            "line": 667
           }
         }
       ],
@@ -1744,7 +1736,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 641,
+          "line": 640,
           "heading": "IR_IS_RTF"
         }
       }
@@ -1841,7 +1833,7 @@
           "meaning": "current page addressing",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1392
+            "line": 1390
           }
         },
         {
@@ -1849,7 +1841,7 @@
           "meaning": "zero page addressing",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1393
+            "line": 1391
           }
         }
       ],
@@ -1859,7 +1851,7 @@
         "text": "IR_ZERO_PAGE = IR_IS_MRI AND NOT(IR[7])",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1385
+          "line": 1383
         }
       },
       "constraints": [],
@@ -1869,7 +1861,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ir_addr_to_ea_addr",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1396
+            "line": 1394
           }
         }
       ],
@@ -1880,7 +1872,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1376,
+          "line": 1374,
           "heading": "IR_ZERO_PAGE"
         }
       }
@@ -1909,7 +1901,7 @@
           "meaning": "not Group 1",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 881
+            "line": 880
           }
         },
         {
@@ -1917,7 +1909,7 @@
           "meaning": "Group 1",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 882
+            "line": 881
           }
         }
       ],
@@ -1927,7 +1919,7 @@
         "text": "IR_OPR_GROUP1 = IR_IS_OPR AND (IR[8] == 0)",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 874
+          "line": 873
         }
       },
       "constraints": [],
@@ -1937,7 +1929,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ac_clear",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 886
+            "line": 885
           }
         },
         {
@@ -1945,7 +1937,7 @@
           "target": "../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 887
+            "line": 886
           }
         },
         {
@@ -1953,7 +1945,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#l_clear",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 888
+            "line": 887
           }
         },
         {
@@ -1961,7 +1953,7 @@
           "target": "../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 889
+            "line": 888
           }
         }
       ],
@@ -1972,7 +1964,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 865,
+          "line": 864,
           "heading": "IR_OPR_GROUP1"
         }
       }
@@ -2001,7 +1993,7 @@
           "meaning": "not Group 2",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 910
+            "line": 909
           }
         },
         {
@@ -2009,7 +2001,7 @@
           "meaning": "Group 2",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 911
+            "line": 910
           }
         }
       ],
@@ -2019,7 +2011,7 @@
         "text": "IR_OPR_GROUP2 = IR_IS_OPR AND IR[8] AND (IR[0] == 0)",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 903
+          "line": 902
         }
       },
       "constraints": [],
@@ -2029,7 +2021,7 @@
           "target": "#ir_class",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 915
+            "line": 914
           }
         },
         {
@@ -2037,7 +2029,7 @@
           "target": "#ir_no_execute",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 916
+            "line": 915
           }
         },
         {
@@ -2045,7 +2037,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 917
+            "line": 916
           }
         }
       ],
@@ -2056,7 +2048,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 894,
+          "line": 893,
           "heading": "IR_OPR_GROUP2"
         }
       }
@@ -2085,7 +2077,7 @@
           "meaning": "not Group 3",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 938
+            "line": 937
           }
         },
         {
@@ -2093,7 +2085,7 @@
           "meaning": "Group 3",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 939
+            "line": 938
           }
         }
       ],
@@ -2103,33 +2095,25 @@
         "text": "IR_OPR_GROUP3 = IR_IS_OPR AND IR[8] AND IR[0]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 931
+          "line": 930
         }
       },
       "constraints": [],
       "consumers": [
         {
-          "text": "AC_CLEAR",
-          "target": "../../03-microarchitecture/02-micro-operations.md#ac_clear",
+          "text": "IR_CLASS",
+          "target": "#ir_class",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 942
+          }
+        },
+        {
+          "text": "the Group 3 bit decodes (IR_OPR_MQA, IR_OPR_MQL)",
+          "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
             "line": 943
-          }
-        },
-        {
-          "text": "AC_OR_MQ",
-          "target": "../../03-microarchitecture/02-micro-operations.md#ac_or_mq",
-          "source": {
-            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 944
-          }
-        },
-        {
-          "text": "AC_TO_MQ_AND_CLEAR_AC",
-          "target": "../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac",
-          "source": {
-            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 945
           }
         }
       ],
@@ -2140,7 +2124,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 922,
+          "line": 921,
           "heading": "IR_OPR_GROUP3"
         }
       }
@@ -2169,7 +2153,7 @@
           "meaning": "modifier inactive",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 760
+            "line": 759
           }
         },
         {
@@ -2177,7 +2161,7 @@
           "meaning": "modifier active",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 761
+            "line": 760
           }
         }
       ],
@@ -2187,7 +2171,7 @@
         "text": "IR_OPR_BSW = IR_OPR_GROUP1 AND IR[1]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 753
+          "line": 752
         }
       },
       "constraints": [],
@@ -2197,7 +2181,7 @@
           "target": "../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 764
+            "line": 763
           }
         }
       ],
@@ -2208,7 +2192,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 737,
+          "line": 736,
           "heading": "IR_OPR_BSW"
         }
       }
@@ -2237,7 +2221,7 @@
           "meaning": "inactive",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 785
+            "line": 784
           }
         },
         {
@@ -2245,7 +2229,7 @@
           "meaning": "clear AC",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 786
+            "line": 785
           }
         }
       ],
@@ -2255,7 +2239,7 @@
         "text": "IR_OPR_CLA = IR_IS_OPR AND IR[7]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 778
+          "line": 777
         }
       },
       "constraints": [],
@@ -2265,7 +2249,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ac_clear",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 789
+            "line": 788
           }
         }
       ],
@@ -2276,7 +2260,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 769,
+          "line": 768,
           "heading": "IR_OPR_CLA"
         }
       }
@@ -2305,7 +2289,7 @@
           "meaning": "inactive",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 809
+            "line": 808
           }
         },
         {
@@ -2313,7 +2297,7 @@
           "meaning": "clear Link",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 810
+            "line": 809
           }
         }
       ],
@@ -2323,7 +2307,7 @@
         "text": "IR_OPR_CLL = IR_OPR_GROUP1 AND IR[6]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 802
+          "line": 801
         }
       },
       "constraints": [],
@@ -2333,7 +2317,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#l_clear",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 813
+            "line": 812
           }
         }
       ],
@@ -2344,7 +2328,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 793,
+          "line": 792,
           "heading": "IR_OPR_CLL"
         }
       }
@@ -2373,7 +2357,7 @@
           "meaning": "inactive",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 833
+            "line": 832
           }
         },
         {
@@ -2381,7 +2365,7 @@
           "meaning": "complement AC",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 834
+            "line": 833
           }
         }
       ],
@@ -2391,7 +2375,7 @@
         "text": "IR_OPR_CMA = IR_OPR_GROUP1 AND IR[5]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 826
+          "line": 825
         }
       },
       "constraints": [],
@@ -2401,7 +2385,7 @@
           "target": "../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 837
+            "line": 836
           }
         }
       ],
@@ -2412,7 +2396,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 817,
+          "line": 816,
           "heading": "IR_OPR_CMA"
         }
       }
@@ -2441,7 +2425,7 @@
           "meaning": "inactive",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 857
+            "line": 856
           }
         },
         {
@@ -2449,7 +2433,7 @@
           "meaning": "complement Link",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 858
+            "line": 857
           }
         }
       ],
@@ -2459,7 +2443,7 @@
         "text": "IR_OPR_CML = IR_OPR_GROUP1 AND IR[4]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 850
+          "line": 849
         }
       },
       "constraints": [],
@@ -2469,7 +2453,7 @@
           "target": "../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 861
+            "line": 860
           }
         }
       ],
@@ -2480,7 +2464,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 841,
+          "line": 840,
           "heading": "IR_OPR_CML"
         }
       }
@@ -2509,7 +2493,7 @@
           "meaning": "inactive",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 966
+            "line": 964
           }
         },
         {
@@ -2517,7 +2501,7 @@
           "meaning": "halt",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 967
+            "line": 965
           }
         }
       ],
@@ -2527,7 +2511,7 @@
         "text": "IR_OPR_HLT = IR_OPR_GROUP2 AND IR[1]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 959
+          "line": 957
         }
       },
       "constraints": [],
@@ -2537,7 +2521,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 970
+            "line": 968
           }
         }
       ],
@@ -2548,7 +2532,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 950,
+          "line": 948,
           "heading": "IR_OPR_HLT"
         }
       }
@@ -2577,7 +2561,7 @@
           "meaning": "inactive",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 992
+            "line": 990
           }
         },
         {
@@ -2585,7 +2569,7 @@
           "meaning": "increment AC",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 993
+            "line": 991
           }
         }
       ],
@@ -2595,7 +2579,7 @@
         "text": "IR_OPR_IAC = IR_OPR_GROUP1 AND IR[0]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 985
+          "line": 983
         }
       },
       "constraints": [],
@@ -2605,7 +2589,7 @@
           "target": "../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 997
+            "line": 995
           }
         }
       ],
@@ -2616,7 +2600,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 976,
+          "line": 974,
           "heading": "IR_OPR_IAC"
         }
       }
@@ -2645,7 +2629,7 @@
           "meaning": "inactive",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1067
+            "line": 1065
           }
         },
         {
@@ -2653,7 +2637,7 @@
           "meaning": "OR switch register into AC",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1068
+            "line": 1066
           }
         }
       ],
@@ -2663,7 +2647,7 @@
         "text": "IR_OPR_OSR = IR_OPR_GROUP2 AND IR[2]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1060
+          "line": 1058
         }
       },
       "constraints": [],
@@ -2673,7 +2657,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1072
+            "line": 1070
           }
         }
       ],
@@ -2684,7 +2668,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1051,
+          "line": 1049,
           "heading": "IR_OPR_OSR"
         }
       }
@@ -2713,7 +2697,7 @@
           "meaning": "inactive",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1017
+            "line": 1015
           }
         },
         {
@@ -2721,7 +2705,7 @@
           "meaning": "OR MQ into AC",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1018
+            "line": 1016
           }
         }
       ],
@@ -2731,17 +2715,17 @@
         "text": "IR_OPR_MQA = IR_OPR_GROUP3 AND IR[6]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1010
+          "line": 1008
         }
       },
       "constraints": [],
       "consumers": [
         {
-          "text": "AC_OR_MQ",
-          "target": "../../03-microarchitecture/02-micro-operations.md#ac_or_mq",
+          "text": "[OPR pass unit](../../03-microarchitecture/07-opr/03-group3-execution.md#4-opr-pass) (stage B)",
+          "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1022
+            "line": 1020
           }
         }
       ],
@@ -2752,7 +2736,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1001,
+          "line": 999,
           "heading": "IR_OPR_MQA"
         }
       }
@@ -2781,15 +2765,15 @@
           "meaning": "inactive",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1042
+            "line": 1040
           }
         },
         {
           "value": "1",
-          "meaning": "Load MQ into AC and clear AC",
+          "meaning": "Load AC into MQ and clear AC",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1043
+            "line": 1041
           }
         }
       ],
@@ -2799,17 +2783,17 @@
         "text": "IR_OPR_MQL = IR_OPR_GROUP3 AND IR[4]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1035
+          "line": 1033
         }
       },
       "constraints": [],
       "consumers": [
         {
-          "text": "AC_TO_MQ_AND_CLEAR_AC",
-          "target": "../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac",
+          "text": "[OPR pass unit](../../03-microarchitecture/07-opr/03-group3-execution.md#4-opr-pass) (stage A and the MQ output)",
+          "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1047
+            "line": 1045
           }
         }
       ],
@@ -2820,7 +2804,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1026,
+          "line": 1024,
           "heading": "IR_OPR_MQL"
         }
       }
@@ -2849,7 +2833,7 @@
           "meaning": "inactive",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1092
+            "line": 1090
           }
         },
         {
@@ -2857,7 +2841,7 @@
           "meaning": "rotate-left component enabled",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1093
+            "line": 1091
           }
         }
       ],
@@ -2867,7 +2851,7 @@
         "text": "IR_OPR_RAL = IR_OPR_GROUP1 AND IR[2]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1085
+          "line": 1083
         }
       },
       "constraints": [],
@@ -2877,7 +2861,7 @@
           "target": "../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1098
+            "line": 1096
           }
         }
       ],
@@ -2888,7 +2872,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1076,
+          "line": 1074,
           "heading": "IR_OPR_RAL"
         }
       }
@@ -2917,7 +2901,7 @@
           "meaning": "inactive",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1118
+            "line": 1116
           }
         },
         {
@@ -2925,7 +2909,7 @@
           "meaning": "rotate-right component enabled",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1119
+            "line": 1117
           }
         }
       ],
@@ -2935,7 +2919,7 @@
         "text": "IR_OPR_RAR = IR_OPR_GROUP1 AND IR[3]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1111
+          "line": 1109
         }
       },
       "constraints": [],
@@ -2945,7 +2929,7 @@
           "target": "../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1123
+            "line": 1121
           }
         }
       ],
@@ -2956,7 +2940,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1102,
+          "line": 1100,
           "heading": "IR_OPR_RAR"
         }
       }
@@ -2985,7 +2969,7 @@
           "meaning": "OR mode (any enabled condition true causes skip)",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1143
+            "line": 1141
           }
         },
         {
@@ -2993,7 +2977,7 @@
           "meaning": "AND mode (all enabled conditions must be true)",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1144
+            "line": 1142
           }
         }
       ],
@@ -3003,7 +2987,7 @@
         "text": "IR_OPR_SKIP_MODE = IR_OPR_GROUP2 AND IR[3]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1136
+          "line": 1134
         }
       },
       "constraints": [],
@@ -3013,7 +2997,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#pc_inc",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1148
+            "line": 1146
           }
         }
       ],
@@ -3024,7 +3008,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1127,
+          "line": 1125,
           "heading": "IR_OPR_SKIP_MODE"
         }
       }
@@ -3053,7 +3037,7 @@
           "meaning": "condition disabled",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1168
+            "line": 1166
           }
         },
         {
@@ -3061,7 +3045,7 @@
           "meaning": "condition enabled",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1169
+            "line": 1167
           }
         }
       ],
@@ -3071,7 +3055,7 @@
         "text": "IR_OPR_SMA = IR_OPR_GROUP2 AND IR[6]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1161
+          "line": 1159
         }
       },
       "constraints": [],
@@ -3081,7 +3065,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#pc_inc",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1173
+            "line": 1171
           }
         }
       ],
@@ -3092,7 +3076,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1152,
+          "line": 1150,
           "heading": "IR_OPR_SMA"
         }
       }
@@ -3121,7 +3105,7 @@
           "meaning": "condition disabled",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1193
+            "line": 1191
           }
         },
         {
@@ -3129,7 +3113,7 @@
           "meaning": "condition enabled",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1194
+            "line": 1192
           }
         }
       ],
@@ -3139,7 +3123,7 @@
         "text": "IR_OPR_SNL = IR_OPR_GROUP2 AND IR[4]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1186
+          "line": 1184
         }
       },
       "constraints": [],
@@ -3149,7 +3133,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#pc_inc",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1198
+            "line": 1196
           }
         }
       ],
@@ -3160,7 +3144,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1177,
+          "line": 1175,
           "heading": "IR_OPR_SNL"
         }
       }
@@ -3189,7 +3173,7 @@
           "meaning": "condition disabled",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1218
+            "line": 1216
           }
         },
         {
@@ -3197,7 +3181,7 @@
           "meaning": "condition enabled",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1219
+            "line": 1217
           }
         }
       ],
@@ -3207,7 +3191,7 @@
         "text": "IR_OPR_SZA = IR_OPR_GROUP2 AND IR[5]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1211
+          "line": 1209
         }
       },
       "constraints": [],
@@ -3217,7 +3201,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#pc_inc",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1223
+            "line": 1221
           }
         }
       ],
@@ -3228,7 +3212,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1202,
+          "line": 1200,
           "heading": "IR_OPR_SZA"
         }
       }
@@ -3257,7 +3241,7 @@
           "meaning": "Does not read DF",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1243
+            "line": 1241
           }
         },
         {
@@ -3265,7 +3249,7 @@
           "meaning": "Reads DF",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1244
+            "line": 1242
           }
         }
       ],
@@ -3275,7 +3259,7 @@
         "text": "IR_READS_DF = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==001) // octal 6214",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1236
+          "line": 1234
         }
       },
       "constraints": [],
@@ -3285,7 +3269,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#df_to_ac",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1247
+            "line": 1245
           }
         }
       ],
@@ -3296,7 +3280,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1227,
+          "line": 1225,
           "heading": "IR_READS_DF"
         }
       }
@@ -3325,7 +3309,7 @@
           "meaning": "Does not read IB",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1267
+            "line": 1265
           }
         },
         {
@@ -3333,7 +3317,7 @@
           "meaning": "Reads IB",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1268
+            "line": 1266
           }
         }
       ],
@@ -3343,7 +3327,7 @@
         "text": "IR_READS_IB = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==011) // octal 6234",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1260
+          "line": 1258
         }
       },
       "constraints": [],
@@ -3353,7 +3337,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ib_to_ac",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1271
+            "line": 1269
           }
         }
       ],
@@ -3364,7 +3348,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1251,
+          "line": 1249,
           "heading": "IR_READS_IB"
         }
       }
@@ -3393,7 +3377,7 @@
           "meaning": "Does not read IF",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1291
+            "line": 1289
           }
         },
         {
@@ -3401,7 +3385,7 @@
           "meaning": "Reads IF",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1292
+            "line": 1290
           }
         }
       ],
@@ -3411,7 +3395,7 @@
         "text": "IR_READS_IF = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==010) // octal 6224",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1284
+          "line": 1282
         }
       },
       "constraints": [],
@@ -3421,7 +3405,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#if_to_ac",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1295
+            "line": 1293
           }
         }
       ],
@@ -3432,7 +3416,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1275,
+          "line": 1273,
           "heading": "IR_READS_IF"
         }
       }
@@ -3461,7 +3445,7 @@
           "meaning": "Does not restore DF/IF from IB",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1315
+            "line": 1313
           }
         },
         {
@@ -3469,7 +3453,7 @@
           "meaning": "Restores IF/DF from IB",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1316
+            "line": 1314
           }
         }
       ],
@@ -3479,7 +3463,7 @@
         "text": "IR_RESTORES_IB = (IR[11:6] == 110010 AND IR[2:0]==100 AND IR[5:3]==100) // octal 6244",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1308
+          "line": 1306
         }
       },
       "constraints": [],
@@ -3489,7 +3473,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ib_to_df",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1319
+            "line": 1317
           }
         },
         {
@@ -3497,7 +3481,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ib_to_dif",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1320
+            "line": 1318
           }
         },
         {
@@ -3505,7 +3489,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ii_set",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1321
+            "line": 1319
           }
         },
         {
@@ -3513,7 +3497,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#cifp_set",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1322
+            "line": 1320
           }
         }
       ],
@@ -3524,7 +3508,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1299,
+          "line": 1297,
           "heading": "IR_RESTORES_IB"
         }
       }
@@ -3553,7 +3537,7 @@
           "meaning": "Does not write DF",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1342
+            "line": 1340
           }
         },
         {
@@ -3561,7 +3545,7 @@
           "meaning": "Writes DF",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1343
+            "line": 1341
           }
         }
       ],
@@ -3571,7 +3555,7 @@
         "text": "IR_WRITES_DF = (IR[11:6] == 110010 AND IR[2]==0 AND IR[0]==1)",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1335
+          "line": 1333
         }
       },
       "constraints": [],
@@ -3581,7 +3565,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ir_df_to_df",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1346
+            "line": 1344
           }
         }
       ],
@@ -3592,7 +3576,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1326,
+          "line": 1324,
           "heading": "IR_WRITES_DF"
         }
       }
@@ -3621,7 +3605,7 @@
           "meaning": "not CIF",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1366
+            "line": 1364
           }
         },
         {
@@ -3629,7 +3613,7 @@
           "meaning": "CIF",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1367
+            "line": 1365
           }
         }
       ],
@@ -3639,7 +3623,7 @@
         "text": "IR_WRITES_IF = (IR[11:6] == 110010 AND IR[2]==0 AND IR[1]==1)",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1359
+          "line": 1357
         }
       },
       "constraints": [],
@@ -3649,7 +3633,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ir_if_to_dif",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1370
+            "line": 1368
           }
         },
         {
@@ -3657,7 +3641,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ii_set",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1371
+            "line": 1369
           }
         },
         {
@@ -3665,7 +3649,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#cifp_set",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 1372
+            "line": 1370
           }
         }
       ],
@@ -3676,7 +3660,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 1350,
+          "line": 1348,
           "heading": "IR_WRITES_IF"
         }
       }
@@ -4184,7 +4168,7 @@
       "values": [
         {
           "value": "000",
-          "meaning": "none of JMP, Group 1 OPR, Group 2 OPR: completes in EXECUTE",
+          "meaning": "neither JMP nor OPR: completes in EXECUTE",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
             "line": 292
@@ -4224,7 +4208,7 @@
         },
         {
           "value": "101",
-          "meaning": "reserved (OPR group classes)",
+          "meaning": "Group 3 OPR: completes in FETCH",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
             "line": 297
@@ -4232,7 +4216,7 @@
         },
         {
           "value": "110",
-          "meaning": "reserved (OPR group classes)",
+          "meaning": "reserved",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
             "line": 298
@@ -4250,7 +4234,7 @@
       "ranges": [],
       "dependencies": [],
       "derivation": {
-        "text": "IR_CLASS = {IR_OPR_GROUP2,\n(IR[11:9] = 101 AND IR[8]) OR IR_OPR_GROUP1,\n(IR[11:9] = 101 AND NOT IR[8]) OR IR_OPR_GROUP1}",
+        "text": "IR_CLASS = {IR_OPR_GROUP2 OR IR_OPR_GROUP3,\n(IR[11:9] = 101 AND IR[8]) OR IR_OPR_GROUP1,\n(IR[11:9] = 101 AND NOT IR[8]) OR IR_OPR_GROUP1 OR IR_OPR_GROUP3}",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
           "line": 282
@@ -4290,7 +4274,7 @@
         "mnemonic": "IR_NO_EXECUTE",
         "display_name": "No EXECUTE State",
         "input_type": "Instruction Class",
-        "purpose": "Indicates that the instruction never enters EXECUTE: a JMP completes at FETCH TP4 when direct, or at DEFER TP4 when indirect; a Group 1 or Group 2 OPR completes at FETCH TP4."
+        "purpose": "Indicates that the instruction never enters EXECUTE: a JMP completes at FETCH TP4 when direct, or at DEFER TP4 when indirect; an OPR completes at FETCH TP4."
       },
       "polarity": {
         "value": "active-high",
@@ -4303,7 +4287,7 @@
           "meaning": "the instruction completes in EXECUTE",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 726
+            "line": 725
           }
         },
         {
@@ -4311,17 +4295,17 @@
           "meaning": "the instruction completes in FETCH (IR_INDIRECT = 0) or DEFER (IR_INDIRECT = 1)",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 727
+            "line": 726
           }
         }
       ],
       "ranges": [],
       "dependencies": [],
       "derivation": {
-        "text": "IR_NO_EXECUTE = IR[11:9] = 101 OR IR_OPR_GROUP1 OR IR_OPR_GROUP2   // JMP; Group 1 OPR; Group 2 OPR",
+        "text": "IR_NO_EXECUTE = IR[11:9] = 101 OR IR_IS_OPR   // JMP; OPR",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 718
+          "line": 717
         }
       },
       "constraints": [],
@@ -4331,7 +4315,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 731
+            "line": 730
           }
         }
       ],
@@ -4342,7 +4326,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 709,
+          "line": 708,
           "heading": "IR_NO_EXECUTE"
         }
       }

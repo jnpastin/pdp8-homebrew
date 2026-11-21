@@ -19,8 +19,9 @@ Branch: `one-cycle-fetch`. This branch evaluates and, if the user approves, impl
 | 4: slice B | **Done** (section 1.3; committed `a7ca584`). |
 | 5: slice D | **Done** (section 1.4; committed `75a4460`). |
 | 6: slice C1 | **Done** (section 1.5; committed `dd96d13`). |
-| 7: slice C2 | **Done, awaiting the user's check and commit** (section 1.6). |
-| 8 onward (slice C3, phases 9, 10) | Not started. |
+| 7: slice C2 | **Done** (section 1.6; committed `761c3d1`). |
+| 8: slice C3 | **Done, awaiting the user's check and commit** (section 1.7). |
+| 9, 10 (full verification, v1 cleanup) | Not started. |
 
 ### 1.2 Slice A (phase 3), 2026-11-20
 
@@ -77,6 +78,17 @@ OPR Group 2 completes in FETCH. FETCH TS3: `OPR_PASS` (stage A CLA, then stage B
 - **Simulator:** `Design.sequencer_a1`, `Design.state_group_run_mux` (v1 off, `V1-ONLY`); `SKIP` register; `SKIP_LOAD` (v2-only field); pass unit stage B (OSR) and CLA for class `100`; `IR_CLASS` bit 2; A1 address bit; `ControlStore.overlay_group(code, RUN)`; derived-flag renames with the v1 names kept as `V1-ONLY` aliases. Tests: `sim/cpu/tests/test_opr_group2_slice_c2.py` (exhaustive: all 256 Group 2 encodings × 10 AC × L 0/1 × 3 SR against the reference model's Group 2, each completing in one FETCH with `HLT_REQ` consumed; targeted: skip from the AC before CLA, SKP, OSR and CLA OSR, TP-by-TP loads, skip with an interrupt at the same TP4 (return address = skip target), ION then SKP, DMA at a skip's completion, HLT at FETCH TP4, HLT then CONTINUE, HLT with Single Step and Single Instruction, SNA HLT). Adjusted: the HLT smoke test and the slice B cost test (HLT is one FETCH in v2).
 - **Verified (Windows, CPython 3.14; PyPy 3.12):** tools 17 suites OK; sim/cpu 119, memory 3, reference 18, io 29, system 77 (1 skipped) OK under v1 and v2 (after making `test_machine.test_run_until_halt` design-aware: a v2 HLT is one FETCH); MAINDEC suite (seeds 1 and 2) under PyPy OK for both; D2AB timing: v1 halt 2607, v2 pass. Full lock-step D2AB PRG0 under v2 (PyPy): seeds 1 and 2 PASS, 46,988,085 instructions each, no divergence.
 - **Diagrams:** `option2/diagrams.md` C2-1 to C2-8.
+
+### 1.7 Slice C3 (phase 8), 2026-11-21
+
+OPR Group 3 completes in FETCH: `OPR_PASS` loads AC (stage A: CLA or MQL zero AC; stage B: MQA ORs MQ) and the new `OPR_PASS_TO_MQ` loads MQ from the pass unit's MQ output, both at FETCH TP3, so SWP exchanges in one TP. Every OPR now completes in FETCH; only IOT and the MRIs other than JMP reach EXECUTE.
+
+- **Decisions (user, 2026-11-21):** one class for Group 3 (`101`; `110` and `111` spare), revising spec decision 2's classes 5 and 6: MQ loads on every Group 3 OPR and the MQ output is the AC after CLA with MQL, MQ itself without (the same pattern as Group 2's unchanged L). `MQ_SRC` 1 becomes "OPR pass unit MQ output" (a gap found in spec §4.1: `MQ_SRC = AC` would have loaded the AC from before CLA, wrong for `CLA MQL` and `CLA SWP`). `AC_OR_MQ`, `AC_TO_MQ_AND_CLEAR_AC`, `AC_MQ_SWAP` removed. The OPR-only ALU encodings (`ALU_OP` OR, NOT, rotates, BSW; `ALU_B_SRC` MQ, FP_SR) and `AC_SRC` 5 (MQ) are kept, unused in v2, for the phase 9 cleanup. Group 3 ISA reworded to order only (same semantics).
+- **Docs:** ISA group 3; group 3 execution (rewritten; "OPR Pass" section with the seven-combination table); group 1 execution §4; fetch-defer §3.3, §3.4; μop catalog; registers (AC, L, MQ); state model; major-state timing §9.3; IR-derived fields (`IR_CLASS` `101`, `IR_NO_EXECUTE = JMP OR IR_IS_OPR`, Group 3 consumers); MCS (`MQ_SRC`, `MQ_LOAD`, `AC_SRC`, `L_OP`, used-by lists); CSO §5.3 (EXECUTE variant counts 4, 19, 8, 7, which still showed v1's); spec §2, §4.1, §11.
+- **Tools:** no change. The packing is identical to slice C2's (46 bits, the same sharing and overlay groups). `SKIP`, `OPR_SKIP_REQ`, and `ISZ_SKIP_REQ` still have no reviewed `control_uses` in the committed schema (warnings since C2).
+- **Simulator:** `IR_CLASS` `101` and `IR_NO_EXECUTE` decodes; pass unit stages A (MQL) and B (MQA) for class `101`; `datapath.opr_pass_mq` (the MQ output); `MQ_SRC` per design (v1: AC, `V1-ONLY`). Tests: `sim/cpu/tests/test_opr_group3_slice_c3.py` (exhaustive: all 256 Group 3 encodings × 10 AC × L 0/1 × 4 MQ against the reference model's Group 3, each completing in one FETCH; targeted: SWP's two loads at TP3, CLA before SWP/MQL/MQA, MQL, MQA, CLA, MQ reloaded unchanged, the EAE bits selecting nothing, L unchanged, cost 1.2 µs, interrupt after SWP). Adjusted: the slice B cost test (Group 3 is one FETCH; IOT keeps EXECUTE).
+- **Verified (Windows, CPython 3.14; PyPy 3.12):** tools 17 suites OK; sim/cpu 128, memory 3, reference 18, io 29, system 77 (1 skipped) OK under v1 and v2; MAINDEC suite (seeds 1 and 2) under PyPy OK for both; D2AB timing: v1 halt 2607, v2 pass. Full lock-step D2AB PRG0 under v2 (PyPy): seeds 1 and 2 PASS, 46,988,085 instructions each, no divergence.
+- **Diagrams:** `option2/diagrams.md` C3-1 (MQ and the pass unit), C3-2 (the flowchart's FETCH completion covers every OPR; supersedes C1-2 and C2-8).
 
 ### 1.1 Commits on this branch
 
@@ -149,8 +161,9 @@ Notes for the review:
 
 ## 4. Next Steps
 
-1. **The user checks and commits slice C2** (section 1.6).
-2. **Slice C3** (plan phase 8): OPR Group 3 in FETCH: classes `101` (without MQL) and `110` (with MQL, so the control store asserts `MQ_LOAD`), stage A gains MQL, stage B gains MQA (OR MQ), SWP's two paths loaded at the same TP3 (spec §4.1); exhaustive test of the 256 Group 3 encodings with MQ edge values; then the OPR-only ALU encodings (`ALU_OP` OR/NOT/rotates/BSW, `ALU_B_SRC` MQ/FP_SR) and the FP_SR → ALU B diagram edge (C2-6) can go; D2AB PRG0 rerun.
+1. **The user checks and commits slice C3** (section 1.7).
+2. **Phase 9, full verification** (plan.md): all suites under CPython for both designs; the MAINDEC regression and full passes of the long programs (D0*, D1*) under PyPy; D2AB PRG0 end to end; the packing and budget review, including the deferred cleanup of the OPR-only ALU encodings (`ALU_OP` OR, NOT, ROR, ROL, RTR, RTL, BSW; `ALU_B_SRC` MQ, FP_SR; `AC_SRC` 5), about 3 datapath bits (spec §5.1); the final diagram list; checkpoint 7 (merge, and whether to plan option 1, IOT in FETCH, later).
+3. (Done) **Slice C3** (plan phase 8): OPR Group 3 in FETCH (one class `101`; the pass unit's MQ output; `OPR_PASS_TO_MQ`).
 3. (Done) **Slice C2** (plan phase 7): OPR Group 2 in FETCH: the SKIP register (loaded at FETCH TP3 from `SKIP_TAKEN`; `SKIP_LOAD`), the `RUN` multiplexer on overlay group 1 (decision 6), CLA and OSR through the pass unit (stage B), PC increment at FETCH TS4 on SKIP, HLT captured at FETCH TP3 (sequencer A1 = `IR_OPR_HLT`), class `100`; skip and interrupt at the same TP4 (decision 4); 08/05-skip-model's EXECUTE TP4 wording. Exhaustive test of the Group 2 encodings.
 3. (Done) **Slice C1** (plan phase 6): OPR group 1 in FETCH through the OPR pass unit (decision 1; `OPR_PASS` as `AC_SRC` = 7 and `L_OP` = 1; class 3; `IR_NO_EXECUTE` gains OPR; amend design principle §3.1). Exhaustive test of the 256 group 1 encodings.
 3. (Done) **Slice D** (plan phase 5): the TS-length table (decision 3a, timing.md rev. 2: FETCH and plain DEFER 5/8/6/5, EXECUTE and autoindex DEFER 6/9/7/6 at 50 ns) in the docs and the simulator's per-TS time base; acceptance is D2AB PRG0 routines 4 and 5 passing. Also decide where the SRAM shadow (decision 12) enters the hardware docs.

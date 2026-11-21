@@ -369,6 +369,6 @@ DEFER is entered only from FETCH TP4 when `IR_INDIRECT = 1`, and IR is loaded on
 
 ### 9.3 An IR_NO_EXECUTE Instruction Never Reaches EXECUTE
 
-EXECUTE is entered only from FETCH TP4 or DEFER TP4 when `IR_NO_EXECUTE = 0` ([Sequencing and Internal Control §3.2.2, §3.2.4](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#322-fetch-transition-without-indirection)), and IR is loaded only at FETCH TP2. IR therefore never holds a JMP or a Group 1 or Group 2 OPR in EXECUTE, including while halted in EXECUTE by Single Step:
+EXECUTE is entered only from FETCH TP4 or DEFER TP4 when `IR_NO_EXECUTE = 0` ([Sequencing and Internal Control §3.2.2, §3.2.4](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#322-fetch-transition-without-indirection)), and IR is loaded only at FETCH TP2. IR therefore never holds a JMP or an OPR in EXECUTE, including while halted in EXECUTE by Single Step:
 
 - `IR_NO_EXECUTE = 0 IF MS = EXECUTE`
