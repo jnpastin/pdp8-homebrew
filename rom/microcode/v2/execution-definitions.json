@@ -63,8 +63,12 @@
           "micro_operation": "IR_ADDR_TO_PC"
         },
         {
-          "predicate": "IR_CLASS = 011",
+          "predicate": "IR_CLASS = 011 OR IR_CLASS = 100",
           "micro_operation": "OPR_PASS"
+        },
+        {
+          "predicate": "IR_CLASS = 100",
+          "micro_operation": "OPR_SKIP_REQ_TO_SKIP"
         },
         {
           "predicate": "IR_CLASS = 001 AND CIFP = 1",
@@ -84,7 +88,7 @@
       "id": "fetch-defer:3.4",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 95
+        "line": 97
       },
       "execution_model": "major-state",
       "context": [
@@ -92,13 +96,18 @@
       ],
       "timing_state": 4,
       "micro_operations": [],
-      "conditional_micro_operations": []
+      "conditional_micro_operations": [
+        {
+          "predicate": "IR_CLASS = 100 AND SKIP = 1",
+          "micro_operation": "PC_INC"
+        }
+      ]
     },
     {
       "id": "fetch-defer:4.2",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 123
+        "line": 132
       },
       "execution_model": "major-state",
       "context": [
@@ -114,7 +123,7 @@
       "id": "fetch-defer:4.3",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 133
+        "line": 142
       },
       "execution_model": "major-state",
       "context": [
@@ -130,7 +139,7 @@
       "id": "fetch-defer:4.4",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 143
+        "line": 152
       },
       "execution_model": "major-state",
       "context": [
@@ -153,7 +162,7 @@
       "id": "fetch-defer:4.5",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 159
+        "line": 168
       },
       "execution_model": "major-state",
       "context": [
@@ -394,7 +403,7 @@
       ],
       "conditional_micro_operations": [
         {
-          "predicate": "ISZ_SKIP_REQUIRED = 1",
+          "predicate": "ISZ_SKIP_REQ = 1",
           "micro_operation": "PC_INC"
         }
       ]
@@ -1561,85 +1570,6 @@
         "FP_DEPOSIT = 0"
       ],
       "timing_state": null,
-      "micro_operations": [],
-      "conditional_micro_operations": []
-    },
-    {
-      "id": "opr2:ts1",
-      "source": {
-        "path": "docs/03-microarchitecture/07-opr/02-group2-execution.md",
-        "line": 62
-      },
-      "execution_model": "major-state",
-      "context": [
-        "MS = EXECUTE",
-        "IR_IS_OPR = 1",
-        "IR_OPR_GROUP2 = 1"
-      ],
-      "timing_state": 1,
-      "micro_operations": [],
-      "conditional_micro_operations": [
-        {
-          "predicate": "SKIP_TAKEN = 1",
-          "micro_operation": "PC_INC"
-        }
-      ]
-    },
-    {
-      "id": "opr2:ts2",
-      "source": {
-        "path": "docs/03-microarchitecture/07-opr/02-group2-execution.md",
-        "line": 76
-      },
-      "execution_model": "major-state",
-      "context": [
-        "MS = EXECUTE",
-        "IR_IS_OPR = 1",
-        "IR_OPR_GROUP2 = 1"
-      ],
-      "timing_state": 2,
-      "micro_operations": [],
-      "conditional_micro_operations": [
-        {
-          "predicate": "IR_OPR_CLA = 1",
-          "micro_operation": "AC_CLEAR"
-        }
-      ]
-    },
-    {
-      "id": "opr2:ts3",
-      "source": {
-        "path": "docs/03-microarchitecture/07-opr/02-group2-execution.md",
-        "line": 82
-      },
-      "execution_model": "major-state",
-      "context": [
-        "MS = EXECUTE",
-        "IR_IS_OPR = 1",
-        "IR_OPR_GROUP2 = 1"
-      ],
-      "timing_state": 3,
-      "micro_operations": [],
-      "conditional_micro_operations": [
-        {
-          "predicate": "IR_OPR_OSR = 1",
-          "micro_operation": "AC_OR_FP_SR"
-        }
-      ]
-    },
-    {
-      "id": "opr2:ts4",
-      "source": {
-        "path": "docs/03-microarchitecture/07-opr/02-group2-execution.md",
-        "line": 95
-      },
-      "execution_model": "major-state",
-      "context": [
-        "MS = EXECUTE",
-        "IR_IS_OPR = 1",
-        "IR_OPR_GROUP2 = 1"
-      ],
-      "timing_state": 4,
       "micro_operations": [],
       "conditional_micro_operations": []
     },

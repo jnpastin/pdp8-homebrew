@@ -103,13 +103,13 @@ Fields: every other encoded field of the control word, grouped here by function.
 |---|---|---|
 | Memory interface | `/RD` (1), `/WR` (1), `AB_SRC` (1), `MFB_SRC` (1), `MDB_SRC` (2), `MA_LOAD` (1), `MA_SRC` (2), `MB_LOAD` (1), `MB_SRC` (2), `EA_ADDR_LOAD` (1), `EA_ADDR_SRC` (1) | 14 |
 | Internal data bus | `IDB_DRIVE` (1), `IDB_SRC` (3) | 4 |
-| Registers and ALU | `AC_LOAD` (1), `AC_SRC` (3), `L_LOAD` (1), `L_OP` (2), `MQ_LOAD` (1), `MQ_SRC` (1), `ALU_A_SRC` (2), `ALU_B_SRC` (2), `ALU_OP` (4), `IR_LOAD` (1), `PC_LOAD` (1), `PC_INC` (1), `PC_SRC` (2) | 22 |
+| Registers and ALU | `AC_LOAD` (1), `AC_SRC` (3), `L_LOAD` (1), `L_OP` (2), `MQ_LOAD` (1), `MQ_SRC` (1), `ALU_A_SRC` (2), `ALU_B_SRC` (2), `ALU_OP` (4), `IR_LOAD` (1), `PC_LOAD` (1), `PC_INC` (1), `PC_SRC` (2), `SKIP_LOAD` (1) | 23 |
 | Fields and interrupts | `IF_LOAD` (1), `IF_SRC` (2), `DF_LOAD` (1), `DF_SRC` (3), `DIF_LOAD` (1), `DIF_SRC` (3), `IB_LOAD` (1), `CIFP_LOAD` (1), `CIFP_VAL` (1), `IE_LOAD` (1), `IE_VAL` (1), `II_LOAD` (1), `II_VAL` (1) | 18 |
 | External IOT | `IOT_TRANSFER_LOAD` (1), `IOT_TRANSFER_VAL` (2), `/DB_READ` (1), `/DB_WRITE` (1) | 5 |
 
-The 43 fields total 63 bits; bit sharing packs them into 45 (section 7.2). Control-word fields that are derived or supplied from outside the control store (`/DMA_GRANT`, `IOT_ACTIVE`, `IOA[5:0]`, `IOP[2:0]`, `GTF_FLAGS`, `IF_DF_COMBINED`, `DB_INPUT`, `MDB_INPUT`) are not produced by either slice.
+The 44 fields total 64 bits; bit sharing packs them into 46 (section 7.2). Control-word fields that are derived or supplied from outside the control store (`/DMA_GRANT`, `IOT_ACTIVE`, `IOA[5:0]`, `IOP[2:0]`, `GTF_FLAGS`, `IF_DF_COMBINED`, `DB_INPUT`, `MDB_INPUT`) are not produced by either slice.
 
-Width: 45 bits after packing (section 7), six devices.
+Width: 46 bits after packing (section 7), six devices.
 
 ---
 
@@ -196,7 +196,6 @@ The sequencer decode carries a different decode in different timing states of EX
 
 | EXECUTE TS | Sequencer decode | Use |
 |---|---|---|
-| 3 | `IR_OPR_HLT` | HLT capture |
 | 4 | `IR_IS_CAF` | CAF system initialization |
 | other | 0 | the sequencer word depends on no instruction decode |
 
@@ -234,7 +233,7 @@ The slice and overlay address inputs are formed from `MAPR` in EXECUTE and from 
 
 `IR_CLASS` is likewise taken from predecode gates on the live IR ([IR-Derived Fields](./10-control-input-definitions/02-ir-derived-fields.md#ir_class)) and is valid from FETCH TP2. It selects the instruction-dependent datapath words of FETCH TS3 and TS4 and of DEFER. In FETCH TS1 and TS2, INTERRUPT, DMA, and while halted, IR holds the previous instruction, or is undefined after power-on, so every datapath word in those contexts must be the same for all values of `IR_CLASS`; the packer verifies this (section 9).
 
-All contexts with `MS_EFF_IS_EXECUTE = 0` (FETCH, DEFER, INTERRUPT, DMA, and halted) therefore share one overlay group, wired as group 1. Its signals must fit `DP_OVL[4:0]`; the current group uses all five bits.
+All contexts with `MS_EFF_IS_EXECUTE = 0` (FETCH, DEFER, INTERRUPT, DMA, and halted) therefore share one overlay group, wired as group 1. Its signals must fit `DP_OVL[4:0]`; its low three bits carry different signals while running and while halted (section 6.3).
 
 #### 5.4.3 Correctness and Timing
 
@@ -269,10 +268,13 @@ A7..A5   = SEQ_OVL[2:0]
 A4       = /DMA_REQ
 A3       = IR_SEQ
 A2       = IR_NO_EXECUTE
-A1..A0   = 0
+A1       = IR_OPR_HLT
+A0       = 0
 ```
 
 `IR_NO_EXECUTE` is taken from predecode gates on the live IR ([IR-Derived Fields](./10-control-input-definitions/02-ir-derived-fields.md#ir_no_execute)). It decides only FETCH TS4 and DEFER TS4: with `IR_SEQ = IR_INDIRECT` it tells FETCH TS4 whether the instruction completes there or continues to DEFER, and it tells DEFER TS4 whether the instruction completes there. The sequencer word in every other context must not depend on it.
+
+`IR_OPR_HLT` is likewise taken from predecode gates on the live IR ([IR-Derived Fields](./10-control-input-definitions/02-ir-derived-fields.md#ir_opr_hlt)). It decides only FETCH TS3, where a Group 2 HLT sets `HLT_REQ` ([Sequencing and Internal Control §3.4.4](./30-direct-control-definitions/01-sequencing-and-internal-control.md#344-hlt-instruction-request-capture)); IR holds the current instruction from FETCH TP2. The sequencer word in every other context must not depend on it.
 
 `SEQ_OVL[2:0]` is a 3-bit 2:1 multiplexer selected by `RUN`:
 
@@ -290,7 +292,7 @@ Console commands are executed only while halted ([Major State Timing §8.2](../0
 While `RUN = 0`:
 
 - `MS_EFF = HALTED` (7), so `MS_EFF_IS_EXECUTE = 0` and the EXECUTE selection ignores `MAPR` (section 5.4.2): `VARIANT = 0`, `DP_OVL_SEL = 1`, and `IR_SEQ = IR_INDIRECT`.
-- `DP_OVL_SEL = 1` presents the state group, which carries `FP_CMD[2:0]` on `DP_OVL[2:0]` (section 6.2). The datapath slice address is therefore `MS_EFF = 7`, the held `TS`, `VARIANT = 0`, and `DP_OVL = {CIFP, AUTO_INDEX_REQUIRED, FP_CMD}`, which selects the command's datapath word.
+- `DP_OVL_SEL = 1` presents the state group, whose `RUN` multiplexer carries `FP_CMD[2:0]` on `DP_OVL[2:0]` while halted (sections 6.2 and 6.3). The datapath slice address is therefore `MS_EFF = 7`, the held `TS`, `VARIANT = 0`, and `DP_OVL = {CIFP, AUTO_INDEX_REQUIRED, FP_CMD}`, which selects the command's datapath word.
 - `SEQ_OVL` carries `FP_CMD[2:0]` (section 5.6), which selects the command's sequencer word: `RUN_NEXT` for START and CONTINUE, `MS_NEXT` and `MS_LOAD` for START, and `/INITIALIZE` for CLEAR.
 
 No overlay selection depends on the command: being halted alone forces the state group. `MAPR` selects among the other groups only in EXECUTE.
@@ -312,22 +314,34 @@ The five overlay bits `DP_OVL[4:0]` are driven by five 4:1 multiplexers, one per
 | Input / `DP_OVL_SEL` | Group | Used in |
 |---|---|---|
 | 0 | external IOT | external-IOT EXECUTE TS1–TS3; also every EXECUTE variant with no runtime condition |
-| 1 | state | `MS_EFF_IS_EXECUTE = 0`: FETCH, DEFER, INTERRUPT, DMA, halted; wired (section 5.4.2) |
+| 1 | state | `MS_EFF_IS_EXECUTE = 0`: FETCH, DEFER, INTERRUPT, DMA, halted; wired (section 5.4.2); low three bits multiplexed by `RUN` (section 6.3) |
 | 2 | external IOT TS4 | external-IOT EXECUTE TS4; SRQ |
-| 3 | instruction conditions | OPR Group 2 TS1 skip, SKON, ISZ TS4, JMP and JMS TS1 |
+| 3 | instruction conditions | SKON, ISZ TS4, JMS TS1 |
 
 ### 6.2 Multiplexer Inputs
 
 | Input (group) | `DP_OVL[4]` | `DP_OVL[3]` | `DP_OVL[2]` | `DP_OVL[1]` | `DP_OVL[0]` |
 |---|---|---|---|---|---|
 | 0 (external IOT) | `IO_WRITE_REQ` | `IO_READ_REQ` | `IO_CLEAR_AC_REQ` | `IOT_WRITE_PENDING` | `IOT_READ_PENDING` |
-| 1 (state) | `CIFP` | `AUTO_INDEX_REQUIRED` | `FP_CMD[2]` | `FP_CMD[1]` | `FP_CMD[0]` |
+| 1 (state), `RUN = 0` | `CIFP` | `AUTO_INDEX_REQUIRED` | `FP_CMD[2]` | `FP_CMD[1]` | `FP_CMD[0]` |
+| 1 (state), `RUN = 1` | `CIFP` | `AUTO_INDEX_REQUIRED` | `SKIP` | 0 | 0 |
 | 2 (external IOT TS4) | `IO_SKIP_REQ` | `IO_CLEAR_AC_REQ` | `IOT_WRITE_PENDING` | `IOT_READ_PENDING` | `/INT_REQ` |
-| 3 (instruction conditions) | `SKIP_TAKEN` | `ISZ_SKIP_REQUIRED` | `IF_CHANGE_PENDING` | `IE` | `CIFP` |
+| 3 (instruction conditions) | 0 | `ISZ_SKIP_REQ` | `IF_CHANGE_PENDING` | `IE` | `CIFP` |
 
-Sixteen distinct signals drive all 20 inputs: the 13 runtime conditions and the three `FP_CMD` bits. `CIFP`, `IO_CLEAR_AC_REQ`, `IOT_READ_PENDING`, and `IOT_WRITE_PENDING` each drive two inputs.
+Sixteen distinct signals drive the 20 inputs: the 13 runtime conditions and the three `FP_CMD` bits. Input 1's low three bits come from the `RUN` multiplexer (section 6.3), which carries `FP_CMD` while halted and `SKIP` and two zeros while running; input 3's `DP_OVL[4]` is wired 0. `CIFP`, `IO_CLEAR_AC_REQ`, `IOT_READ_PENDING`, and `IOT_WRITE_PENDING` each drive two inputs.
 
 The groups and pin assignments are produced by the control-store packer (section 9), which always places the `MS_EFF_IS_EXECUTE = 0` group at input 1. A variant with no runtime condition may use any group, because its datapath words do not depend on `DP_OVL`. Group 2 relies on the TS4 request window ([Major State Timing §5.2.7](../09-timing/03-major-state-timing.md#527-ts4)), which excludes `IO_READ_REQ` and `IO_WRITE_REQ` in TS4.
+
+### 6.3 State-Group Run Multiplexer
+
+The state group's low three bits pass through a 3-bit 2:1 multiplexer selected by `RUN`, exactly as `SEQ_OVL` does (section 5.6):
+
+| `RUN` | `DP_OVL[2]` | `DP_OVL[1]` | `DP_OVL[0]` |
+|---|---|---|---|
+| 0 (halted) | `FP_CMD[2]` | `FP_CMD[1]` | `FP_CMD[0]` |
+| 1 (running) | `SKIP` | 0 | 0 |
+
+`FP_CMD` selects a datapath word only while halted, and `SKIP` only in FETCH TS4 of a Group 2 OPR, so neither loses a context it needs. `CIFP` and `AUTO_INDEX_REQUIRED` reach `DP_OVL[4:3]` in both modes. Like the other address multiplexers, this is address formation: it selects which inputs reach the address and evaluates no condition.
 
 ---
 
@@ -350,9 +364,9 @@ Fields that never require a value in the same control word share device outputs 
 | 2 | `IOT_TRANSFER_VAL`, `L_OP`, `MB_SRC` |
 | 1 | `AB_SRC`, `IE_VAL` |
 | 1 | `CIFP_VAL`, `MQ_SRC` |
-| 30 | the remaining 27 fields, unshared: `IDB_SRC` (3 bits), `MDB_SRC` (2 bits), and 25 one-bit fields |
+| 31 | the remaining 28 fields, unshared: `IDB_SRC` (3 bits), `MDB_SRC` (2 bits), and 26 one-bit fields |
 
-Total: 45 bits in six devices, three bits spare.
+Total: 46 bits in six devices, two bits spare.
 
 Fields that share bits are aligned at the low-order end of the shared bits: a field of width *w* occupies the lowest *w* of them. A field narrower than its shared bits, such as `MA_SRC` in the three bits it shares with `AC_SRC` and `DIF_SRC`, does not use the highest one.
 

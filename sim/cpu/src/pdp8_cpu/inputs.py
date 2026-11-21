@@ -51,13 +51,15 @@ def ir_decodes(ir) -> dict:
     hi6 = bits(ir, 11, 6)
     memext_6x = eq(hi6, 0o62)  # IR[11:6] == 110010
     jmp = eq(op, 0o5)
+    class_b2 = g2
     class_b1 = t_or(t_and(jmp, bit(ir, 8)), g1)
     class_b0 = t_or(t_and(jmp, t_not(bit(ir, 8))), g1)
     return {
-        # IRD IR_CLASS = {0, (IR[11:9] = 101 AND IR[8]) OR IR_OPR_GROUP1,
-        #                    (IR[11:9] = 101 AND NOT IR[8]) OR IR_OPR_GROUP1}
-        "IR_CLASS": None if class_b1 is None or class_b0 is None else (class_b1 << 1) | class_b0,
-        "IR_NO_EXECUTE": t_or(jmp, g1),                               # IRD IR_NO_EXECUTE
+        # IRD IR_CLASS = {IR_OPR_GROUP2, (IR[11:9] = 101 AND IR[8]) OR IR_OPR_GROUP1,
+        #                                (IR[11:9] = 101 AND NOT IR[8]) OR IR_OPR_GROUP1}
+        "IR_CLASS": None if None in (class_b2, class_b1, class_b0)
+        else (class_b2 << 2) | (class_b1 << 1) | class_b0,
+        "IR_NO_EXECUTE": t_or(jmp, g1, g2),                           # IRD IR_NO_EXECUTE
         "IR_IS_MRI": is_mri,
         "IR_IS_IOT": is_iot,
         "IR_IS_OPR": is_opr,
@@ -118,13 +120,14 @@ def primitive_flags(st) -> dict:
         "II": st["II"],
         "HLT_REQ": st["HLT_REQ"],
         "RUN": st["RUN"],
+        "SKIP": st["SKIP"],
         "IOT_READ_PENDING": eq(xfer, 0b01),
         "IOT_WRITE_PENDING": eq(xfer, 0b10),
     }
 
 
-def skip_taken(d, f):
-    """DRV SKIP_TAKEN."""
+def opr_skip_req(d, f):
+    """DRV OPR_SKIP_REQ."""
     mode = d["IR_OPR_SKIP_MODE"]
     nmode = t_not(mode)
     or_any = t_or(t_and(nmode, d["IR_OPR_SMA"], eq(f["ACN"], 1)),
@@ -165,9 +168,9 @@ class Conditions:
         if name in self.ir:
             return self.ir[name]
         f, d = self.flags, self.ir
-        if name == "SKIP_TAKEN":
-            return skip_taken(d, f)
-        if name == "ISZ_SKIP_REQUIRED":                               # DRV ISZ_SKIP_REQUIRED
+        if name in ("OPR_SKIP_REQ", "SKIP_TAKEN"):                     # SKIP_TAKEN: V1-ONLY name
+            return opr_skip_req(d, f)
+        if name in ("ISZ_SKIP_REQ", "ISZ_SKIP_REQUIRED"):             # DRV ISZ_SKIP_REQ; V1-ONLY name
             return t_and(eq(d["IR_MRI_OPCODE"], 0o2), f["MBZ"])
         if name == "AUTO_INDEX_REQUIRED":                             # DRV AUTO_INDEX_REQUIRED
             return t_and(d["IR_INDIRECT"], f["EAI"])

@@ -14,7 +14,7 @@ REGISTER_WIDTHS = {
     # architectural
     "AC": 12, "L": 1, "MQ": 12, "PC": 12, "IF": 3, "DF": 3, "IE": 1,
     # control-visible
-    "CIFP": 1, "HLT_REQ": 1, "II": 1, "IR": 12, "MS": 3, "RUN": 1,
+    "CIFP": 1, "HLT_REQ": 1, "II": 1, "IR": 12, "MS": 3, "RUN": 1, "SKIP": 1,
     # internal
     "DIF": 3, "EA_ADDR": 12, "IB": 6, "IOT_TRANSFER": 2, "MA": 12, "MAPR": 8, "MB": 12,
 }

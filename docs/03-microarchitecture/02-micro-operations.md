@@ -63,13 +63,13 @@ No intermediate state or flag storage is created.
 ### 4.2 Arithmetic / Logical
 - [AC_AND_MB](#ac_and_mb)
 - [AC_OR_MQ](#ac_or_mq)
-- [AC_OR_FP_SR](#ac_or_fp_sr)
 - [ADD_AC_MB](#add_ac_mb)
 - [OPR_PASS](#opr_pass)
 
 ### 4.3 Control Flow
 - [IR_ADDR_TO_PC](#ir_addr_to_pc)
 - [MB_TO_PC](#mb_to_pc)
+- [OPR_SKIP_REQ_TO_SKIP](#opr_skip_req_to_skip)
 - [PC_INC](#pc_inc)
 - [PC_LOAD_EA_ADDR](#pc_load_ea_addr)
 
@@ -210,25 +210,6 @@ AC ← AC OR MQ
 
 **Sources:** 
 AC, MQ
-
----
-
-### AC_OR_FP_SR
-  
-**Category:** 
-Arithmetic / Logical  
-
-**Description:** 
-Performs a bitwise OR between the accumulator and the switch register, storing the result in the accumulator.  
-
-**Target:** 
-AC  
-
-**Expression:** 
-AC ← AC OR FP_SR  
-
-**Sources:** 
-AC, FP_SR
 
 ---
 
@@ -1231,13 +1212,32 @@ MQ ← 0
 Arithmetic / Logical
 
 **Description:**
-Loads AC and L from the OPR pass unit, which performs a whole Group 1 OPR instruction in one pass. The pass unit's stage functions are selected directly by IR bits ([Group 1 Execution §4](./07-opr/01-group1-execution.md#4-opr-pass)); this μop selects only that AC and L load from it. Selected in FETCH TS3 when `IR_CLASS = 011`.
+Loads AC and L from the OPR pass unit, which performs the AC and L operations of a whole Group 1 or Group 2 OPR instruction in one pass. The pass unit's stage functions are selected directly by IR bits ([Group 1 Execution §4](./07-opr/01-group1-execution.md#4-opr-pass), [Group 2 Execution §4](./07-opr/02-group2-execution.md#4-opr-pass)); this μop selects only that AC and L load from it. Selected in FETCH TS3 when `IR_CLASS` = 011 or 100.
 
 **Target:**
 AC, L
 
 **Expression:**
-(L, AC) ← OPR_PASS(L, AC, IR)
+(L, AC) ← OPR_PASS(L, AC, FP_SR, IR)
+
+**Sources:**
+AC, L, FP_SR, IR
+
+---
+
+### OPR_SKIP_REQ_TO_SKIP
+
+**Category:**
+Control Flow
+
+**Description:**
+Loads the `SKIP` register with a Group 2 OPR's skip decision, `OPR_SKIP_REQ`, formed from the AC and L held before the TP. Selected in FETCH TS3 when `IR_CLASS = 100`; `SKIP` then selects `PC_INC` in FETCH TS4 ([Group 2 Execution](./07-opr/02-group2-execution.md)).
+
+**Target:**
+SKIP
+
+**Expression:**
+SKIP ← OPR_SKIP_REQ
 
 **Sources:**
 AC, L, IR

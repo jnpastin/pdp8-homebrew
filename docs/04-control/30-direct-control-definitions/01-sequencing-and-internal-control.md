@@ -1009,7 +1009,7 @@ Sources:
 Applicable context:
 
 ```text
-MS = EXECUTE
+MS = FETCH
 TS = 3
 IR_OPR_HLT = 1
 ```
@@ -1028,7 +1028,7 @@ HLT_REQ <- 1 at TP3
 
 Constraints:
 
-- The request committed at TP3 is available as `HLT_REQ = 1` to the subsequent EXECUTE TP4 control decision.
+- The request committed at TP3 is available as `HLT_REQ = 1` to the subsequent FETCH TP4 instruction-completion decision, where it is consumed by [Pending-Halt Consumption](#346-pending-halt-consumption).
 - This definition covers only capture of the HLT request.
 - The subsequent run-state transition and request consumption are defined separately by [Pending-Halt Consumption](#346-pending-halt-consumption).
 - Request capture is independent of whether normal running, Single Instruction mode, or Single Step mode is active.
@@ -1168,7 +1168,7 @@ Condition                                                         HLT_REQ_NEXT
 ----------------------------------------------------------------  ------------
 No pending or newly accepted halt request                         0
 STOP captured before the applicable instruction-completion TP     1
-HLT instruction executed at EXECUTE TP3                           1
+HLT instruction executed at FETCH TP3                             1
 Pending request before instruction completion                     1
 Pending request at instruction completion                         0
 Single Instruction halt with no pending request                   0

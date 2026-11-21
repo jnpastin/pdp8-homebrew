@@ -117,14 +117,15 @@ def datapath_address(mseff, tscode, variant, ovl):
     return _assemble(fields)
 
 
-def sequencer_address(mseff, tscode, hlt_req, fp_stop, seq_ovl, dma_req_n, ir_seq, a2=0):
+def sequencer_address(mseff, tscode, hlt_req, fp_stop, seq_ovl, dma_req_n, ir_seq, a2=0, a1=0):
     """CSO §5.6: A14..A12 MS_EFF, A11..A10 TS_CODE, A9 HLT_REQ, A8 FP_STOP, A7..A5 SEQ_OVL,
-    A4 /DMA_REQ, A3 IR_SEQ, A2 the design's A2 decode (v2: IR_NO_EXECUTE; v1: 0), A1..A0 = 0."""
+    A4 /DMA_REQ, A3 IR_SEQ, A2 and A1 the design's decodes (v2: IR_NO_EXECUTE, IR_OPR_HLT; v1:
+    0), A0 = 0."""
     fields = [(12 + k, (mseff >> k) & 1) for k in range(3)]
     fields += [(10 + k, (tscode >> k) & 1) for k in range(2)]
     fields += [(9, hlt_req), (8, fp_stop)]
     fields += [(5 + k, seq_ovl[k]) for k in range(3)]
-    fields += [(4, dma_req_n), (3, ir_seq), (2, a2)]
+    fields += [(4, dma_req_n), (3, ir_seq), (2, a2), (1, a1)]
     return _assemble(fields)
 
 

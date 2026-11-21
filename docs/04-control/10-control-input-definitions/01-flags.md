@@ -268,6 +268,24 @@ IOT_WRITE_PENDING = (IOT_TRANSFER = 10)
 
 ---
 
+### SKIP
+
+**Name:** SKIP
+**Source Register:** SKIP
+**Purpose:** Holds a Group 2 OPR's skip decision from FETCH TP3 to FETCH TP4.
+
+**Value Encoding:**
+- 0 → no skip
+- 1 → skip
+
+**Consumed By:**
+- Control decision:
+  - FETCH TS4 `PC_INC` selection for a Group 2 OPR (`IR_CLASS = 100`)
+- Modified by:
+  - [OPR_SKIP_REQ_TO_SKIP](../../03-microarchitecture/02-micro-operations.md#opr_skip_req_to_skip)
+
+---
+
 ## 5. Summary
 
 This flag set is:

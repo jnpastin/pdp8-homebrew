@@ -51,7 +51,8 @@ DATAPATH_FIELDS = {f.name: f for f in [
     _f("AB_SRC", 1, {0: "MA", 1: "PC"}, "MCS AB_SRC"),
     _f("AC_LOAD", 1, LOAD, "MCS AC_LOAD"),
     _f("AC_SRC", 3, {0: "IDB", 1: "DB", 2: "IF (field-merge)", 3: "DF (field-merge)",
-                     4: "IB (field-merge)", 5: "MQ", 6: "GTF_FLAGS", 7: "OPR pass unit"}, "MCS AC_SRC"),
+                     4: "IB (field-merge)", 5: "MQ", 6: "GTF_FLAGS",
+                     7: "OPR pass unit (Group 1 and Group 2 OPR)"}, "MCS AC_SRC"),
     _f("ALU_A_SRC", 2, {0: "AC", 1: "MB", 2: "PC", 3: "reserved"}, "MCS ALU_A_SRC"),
     _f("ALU_B_SRC", 2, {0: "NONE", 1: "MB", 2: "MQ", 3: "FP_SR"}, "MCS ALU_B_SRC"),
     _f("ALU_OP", 4, {0: "ADD", 1: "AND", 2: "OR", 3: "NOT", 4: "INC", 5: "ROR", 6: "ROL",
@@ -81,7 +82,8 @@ DATAPATH_FIELDS = {f.name: f for f in [
     _f("IOT_TRANSFER_VAL", 2, {0: "NONE", 1: "READ", 2: "WRITE", 3: "invalid"}, "MCS IOT_TRANSFER_VAL"),
     _f("IR_LOAD", 1, LOAD, "MCS IR_LOAD"),
     _f("L_LOAD", 1, LOAD, "MCS L_LOAD"),
-    _f("L_OP", 2, {0: "CLEAR", 1: "OPR pass unit link", 2: "ALU_LINK", 3: "AC[11]"}, "MCS L_OP"),
+    _f("L_OP", 2, {0: "CLEAR", 1: "OPR pass unit link (Group 1 and Group 2 OPR)", 2: "ALU_LINK",
+                   3: "AC[11]"}, "MCS L_OP"),
     _f("MA_LOAD", 1, LOAD, "MCS MA_LOAD"),
     _f("MA_SRC", 2, {0: "PC", 1: "EA_ADDR", 2: "Zero (hardwired 0000)", 3: "reserved"}, "MCS MA_SRC"),
     _f("MB_LOAD", 1, LOAD, "MCS MB_LOAD"),
@@ -94,6 +96,7 @@ DATAPATH_FIELDS = {f.name: f for f in [
     _f("PC_LOAD", 1, LOAD, "MCS PC_LOAD"),
     _f("PC_SRC", 2, {0: "IDB", 1: "Constant 0001 (hardwired)", 2: "IR address formation unit",
                      3: "reserved"}, "MCS PC_SRC"),
+    _f("SKIP_LOAD", 1, LOAD, "MCS SKIP_LOAD"),
 ]}
 
 # Fields whose definition differs by control design, keyed by design name (design.py).
@@ -108,9 +111,16 @@ _DESIGN_OVERRIDES = {
 }
 
 
+# Fields a control design does not have.
+_DESIGN_ABSENT = {"v1": {"SKIP_LOAD"}}  # V1-ONLY
+
+
 def datapath_fields(design_name: str) -> dict:
     """The datapath-slice field definitions of a control design."""
-    return {**DATAPATH_FIELDS, **_DESIGN_OVERRIDES.get(design_name, {})}
+    fields = {**DATAPATH_FIELDS, **_DESIGN_OVERRIDES.get(design_name, {})}
+    for name in _DESIGN_ABSENT.get(design_name, ()):
+        del fields[name]
+    return fields
 
 # Sequencer-slice fields (CSO §4.1), encodings from SCS §4 and ACS §4.9.
 SEQUENCER_FIELDS = {f.name: f for f in [

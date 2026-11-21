@@ -27,6 +27,7 @@ All stable values in the system must reside in registers.
 - IR: [Instruction Register](#ir--instruction-register)
 - MS: [Major State](#ms--major-state)
 - RUN: [Run State](#run--run-state)
+- SKIP: [Skip](#skip--skip)
 
 ---
 
@@ -53,18 +54,18 @@ Visibility: Global
 Invariants:
 - Holds the canonical 12-bit result of the last completed operation
 - Forms a composite 13-bit value with L for arithmetic and shifts
-- Stable outside EXECUTE, except at the FETCH TP3 of a Group 1 OPR and when cleared by the START or CLEAR console operation while halted
+- Stable outside EXECUTE, except at the FETCH TP3 of a Group 1 or Group 2 OPR and when cleared by the START or CLEAR console operation while halted
 
 Constraints:
-- Modified only during EXECUTE, at the FETCH TP3 of a Group 1 OPR (`OPR_PASS`), or by the START or CLEAR console operation while halted
+- Modified only during EXECUTE, at the FETCH TP3 of a Group 1 or Group 2 OPR (`OPR_PASS`), or by the START or CLEAR console operation while halted
 - Must not be written during DEFER, or during FETCH except at that TP3
 - All operations affecting AC must define L behavior if carry/borrow arises
 
 Writers:
 - ALU result path
-- OPR pass unit (Group 1 OPR: CLA, CMA, IAC, rotates, BSW; [Group 1 Execution](../03-microarchitecture/07-opr/01-group1-execution.md))
+- OPR pass unit (Group 1 OPR: CLA, CMA, IAC, rotates, BSW, [Group 1 Execution](../03-microarchitecture/07-opr/01-group1-execution.md); Group 2 OPR: CLA, OSR, [Group 2 Execution](../03-microarchitecture/07-opr/02-group2-execution.md))
 - Shift/rotate network (AC:L)
-- OPR control operations (Group 2 and 3 CLA)
+- OPR control operations (Group 3 CLA)
 - MQ transfer path
 - IOT execution (GTF)
 - System initialization (CAF, front-panel CLEAR; AC_CLEAR micro-operation)
@@ -405,7 +406,7 @@ Visibility: Global
 Invariants:
 - Represents the 13th bit of AC:L during arithmetic
 - Always defined after any instruction that targets it
-- Stable outside EXECUTE, except at the FETCH TP3 of a Group 1 OPR and when cleared by the START or CLEAR console operation while halted
+- Stable outside EXECUTE, except at the FETCH TP3 of a Group 1 OPR (a Group 2 OPR reloads L unchanged at its FETCH TP3) and when cleared by the START or CLEAR console operation while halted
 
 Constraints:
 - Modified only during EXECUTE, at the FETCH TP3 of a Group 1 OPR (`OPR_PASS`), or by the START or CLEAR console operation while halted
@@ -590,7 +591,7 @@ Invariants:
 Constraints:
 - Incremented at FETCH TP1; MA loads the pre-increment PC at the same TP
 - After FETCH TP1, modified only by:
-  - Conditional skip (increment, EXECUTE)
+  - Conditional skip (increment: Group 2 OPR at FETCH TP4; ISZ and skip IOTs in EXECUTE)
   - Direct JMP (load, FETCH TP3)
   - JMP I (load, DEFER TP4)
   - JMS (EXECUTE: store return address, then load)
@@ -626,4 +627,26 @@ Constraints:
 
 Writers:
 - Sequencing control (RUN_NEXT)
+
+---
+
+### SKIP – Skip
+
+Width: 1 bit
+
+Role: Holds a Group 2 OPR's skip decision from FETCH TP3, where it is made, to FETCH TP4, where it increments PC.
+
+Visibility: Control-visible
+
+Invariants:
+- Meaningful only in FETCH TS4 of the Group 2 OPR that loaded it; its value at any other time has no effect
+- Power-on value undefined; it is not read before it is loaded
+
+Constraints:
+- Loaded only at the FETCH TP3 of a Group 2 OPR, with `OPR_SKIP_REQ` (`SKIP_LOAD`; OPR_SKIP_REQ_TO_SKIP micro-operation)
+- `OPR_SKIP_REQ` is formed from the AC and L held before that TP, so a CLA committed at the same TP does not affect it
+- Must not be modified by any other μop
+
+Writers:
+- Group 2 skip logic (`OPR_SKIP_REQ`; [Group 2 Execution](../03-microarchitecture/07-opr/02-group2-execution.md))
 

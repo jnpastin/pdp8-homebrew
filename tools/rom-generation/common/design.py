@@ -27,17 +27,22 @@ class Design:
     build: PurePosixPath         # tool outputs, relative to the repository root
     frozen: bool                 # packed from maintained artifacts only; not regenerated
     # Control-store address formation outside EXECUTE (Control Store Organization §5.4.2,
-    # §5.6): the IR-derived decode that drives the datapath slice's VARIANT, and the one on
-    # the sequencer slice's A2. None: VARIANT = 0 and A2 = 0 (v1).
+    # §5.6): the IR-derived decode that drives the datapath slice's VARIANT, and the ones on
+    # the sequencer slice's A2 and A1. None: VARIANT = 0, A2 = 0, A1 = 0 (v1).
     non_execute_variant: str | None = "IR_CLASS"
     sequencer_a2: str | None = "IR_NO_EXECUTE"
+    sequencer_a1: str | None = "IR_OPR_HLT"
+    # The state overlay group's low three bits pass through a 3-bit 2:1 multiplexer selected
+    # by RUN: FP_CMD while halted, running-only signals while running (CSO §6.3).
+    state_group_run_mux: bool = True
 
 
 DESIGNS = {
     # V1-ONLY: v1 keeps its original paths, so v1 output is unchanged by the selection.
     "v1": Design("v1", PurePosixPath("rom/microcode/v1"),
                  PurePosixPath("build/simulation_outputs/rom-generation"), frozen=True,
-                 non_execute_variant=None, sequencer_a2=None),
+                 non_execute_variant=None, sequencer_a2=None, sequencer_a1=None,
+                 state_group_run_mux=False),
     "v2": Design("v2", PurePosixPath("rom/microcode/v2"),
                  PurePosixPath("build/simulation_outputs/rom-generation-v2"), frozen=False),
 }

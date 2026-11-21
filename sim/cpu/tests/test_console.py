@@ -3,6 +3,7 @@
 import unittest
 
 import _paths  # noqa: F401
+from pdp8_cpu import design as D
 from pdp8_cpu import encodings as E
 from pdp8_cpu.cpu import Cpu
 from pdp8_cpu.images import ControlStore
@@ -129,7 +130,8 @@ class ConsoleTests(unittest.TestCase):
 
 class SmokeTests(unittest.TestCase):
     def test_hlt_program(self):
-        # Deposit HLT at 0200, start there: FETCH, EXECUTE, halt at EXECUTE TP4 with PC = 0201.
+        # Deposit HLT at 0200, start there; it halts at its last state's TP4 with PC = 0201:
+        # FETCH, EXECUTE (v1), or FETCH alone (v2: Group 2 OPR completes in FETCH).
         cpu, rec = new_cpu()
         load_address(cpu, 0o200)
         cpu.panel.sr = 0o7402
@@ -141,11 +143,12 @@ class SmokeTests(unittest.TestCase):
             cpu.step_ts()
             n += 1
         st = cpu.st
-        self.assertEqual(n, 8)
+        states = D.major_states(cpu.design, 0o7402)
+        self.assertEqual(n, 4 * len(states))
         self.assertEqual((st["RUN"], st["PC"], st["IR"], st["MS"], st.ts, st["HLT_REQ"]),
                          (0, 0o201, 0o7402, E.FETCH, 1, 0))
         self.assertEqual([(r.ms, r.ts) for r in rec if r.kind == "TS"],
-                         [(E.FETCH, t) for t in (1, 2, 3, 4)] + [(E.EXECUTE, t) for t in (1, 2, 3, 4)])
+                         [(getattr(E, ms), t) for ms in states for t in (1, 2, 3, 4)])
 
 
 if __name__ == "__main__":

@@ -274,6 +274,7 @@ Constraint:
 - [MQ_LOAD](#mq_load)
 - [PC_INC](#pc_inc)
 - [PC_LOAD](#pc_load)
+- [SKIP_LOAD](#skip_load)
 
 ---
 
@@ -369,7 +370,6 @@ All numeric encodings in this section are octal unless otherwise noted.
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 1
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 1
 - [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap) = 1
-- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr) = 1
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 1
 - [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 1
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 1
@@ -403,7 +403,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 4 → IB (field-merge)
 5 → MQ
 6 → GTF_FLAGS
-7 → OPR pass unit
+7 → OPR pass unit (Group 1 and Group 2 OPR)
 ```
 
 **Constraints:**
@@ -420,7 +420,6 @@ All numeric encodings in this section are octal unless otherwise noted.
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 0
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 0
 - [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap) = 5
-- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr) = 0
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 0
 - [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 0
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 0
@@ -460,7 +459,6 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Used by μops:**
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 0
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 0
-- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr) = 0
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 0
 - [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 0
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 0
@@ -498,7 +496,6 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Used by μops:**
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 1
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 0
-- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr) = 3
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 2
 - [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 0
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 1
@@ -546,7 +543,6 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Used by μops:**
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 1
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 12
-- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr) = 2
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 2
 - [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 12
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 0
@@ -921,7 +917,6 @@ Bits 5:0 are the save field held in IB, not the current IF and DF ([IOT Instruct
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 1
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 1
 - [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap) = 1
-- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr) = 1
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 1
 - [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb) = 1
 - [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 1
@@ -970,7 +965,6 @@ Bits 5:0 are the save field held in IB, not the current IF and DF ([IOT Instruct
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 7
 - [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 7
 - [AC_MQ_SWAP](../../03-microarchitecture/02-micro-operations.md#ac_mq_swap) = 0
-- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr) = 7
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq) = 7
 - [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb) = 0
 - [AC_TO_MQ_AND_CLEAR_AC](../../03-microarchitecture/02-micro-operations.md#ac_to_mq_and_clear_ac) = 7
@@ -1319,7 +1313,7 @@ IF_DF_COMBINED[5:3]=IF
 **Encoding:**
 ```
 0 → CLEAR
-1 → OPR pass unit link
+1 → OPR pass unit link (Group 1 and Group 2 OPR)
 2 → ALU_LINK
 3 → AC[11]
 ```
@@ -1684,6 +1678,33 @@ memory bus value
 - [MB_TO_PC](../../03-microarchitecture/02-micro-operations.md#mb_to_pc) = 0
 - [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr) = 0
 - [PC_SET_1](../../03-microarchitecture/02-micro-operations.md#pc_set_1) = 1
+---
+
+### SKIP_LOAD
+
+**Mnemonic:** SKIP_LOAD
+**Name:** Skip Register Load
+**Class:** Enable
+**Bit Width:** 1
+**Default Value:** 0
+**Explicit Value Required:** Yes
+**Value Required When:** Always
+
+**Purpose:** Loads the SKIP register from `OPR_SKIP_REQ`.
+
+**Encoding:**
+```
+0 → no load
+1 → load
+```
+
+**Constraints:**
+- Uses direct load path (no ALU or IDB involvement)
+- `OPR_SKIP_REQ` is formed from the pre-TP AC and L, so an AC or L load at the same TP does not affect the loaded value
+
+**Used by μops:**
+- [OPR_SKIP_REQ_TO_SKIP](../../03-microarchitecture/02-micro-operations.md#opr_skip_req_to_skip) = 1
+
 ---
 
 ## 6. Global Signal Constraints
@@ -2532,7 +2553,6 @@ ALU_B_SRC ≠ NONE
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb)
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb)
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
-- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr)
 
 ---
 

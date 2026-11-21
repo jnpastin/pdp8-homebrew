@@ -109,6 +109,10 @@ NON_EXECUTE_IR_SEQ = "IR_INDIRECT"
 NON_EXECUTE_VARIANT = DESIGN.non_execute_variant
 SEQ_A2 = DESIGN.sequencer_a2
 SEQ_A2_BIT = 2
+SEQ_A1 = DESIGN.sequencer_a1
+SEQ_A1_BIT = 1
+# The wired state group's low FP_CMD_WIDTH bits are multiplexed by RUN (CSO §6.3).
+STATE_GROUP_RUN_MUX = DESIGN.state_group_run_mux
 # The non-EXECUTE contexts in which IR holds the current instruction (it loads
 # at FETCH TP2), so the datapath word may depend on the class. In every other
 # non-EXECUTE context the word must be the same for every class (§5.4.2).
@@ -335,7 +339,8 @@ def build_model(documents: dict[str, dict[str, Any]]) -> tuple[Model | None, lis
     for name in IR_SEQ:
         if name not in ir_table:
             error("MISSING_IR_DECODE", "IR_SEQ decode is not an evaluable IR-derived input.", name)
-    for name, what in ((NON_EXECUTE_VARIANT, "non-EXECUTE VARIANT"), (SEQ_A2, "sequencer A2")):
+    for name, what in ((NON_EXECUTE_VARIANT, "non-EXECUTE VARIANT"), (SEQ_A2, "sequencer A2"),
+                       (SEQ_A1, "sequencer A1")):
         if name is not None and name not in ir_table:
             error("MISSING_IR_DECODE", f"The {what} decode is not an evaluable IR-derived input.",
                   name)
@@ -343,6 +348,8 @@ def build_model(documents: dict[str, dict[str, Any]]) -> tuple[Model | None, lis
         error("VARIANT_OVERFLOW", f"{NON_EXECUTE_VARIANT} is wider than VARIANT.")
     if SEQ_A2 in ir_table and len(ir_table[SEQ_A2][0]) != 1:
         error("A2_NOT_ONE_BIT", "The sequencer A2 decode must be one bit.", SEQ_A2)
+    if SEQ_A1 in ir_table and len(ir_table[SEQ_A1][0]) != 1:
+        error("A1_NOT_ONE_BIT", "The sequencer A1 decode must be one bit.", SEQ_A1)
 
     if has_failures(diagnostics):
         return None, diagnostics
@@ -592,9 +599,15 @@ class Group:
     code: int
     signals: list[str]
     bits: dict[str, int] = field(default_factory=dict)
+    # The state group behind the RUN multiplexer (CSO §6.3): `bits` is its halted face and
+    # `running_bits` its running face. None: one face for both.
+    running_bits: dict[str, int] | None = None
 
     def width(self) -> int:
         return sum(signal_width(s) for s in self.signals)
+
+    def face(self, halted: bool) -> dict[str, int]:
+        return self.bits if halted or self.running_bits is None else self.running_bits
 
 
 def pack_groups(needs: Sequence[frozenset[str]]) -> tuple[list[Group], dict[frozenset, int]]:
@@ -655,9 +668,51 @@ def place_group(groups: list[Group], placement: dict[frozenset, int], need: froz
             placement[key] = current
 
 
-def overlay_values(group: Group, ovl: int) -> dict[str, str]:
+def state_group(halted_need: frozenset, running_need: frozenset) -> Group | None:
+    """The wired state group behind the RUN multiplexer (CSO §6.3), or None if a face
+    does not fit.
+
+    Halted face: FP_CMD on bits 0..2, the other halted signals from bit 3 up. Running face:
+    the halted face's unmultiplexed signals on the same bits, then the running signals on
+    the free bits from 3 up, then on the multiplexed bits from 2 down. Bits 3 up are wired
+    past the multiplexer, so the halted face shows the running signals placed there too."""
+
+    halted = {FP_CMD: 0} if FP_CMD in halted_need else {}
+    bit = FP_CMD_WIDTH
+    for s in sorted(halted_need - {FP_CMD}):
+        halted[s] = bit
+        bit += signal_width(s)
+    if bit > DP_OVL_WIDTH or FP_CMD in running_need:
+        return None
+    running = {s: b for s, b in halted.items() if s != FP_CMD}
+    free = [b for b in range(FP_CMD_WIDTH, DP_OVL_WIDTH) if b not in running.values()]
+    free += list(range(FP_CMD_WIDTH - 1, -1, -1))
+    for s in sorted(running_need - set(running)):
+        if signal_width(s) != 1 or not free:
+            return None
+        running[s] = free.pop(0)
+    # Bits 3 up are not multiplexed: the hardware presents them in both faces.
+    halted.update({s: b for s, b in running.items() if b >= FP_CMD_WIDTH})
+    return Group(NON_EXECUTE_GROUP, sorted(halted_need | running_need), halted, running)
+
+
+def insert_group(groups: list[Group], placement: dict[frozenset, int], state: Group) -> None:
+    """Insert the state group at its wired code; the groups at and above it move up one."""
+
+    code = state.code
+    while len(groups) < code:
+        groups.append(Group(len(groups), []))
+    groups.insert(code, state)
+    for index, group in enumerate(groups):
+        group.code = index
+    for key, value in placement.items():
+        if key and value >= code:
+            placement[key] = value + 1
+
+
+def overlay_values(group: Group, ovl: int, halted: bool = True) -> dict[str, str]:
     out = {}
-    for signal, bit in group.bits.items():
+    for signal, bit in group.face(halted).items():
         if signal == FP_CMD:
             out[signal] = str((ovl >> bit) & 0b111)
         else:
@@ -720,6 +775,7 @@ def pack(model: Model) -> tuple[Packing | None, list[Diagnostic]]:
     nonexec: dict[tuple[str, int], Signature] = {}
     needs: list[frozenset] = []
     non_execute_needs: set[str] = set()
+    halted_needs: set[str] = set()
     for b in dp:
         if not b.records:
             continue  # unreachable IR values: any address content will do
@@ -747,6 +803,8 @@ def pack(model: Model) -> tuple[Packing | None, list[Diagnostic]]:
                 nonexec_sigs[(b.context.name, cls)].add((sig.signals, sig.table))
                 nonexec[(b.context.name, cls)] = sig
             non_execute_needs |= set(signals)
+            if b.context.halted:
+                halted_needs |= set(signals)
     for (name, cls), sigs in nonexec_sigs.items():
         if len(sigs) > 1:
             error("NON_EXECUTE_IR_DEPENDENCE",
@@ -767,7 +825,20 @@ def pack(model: Model) -> tuple[Packing | None, list[Diagnostic]]:
                   f"EXECUTE:TS{ts}")
     # Every non-EXECUTE context shares the one wired overlay group.
     non_execute_need = frozenset(non_execute_needs)
-    all_needs = needs + [non_execute_need]
+    state = None
+    if STATE_GROUP_RUN_MUX:
+        # The state group has a halted and a running face (CSO §6.3); it is placed alone
+        # at the wired code, and the EXECUTE needs share the other groups.
+        halted_need = frozenset(halted_needs)
+        running_need = frozenset(non_execute_needs - halted_needs)
+        state = state_group(halted_need, running_need)
+        if state is None:
+            error("OVERLAY_TOO_WIDE",
+                  f"halted {sorted(halted_need)} and running {sorted(running_need)} do not fit "
+                  f"the {DP_OVL_WIDTH} state-group bits behind the RUN multiplexer.")
+        all_needs = needs
+    else:
+        all_needs = needs + [non_execute_need]
     for need in all_needs:
         if sum(map(signal_width, need)) > DP_OVL_WIDTH:
             error("OVERLAY_TOO_WIDE",
@@ -777,7 +848,10 @@ def pack(model: Model) -> tuple[Packing | None, list[Diagnostic]]:
     if has_failures(diagnostics):
         return None, diagnostics
     groups, placement = pack_groups(all_needs)
-    place_group(groups, placement, non_execute_need, NON_EXECUTE_GROUP)
+    if state is not None:
+        insert_group(groups, placement, state)
+    else:
+        place_group(groups, placement, non_execute_need, NON_EXECUTE_GROUP)
     if len(groups) > 2 ** DP_OVL_SEL_WIDTH:
         error("OVERLAY_GROUP_OVERFLOW", f"{len(groups)} overlay groups exceed "
               f"{2 ** DP_OVL_SEL_WIDTH}.")
@@ -855,7 +929,7 @@ def pack(model: Model) -> tuple[Packing | None, list[Diagnostic]]:
         for ts in ((context.ts,) if context.ts else (1, 2, 3, 4)):
             selected = ir_seq_select.get((execute, ts))
             bit = irseq[IR_SEQ.index(selected)] if selected else "0"
-            seq_projected[(ctx, ts, bit, irseq[-1], visible)].extend(records)
+            seq_projected[(ctx, ts, bit, irseq[-2], irseq[-1], visible)].extend(records)
     for key, records in seq_projected.items():
         table = projection(records, [])
         if table is None:
@@ -878,14 +952,19 @@ def pack(model: Model) -> tuple[Packing | None, list[Diagnostic]]:
 
 
 def _split_by_irseq(model: Model, irs: Sequence[int]) -> list[tuple[str, ...]]:
-    """The IR_SEQ decodes, then the A2 decode, of each IR value."""
-    return sorted({tuple(model.ir_table[n][ir] for n in IR_SEQ) + (a2_value(model, ir),)
-                   for ir in irs})
+    """The IR_SEQ decodes, then the A2 and A1 decodes, of each IR value."""
+    return sorted({tuple(model.ir_table[n][ir] for n in IR_SEQ)
+                   + (a2_value(model, ir), a1_value(model, ir)) for ir in irs})
 
 
 def a2_value(model: Model, ir: int) -> str:
     """The sequencer slice's A2 for IR value `ir` (Control Store Organization §5.6)."""
     return model.ir_table[SEQ_A2][ir] if SEQ_A2 else "0"
+
+
+def a1_value(model: Model, ir: int) -> str:
+    """The sequencer slice's A1 for IR value `ir` (Control Store Organization §5.6)."""
+    return model.ir_table[SEQ_A1][ir] if SEQ_A1 else "0"
 
 
 def non_execute_class(model: Model, ir: int) -> int:
@@ -977,13 +1056,14 @@ def datapath_address(ms_eff: int, ts: int, variant: int, ovl: int) -> int:
 
 
 def sequencer_address(ms_eff: int, ts: int, values: dict[str, str], halted: bool,
-                      irseq: str, a2: str = "0") -> int:
+                      irseq: str, a2: str = "0", a1: str = "0") -> int:
     def bit(name):
         return 1 if values.get(name) == "1" else 0
     ovl = fp_code(values) if halted else (
         bit(SEQ_RUNNING[0]) << 2 | bit(SEQ_RUNNING[1]) << 1 | bit(SEQ_RUNNING[2]))
     return ((ms_eff << 12) | ((ts - 1) << 10) | bit("HLT_REQ") << 9 | bit("FP_STOP") << 8
-            | ovl << 5 | bit("/DMA_REQ") << 4 | int(irseq) << 3 | int(a2) << SEQ_A2_BIT)
+            | ovl << 5 | bit("/DMA_REQ") << 4 | int(irseq) << 3 | int(a2) << SEQ_A2_BIT
+            | int(a1) << SEQ_A1_BIT)
 
 
 def build_images(packing: Packing) -> None:
@@ -1027,7 +1107,7 @@ def build_images(packing: Packing) -> None:
                 table = sig.lookup()
                 g = packing.groups[group]
                 for ovl in range(1 << DP_OVL_WIDTH):
-                    values = overlay_values(g, ovl)
+                    values = overlay_values(g, ovl, ms_eff == HALTED_CODE)
                     key = tuple(values.get(s, OTHER) for s in sig.signals)
                     required = table.get(key)
                     if required is None:
@@ -1037,7 +1117,7 @@ def build_images(packing: Packing) -> None:
                         packing, word, set(dict(required)))
 
     sequencer = [seq_default] * (1 << ADDRESS_BITS)
-    for (ctx, ts, irseq, a2, visible), required in packing.sequencer_table.items():
+    for (ctx, ts, irseq, a2, a1, visible), required in packing.sequencer_table.items():
         context = next(c for c in model.contexts if c.name == ctx)
         values = dict(zip(list(SEQ_ALWAYS) + ([FP_CMD] if context.halted else list(SEQ_RUNNING)),
                           visible))
@@ -1046,7 +1126,14 @@ def build_images(packing: Packing) -> None:
             values.update({n: "1" if i + 1 == code else "0" for i, n in enumerate(FP_COMMANDS)})
         word = _seq_word(model, {**model.defaults, **required})
         ms_eff = HALTED_CODE if context.halted else context.ms_code
-        sequencer[sequencer_address(ms_eff, ts, values, context.halted, irseq, a2)] = word
+        sequencer[sequencer_address(ms_eff, ts, values, context.halted, irseq, a2, a1)] = word
+        # A1 = 1 occurs only with the IR_SEQ and A2 values of the A1 decode's own IR values
+        # (v2: a Group 2 HLT, so IR_INDIRECT = 0 and IR_NO_EXECUTE = 1). The other A1 = 1
+        # addresses are unreachable from any IR value; they repeat the A1 = 0 word, so that a
+        # word that does not depend on IR is the same at every address an undefined IR (power-on)
+        # can form.
+        if SEQ_A1 and a1 == "0" and (ctx, ts, irseq, a2, "1", visible) not in packing.sequencer_table:
+            sequencer[sequencer_address(ms_eff, ts, values, context.halted, irseq, a2, "1")] = word
 
     packing.images = {"mapping": mapping, "sequencer": sequencer}
     for device in range(DATAPATH_DEVICES):
@@ -1073,7 +1160,7 @@ def check_instruction_end(model: Model, seq_table: dict, diagnostics: list[Diagn
     continuing = {model.ms_codes[name] for name in CONTINUING_STATES}
     contexts = {c.name: c for c in model.contexts}
     bad = []
-    for (ctx, ts, irseq, a2, visible), word in seq_table.items():
+    for (ctx, ts, irseq, a2, _a1, visible), word in seq_table.items():
         context = contexts[ctx]
         if context.halted or ts != 4:
             continue
@@ -1145,12 +1232,13 @@ def verify(packing: Packing, dp: Sequence[Behavior], seq: Sequence[Behavior],
             for entry, ir in entries(b, ts).items():
                 variant = entry & ((1 << VARIANT_WIDTH) - 1)
                 group = packing.groups[(entry >> VARIANT_WIDTH) & ((1 << DP_OVL_SEL_WIDTH) - 1)]
-                signals = list(group.bits)
+                bits = group.face(context.halted)
+                signals = list(bits)
                 for record in b.records:
                     for concrete in concrete_combinations(signals, record.values):
                         ovl = 0
                         for s, v in zip(signals, concrete):
-                            ovl |= int(v) << group.bits[s]
+                            ovl |= int(v) << bits[s]
                         word = datapath[datapath_address(ms_eff, ts, variant, ovl)]
                         checked += 1
                         for f in record.care:
@@ -1166,8 +1254,8 @@ def verify(packing: Packing, dp: Sequence[Behavior], seq: Sequence[Behavior],
             seen: dict[tuple, int] = {}
             for ir in b.irs:
                 seen.setdefault((slice_select(packing, context.execute, ir, ts),
-                                 a2_value(model, ir)), ir)
-            for (entry, a2), ir in seen.items():
+                                 a2_value(model, ir), a1_value(model, ir)), ir)
+            for (entry, a2, a1), ir in seen.items():
                 irseq = str((entry >> IR_SEQ_BIT) & 1)
                 for record in b.records:
                     for concrete in concrete_combinations(visible, record.values):
@@ -1177,7 +1265,7 @@ def verify(packing: Packing, dp: Sequence[Behavior], seq: Sequence[Behavior],
                             values.update({n: "1" if i + 1 == code else "0"
                                            for i, n in enumerate(FP_COMMANDS)})
                         word = sequencer[sequencer_address(ms_eff, ts, values,
-                                                           context.halted, irseq, a2)]
+                                                           context.halted, irseq, a2, a1)]
                         checked += 1
                         for f in record.care:
                             if _seq_unpack(model, word, f) != record.word[f]:
@@ -1224,11 +1312,13 @@ def packing_json(packing: Packing, diagnostics: Sequence[Diagnostic]) -> dict[st
                               "A4..A0 = DP_OVL",
             "sequencer_slice": "A14..A12 = MS_EFF, A11..A10 = TS_CODE (TS-1), A9 = HLT_REQ, "
                                "A8 = FP_STOP, A7..A5 = SEQ_OVL, A4 = /DMA_REQ, A3 = IR_SEQ, "
-                               + (f"A2 = {SEQ_A2}, A1..A0 = 0" if SEQ_A2 else "A2..A0 = 0"),
+                               + (f"A2 = {SEQ_A2}, A1 = {SEQ_A1}, A0 = 0" if SEQ_A2 and SEQ_A1
+                                  else f"A2 = {SEQ_A2}, A1..A0 = 0" if SEQ_A2 else "A2..A0 = 0"),
         },
         # Present only for a design that sets them (absent for v1), so v1 output is unchanged.
         **({"non_execute_variant": NON_EXECUTE_VARIANT} if NON_EXECUTE_VARIANT else {}),
         **({"sequencer_a2": SEQ_A2} if SEQ_A2 else {}),
+        **({"sequencer_a1": SEQ_A1} if SEQ_A1 else {}),
         "mapping_rom": {
             "fields": {"VARIANT": [0, VARIANT_WIDTH],
                        "DP_OVL_SEL": [VARIANT_WIDTH, DP_OVL_SEL_WIDTH],
@@ -1240,7 +1330,13 @@ def packing_json(packing: Packing, diagnostics: Sequence[Diagnostic]) -> dict[st
         "overlay_groups": [
             {"code": g.code,
              "bits": [{"bit": bit, "signal": s, "width": signal_width(s)}
-                      for s, bit in sorted(g.bits.items(), key=lambda kv: kv[1])]}
+                      for s, bit in sorted(g.bits.items(), key=lambda kv: kv[1])],
+             # The state group's running face behind the RUN multiplexer (CSO §6.3); "bits"
+             # is then its halted face. Absent for a group with one face (and for v1).
+             **({"running_bits": [{"bit": bit, "signal": s, "width": signal_width(s)}
+                                  for s, bit in sorted(g.running_bits.items(),
+                                                       key=lambda kv: kv[1])]}
+                if g.running_bits is not None else {})}
             for g in packing.groups
         ],
         "non_execute_overlay_group": NON_EXECUTE_GROUP,
@@ -1292,10 +1388,16 @@ def build_report(packing: Packing | None, diagnostics: Sequence[Diagnostic]) -> 
             "",
             "Overlay groups", "--------------",
         ]
-        for g in data["overlay_groups"]:
-            lines.append(f"{g['code']}: " + ", ".join(
+        def face(bits):
+            return ", ".join(
                 f"[{b['bit']}{'..' + str(b['bit'] + b['width'] - 1) if b['width'] > 1 else ''}] "
-                f"{b['signal']}" for b in g["bits"]))
+                f"{b['signal']}" for b in bits)
+        for g in data["overlay_groups"]:
+            if "running_bits" in g:
+                lines.append(f"{g['code']} (RUN = 0): {face(g['bits'])}")
+                lines.append(f"{g['code']} (RUN = 1): {face(g['running_bits'])}")
+            else:
+                lines.append(f"{g['code']}: {face(g['bits'])}")
         lines.append(f"Non-EXECUTE group (wired): {data['non_execute_overlay_group']}")
         lines += ["", "EXECUTE variants", "----------------"]
         for ts, items in data["execute_variants"].items():

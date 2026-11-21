@@ -107,6 +107,47 @@ No diagram exists for the timing ROM, the TSEQ counter, or the shadow-copy logic
 
 ---
 
+## Slice C2 (phase 7): OPR Group 2 completes in FETCH (SKIP register, HLT at FETCH TP3, RUN multiplexer)
+
+### `diagrams/control/control-store-overlay/source/control-store-overlay.xml`
+
+The five 4:1 multiplexers, read from the edges: `m7rejeYPD5JNTGzo8jMm-1` → DP_OVL[4] (inputs `SKIP_TAKEN`, `IO_SKIP_REQ`, `CIFP`, `IO_WRITE_REQ`); `-40` → DP_OVL[3] (`ISZ_SKIP_REQUIRED`, `IO_CLEAR_AC_REQ`, `AUTO_INDEX_REQUIRED`, `IO_READ_REQ`); `-57` → DP_OVL[2] (`IF_CHANGE_PENDING`, `IOT_WRITE_PENDING`, `FP_CMD[2]`, `IO_CLEAR_AC_REQ`); `-74` → DP_OVL[1] (`IE`, `IOT_READ_PENDING`, `FP_CMD[1]`, `IOT_WRITE_PENDING`); `-91` → DP_OVL[0] (`CIFP`, `/INT_REQ`, `FP_CMD[0]`, `IOT_READ_PENDING`). Input edges `rYJyN2ecPjk_JY8LC9AR-1` to `-20`.
+
+| # | Current content (source) | Required change | Doc | Status |
+|---|---|---|---|---|
+| C2-1 | `FP_CMD[2]` (`-59`), `FP_CMD[1]` (`-76`), `FP_CMD[0]` (`-93`) drive the group 1 inputs of the DP_OVL[2], [1], [0] multiplexers directly (`rYJyN2ecPjk_JY8LC9AR-11`, `-15`, `-19`). | Put a 3-bit 2:1 multiplexer selected by `RUN` in front of those three inputs: `RUN = 0` → `FP_CMD[2:0]`; `RUN = 1` → `SKIP`, 0, 0 (SKIP on DP_OVL[2]). | CSO §6.2, §6.3 | open |
+| C2-2 | Node `-9` "SKIP_TAKEN" → DP_OVL[4] multiplexer (`rYJyN2ecPjk_JY8LC9AR-1`), group 3's input. | Group 3 no longer uses DP_OVL[4] (the skip decision is now the `SKIP` register, in group 1): the input becomes wired 0. | CSO §6.2 | open |
+| C2-3 | Node `-44` labelled "ISZ_SKIP_REQUIRED". | Rename to `ISZ_SKIP_REQ`. | Derived Flags; CSO §6.2 | open |
+
+### `diagrams/control/control-store-organization/source/control-store-organization.xml`
+
+| # | Current content (source) | Required change | Doc | Status |
+|---|---|---|---|---|
+| C2-4 | Sequencer Slice ROM inputs: TS, IR_SEQ, HLT_REQ, FP_STOP, /DMA_REQ, SEQ_OVL, MS_EFF (`Smnm8CKmp2vPJFrs1iI9-30` to `-36`); no A1 input (B4 adds A2). | Add `IR_OPR_HLT [1 Bit]` → Sequencer Slice ROM (address A1). | CSO §5.6 | open |
+| C2-5 | Node `-14` "Datapath SliceROM [45 Bits]" (45 matches slice C1's packing). | 46 bits (slice C2 adds `SKIP_LOAD`). Replaces B5. | CSO §4.2, §7.2 | open |
+
+### `diagrams/microarchitecture/cpu-architecture/source/CPU_Architecture.xml`
+
+| # | Current content (source) | Required change | Doc | Status |
+|---|---|---|---|---|
+| C2-6 | FP_SR → ALU B: edge `2Ph0Qde3JH9-hkXoXRvS-145`, free end at (670, 990) on "ALU A B" (v1's OSR path, `ALU_B_SRC = FP_SR`). No FP_SR input to an OPR pass unit (C1-1 adds the unit). | Add FP_SR → the OPR pass unit (stage B, OSR). The FP_SR → ALU B edge is no longer used in v2; remove it when the encoding goes (slice C3) or now, your call. | `07-opr/02-group2-execution.md` §4; `01-group1-execution.md` §4 | open |
+| C2-7 | Halt Request (HLT_REQ) node `2GY4jtORsDWkwOyoSZJb-3`, written by Control (`2Ph0Qde3JH9-hkXoXRvS-174`). No SKIP register. | Add the 1-bit `SKIP` register: loaded from the Group 2 skip logic (`OPR_SKIP_REQ`, from AC, L, IR) under `SKIP_LOAD`, read by Control (state overlay). Drawn like HLT_REQ. | `01-registers.md` SKIP; MCS `SKIP_LOAD` | open |
+
+### `diagrams/control/ms_next-flowchart/source/ms_next-flowchart.xml`
+
+| # | Current content (source) | Required change | Doc | Status |
+|---|---|---|---|---|
+| C2-8 | As B1 and C1-2: FETCH (`-1`) → "Indirect Addressing?" (`-3`) → DEFER or Execute. | The FETCH completion path covers Group 2 OPR too: "JMP, Group 1 or Group 2 OPR?" (or "IR_NO_EXECUTE?"). | `04-fetch-defer.md` §3.4 | open |
+
+### Checked, no slice C2 change
+
+| Diagram | What the source contains | Why unchanged |
+|---|---|---|
+| `control-store-mapping.xml` | IR → Mapping ROM → MAPR → MUX[5], MUX[2] (Wired 01), MUX[1] (IR_INDIRECT / MAPR[7]) | The diagram does not name the sequencer decode's per-TS contents (CSO §5.3 table), so dropping EXECUTE TS3's `IR_OPR_HLT` changes nothing drawn |
+| `control-store-address-formation.xml` | MS/RUN → MS_EFF; FP command priority encoder; SEQ_OVL MUX[3] by RUN | The new RUN multiplexer is on the datapath overlay (C2-1), not here |
+
+---
+
 ## Later slices
 
 Entries are added when each slice's docs are written, after reading the sources again. The spec's expected list ([spec.md](spec.md) §9) is a forecast, not yet checked against the sources.

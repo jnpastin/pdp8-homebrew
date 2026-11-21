@@ -43,6 +43,7 @@ Defined in:
 - [LZ](./01-flags.md#lz)  
 - [MBZ](./01-flags.md#mbz)  
 - [RUN](./01-flags.md#run)
+- [SKIP](./01-flags.md#skip)
 
 ---
 
@@ -148,8 +149,8 @@ Defined in: [Derived Flags](./03-derived-flags.md)
 - [AUTO_INDEX_REQUIRED](./03-derived-flags.md#auto_index_required)  
 - [IF_CHANGE_PENDING](./03-derived-flags.md#if_change_pending)
 - [INTERRUPT_REQUEST_VALID](./03-derived-flags.md#interrupt_request_valid)  
-- [ISZ_SKIP_REQUIRED](./03-derived-flags.md#isz_skip_required)  
-- [SKIP_TAKEN](./03-derived-flags.md#skip_taken)  
+- [ISZ_SKIP_REQ](./03-derived-flags.md#isz_skip_req)  
+- [OPR_SKIP_REQ](./03-derived-flags.md#opr_skip_req)  
 
 ---
 
@@ -194,11 +195,12 @@ The following control inputs are defined here but are not read by any execution 
 
 | Input | Path | Used through |
 |---|---|---|
-| `ACN`, `ACZ`, `LZ` | derived-flag logic | `SKIP_TAKEN` |
-| `IR_OPR_SKIP_MODE`, `IR_OPR_SMA`, `IR_OPR_SNL`, `IR_OPR_SZA` | derived-flag logic | `SKIP_TAKEN` |
+| `ACN`, `ACZ`, `LZ` | derived-flag logic | `OPR_SKIP_REQ` |
+| `IR_OPR_SKIP_MODE`, `IR_OPR_SMA`, `IR_OPR_SNL`, `IR_OPR_SZA` | derived-flag logic | `OPR_SKIP_REQ` |
+| `OPR_SKIP_REQ` | datapath | the value loaded into `SKIP` by `OPR_SKIP_REQ_TO_SKIP` |
 | `EAI` | derived-flag logic | `AUTO_INDEX_REQUIRED` |
 | `II` | derived-flag logic | `INTERRUPT_REQUEST_VALID` |
-| `MBZ` | derived-flag logic | `ISZ_SKIP_REQUIRED` |
+| `MBZ` | derived-flag logic | `ISZ_SKIP_REQ` |
 | `IR_ADDR`, `IR_ZERO_PAGE` | datapath | EA formation by `IR_ADDR_TO_EA_ADDR` |
 | `FP_IF`, `FP_DF` | datapath | values loaded by `FP_IF_TO_IF`, `FP_IF_TO_DIF`, `FP_DF_TO_DF` |
 | `IR_DF`, `IR_IF` | datapath | values loaded by `IR_DF_TO_DF` (`DF_SRC = IR_DF`) and `IR_IF_TO_DIF` (`DIF_SRC = IR_IF`) |

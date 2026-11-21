@@ -82,7 +82,7 @@ TS4:
 Conditional μops:
 
 ```text
-ISZ_SKIP_REQUIRED = 1 -> PC_INC
+ISZ_SKIP_REQ = 1 -> PC_INC
 ```
 
 ---

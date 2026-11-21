@@ -80,6 +80,8 @@ PC   = [Program Counter](../01-architecture/01-registers.md#pc--program-counter)
 
 RUN  = [Run state](../01-architecture/01-registers.md#run--run-state)
 
+SKIP = [Skip](../01-architecture/01-registers.md#skip--skip)
+
 
 ---
 

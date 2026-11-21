@@ -282,18 +282,18 @@ IR_ADDR = IR[6:0]
 **Derivation:**
 
 ```text
-IR_CLASS = {0,
+IR_CLASS = {IR_OPR_GROUP2,
             (IR[11:9] = 101 AND IR[8]) OR IR_OPR_GROUP1,
             (IR[11:9] = 101 AND NOT IR[8]) OR IR_OPR_GROUP1}
 ```
 
 **Value Encoding:**
 
-- `000` → neither JMP nor Group 1 OPR: completes in EXECUTE
+- `000` → none of JMP, Group 1 OPR, Group 2 OPR: completes in EXECUTE
 - `001` → direct JMP: completes in FETCH
 - `010` → JMP I: completes in DEFER
 - `011` → Group 1 OPR: completes in FETCH
-- `100` → reserved (OPR group classes)
+- `100` → Group 2 OPR: completes in FETCH
 - `101` → reserved (OPR group classes)
 - `110` → reserved (OPR group classes)
 - `111` → reserved
@@ -634,7 +634,6 @@ IR_IS_OPR = (IR[11:9] == 111)
 - [L_CLEAR](../../03-microarchitecture/02-micro-operations.md#l_clear)
 - [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
 - [AC_OR_MQ](../../03-microarchitecture/02-micro-operations.md#ac_or_mq)
-- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr)
 - [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
 
 ---
@@ -703,7 +702,7 @@ IR_MRI_OPCODE = IR[11:9]
 **Consumed By:**
 
 - MRI execution selection
-- `ISZ_SKIP_REQUIRED`
+- `ISZ_SKIP_REQ`
 
 ---
 
@@ -714,12 +713,12 @@ IR_MRI_OPCODE = IR[11:9]
 **Type:** Instruction Class  
 **Bit Width:** 1  
 
-**Purpose:** Indicates that the instruction never enters EXECUTE: a JMP completes at FETCH TP4 when direct, or at DEFER TP4 when indirect; a Group 1 OPR completes at FETCH TP4.
+**Purpose:** Indicates that the instruction never enters EXECUTE: a JMP completes at FETCH TP4 when direct, or at DEFER TP4 when indirect; a Group 1 or Group 2 OPR completes at FETCH TP4.
 
 **Derivation:**
 
 ```text
-IR_NO_EXECUTE = IR[11:9] = 101 OR IR_OPR_GROUP1   // JMP; Group 1 OPR
+IR_NO_EXECUTE = IR[11:9] = 101 OR IR_OPR_GROUP1 OR IR_OPR_GROUP2   // JMP; Group 1 OPR; Group 2 OPR
 ```
 
 **Value Encoding:**
@@ -913,9 +912,9 @@ IR_OPR_GROUP2 = IR_IS_OPR AND IR[8] AND (IR[0] == 0)
 
 **Consumed By:**
 
-- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
-- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr)
-- [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
+- [IR_CLASS](#ir_class)
+- [IR_NO_EXECUTE](#ir_no_execute)
+- the Group 2 bit decodes (`IR_OPR_HLT`, `IR_OPR_OSR`, `IR_OPR_SKIP_MODE`, `IR_OPR_SMA`, `IR_OPR_SNL`, `IR_OPR_SZA`)
 
 
 ---
@@ -968,7 +967,9 @@ IR_OPR_HLT = IR_OPR_GROUP2 AND IR[1]
 - 1 → halt  
 
 **Consumed By:**
-- Halt-request sequencing control
+- Halt-request capture at FETCH TS3 ([Sequencing and Internal Control §3.4.4](../30-direct-control-definitions/01-sequencing-and-internal-control.md#344-hlt-instruction-request-capture))
+
+**Realization:** Decoded by predecode gates from the live IR. It drives the sequencer slice's A1 input ([Control Store Organization §5.6](../08-control-store-organization.md#56-sequencer-slice-address)).
 
 ---
 
@@ -1068,7 +1069,7 @@ IR_OPR_OSR = IR_OPR_GROUP2 AND IR[2]
 
 **Consumed By:**
 
-- [AC_OR_FP_SR](../../03-microarchitecture/02-micro-operations.md#ac_or_fp_sr)
+- [OPR pass unit](../../03-microarchitecture/07-opr/02-group2-execution.md#4-opr-pass) (stage B)
 
 ---
 

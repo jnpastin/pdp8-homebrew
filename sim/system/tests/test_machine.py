@@ -7,6 +7,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 import run_sim
+from pdp8_cpu import design as D
 from pdp8_system.machine import Machine
 
 
@@ -23,7 +24,8 @@ class MachineTests(unittest.TestCase):
         m.deposit_block(0o0200, [0o7402])
         m.load_address(0o0200)
         m.start()
-        self.assertEqual(m.run(max_ts=50), 8)
+        # HLT runs FETCH and EXECUTE in v1, FETCH alone in v2 (Group 2 OPR completes in FETCH).
+        self.assertEqual(m.run(max_ts=50), 4 * len(D.major_states(m.cpu.design, 0o7402)))
         self.assertEqual(m.state["PC"], 0o0201)
 
     def test_cli_check(self):

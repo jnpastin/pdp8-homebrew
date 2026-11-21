@@ -51,6 +51,7 @@ Defined in:
 - [MQ_LOAD](./01-microarchitectural-control-signals.md#mq_load)  
 - [PC_INC](./01-microarchitectural-control-signals.md#pc_inc)  
 - [PC_LOAD](./01-microarchitectural-control-signals.md#pc_load)  
+- [SKIP_LOAD](./01-microarchitectural-control-signals.md#skip_load)  
 
 ---
 

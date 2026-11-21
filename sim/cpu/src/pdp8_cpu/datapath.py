@@ -234,6 +234,8 @@ class _Eval:
             fx.loads["II"] = f["II_VAL"]
         if f["IOT_TRANSFER_LOAD"]:
             fx.loads["IOT_TRANSFER"] = self.sel("IOT_TRANSFER_VAL")
+        if f.get("SKIP_LOAD"):                           # OPR_SKIP_REQ_TO_SKIP (v2 only)
+            fx.loads["SKIP"] = self.cond.get("OPR_SKIP_REQ")
         return fx
 
     def ac_input(self, db_read):
@@ -282,17 +284,25 @@ class _Eval:
         return bit(self.st["AC"], 11)
 
     def opr_pass(self):
-        """The OPR pass unit (docs/03-microarchitecture/07-opr/01-group1-execution.md §4): the
-        13-bit L·AC result of one pass, stages A (CLA, CLL), C (CMA, CML), D (IAC), E (rotate or
-        BSW), each selected by its IR bit qualified by IR_CLASS = 011. Returns (AC, L)."""
+        """The OPR pass unit (docs/03-microarchitecture/07-opr/01-group1-execution.md §4,
+        02-group2-execution.md §4): the 13-bit L·AC result of one pass, stages A (CLA, CLL),
+        B (OSR), C (CMA, CML), D (IAC), E (rotate or BSW), each selected by its IR bit qualified
+        by the class: CLA by IR_CLASS = 011 or 100, OSR by 100, the others by 011. Returns
+        (AC, L)."""
         st, d = self.st, self.cond
         ac, link = st["AC"], st["L"]
         cls = d.get("IR_CLASS")
         if cls is None or ac is None or link is None:
             return None, None
+        on = lambda name: d.get(name) == 1
+        if cls == 0b100:                     # Group 2: stage A (CLA), then stage B (OSR)
+            if on("IR_OPR_CLA"):
+                ac = 0
+            if on("IR_OPR_OSR"):
+                ac = u(lambda a, s: a | s, ac, self.panel.sr)
+            return ac, link
         if cls != 0b011:                     # no stage selected: the unit passes AC and L through
             return ac, link
-        on = lambda name: d.get(name) == 1
         if on("IR_OPR_CLA"):
             ac = 0
         if on("IR_OPR_CLL"):

@@ -32,7 +32,6 @@ NON_EXECUTE_GROUP = 1  # CSO §5.4.2: the MS_EFF_IS_EXECUTE = 0 group is wired a
 
 # CSO §4.1 and §4.2: the fields each slice produces.
 SEQUENCER_FIELD_NAMES = {"MS_NEXT", "MS_LOAD", "RUN_NEXT", "HLT_REQ_NEXT", "/INITIALIZE"}
-DATAPATH_FIELD_NAMES = set(E.DATAPATH_FIELDS)
 
 
 @dataclass(frozen=True)
@@ -76,6 +75,12 @@ class ControlStore:
             g["code"]: [(b["bit"], b["signal"], b["width"]) for b in g["bits"]]
             for g in packing["overlay_groups"]
         }
+        # CSO §6.3: the state group's running face behind the RUN multiplexer (v2); "bits" is
+        # then its halted face.
+        self.running_overlay_groups = {
+            g["code"]: [(b["bit"], b["signal"], b["width"]) for b in g["running_bits"]]
+            for g in packing["overlay_groups"] if "running_bits" in g
+        }
         self.fields = E.datapath_fields(design.name)   # this design's datapath field definitions
         self._dp_words: dict[int, dict] = {}     # decoded words, by address (the images never change)
         self._seq_words: dict[int, dict] = {}
@@ -117,10 +122,11 @@ class ControlStore:
                     problems.append(f"{name} ({fd.width} bits) does not fit its {slot.width}-bit slot")
             if slot.offset + slot.width > 8 * DATAPATH_DEVICES:
                 problems.append(f"datapath slot at bit {slot.offset} exceeds {8 * DATAPATH_DEVICES} bits")
-        if set(seen) != DATAPATH_FIELD_NAMES:
+        names = set(self.fields)
+        if set(seen) != names:
             problems.append(f"datapath layout fields differ from CSO §4.2: "
-                            f"missing {sorted(DATAPATH_FIELD_NAMES - set(seen))}, "
-                            f"extra {sorted(set(seen) - DATAPATH_FIELD_NAMES)}")
+                            f"missing {sorted(names - set(seen))}, "
+                            f"extra {sorted(set(seen) - names)}")
         seq_names = {s.fields[0] for s in self.sequencer_layout}
         if seq_names != SEQUENCER_FIELD_NAMES:
             problems.append(f"sequencer layout fields {sorted(seq_names)} differ from CSO §4.1")
@@ -134,11 +140,16 @@ class ControlStore:
         if self.packing.get("non_execute_overlay_group") != NON_EXECUTE_GROUP:
             problems.append("non-EXECUTE overlay group is not group 1 (CSO §5.4.2)")
         for key, wired in (("non_execute_variant", self.design.non_execute_variant),
-                           ("sequencer_a2", self.design.sequencer_a2)):
+                           ("sequencer_a2", self.design.sequencer_a2),
+                           ("sequencer_a1", self.design.sequencer_a1)):
             if self.packing.get(key) != wired:
                 problems.append(f"{key} is {self.packing.get(key)!r} in the packing, "
                                 f"{wired!r} for design {self.design.name} (CSO §5.4.2, §5.6)")
-        for code, bits in self.overlay_groups.items():
+        muxed = set(self.running_overlay_groups)
+        if muxed != ({NON_EXECUTE_GROUP} if self.design.state_group_run_mux else set()):
+            problems.append(f"overlay groups with a RUN-multiplexed face {sorted(muxed)} do not "
+                            f"match design {self.design.name} (CSO §6.3)")
+        for code, bits in [*self.overlay_groups.items(), *self.running_overlay_groups.items()]:
             used = set()
             for bit, _signal, width in bits:
                 used |= set(range(bit, bit + width))
@@ -179,6 +190,13 @@ class ControlStore:
             cached = {s.fields[0]: (word >> s.offset) & ((1 << s.width) - 1) for s in self.sequencer_layout}
             self._seq_words[address] = cached
         return cached
+
+    def overlay_group(self, code: int, run) -> list:
+        """The bits overlay group `code` presents on DP_OVL: the state group's running face
+        while RUN = 1 when the design multiplexes it (CSO §6.3)."""
+        if run == 1 and code in self.running_overlay_groups:
+            return self.running_overlay_groups[code]
+        return self.overlay_groups[code]
 
     def mapping_entry(self, address: int) -> int:
         return self.mapping[address]

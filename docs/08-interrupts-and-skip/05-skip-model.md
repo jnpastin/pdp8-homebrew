@@ -21,7 +21,7 @@ This document defines:
 - the common result of a taken skip
 - the supported skip-source classes
 - the relationship between condition evaluation and `PC_INC`
-- the absence of persistent skip state
+- the one stored skip decision (`SKIP`)
 - the effect of a skip on subsequent instruction execution
 - same-TP rules applying to skip decisions
 - system-level skip invariants
@@ -45,7 +45,7 @@ A taken skip increments `PC` exactly once in addition to any increment already p
 Conceptually:
 
 ```text
-if SKIP_CONDITION:
+if skip condition:
     PC <- PC + 1
 ```
 
@@ -58,7 +58,7 @@ A skip does not:
 - modify `DF`
 - modify the skipped memory word
 - fetch or execute the skipped instruction
-- create persistent skip state
+- create skip state lasting beyond the instruction
 
 The `PC_INC` micro-operation is defined in [Micro-Operations](../03-microarchitecture/02-micro-operations.md).
 
@@ -92,9 +92,9 @@ The execution behavior is defined in [Group 2 Execution](../03-microarchitecture
 
 The reduced control condition is defined in [Derived Flags](../04-control/10-control-input-definitions/03-derived-flags.md).
 
-A taken Group 2 skip selects one `PC_INC` at TP1 of EXECUTE.
+A Group 2 instruction completes in FETCH. Its skip decision, `OPR_SKIP_REQ`, is recorded in the `SKIP` register at FETCH TP3, and a taken skip selects one `PC_INC` at FETCH TP4.
 
-Later operations encoded in the same Group 2 instruction execute at their assigned timing pulses whether or not the skip is taken.
+CLA, OSR, and HLT in the same instruction act whether or not the skip is taken. The skip decision uses the AC and L held before TP3, so a CLA committed at that TP3 cannot change it.
 
 ## 6. ISZ Skip
 
@@ -225,18 +225,22 @@ At any TP:
 
 When an instruction defines multiple predicates, those predicates are reduced to one boolean skip decision before `PC_INC` is selected.
 
-## 12. No Persistent Skip State
+## 12. Skip State
 
-The CPU does not contain a skip-pending register or stored skip result.
+The CPU stores one skip decision only: the 1-bit `SKIP` register ([Registers](../01-architecture/01-registers.md#skip--skip)).
 
-A skip condition is:
+- `SKIP` loads at FETCH TP3 of a Group 2 OPR with `OPR_SKIP_REQ`, and is read only in FETCH TS4 of the same instruction, where it selects `PC_INC`.
+- It is needed because the skip decision and a CLA commit at the same TP3, while the increment commits at TP4. The KK8-E's SKIP flip-flop is set at TP3 in the same way.
+- Its value at any other time has no effect.
+
+Every other skip condition (ISZ, CPU-internal IOT, external-controller IOT) is not stored. It is:
 
 1. evaluated from the state and inputs defined for its source
 2. consumed during the applicable timing state
 3. realized as `PC_INC` at the associated timing pulse
 4. discarded after that decision
 
-A skip decision does not persist into another timing state, instruction, or major state.
+No skip decision persists into another instruction or major state.
 
 If a controller condition remains true, software must execute another applicable skip IOT to test that condition again.
 
@@ -255,22 +259,22 @@ The skipped instruction:
 - produces no instruction-defined state change
 - cannot itself generate a skip, interrupt-control action, I/O operation, or memory operation
 
-The next executed instruction follows the normal FETCH, optional DEFER, and EXECUTE sequence.
+The next executed instruction follows its own major-state sequence.
 
 ## 14. Relationship to Interrupt and DMA Recognition
 
 A skip changes `PC`; it does not independently alter the major-state transition policy.
 
-At EXECUTE TP4, a skip may commit concurrently with interrupt or DMA recognition when the applicable instruction defines its skip at TP4.
+At the instruction-completion TP4 (FETCH TP4 for a Group 2 OPR; EXECUTE TP4 for ISZ and the IOT skips), a skip may commit concurrently with interrupt or DMA recognition when the applicable instruction defines its skip at TP4.
 
 The transition decision and `PC_INC` use pre-TP4 state and commit concurrently.
 
-If an interrupt is recognized at the same EXECUTE TP4:
+If an interrupt is recognized at the same TP4:
 
 - the incremented `PC` is the return address preserved during interrupt entry
 - interrupt entry proceeds according to [Interrupt Entry and Return](./04-interrupt-entry-and-return.md)
 
-If DMA is selected at the same EXECUTE TP4:
+If DMA is selected at the same TP4:
 
 - the incremented `PC` remains the address used when normal instruction execution resumes
 - DMA proceeds according to the existing DMA sequencing rules
@@ -307,7 +311,7 @@ The following invariants apply:
 - A skip bypasses exactly one sequential instruction word.
 - All skip effects use the defined `PC_INC` mechanism.
 - No controller modifies `PC` directly.
-- No persistent CPU skip state exists.
+- The only stored skip state is `SKIP`, from FETCH TP3 to FETCH TP4 of one Group 2 OPR.
 - Source-specific skip conditions remain defined by their owning documents.
 - Multiple predicates within one instruction reduce to one skip decision.
 - Multiple true predicates must not produce multiple `PC_INC` operations.
@@ -329,4 +333,4 @@ All skip sources share one architectural result: a taken skip increments `PC` ex
 
 Group 2 OPR, ISZ, CPU-internal IOT, and external-controller IOT instructions define distinct skip conditions and timing. Those conditions are evaluated from pre-TP state and reduced to one `PC_INC` decision.
 
-No persistent skip state exists, and no controller may modify `PC` directly.
+The only stored skip decision is a Group 2 instruction's `SKIP`, held from FETCH TP3 to FETCH TP4, and no controller may modify `PC` directly.

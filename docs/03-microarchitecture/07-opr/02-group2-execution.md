@@ -1,24 +1,28 @@
 # Group 2 Execution
 
 ## 1. Purpose
-  
-Defines execution behavior for OPR Group 2 instructions.  
+
+Defines execution behavior for OPR Group 2 instructions.
+
 This document specifies:
-- IR bit to μop mapping
-- TS assignment of μops
-- condition evaluation rules
-- composition constraints  
+
+- the Group 2 stages of the OPR pass unit (CLA, OSR)
+- the skip request and the `SKIP` register
+- the HLT request
+- when each acts
 
 Instruction semantics and encoding details are defined in:
-- [Group 2 ISA](../../02-isa/02-group-2.md)  
+
+- [Group 2 ISA](../../02-isa/02-group-2.md)
 
 Execution behavior follows:
+
 - [Execution Model](../01-execution-model.md)
 
 ---
 
 ## 2. Scope
-  
+
 Applies when:
 
 ```text
@@ -29,98 +33,61 @@ IR_OPR_GROUP2 = 1
 ---
 
 ## 3. Execution Model
-  
-Group 2 instructions are composed of:
-- conditional skip operations (TS1)
-- optional state modification operations (TS2–TS3)
 
-Properties:
-- Skip conditions are evaluated during TS1
-- Skip results are realized as conditional PC_INC
-- Sub-group selection defines condition composition:
-  - AND sub-group: all enabled conditions must be true
-  - OR sub-group: any enabled condition must be true
-- CLA and OSR are datapath operations
-- HLT is a control-level operation (see TS3)
-- μops execute concurrently within a TS  
+A Group 2 instruction completes in FETCH and does not enter EXECUTE (`IR_CLASS = 100`, `IR_NO_EXECUTE = 1`).
 
-All μop selection and condition evaluation are derived directly from IR bits.
+- In FETCH TS3 ([Fetch & Defer §3.3](../04-fetch-defer.md#33-ts3)):
+  - the control store selects `OPR_PASS`, which loads AC from the OPR pass unit at TP3 (section 4); L is reloaded unchanged
+  - `OPR_SKIP_REQ_TO_SKIP` loads the `SKIP` register with `OPR_SKIP_REQ` at the same TP3 (section 5)
+  - a HLT sets `HLT_REQ` at the same TP3 (section 6)
+- In FETCH TS4, if `SKIP = 1`, `PC_INC` increments PC at TP4 ([Fetch & Defer §3.4](../04-fetch-defer.md#34-ts4)).
+- The instruction completes at FETCH TP4 ([Sequencing and Internal Control §3.1.1](../../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#311-instruction-completion)).
+
+This follows the KK8-E: combinational skip logic sets the SKIP flip-flop at TP3, CLA and OSR act in the same pass, and PC, plus 1 if SKIP, is loaded at TP4.
 
 ---
 
-## 4. Instruction Definition
+## 4. OPR Pass
 
-### 4.1 IR[11:9] = 111 (Group 2)
+A Group 2 instruction selects two stages of the OPR pass unit ([Group 1 Execution §4](./01-group1-execution.md#4-opr-pass)):
 
-### 4.2 Sub-group selection
-  
-- AND sub-group: IR[3] = 1 AND IR[0] = 0  
-- OR sub-group:  IR[3] = 0 AND IR[0] = 0  
+| Stage | Function | Selected by |
+|---|---|---|
+| A: zero gating | AC ← 0 | `IR_OPR_CLA` |
+| B: OR inputs | AC ← AC OR FP_SR | `IR_OPR_OSR` |
 
----
-
-### 4.3 TS1 — Skip Evaluation
-
-Conditional μops:
-
-```text
-SKIP_TAKEN = 1 -> PC_INC
-```
-
-The composition of the Group 2 skip predicates, including AND-subgroup vacuous truth and OR-subgroup behavior, is defined by `SKIP_TAKEN` in the control-input definitions [found here](../../04-control/10-control-input-definitions/03-derived-flags.md#skip_taken).
-
-The Group 2 ISA defines the instruction-bit meanings and subgroup encodings.
+Each stage's control is its IR bit qualified by `IR_CLASS = 100`. Stage A acts before stage B, so `CLA OSR` loads FP_SR into AC. L passes through the unit unchanged.
 
 ---
 
-### 4.4 TS2 — AC Modification
+## 5. Skip Request
 
-- if IR_OPR_CLA = 1: AC_CLEAR
+The skip decision is `OPR_SKIP_REQ`, which combines the enabled skip conditions of the selected sub-group, including AND-subgroup vacuous truth (SKP) and OR-subgroup behavior ([Derived Flags](../../04-control/10-control-input-definitions/03-derived-flags.md#opr_skip_req)).
 
----
-
-### 4.5 TS3 — Register and Control Operations
-
-- if IR_OPR_OSR = 1: AC_OR_FP_SR
-
-- if IR_OPR_HLT = 1:
-  - HLT is a meta-instruction
-  - No datapath μop is performed
-  - Behavior is implemented via control signals
-  - No register state is modified
-  - Control behavior is defined in [Control Model](../../04-control/01-control-model.md)
+- `OPR_SKIP_REQ` is computed from the AC and L held before TP3, so a CLA committed at the same TP3 cannot change the decision.
+- `SKIP` holds the decision from FETCH TP3 to FETCH TP4, where it selects `PC_INC` ([Skip Model §12](../../08-interrupts-and-skip/05-skip-model.md#12-skip-state)).
 
 ---
 
-### 4.6 TS4
+## 6. HLT
 
-- (no μops)
-
----
-
-## 5. Composition Rules
-
-### 5.1 Skip Composition
-- TS1 conditions are combined per sub-group definition
-- Evaluation produces a single boolean result
-- Result is realized as conditional PC_INC
-
-### 5.2 TS Ordering
-- TS1 executes before TS2 and TS3
-- PC_INC (if taken) occurs before subsequent operations
-
-### 5.3 Concurrency
-- μops within a TS execute concurrently
-- No ordering exists within a TS
-
-### 5.4 Register Conflicts
-- No two μops may write the same register in the same TS
+- HLT is a control-level operation; no datapath μop is performed and no register other than `HLT_REQ` is modified
+- `HLT_REQ` is set at FETCH TP3 ([Sequencing and Internal Control §3.4.4](../../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#344-hlt-instruction-request-capture))
+- The pending halt is consumed at this instruction's completion, FETCH TP4 ([Sequencing and Internal Control §3.4.6](../../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#346-pending-halt-consumption)), after any skip increment committed at the same TP4
 
 ---
 
-## 6. Notes
-- All behavior is expressed using IR bit selection, μops, and conditions
+## 7. Composition Rules
+
+- The skip decision, the pass (stages A then B), and the HLT request all act at FETCH TP3; the skip decision uses the pre-TP3 AC and L
+- AC, L, and `SKIP` are each loaded once, at that TP
+- A taken skip increments PC once, at FETCH TP4
+- No two μops write the same register in the same TS
+
+---
+
+## 8. Notes
+
+- The stage controls come from IR bits; the control word carries only `OPR_PASS` (`AC_SRC` = OPR pass unit, `L_OP` = OPR pass unit link) and `SKIP_LOAD`
 - No symbolic instruction interpretation is used
-- Skip behavior is realized solely via PC_INC
-- HLT is a control-layer effect and does not correspond to a datapath μop
-- No persistent flag state is introduced
+- Skip behavior is realized solely via `PC_INC`

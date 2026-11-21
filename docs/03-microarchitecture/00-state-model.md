@@ -41,8 +41,8 @@ The processor follows this high-level progression:
 Properties:
 - FETCH always occurs
 - DEFER occurs only for indirect addressing
-- EXECUTE occurs once for every instruction except JMP, which completes in FETCH (direct) or DEFER (indirect), and Group 1 OPR, which completes in FETCH
-- An instruction completes at the TP4 of its last major state: FETCH (direct JMP, Group 1 OPR), DEFER (JMP I), or EXECUTE (all others)
+- EXECUTE occurs once for every instruction except JMP, which completes in FETCH (direct) or DEFER (indirect), and Group 1 and Group 2 OPR, which complete in FETCH
+- An instruction completes at the TP4 of its last major state: FETCH (direct JMP, Group 1 and Group 2 OPR), DEFER (JMP I), or EXECUTE (all others)
 - INTERRUPT occurs only when conditions are met at instruction completion
 - DMA occurs only when conditions are met at instruction completion
 

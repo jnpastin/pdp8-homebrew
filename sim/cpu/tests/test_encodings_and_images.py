@@ -34,7 +34,7 @@ class EncodingTests(unittest.TestCase):
 class ImageTests(unittest.TestCase):
     def test_layout_covers_every_datapath_field_once(self):
         names = [n for slot in store().datapath_layout for n in slot.fields]
-        self.assertEqual(sorted(names), sorted(E.DATAPATH_FIELDS))
+        self.assertEqual(sorted(names), sorted(E.datapath_fields(store().design.name)))
 
     def test_packing_that_disagrees_with_docs_is_rejected(self):
         s = store()

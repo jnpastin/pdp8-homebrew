@@ -20,10 +20,13 @@ import pack_control_store as P  # noqa: E402
 from unittest import mock  # noqa: E402
 
 # The address-formation decodes outside EXECUTE come from the selected design
-# (common/design.py). Most tests use the v1 form (VARIANT = 0, A2 = 0) so that
-# they do not depend on PDP8_DESIGN; V2AddressFormationTests sets them.
+# (common/design.py). Most tests use the v1 form (VARIANT = 0, A2 = A1 = 0, no
+# state-group RUN multiplexer) so that they do not depend on PDP8_DESIGN;
+# V2AddressFormationTests and V2HaltAndSkipTests set them.
 _PATCHES = [mock.patch.object(P, "NON_EXECUTE_VARIANT", None),
-            mock.patch.object(P, "SEQ_A2", None)]
+            mock.patch.object(P, "SEQ_A2", None),
+            mock.patch.object(P, "SEQ_A1", None),
+            mock.patch.object(P, "STATE_GROUP_RUN_MUX", False)]
 
 
 def setUpModule():
@@ -508,6 +511,135 @@ class V2AddressFormationTests(unittest.TestCase):
         model, _ = P.build_model(documents(v2=True, fetch_extra=wrong))
         _, diagnostics = P.pack(model)
         self.assertIn("INSTR_END_DISAGREES", [d.code for d in diagnostics])
+
+class V2HaltAndSkipTests(unittest.TestCase):
+    """Slice C2 (Control Store Organization §5.6, §6.3): HLT is captured in FETCH TS3 through
+    sequencer A1 = IR_OPR_HLT, and the state group's low bits are multiplexed by RUN so that
+    SKIP reaches FETCH TS4 while FP_CMD reaches the halted words."""
+
+    SKIP_F = {"F": [{"value": "1", "when": f"({FETCH_TS4} AND SKIP = 1)"}],
+              "HLT_REQ_NEXT": [{"value": "1", "when":
+                                "((MS = FETCH AND RUN = 1) AND TS = 3 AND IR_OPR_HLT = 1)"}]}
+    HALTED_F = {"F": [{"value": "1", "when": "(RUN = 0 AND FP_START = 1)"}]}
+
+    def setUp(self):
+        patches = [mock.patch.object(P, "NON_EXECUTE_VARIANT", "IR_CLASS"),
+                   mock.patch.object(P, "SEQ_A2", "IR_NO_EXECUTE"),
+                   mock.patch.object(P, "SEQ_A1", "IR_OPR_HLT"),
+                   mock.patch.object(P, "STATE_GROUP_RUN_MUX", True)]
+        for patch in patches:
+            patch.start()
+            self.addCleanup(patch.stop)
+
+    def documents(self):
+        docs = documents(v2=True, fetch_extra=None)
+        fetch = next(c for c in docs["symbolic"]["cases"] if c["execution_case_id"] == "fetch")
+        fetch["field_assignments"] = {**fetch["field_assignments"], **self.SKIP_F}
+        halted = next(c for c in docs["symbolic"]["cases"] if c["execution_case_id"] == "halted")
+        halted["field_assignments"] = {**halted["field_assignments"], **self.HALTED_F}
+        docs["inputs"]["fields"].append(make_input("SKIP"))
+        return docs
+
+    def pack(self):
+        model, diagnostics = P.build_model(self.documents())
+        self.assertEqual([d.code for d in diagnostics], [])
+        packing, diagnostics = P.pack(model)
+        self.assertEqual([d.code for d in diagnostics], [])
+        return packing
+
+    # -- units
+
+    def test_state_group_faces(self):
+        g = P.state_group(frozenset({"FP_CMD"}),
+                          frozenset({"CIFP", "AUTO_INDEX_REQUIRED", "SKIP"}))
+        self.assertEqual(g.running_bits, {"AUTO_INDEX_REQUIRED": 3, "CIFP": 4, "SKIP": 2})
+        self.assertEqual(g.bits, {"FP_CMD": 0, "AUTO_INDEX_REQUIRED": 3, "CIFP": 4})
+        self.assertEqual(g.face(True), g.bits)
+        self.assertEqual(g.face(False), g.running_bits)
+
+    def test_state_group_that_does_not_fit(self):
+        six = frozenset({"A", "B", "C", "D", "E", "F"})
+        self.assertIsNone(P.state_group(frozenset({"FP_CMD"}), six))
+        self.assertIsNone(P.state_group(frozenset(), frozenset({"FP_CMD"})))
+
+    def test_overlay_values_by_face(self):
+        g = P.state_group(frozenset({"FP_CMD"}), frozenset({"SKIP"}))
+        self.assertEqual(P.overlay_values(g, 0b00101, halted=True)["FP_CMD"], "5")
+        self.assertEqual(P.overlay_values(g, 0b01000, halted=False), {"SKIP": "1"})   # bit 3
+
+    def test_insert_group_renumbers(self):
+        groups = [P.Group(0, ["A"], {"A": 0}), P.Group(1, ["B"], {"B": 0})]
+        placement = {frozenset({"A"}): 0, frozenset({"B"}): 1, frozenset(): 0}
+        state = P.Group(P.NON_EXECUTE_GROUP, ["SKIP"], {}, {"SKIP": 2})
+        P.insert_group(groups, placement, state)
+        self.assertEqual([g.code for g in groups], [0, 1, 2])
+        self.assertIs(groups[1], state)
+        self.assertEqual(placement, {frozenset({"A"}): 0, frozenset({"B"}): 2, frozenset(): 0})
+
+    def test_a1_is_sequencer_address_bit_1(self):
+        base = P.sequencer_address(0, 3, {}, False, "0", "0", "0")
+        self.assertEqual(P.sequencer_address(0, 3, {}, False, "0", "0", "1") - base, 0b10)
+
+    # -- packing
+
+    def test_packs_and_verifies(self):
+        packing = self.pack()
+        state = packing.groups[P.NON_EXECUTE_GROUP]
+        self.assertEqual(state.bits, {"FP_CMD": 0, "SKIP": 3})   # bit 3 is not multiplexed
+        self.assertEqual(state.running_bits, {"SKIP": 3})       # first free unmultiplexed bit
+        self.assertGreater(packing.checked, 0)
+
+    def test_hlt_capture_reads_a1(self):
+        packing = self.pack()
+        fetch = packing.model.ms_codes["FETCH"]
+        values = {"/DMA_REQ": "1"}
+
+        def hlt_req_next(a1):
+            word = packing.images["sequencer"][P.sequencer_address(fetch, 3, values, False,
+                                                                   "0", "0", a1)]
+            return P._seq_unpack(packing.model, word, "HLT_REQ_NEXT")
+        self.assertEqual((hlt_req_next("0"), hlt_req_next("1")), (0, 1))
+
+    def test_unreachable_a1_addresses_repeat_the_a1_0_word(self):
+        # IR_OPR_HLT (IR[9]) with IR_INDIRECT (IR[8]) is a real IR value in this fixture, so use
+        # FETCH TS1, whose word does not depend on IR: every A1 value must give the same word.
+        packing = self.pack()
+        fetch = packing.model.ms_codes["FETCH"]
+        seq = packing.images["sequencer"]
+        values = {"/DMA_REQ": "1"}
+        for irseq in "01":
+            for a2 in "01":
+                words = {seq[P.sequencer_address(fetch, 1, values, False, irseq, a2, a1)]
+                         for a1 in "01"}
+                self.assertEqual(len(words), 1, (irseq, a2))
+
+    def test_run_multiplexer_selects_the_face(self):
+        packing = self.pack()
+        state = packing.groups[P.NON_EXECUTE_GROUP]
+        words = packing.images["_datapath_words"]
+        fetch = packing.model.ms_codes["FETCH"]
+        skip = 1 << state.running_bits["SKIP"]
+
+        def f(ms_eff, ts, ovl):
+            return P.unpack(packing, words[P.datapath_address(ms_eff, ts, 0, ovl)], "F")
+        self.assertEqual((f(fetch, 4, 0), f(fetch, 4, skip)), (0, 1))
+        self.assertEqual((f(P.HALTED_CODE, 1, 0), f(P.HALTED_CODE, 1, 1)), (0, 1))  # FP_START
+
+    def test_hlt_capture_without_a1_is_an_error(self):
+        with mock.patch.object(P, "SEQ_A1", None):
+            model, _ = P.build_model(self.documents())
+            _, diagnostics = P.pack(model)
+        self.assertTrue({"NON_EXECUTE_IR_SEQ", "SEQUENCER_IR_DEPENDENCE"}
+                        & {d.code for d in diagnostics})
+
+    def test_json_describes_both_faces(self):
+        data = P.packing_json(self.pack(), [])
+        state = data["overlay_groups"][P.NON_EXECUTE_GROUP]
+        self.assertEqual(state["bits"], [{"bit": 0, "signal": "FP_CMD", "width": 3},
+                                         {"bit": 3, "signal": "SKIP", "width": 1}])
+        self.assertEqual(state["running_bits"], [{"bit": 3, "signal": "SKIP", "width": 1}])
+        self.assertEqual(data["sequencer_a1"], "IR_OPR_HLT")
+        self.assertNotIn("running_bits", data["overlay_groups"][0])
 
 
 if __name__ == "__main__":

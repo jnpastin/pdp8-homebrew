@@ -15,10 +15,10 @@ Derived flags are combinational and reduce multi-input control conditions into s
 
 ---
 
-### SKIP_TAKEN
+### OPR_SKIP_REQ
 
-**Mnemonic:** SKIP_TAKEN
-**Name:** Skip Taken
+**Mnemonic:** OPR_SKIP_REQ
+**Name:** OPR Skip Request
 
 
 **Inputs:**
@@ -39,7 +39,7 @@ Derived flags are combinational and reduce multi-input control conditions into s
 
 **Internal Composition (local to this definition):**
 
-OR-subgroup predicates (active when SKIP_MODE = 0):
+OR-subgroup predicates (active when IR_OPR_SKIP_MODE = 0):
 
 ```
 SMA_OR = ( !IR_OPR_SKIP_MODE ) AND IR_OPR_SMA AND (ACN = 1)
@@ -56,7 +56,7 @@ OR_ANY_TRUE =
    OR SNL_OR
 ```
 
-AND-subgroup predicates (reinterpretation when SKIP_MODE = 1):
+AND-subgroup predicates (reinterpretation when IR_OPR_SKIP_MODE = 1):
 
 ```
 SPA = IR_OPR_SKIP_MODE AND IR_OPR_SMA
@@ -76,7 +76,7 @@ AND_ALL_TRUE =
 Final expression:
 
 ```
-SKIP_TAKEN =
+OPR_SKIP_REQ =
     IR_OPR_GROUP2
 AND (
        ( !IR_OPR_SKIP_MODE AND OR_ANY_TRUE )
@@ -88,19 +88,19 @@ AND (
 
 **Value Encoding:**
 - `0` → no skip
-- `1` → increment PC
+- `1` → skip
 
 ---
 
 **Used By μops:**
-- [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
+- [OPR_SKIP_REQ_TO_SKIP](../../03-microarchitecture/02-micro-operations.md#opr_skip_req_to_skip) (the value loaded into `SKIP`, which selects `PC_INC` in FETCH TS4)
 
 ---
 
-### ISZ_SKIP_REQUIRED
+### ISZ_SKIP_REQ
 
-**Mnemonic:** ISZ_SKIP_REQUIRED  
-**Name:** Increment Skip if Zero - Skip Required  
+**Mnemonic:** ISZ_SKIP_REQ  
+**Name:** Increment Skip if Zero - Skip Request  
 
 **Inputs:**
 
@@ -112,7 +112,7 @@ AND (
 **Expression:**
 
 ```text
-ISZ_SKIP_REQUIRED =
+ISZ_SKIP_REQ =
     (IR_MRI_OPCODE = 010)
 AND MBZ
 ```

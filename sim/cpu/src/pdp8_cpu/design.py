@@ -18,6 +18,10 @@ can be removed before the merge. A `Design` names everything that differs betwee
 - `non_execute_variant`, `sequencer_a2`: the IR decodes on the datapath slice's VARIANT and the
   sequencer slice's A2 outside EXECUTE (v2: IR_CLASS and IR_NO_EXECUTE; v1: none, so 0).
   docs/04-control/08-control-store-organization.md §5.4.2, §5.6.
+- `sequencer_a1`: the IR decode on the sequencer slice's A1 (v2: IR_OPR_HLT, HLT capture in
+  FETCH TS3; v1: none, so 0). CSO §5.6.
+- `state_group_run_mux`: the state overlay group's low three bits are multiplexed by RUN, FP_CMD
+  while halted and SKIP while running (v2). CSO §6.3.
 
 `PDP8_DESIGN` selects the design (default v1), as for the ROM-generation tools
 (tools/rom-generation/common/design.py).
@@ -61,6 +65,8 @@ class Design:
     non_execute_variant: str | None = "IR_CLASS"      # slice B
     sequencer_a2: str | None = "IR_NO_EXECUTE"        # slice B
     opr_pass: bool = True             # AC_SRC 7 and L_OP 1 select the OPR pass unit (slice C1)
+    sequencer_a1: str | None = "IR_OPR_HLT"           # slice C2
+    state_group_run_mux: bool = True                  # slice C2
 
     @property
     def image_dir(self) -> Path:
@@ -84,7 +90,8 @@ DESIGNS = {
                  ts_ns=dict(UNIFORM_1200),
                  ir_source="MB", ea_page="PC", boundary_rule="execute",
                  non_execute_variant=None, sequencer_a2=None,
-                 opr_pass=False),                                     # V1-ONLY
+                 opr_pass=False, sequencer_a1=None,
+                 state_group_run_mux=False),                          # V1-ONLY
     "v2": Design("v2", _ROM_BUILD / "rom-generation-v2",
                  REPO_ROOT / "rom" / "microcode" / "v2" / "control-word-schema.json"),
 }
