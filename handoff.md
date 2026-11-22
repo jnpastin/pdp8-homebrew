@@ -20,8 +20,9 @@ Branch: `one-cycle-fetch`. This branch evaluates and, if the user approves, impl
 | 5: slice D | **Done** (section 1.4; committed `75a4460`). |
 | 6: slice C1 | **Done** (section 1.5; committed `dd96d13`). |
 | 7: slice C2 | **Done** (section 1.6; committed `761c3d1`). |
-| 8: slice C3 | **Done, awaiting the user's check and commit** (section 1.7). |
-| 9, 10 (full verification, v1 cleanup) | Not started. |
+| 8: slice C3 | **Done** (section 1.7; committed `7d0b558`). |
+| 9: full verification | **In progress** (section 1.8): ALU cleanup made; final verification running. |
+| 10: v1 cleanup | Not started. |
 
 ### 1.2 Slice A (phase 3), 2026-11-20
 
@@ -89,6 +90,21 @@ OPR Group 3 completes in FETCH: `OPR_PASS` loads AC (stage A: CLA or MQL zero AC
 - **Simulator:** `IR_CLASS` `101` and `IR_NO_EXECUTE` decodes; pass unit stages A (MQL) and B (MQA) for class `101`; `datapath.opr_pass_mq` (the MQ output); `MQ_SRC` per design (v1: AC, `V1-ONLY`). Tests: `sim/cpu/tests/test_opr_group3_slice_c3.py` (exhaustive: all 256 Group 3 encodings × 10 AC × L 0/1 × 4 MQ against the reference model's Group 3, each completing in one FETCH; targeted: SWP's two loads at TP3, CLA before SWP/MQL/MQA, MQL, MQA, CLA, MQ reloaded unchanged, the EAE bits selecting nothing, L unchanged, cost 1.2 µs, interrupt after SWP). Adjusted: the slice B cost test (Group 3 is one FETCH; IOT keeps EXECUTE).
 - **Verified (Windows, CPython 3.14; PyPy 3.12):** tools 17 suites OK; sim/cpu 128, memory 3, reference 18, io 29, system 77 (1 skipped) OK under v1 and v2; MAINDEC suite (seeds 1 and 2) under PyPy OK for both; D2AB timing: v1 halt 2607, v2 pass. Full lock-step D2AB PRG0 under v2 (PyPy): seeds 1 and 2 PASS, 46,988,085 instructions each, no divergence.
 - **Diagrams:** `option2/diagrams.md` C3-1 (MQ and the pass unit), C3-2 (the flowchart's FETCH completion covers every OPR; supersedes C1-2 and C2-8).
+
+### 1.8 Phase 9 (full verification, ALU cleanup), 2026-11-21
+
+Uncommitted. Stop for the user's check and commit, and checkpoint 7, when the final verification passes.
+
+- **Baseline on the 46-bit design (`7d0b558`), v2 in lock-step under PyPy, seed 1 unless noted:**
+  - All suites OK under v1 and v2 (tools 17; sim/cpu 128, memory 3, reference 18, io 29, system 77 with 1 skipped); MAINDEC suite OK for both; D2AB timing: v1 halt 2607, v2 pass.
+  - D2AB PRG0 end to end, seeds 1 and 2: PASS, 46,988,085 instructions each.
+  - Full passes: D0AB, D0BB, D0DB, D0EB, D0FC, D0GC, D0HC, D0JC, D1EC (2 each); D0IB, D1HA (1 each; D1HA 92,510,728 instructions); D0CC fast test to its end message.
+  - Bounded, not full passes: D1AA 8 million instructions, D1FB and D1BC 15 million, all PASS.
+- **Judging fix (approved by the user):** D0FC, D0HC, and D0JC failed at their first full pass because `maindec.py` had no markers for their end-of-pass text (`FC`, `HC`, `JC`: each write-up §9). v1 and v2 printed the same text at the same instruction counts. Markers and `PassCriteria` tests added; no CPU change.
+- **ALU cleanup (spec decision 13, option C):** `ALU_OP` 2 bits (ADD, AND, INC, CLEAR), `ALU_B_SRC` 1 bit (NONE, MB), `AC_SRC` 5 reserved. Docs: MCS, CSO §4.2 and §7.2, control word §2.1, registers. Pipeline promoted by the user. Packing: 44 of 48 bits, EXECUTE variants 4/19/8/7. Simulator: encodings per design (v1's are `V1-ONLY`); `sim/cpu/tests/test_alu_cleanup_phase9.py`; sim/cpu is now 135 tests.
+- **Final verification on the 44-bit design:** running (started 2026-11-21, about 21:32). The baseline's list repeated, with D1FB and D1BC raised to 110 million instructions to try for a full pass. It has no result until recorded here; if interrupted, run it again.
+- **Host note:** the laptop idle-sleeps after 15 minutes (GPO) and crashed in Modern Standby on 2026-11-21. For long runs hold a `SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED)` request, with the user's consent, and stay on AC.
+- **Diagrams:** `option2/diagrams.md` P9-1, P9-2, and the consolidated final list.
 
 ### 1.1 Commits on this branch
 
@@ -162,7 +178,7 @@ Notes for the review:
 ## 4. Next Steps
 
 1. **The user checks and commits slice C3** (section 1.7).
-2. **Phase 9, full verification** (plan.md): all suites under CPython for both designs; the MAINDEC regression and full passes of the long programs (D0*, D1*) under PyPy; D2AB PRG0 end to end; the packing and budget review, including the deferred cleanup of the OPR-only ALU encodings (`ALU_OP` OR, NOT, ROR, ROL, RTR, RTL, BSW; `ALU_B_SRC` MQ, FP_SR; `AC_SRC` 5), about 3 datapath bits (spec §5.1); the final diagram list; checkpoint 7 (merge, and whether to plan option 1, IOT in FETCH, later).
+2. **Phase 9, full verification** (plan.md; section 1.8): finish the final verification on the 44-bit design, record it, and stop for the user's check and commit; then checkpoint 7 (merge, and whether to plan option 1, IOT in FETCH, later).
 3. (Done) **Slice C3** (plan phase 8): OPR Group 3 in FETCH (one class `101`; the pass unit's MQ output; `OPR_PASS_TO_MQ`).
 3. (Done) **Slice C2** (plan phase 7): OPR Group 2 in FETCH: the SKIP register (loaded at FETCH TP3 from `SKIP_TAKEN`; `SKIP_LOAD`), the `RUN` multiplexer on overlay group 1 (decision 6), CLA and OSR through the pass unit (stage B), PC increment at FETCH TS4 on SKIP, HLT captured at FETCH TP3 (sequencer A1 = `IR_OPR_HLT`), class `100`; skip and interrupt at the same TP4 (decision 4); 08/05-skip-model's EXECUTE TP4 wording. Exhaustive test of the Group 2 encodings.
 3. (Done) **Slice C1** (plan phase 6): OPR group 1 in FETCH through the OPR pass unit (decision 1; `OPR_PASS` as `AC_SRC` = 7 and `L_OP` = 1; class 3; `IR_NO_EXECUTE` gains OPR; amend design principle §3.1). Exhaustive test of the 256 group 1 encodings.

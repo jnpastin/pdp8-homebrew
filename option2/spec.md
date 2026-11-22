@@ -131,7 +131,7 @@ The four-step group 1 order (CLA/CLL; CMA/CML; IAC; rotates or BSW) is the order
   - stage E: 7 × dual 4:1 multiplexer.
   
   Roughly 21 to 25 packages; delays in [timing.md](timing.md) §5.
-- **The ALU's rotate, BSW, NOT, and CLEAR operations become unused in v2** once OPR leaves EXECUTE. `MQ_CLEAR` (console) and `AC_CLEAR` (IOT, console) still use CLEAR. Whether to delete the others is a packing choice for slice C3 (section 7).
+- **The ALU's OR, NOT, rotate, and BSW operations, its MQ and FP_SR operands, and the MQ → AC path become unused in v2** once OPR leaves EXECUTE, and are removed (decision 13). `MQ_CLEAR` (console) and `AC_CLEAR` (IOT, console) still use CLEAR.
 
 ### 4.2 SKIP register
 
@@ -159,12 +159,13 @@ The page bits come from **MA** instead of PC (section 3.1). The unit stays combi
 |---|---|---|
 | OPR pass select | `AC_SRC` = 7 (reserved) and `L_OP` = 1 (freed COMP code) | 0 |
 | SKIP load | new `SKIP_LOAD` | +1 |
-| `ALU_OP`: OR, NOT, ROR, ROL, RTR, RTL, BSW used only by OPR | 4 → 2 bits (ADD, AND, INC, CLEAR) | −2, after slice C3 |
-| `ALU_B_SRC`: MQ and FP_SR used only by OPR | 2 → 1 bit (NONE, MB) | −1, after slice C3 |
+| `ALU_OP`: OR, NOT, ROR, ROL, RTR, RTL, BSW used only by OPR | 4 → 2 bits (ADD, AND, INC, CLEAR) | −1 after sharing (phase 9) |
+| `ALU_B_SRC`: MQ and FP_SR used only by OPR | 2 → 1 bit (NONE, MB) | −1 (phase 9) |
+| `AC_SRC` 5 (MQ) used only by OPR | reserved | 0 (phase 9) |
 | PC source `EA_FORMED` | `PC_SRC` 1 → 2 bits | 0: it already sits in a 2-bit shared group (`IOT_TRANSFER_VAL`, `L_OP`, `MB_SRC`, `PC_SRC`) |
 | IR from MDB | `IR_LOAD` unchanged, source wired | 0 |
 
-v1 uses 44 of 48 datapath bits. The packer's result was **46 of 48** after slice B, **45 of 48** after slice C1, and **46 of 48** after slice C2 (`SKIP_LOAD`): direct JMP's FETCH TS3 word uses `PC_SRC`, `EA_ADDR_SRC`, `IF_SRC`, `CIFP_VAL`, and `II_VAL` together, which breaks two of v1's sharing groups. Removing the OPR-only ALU encodings after slice C3 (section 7) frees about 3 bits. **No seventh datapath EEPROM is needed.** The packer confirms the sharing (phase 3 onward).
+v1 uses 44 of 48 datapath bits. The packer's result was **46 of 48** after slice B, **45 of 48** after slice C1, and **46 of 48** after slice C2 (`SKIP_LOAD`): direct JMP's FETCH TS3 word uses `PC_SRC`, `EA_ADDR_SRC`, `IF_SRC`, `CIFP_VAL`, and `II_VAL` together, which breaks two of v1's sharing groups. Removing the OPR-only ALU encodings in phase 9 (decision 13) frees 2 bits: **44 of 48**, the same as v1. **No seventh datapath EEPROM is needed.** The packer confirms the sharing (phase 3 onward).
 
 ### 5.2 Address formation outside EXECUTE (decision 2a)
 
@@ -219,7 +220,7 @@ The `IR_SEQ` meaning of `MAPR[7]` in EXECUTE TS3 (`IR_OPR_HLT`) is no longer nee
 
 | Resource | v1 | v2 |
 |---|---|---|
-| Datapath control word | 44 / 48 bits | 45 / 48, then about 42 after slice C3 |
+| Datapath control word | 44 / 48 bits | 46 / 48 after slice C3, then 44 after the phase 9 cleanup |
 | Datapath address | 15 / 15 | 15 / 15 (same fields; `VARIANT` takes 3 class bits outside EXECUTE) |
 | Datapath variants used outside EXECUTE | 1 | 7 (the classes) |
 | Mapping ROM address | IR 12 + TS 2 + `A0` = 0 | unchanged |
@@ -263,7 +264,7 @@ Single Step halts after each major state, so it shows one state for OPR and dire
 - The EXECUTE cases for OPR groups 1 to 3 and JMP.
 - `MB_TO_IR` and the FETCH TS4 `IR_ADDR_TO_EA_ADDR`; EA formation moves to TS3.
 - FETCH TS4's PC increment (moved to TS1; TS4 keeps a conditional increment).
-- ALU operations no longer needed (ROR, ROL, RTR, RTL, BSW, NOT) can be dropped or kept. Recommendation: keep the ALU encoding until slice C3 has passed, then decide on cleanup.
+- ALU operations no longer needed (OR, NOT, ROR, ROL, RTR, RTL, BSW), the ALU's MQ and FP_SR operands, and `AC_SRC` 5 (MQ) are removed in phase 9 (decision 13).
 
 ## 8. Timing (decision 3a): summary
 
@@ -287,7 +288,7 @@ Result of the per-TS analysis ([timing.md](timing.md) revision 2, §4), with the
 
 As handoff §6, with these resolutions:
 - §6.1 hardware: OPR pass unit (section 4.1), SKIP, IR source, `EA_FORMED` PC source, EA page from MA, the class decode, the group 1 `RUN` multiplexer, the timing ROM.
-- §6.2 control store: 45 / 48 datapath bits (about 42 after slice C3); mapping ROM `A0` not needed; sequencer A2 and A1 used.
+- §6.2 control store: 44 / 48 datapath bits (46 until the phase 9 cleanup); mapping ROM `A0` not needed; sequencer A2 and A1 used.
 - §6.3 sequencing: section 6.
 - §6.4 documentation and §6.5 simulator: as handoff, in the slice order of [plan.md](plan.md).
 
@@ -323,6 +324,7 @@ Per [plan.md](plan.md):
 | 10 | Drive AB from MA whenever the CPU owns the bus (not only while `/RD` or `/WR`), so the address leads `/RD` | **No** (revised with decision 12): the read already has 110 ns of margin | **decided 2026-11-20** (timing.md rev. 2) |
 | 11 | Register `MS_EFF_IS_EXECUTE` and the overlay's combinational conditions (zero detects) at the preceding TP | **Not required** (revised with decision 12): without it every TS still fits, with at least 50 ns of margin (timing.md §4.3, conclusion 5) | **decided 2026-11-20** (timing.md rev. 2) |
 | 12 | Control store shadowed in fast SRAM: the EEPROMs are copied into SRAM at power-on reset, and the machine runs from the SRAM | Yes | **decided 2026-11-20** (with option 2) |
+| 13 | Cleanup of the OPR-only ALU encodings: `ALU_OP` 2 bits (ADD, AND, INC, CLEAR), `ALU_B_SRC` 1 bit (NONE, MB), `AC_SRC` 5 reserved | Yes: OPR's functions exist once, in the pass unit, as the 8/E's exist once in its data path (KK8-E); 2 bits freed | **decided 2026-11-21** |
 
 ### 11.1 Decision 12: SRAM-shadowed control store
 

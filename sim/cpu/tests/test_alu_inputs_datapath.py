@@ -27,12 +27,14 @@ class AluTests(unittest.TestCase):
 
     def test_logic(self):
         self.assertEqual(alu(E.AND, 0o7070, 0o0770, 1), (0o0070, 1))
+        self.assertEqual(alu(E.CLEAR, None, None, 1), (0, 1))
+
+    def test_logic_of_the_v1_alu(self):  # V1-ONLY
         self.assertEqual(alu(E.OR, 0o7000, 0o0007, 0), (0o7007, 0))
         self.assertEqual(alu(E.NOT, 0o7070, None, 0), (0o0707, 0))
-        self.assertEqual(alu(E.CLEAR, None, None, 1), (0, 1))
         self.assertEqual(alu(E.BSW, 0o1234, None, 0), (0o3412, 0))
 
-    def test_rotates_are_a_13_bit_ring(self):
+    def test_rotates_are_a_13_bit_ring(self):  # V1-ONLY
         self.assertEqual(alu(E.ROR, 0o0001, None, 1), (0o4000, 1))   # RAR: L -> AC11, AC0 -> L
         self.assertEqual(alu(E.ROL, 0o4000, None, 1), (0o0001, 1))   # RAL
         self.assertEqual(alu(E.RTR, 0o0003, None, 0), (0o4000, 1))   # RTR: two places right
@@ -136,16 +138,18 @@ class DatapathTests(unittest.TestCase):
             self.run_word(MA_LOAD=1, MA_SRC=3)            # MA_SRC 3 is reserved in both designs
 
     def test_pc_inc_rules(self):
-        fx = self.run_word(PC_INC=1, ALU_OP=E.INC, ALU_A_SRC=2)
+        add, inc = (E.alu_code(DS.select().name, op) for op in (E.ADD, E.INC))
+        fx = self.run_word(PC_INC=1, ALU_OP=inc, ALU_A_SRC=2)
         self.assertEqual(fx.loads, {"PC": 0o201})
         with self.assertRaises(SpecViolation):
-            self.run_word(PC_INC=1, ALU_OP=E.ADD, ALU_A_SRC=2)
+            self.run_word(PC_INC=1, ALU_OP=add, ALU_A_SRC=2)
         with self.assertRaises(SpecViolation):
-            self.run_word(PC_INC=1, PC_LOAD=1, ALU_OP=E.INC, ALU_A_SRC=2)
+            self.run_word(PC_INC=1, PC_LOAD=1, ALU_OP=inc, ALU_A_SRC=2)
 
     def test_binary_alu_needs_operand(self):
         with self.assertRaises(SpecViolation):
-            self.run_word(AC_LOAD=1, AC_SRC=0, IDB_DRIVE=1, IDB_SRC=7, ALU_OP=E.ADD, ALU_B_SRC=0)
+            self.run_word(AC_LOAD=1, AC_SRC=0, IDB_DRIVE=1, IDB_SRC=7, ALU_OP=E.alu_code(DS.select().name, E.ADD),
+                          ALU_B_SRC=0)
 
     def test_ea_formation_page_from_ma(self):
         # v2: the page is MA[11:7], the instruction's address; PC has already advanced at FETCH TP1

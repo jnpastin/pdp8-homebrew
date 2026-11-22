@@ -60,14 +60,23 @@ DIAGNOSTICS = {
     # §8: CR LF "T" after each 4096 tests (observed every 2.84 million instructions).
     "d0eb": Diagnostic("maindec-8e-d0eb", "Random TAD Test", markers=frozenset({ord("T") | 0o200}),
                        ignored=NEWLINE),
-    "d0fc": Diagnostic("maindec-8e-d0fc", "Random ISZ Test"),
+    # §9: "FC" after each 32,000 tests (observed as CR LF "FC" RUBOUT every 3.26 million
+    # instructions). §6.2: an error printout starts "F", then a space, which is error text.
+    "d0fc": Diagnostic("maindec-8e-d0fc", "Random ISZ Test", markers=frozenset({ord("C") | 0o200}),
+                       ignored=NEWLINE | {ord("F") | 0o200, RUBOUT}),
     # Not in the write-up: a bell after each pass (observed every 2.43 million instructions). The
     # "E" of §6.1 ends an error printout, so it is error text.
     "d0gc": Diagnostic("maindec-8e-d0gc", "Random DCA Test", markers=frozenset({BEL})),
-    "d0hc": Diagnostic("maindec-8e-d0hc", "Random JMP Test", ignored=frozenset({NUL})),
+    # §9: "HC" after each 72,000 tests (observed as CR LF "HC" every 3.6 to 4.1 million
+    # instructions, after a NUL at start-up). §6.2: an error printout starts "F".
+    "d0hc": Diagnostic("maindec-8e-d0hc", "Random JMP Test", markers=frozenset({ord("C") | 0o200}),
+                       ignored=NEWLINE | {ord("H") | 0o200, NUL}),
     # §8.1: a bell every 3456 loops (observed first at 3,701,408 instructions).
     "d0ib": Diagnostic("maindec-8e-d0ib", "Basic JMP-JMS Test", markers=frozenset({BEL})),
-    "d0jc": Diagnostic("maindec-8e-d0jc", "Random JMP-JMS Test", ignored=frozenset({RUBOUT})),
+    # §9: "JC" after each 61,000 tests (observed as CR LF "JC" every 4.6 million instructions,
+    # after a RUBOUT at start-up). §6.2: an error printout starts "F".
+    "d0jc": Diagnostic("maindec-8e-d0jc", "Random JMP-JMS Test", markers=frozenset({ord("C") | 0o200}),
+                       ignored=NEWLINE | {ord("J") | 0o200, RUBOUT}),
     # No write-up in the archive: started at 0200 with SR = 0 and judged by halts until its output
     # is known.
     "d1aa": Diagnostic("maindec-8e-d1aa", "MM8-E 4K Memory Checkerboard", printout_halts=True),

@@ -398,7 +398,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 2 → IF (field-merge)
 3 → DF (field-merge)
 4 → IB (field-merge)
-5 → MQ
+5 → reserved
 6 → GTF_FLAGS
 7 → OPR pass unit (OPR)
 ```
@@ -409,7 +409,6 @@ All numeric encodings in this section are octal unless otherwise noted.
 - Field-merge encodings OR the selected field into its DEC-defined AC bit positions and preserve all other AC bits:
   - IF, DF → AC[5:3]
   - IB → AC[5:3] (saved IF), AC[2:0] (saved DF)
-- MQ replaces AC in full (AC ← MQ), not a merge or OR; no μop selects it (OPR moved to the OPR pass unit; the encoding is kept until the phase 9 cleanup)
 - GTF_FLAGS is ORed into AC and is used only after AC_CLEAR has committed at the preceding TP.
 
 **Used by μops:**
@@ -465,7 +464,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Mnemonic:** ALU_B_SRC  
 **Name:** ALU Input B Select  
 **Class:** Select  
-**Bit Width:** 2  
+**Bit Width:** 1  
 **Default Value:** 0  
 **Explicit Value Required:** Conditionally  
 **Value Required When:** (IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1 OR (L_LOAD=1 AND L_OP=2)  
@@ -476,8 +475,6 @@ All numeric encodings in this section are octal unless otherwise noted.
 ```
 0 → NONE
 1 → MB
-2 → MQ
-3 → FP_SR
 ```
 
 **Constraints:**
@@ -500,7 +497,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Mnemonic:** ALU_OP  
 **Name:** ALU Operation  
 **Class:** Select  
-**Bit Width:** 4  
+**Bit Width:** 2  
 **Default Value:** 0  
 **Explicit Value Required:** Conditionally  
 **Value Required When:** (IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1 OR (L_LOAD=1 AND L_OP=2)  
@@ -511,20 +508,8 @@ All numeric encodings in this section are octal unless otherwise noted.
 ```
 0 → ADD
 1 → AND
-2 → OR
-3 → NOT
-4 → INC
-5 → ROR
-6 → ROL
-7 → RTR
-10 → RTL
-11 → BSW
-12 → CLEAR
-13 → reserved
-14 → reserved
-15 → reserved
-16 → reserved
-17 → reserved
+2 → INC
+3 → CLEAR
 ```
 
 **Constraints:**
@@ -532,11 +517,11 @@ All numeric encodings in this section are octal unless otherwise noted.
 
 **Used by μops:**
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 1
-- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 12
+- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 3
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 0
-- [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc) = 4
-- [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 12
-- [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc) = 4
+- [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc) = 2
+- [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 3
+- [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc) = 2
 
 ---
 
@@ -1270,7 +1255,7 @@ IF_DF_COMBINED[5:3]=IF
 ```
 
 **Constraints:**
-- Typically used with ALU operations affecting carry or rotate
+- Typically used with ALU operations affecting carry, or with the OPR pass unit
 
 **Used by μops:**
 - [OPR_PASS](../../03-microarchitecture/02-micro-operations.md#opr_pass) = 1
@@ -2000,17 +1985,10 @@ Bit 11 is the most significant bit (DEC bit 0). `X·Y` concatenates bit fields, 
 |---|---|---|
 | ADD | (A + B) mod 4096 | LIN XOR CARRY |
 | AND | A AND B | LIN |
-| OR | A OR B | LIN |
-| NOT | NOT A | LIN |
 | INC | (A + 1) mod 4096 | LIN XOR CARRY |
-| ROR | LIN·A[11:1] | A[0] |
-| ROL | A[10:0]·LIN | A[11] |
-| RTR | A[0]·LIN·A[11:2] | A[1] |
-| RTL | A[9:0]·LIN·A[11] | A[10] |
-| BSW | A[5:0]·A[11:6] | LIN |
 | CLEAR | 0 | LIN |
 
-The link output treats LIN and A as one 13-bit value: a carry out of the most significant bit complements the link, and the rotates move LIN·A as a 13-bit ring. This matches the PDP-8/e, where a carry out of AC bit 0 complements L and the rotates operate on L and AC together.
+The link output treats LIN and A as one 13-bit value: a carry out of the most significant bit complements the link. This matches the PDP-8/e, where a carry out of AC bit 0 complements L.
 
 Properties:
 
@@ -2494,7 +2472,7 @@ ALU operations impose constraints on operand selection.
 For unary operations:
 
 ```
-ALU_OP ∈ {NOT, INC, CLEAR, ROR, ROL, RTR, RTL, BSW}
+ALU_OP ∈ {INC, CLEAR}
 ```
 
 Constraints:
@@ -2506,7 +2484,6 @@ ALU_B_SRC = NONE
 Additional constraints:
 
 - Operation is applied to ALU_A_SRC  
-- Rotate operations use L through the ALU link input, not as a selected operand ([§7.3.1](#731-alu-evaluation))  
 - No independently selected second operand is consumed  
 
 **Used by μops:**
@@ -2519,7 +2496,7 @@ Additional constraints:
 For binary operations:
 
 ```
-ALU_OP ∈ {ADD, AND, OR}
+ALU_OP ∈ {ADD, AND}
 ```
 
 Constraint:
@@ -2670,7 +2647,7 @@ A value explicitly defined in a signal’s encoding table.
 Example:
 
 ```
-ALU_OP = 00 (ADD) → valid
+ALU_OP = 0 (ADD) → valid
 ```
 
 ---
@@ -2682,7 +2659,7 @@ A value within the encoding space that is not currently assigned a meaning.
 Example:
 
 ```
-ALU_OP = 13 → reserved
+ALU_A_SRC = 3 → reserved
 ```
 
 ---

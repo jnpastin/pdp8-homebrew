@@ -40,31 +40,31 @@ def alu(op, a, b, lin):
     """MCS §7.3.1. Returns (ALU_RESULT, ALU_LINK); None for an undefined result."""
     if op == E.CLEAR:
         return 0, lin
-    if op in (E.ADD, E.AND, E.OR):
+    if op in (E.ADD, E.AND, E.OR):                          # V1-ONLY: OR
         if a is None or b is None:
             return None, None if op == E.ADD else lin
         if op == E.ADD:
             s = a + b
             return s & MASK12, u(lambda l: l ^ (s >> 12), lin)
-        return (a & b, lin) if op == E.AND else (a | b, lin)
+        return (a & b, lin) if op == E.AND else (a | b, lin)  # V1-ONLY: OR
     if a is None:
-        return None, None if op in (E.INC, E.ROR, E.ROL, E.RTR, E.RTL) else lin
-    if op == E.NOT:
-        return ~a & MASK12, lin
+        return None, None if op in (E.INC, E.ROR, E.ROL, E.RTR, E.RTL) else lin  # V1-ONLY: rotates
+    if op == E.NOT:                                         # V1-ONLY
+        return ~a & MASK12, lin                             # V1-ONLY
     if op == E.INC:
         s = a + 1
         return s & MASK12, u(lambda l: l ^ (s >> 12), lin)
-    if op == E.BSW:
-        return ((a & 0o77) << 6) | (a >> 6), lin
-    # Rotates move LIN·A as a 13-bit ring.
-    if op == E.ROR:
-        return u(lambda l: (l << 11) | (a >> 1), lin), a & 1
-    if op == E.ROL:
-        return u(lambda l: ((a << 1) & MASK12) | l, lin), (a >> 11) & 1
-    if op == E.RTR:
-        return u(lambda l: ((a & 1) << 11) | (l << 10) | (a >> 2), lin), (a >> 1) & 1
-    if op == E.RTL:
-        return u(lambda l: ((a & 0o1777) << 2) | (l << 1) | (a >> 11), lin), (a >> 10) & 1
+    if op == E.BSW:                                         # V1-ONLY
+        return ((a & 0o77) << 6) | (a >> 6), lin            # V1-ONLY
+    # V1-ONLY: rotates move LIN·A as a 13-bit ring.
+    if op == E.ROR:                                         # V1-ONLY
+        return u(lambda l: (l << 11) | (a >> 1), lin), a & 1  # V1-ONLY
+    if op == E.ROL:                                         # V1-ONLY
+        return u(lambda l: ((a << 1) & MASK12) | l, lin), (a >> 11) & 1  # V1-ONLY
+    if op == E.RTR:                                         # V1-ONLY
+        return u(lambda l: ((a & 1) << 11) | (l << 10) | (a >> 2), lin), (a >> 1) & 1  # V1-ONLY
+    if op == E.RTL:                                         # V1-ONLY
+        return u(lambda l: ((a & 0o1777) << 2) | (l << 1) | (a >> 11), lin), (a >> 10) & 1  # V1-ONLY
     raise SpecViolation(f"reserved ALU_OP {op:o}", "MCS ALU_OP")
 
 
@@ -94,12 +94,14 @@ class _Eval:
         if self._alu is None:
             st = self.st
             a = {0: st["AC"], 1: st["MB"], 2: st["PC"]}[self.sel("ALU_A_SRC")]
-            op = self.sel("ALU_OP")
+            op = E.alu_operation(self.design.name, self.sel("ALU_OP"))
             b_src = self.sel("ALU_B_SRC")
-            if b_src == 0 and op in (E.ADD, E.AND, E.OR):
+            if b_src == 0 and op in (E.ADD, E.AND, E.OR):  # V1-ONLY: OR
                 raise SpecViolation(f"binary ALU_OP {op:o} with ALU_B_SRC = NONE",
                                     "MCS ALU_B_SRC (NONE is for unary operations), §9.5.2")
-            b = {0: None, 1: st["MB"], 2: st["MQ"], 3: self.panel.sr}[b_src]
+            b = {0: None, 1: st["MB"],
+                 2: st["MQ"], 3: self.panel.sr,          # V1-ONLY
+                 }[b_src]
             self._alu = alu(op, a, b, st["L"])
         return self._alu
 
@@ -204,7 +206,8 @@ class _Eval:
         if f["PC_INC"] and f["PC_LOAD"]:
             raise SpecViolation("PC_INC and PC_LOAD asserted together", "MCS PC_INC, PC_LOAD")
         if f["PC_INC"]:
-            if self.sel("ALU_OP") != E.INC or self.sel("ALU_A_SRC") != 2:
+            if (E.alu_operation(self.design.name, self.sel("ALU_OP")) != E.INC
+                    or self.sel("ALU_A_SRC") != 2):
                 raise SpecViolation("PC_INC without ALU_OP = INC and ALU_A_SRC = PC", "MCS PC_INC")
             fx.loads["PC"] = self.alu()[0]
         if f["PC_LOAD"]:
@@ -257,8 +260,8 @@ class _Eval:
             return u(lambda a, d: a | (d << 3), ac, st["DF"])
         if src == 4:                                     # IB_TO_AC: AC[5:0] <- AC[5:0] OR IB
             return u(lambda a, b: a | b, ac, st["IB"])
-        if src == 5:                                     # AC_MQ_SWAP: AC <- MQ
-            return st["MQ"]
+        if src == 5:                                     # V1-ONLY: AC_MQ_SWAP: AC <- MQ
+            return st["MQ"]                              # V1-ONLY: reserved in v2
         if src == 7:                                     # OPR_PASS: AC <- the OPR pass unit
             return self.opr_pass()[0]
         return u(lambda a, g: a | g, ac, self.gtf_flags())  # GTF_FLAGS_TO_AC: AC <- AC OR GTF_FLAGS

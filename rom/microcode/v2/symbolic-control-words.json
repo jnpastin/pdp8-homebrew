@@ -132,7 +132,7 @@
         ],
         "ALU_OP": [
           {
-            "value": "4",
+            "value": "2",
             "when": "((MS = FETCH AND TS = 1) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "PC_INC"
@@ -832,7 +832,7 @@
         ],
         "ALU_OP": [
           {
-            "value": "4",
+            "value": "2",
             "when": "(((MS = FETCH AND TS = 4) AND RUN = 1) AND (IR_CLASS = 100 AND SKIP = 1))",
             "origin": "conditional micro-operation mapping",
             "source": "PC_INC"
@@ -1487,7 +1487,7 @@
         ],
         "ALU_OP": [
           {
-            "value": "4",
+            "value": "2",
             "when": "(((MS = DEFER AND TS = 3) AND RUN = 1) AND AUTO_INDEX_REQUIRED = 1)",
             "origin": "conditional micro-operation mapping",
             "source": "MB_INC"
@@ -4037,7 +4037,7 @@
         ],
         "ALU_OP": [
           {
-            "value": "4",
+            "value": "2",
             "when": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 3) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "MB_INC"
@@ -4243,7 +4243,7 @@
         ],
         "ALU_OP": [
           {
-            "value": "4",
+            "value": "2",
             "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 4) AND RUN = 1) AND ISZ_SKIP_REQ = 1)",
             "origin": "conditional micro-operation mapping",
             "source": "PC_INC"
@@ -5079,7 +5079,7 @@
         ],
         "ALU_OP": [
           {
-            "value": "12",
+            "value": "3",
             "when": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 4) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_CLEAR"
@@ -5951,7 +5951,7 @@
         ],
         "ALU_OP": [
           {
-            "value": "4",
+            "value": "2",
             "when": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "PC_INC"
@@ -6374,7 +6374,7 @@
         ],
         "ALU_OP": [
           {
-            "value": "12",
+            "value": "3",
             "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 2) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
             "origin": "conditional micro-operation mapping",
             "source": "AC_CLEAR"
@@ -6638,7 +6638,7 @@
         ],
         "ALU_OP": [
           {
-            "value": "12",
+            "value": "3",
             "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
             "origin": "conditional micro-operation mapping",
             "source": "AC_CLEAR"
@@ -6936,13 +6936,13 @@
         ],
         "ALU_OP": [
           {
-            "value": "12",
+            "value": "3",
             "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
             "origin": "conditional micro-operation mapping",
             "source": "AC_CLEAR"
           },
           {
-            "value": "4",
+            "value": "2",
             "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND IO_SKIP_REQ = 1)",
             "origin": "conditional micro-operation mapping",
             "source": "PC_INC"
@@ -8778,7 +8778,7 @@
         ],
         "ALU_OP": [
           {
-            "value": "4",
+            "value": "2",
             "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 2) AND RUN = 1) AND IE = 1)",
             "origin": "conditional micro-operation mapping",
             "source": "PC_INC"
@@ -9492,7 +9492,7 @@
         ],
         "ALU_OP": [
           {
-            "value": "4",
+            "value": "2",
             "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 2) AND RUN = 1) AND /INT_REQ = 0)",
             "origin": "conditional micro-operation mapping",
             "source": "PC_INC"
@@ -10057,7 +10057,7 @@
         ],
         "ALU_OP": [
           {
-            "value": "12",
+            "value": "3",
             "when": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_CLEAR"
@@ -12722,7 +12722,7 @@
         ],
         "ALU_OP": [
           {
-            "value": "12",
+            "value": "3",
             "when": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_CLEAR"
@@ -15530,7 +15530,7 @@
         ],
         "ALU_OP": [
           {
-            "value": "4",
+            "value": "2",
             "when": "(RUN = 0 AND FP_EXAMINE = 1)",
             "origin": "micro-operation mapping",
             "source": "PC_INC"
@@ -15797,7 +15797,7 @@
         ],
         "ALU_OP": [
           {
-            "value": "4",
+            "value": "2",
             "when": "(RUN = 0 AND FP_DEPOSIT = 1)",
             "origin": "micro-operation mapping",
             "source": "PC_INC"
@@ -16058,7 +16058,7 @@
         ],
         "ALU_OP": [
           {
-            "value": "12",
+            "value": "3",
             "when": "(RUN = 0 AND FP_CLEAR = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_CLEAR"
@@ -16319,13 +16319,13 @@
         ],
         "ALU_OP": [
           {
-            "value": "12",
+            "value": "3",
             "when": "(RUN = 0 AND FP_START = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_CLEAR"
           },
           {
-            "value": "12",
+            "value": "3",
             "when": "(RUN = 0 AND FP_START = 1)",
             "origin": "micro-operation mapping",
             "source": "MQ_CLEAR"

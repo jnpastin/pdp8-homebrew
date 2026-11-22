@@ -64,7 +64,6 @@ Constraints:
 Writers:
 - ALU result path
 - OPR pass unit (Group 1 OPR: CLA, CMA, IAC, rotates, BSW, [Group 1 Execution](../03-microarchitecture/07-opr/01-group1-execution.md); Group 2 OPR: CLA, OSR, [Group 2 Execution](../03-microarchitecture/07-opr/02-group2-execution.md); Group 3 OPR: CLA, MQA, MQL, SWP, [Group 3 Execution](../03-microarchitecture/07-opr/03-group3-execution.md))
-- Shift/rotate network (AC:L)
 - IOT execution (GTF)
 - System initialization (CAF, front-panel CLEAR; AC_CLEAR micro-operation)
 - Console START (AC_CLEAR micro-operation)

@@ -43,7 +43,7 @@ Constraint:
 
 ### 2.1 Encoding Notation
 
-The encodings listed for a control-output field ([Control Output Definitions](./20-control-output-definitions/00-index.md)) are octal numerals, following PDP-8 convention. For example, `ALU_OP` encoding `12` is binary `1010`.
+The encodings listed for a control-output field ([Control Output Definitions](./20-control-output-definitions/00-index.md)) are octal numerals, following PDP-8 convention. For example, `AC_SRC` encoding `7` is binary `111`, and a numeral `12` would be binary `1010`.
 
 ---
 

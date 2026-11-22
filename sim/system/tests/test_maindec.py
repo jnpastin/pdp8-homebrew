@@ -112,6 +112,28 @@ class PassCriteria(unittest.TestCase):
         self.assertEqual(maindec.classify(D["d0jc"], [maindec.RUBOUT] + self.chars("F")),
                          (0, self.chars("F")))
 
+    def test_end_of_pass_names(self):
+        # D0FC, D0HC, D0JC write-ups §9, as printed by full passes (start-up character included).
+        D, nl = maindec.DIAGNOSTICS, [maindec.CR, maindec.LF]
+        for name, start, printed in (("d0fc", [], self.chars("FC") + [maindec.RUBOUT]),
+                                     ("d0hc", [maindec.NUL], self.chars("HC")),
+                                     ("d0jc", [maindec.RUBOUT], self.chars("JC"))):
+            with self.subTest(program=name):
+                self.assertEqual(maindec.classify(D[name], start + (nl + printed) * 2), (2, []))
+
+    def test_error_printouts_are_not_passes(self):
+        # The examples of error printouts in the same write-ups (§6.2).
+        D, nl = maindec.DIAGNOSTICS, [maindec.CR, maindec.LF]
+        for name, lines in (("d0fc", ("F 3003 T 5470", "0 3705 F 4777 R 5000 S")),
+                            ("d0fc", ("F 3003 T 5470", "0 3705 F 4777 R 5020  NS")),
+                            ("d0hc", ("F 4252 TO 7020", "Z = 7000")),
+                            ("d0jc", ("F 5236 TO 6354", "(TO) = 7402", "(4354) = 5237")),
+                            ("d0jc", ("F 5236 TO 6354", "(TO) = 7237", "(6354) = 7237"))):
+            with self.subTest(program=name, lines=lines):
+                markers, errors = maindec.classify(D[name], [c for line in lines for c in nl + self.chars(line)])
+                self.assertEqual(markers, 0)
+                self.assertTrue(errors)
+
     def test_information_lines(self):
         d, out = maindec.DIAGNOSTICS["d1fb"], maindec.Outcome("d1fb")
         nl = [maindec.CR, maindec.LF]

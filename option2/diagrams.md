@@ -170,6 +170,34 @@ The five 4:1 multiplexers, read from the edges: `m7rejeYPD5JNTGzo8jMm-1` → DP_
 
 ---
 
-## Later slices
+## Phase 9: ALU cleanup (decision 13, 2026-11-21)
 
-Entries are added when each slice's docs are written, after reading the sources again. The spec's expected list ([spec.md](spec.md) §9) is a forecast, not yet checked against the sources.
+### `diagrams/microarchitecture/cpu-architecture/source/CPU_Architecture.xml`
+
+| # | Current content (source) | Required change | Doc | Status |
+|---|---|---|---|---|
+| P9-1 | FP_SR → ALU B (`2Ph0Qde3JH9-hkXoXRvS-145`), MQ → ALU B (`2Ph0Qde3JH9-hkXoXRvS-141`), MQ → AC (`cX9REWVKWh3u19Wi5yly-27`). | Remove all three edges. Settles the "your call" removals in C2-6 and C3-1. | MCS `ALU_B_SRC`, `AC_SRC` | open |
+
+### `diagrams/control/control-store-organization/source/control-store-organization.xml`
+
+| # | Current content (source) | Required change | Doc | Status |
+|---|---|---|---|---|
+| P9-2 | Node `Smnm8CKmp2vPJFrs1iI9-14` "Datapath SliceROM [45 Bits]". | 44 bits. Supersedes B5 and C2-5. | CSO §4.2, §7.2 | open |
+
+---
+
+## Final list (phase 9, 2026-11-21)
+
+No diagram source has changed on this branch (`git diff main -- diagrams` is empty), so every entry above is still open. Superseded entries are folded into the entry that replaces them. Per diagram:
+
+| Diagram | Entries | Change |
+|---|---|---|
+| `CPU_Architecture.xml` | A1, A2, B6, B7, C1-1, C2-6, C2-7, C3-1, P9-1 | MDB → IR, IR → IDB only (A1); MA → EA_ADDR for the page (A2); formed address → PC (B6); INSTR_END output to the DMA arbiter (B7); the OPR pass unit with AC, L, FP_SR, and MQ inputs and AC, L, and MQ outputs (C1-1, C2-6, C3-1); the SKIP register (C2-7). Remove FP_SR → ALU B, MQ → ALU B, and MQ → AC (P9-1). |
+| `ms_next-flowchart.xml` | B1 + C3-2 (C1-2, C2-8 superseded), B2 | FETCH: a direct JMP or any OPR (`IR_NO_EXECUTE = 1`, not indirect) goes to the instruction-completion decision; DEFER: a JMP I does too. |
+| `control-store-mapping.xml` | B3 | The wired 0 into the 5-bit MUX becomes `00·IR_CLASS`. |
+| `control-store-organization.xml` | B4, C2-4, P9-2 (B5, C2-5 superseded), D2 (optional) | Sequencer ROM inputs `IR_NO_EXECUTE` (A2) and `IR_OPR_HLT` (A1); the datapath slice label "[45 Bits]" becomes **44** (P9-2); optionally, EEPROMs shadowed into SRAM. |
+| `control-store-overlay.xml` | C2-1, C2-2, C2-3 | The `RUN` multiplexer on group 1 bits 2 to 0 (`SKIP`, 0, 0 when running); group 3's DP_OVL[4] input `SKIP_TAKEN` becomes wired 0; `ISZ_SKIP_REQUIRED` → `ISZ_SKIP_REQ`. |
+| `cpu-timing-overview.json` | D1 | Add the fast state (5/8/6/5) beside the slow state (6/9/7/6). |
+| Not drawn | D (note) | No diagram exists for the timing ROM, the TSEQ counter, or the shadow-copy logic; drawing them is your call. |
+
+Checked across all slices with no change: `control-store-address-formation.xml`, `addressing-model.xml`, `class-a-buses.xml`, `High-Level-Architecture.xml`, `io_subsystem.xml`, `io/*.json` (`dma_timing.json`'s FETCH → DMA label is now a possible sequence; optional). The spec §9 forecast is fully covered by the entries above.

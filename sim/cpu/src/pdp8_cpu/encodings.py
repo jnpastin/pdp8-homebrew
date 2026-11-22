@@ -51,13 +51,11 @@ DATAPATH_FIELDS = {f.name: f for f in [
     _f("AB_SRC", 1, {0: "MA", 1: "PC"}, "MCS AB_SRC"),
     _f("AC_LOAD", 1, LOAD, "MCS AC_LOAD"),
     _f("AC_SRC", 3, {0: "IDB", 1: "DB", 2: "IF (field-merge)", 3: "DF (field-merge)",
-                     4: "IB (field-merge)", 5: "MQ", 6: "GTF_FLAGS",
+                     4: "IB (field-merge)", 5: "reserved", 6: "GTF_FLAGS",
                      7: "OPR pass unit (OPR)"}, "MCS AC_SRC"),
     _f("ALU_A_SRC", 2, {0: "AC", 1: "MB", 2: "PC", 3: "reserved"}, "MCS ALU_A_SRC"),
-    _f("ALU_B_SRC", 2, {0: "NONE", 1: "MB", 2: "MQ", 3: "FP_SR"}, "MCS ALU_B_SRC"),
-    _f("ALU_OP", 4, {0: "ADD", 1: "AND", 2: "OR", 3: "NOT", 4: "INC", 5: "ROR", 6: "ROL",
-                     7: "RTR", 0o10: "RTL", 0o11: "BSW", 0o12: "CLEAR",
-                     **{c: "reserved" for c in range(0o13, 0o20)}}, "MCS ALU_OP"),
+    _f("ALU_B_SRC", 1, {0: "NONE", 1: "MB"}, "MCS ALU_B_SRC"),
+    _f("ALU_OP", 2, {0: "ADD", 1: "AND", 2: "INC", 3: "CLEAR"}, "MCS ALU_OP"),
     _f("CIFP_LOAD", 1, LOAD, "MCS CIFP_LOAD"),
     _f("CIFP_VAL", 1, BOOL_VAL, "MCS CIFP_VAL"),
     _f("DF_LOAD", 1, LOAD, "MCS DF_LOAD"),
@@ -106,6 +104,10 @@ _DESIGN_OVERRIDES = {
         "AC_SRC": _f("AC_SRC", 3, {0: "IDB", 1: "DB", 2: "IF (field-merge)", 3: "DF (field-merge)",
                                    4: "IB (field-merge)", 5: "MQ", 6: "GTF_FLAGS", 7: "reserved"},
                      "MCS AC_SRC"),
+        "ALU_B_SRC": _f("ALU_B_SRC", 2, {0: "NONE", 1: "MB", 2: "MQ", 3: "FP_SR"}, "MCS ALU_B_SRC"),
+        "ALU_OP": _f("ALU_OP", 4, {0: "ADD", 1: "AND", 2: "OR", 3: "NOT", 4: "INC", 5: "ROR", 6: "ROL",
+                                   7: "RTR", 0o10: "RTL", 0o11: "BSW", 0o12: "CLEAR",
+                                   **{c: "reserved" for c in range(0o13, 0o20)}}, "MCS ALU_OP"),
         "L_OP": _f("L_OP", 2, {0: "CLEAR", 1: "COMP", 2: "ALU_LINK", 3: "AC[11]"}, "MCS L_OP"),
         "MQ_SRC": _f("MQ_SRC", 1, {0: "IDB", 1: "AC"}, "MCS MQ_SRC"),
     },
@@ -143,8 +145,20 @@ MS_NAMES = {FETCH: "FETCH", DEFER: "DEFER", EXECUTE: "EXECUTE", INTERRUPT: "INTE
 FP_CMD_CODES = {None: 0, "START": 1, "CONTINUE": 2, "CLEAR": 3, "LOAD_ADDRESS": 4,
                 "EXAMINE": 5, "DEPOSIT": 6}
 
-# ALU operations (MCS ALU_OP).
-ADD, AND, OR, NOT, INC, ROR, ROL, RTR, RTL, BSW, CLEAR = range(11)
+# ALU operations (MCS ALU_OP). The numbers are the v2 codes.
+ADD, AND, INC, CLEAR = range(4)
+OR, NOT, ROR, ROL, RTR, RTL, BSW = range(4, 11)  # V1-ONLY: operations, not codes
+_V1_ALU_OPS = (ADD, AND, OR, NOT, INC, ROR, ROL, RTR, RTL, BSW, CLEAR)  # V1-ONLY: in code order
+
+
+def alu_operation(design_name: str, code: int) -> int:
+    """The operation that a design's ALU_OP code selects."""
+    return _V1_ALU_OPS[code] if design_name == "v1" else code  # V1-ONLY: the v1 translation
+
+
+def alu_code(design_name: str, operation: int) -> int:
+    """The ALU_OP code that selects an operation in a design."""
+    return _V1_ALU_OPS.index(operation) if design_name == "v1" else operation  # V1-ONLY: the v1 translation
 
 # IOT_TRANSFER encoding (Registers, IOT_TRANSFER).
 IOT_NONE, IOT_READ, IOT_WRITE = 0, 1, 2
