@@ -16,9 +16,9 @@ Each of the lower 8 bits of the instruction are flags for a specific operation. 
 
 ## 1. Flag Definition and Timing
 
-Each flag performs a single operation, these actions will occur at a defined TP during EXECUTE.
+Each flag performs a single operation. Operations with a lower Order take effect first; those with the same Order are independent.
 
-| Mnemonic | TP | Operation |
+| Mnemonic | Order | Operation |
 |---|---|---|
 | CLA | 1 | Clear AC |
 | CLL | 1 | Clear L |
@@ -53,6 +53,6 @@ NOP:
 
 ## 2. Combining Operations
 
-All Group 1 operations can be combined with others into a single instruction.  This allows significant speedup by combining multiple operations, skipping additional FETCH and EXECUTE states.  For example, `CLA` and `CLL` can be combined to clear both AC and L, or `CLA` and `IAC` can be combined to clear then increment the AC, setting it to `0001`.
+All Group 1 operations can be combined with others into a single instruction.  This allows significant speedup by combining multiple operations, saving the FETCH of each additional instruction.  For example, `CLA` and `CLL` can be combined to clear both AC and L, or `CLA` and `IAC` can be combined to clear then increment the AC, setting it to `0001`.
 
 However, it is critical to understand the order.  For example, if AC is `1354`, a `CMA IAC` complements first (AC = `6423`) and then increments (AC = `6424`).  It will **NOT** happen in the opposite order, incrementing and then complementing (AC = `6422`)

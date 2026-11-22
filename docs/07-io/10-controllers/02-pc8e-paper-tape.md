@@ -611,7 +611,6 @@ An ignored operation produces:
 - no DB capture
 - no `IO_CLEAR_AC_REQ`
 - no `IO_SKIP_REQ`
-- no `/IO_WAIT`
 - no controller state change
 - no flag change
 - no interrupt-enable change

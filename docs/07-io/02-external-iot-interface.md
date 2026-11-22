@@ -133,7 +133,6 @@ A controller that is not selected must:
 - not drive DB
 - not capture DB
 - not modify controller state because of the IOT
-- not assert /IO_WAIT because of the IOT
 
 ---
 

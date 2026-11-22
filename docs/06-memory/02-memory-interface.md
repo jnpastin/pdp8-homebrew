@@ -17,6 +17,7 @@ The memory subsystem interface consists of:
 - MDB
 - /RD
 - /WR
+- /WR_PULSE, which times a write ([Memory Timing §4](./04-memory-timing.md#4-active-write-window))
 
 These signals define the complete memory-facing interface for normal memory operations.
 
@@ -68,7 +69,7 @@ When /RD is asserted as part of a valid read operation, memory uses MEM_ADDR to 
 
 From the memory subsystem perspective, /WR is an input.
 
-When /WR is asserted as part of a valid write operation, memory uses MEM_ADDR to select a word and stores the 12-bit value presented on MDB.
+When /WR is asserted as part of a valid write operation, memory uses MEM_ADDR to select a word and, during /WR_PULSE, stores the 12-bit value presented on MDB.
 
 /WR does not define the source of write data. It only defines the memory-side write request.
 
@@ -83,7 +84,7 @@ The following diagram shows representative CPU memory-read and memory-write tran
 For both transaction types:
 
 - CPU control supplies `MFB[2:0]` and `AB[11:0]`.
-- `MFB` and `AB` remain stable while `/RD` or `/WR` is asserted and through the associated commit TP.
+- `MFB` and `AB` remain stable while `/RD` is asserted or a write pulse is active, and through the associated commit TP.
 - Exactly one of `/RD` or `/WR` is asserted for a valid memory transaction.
 - During a memory read, memory drives `MDB[11:0]`, and the CPU captures the value at the commit TP.
 - During a memory write, the CPU drives `MDB[11:0]`, and memory captures the value at the commit TP.
@@ -154,7 +155,7 @@ The following conditions are invalid unless explicitly defined elsewhere:
 
 - /RD and /WR asserted at the same time
 - /RD asserted while memory is not allowed to drive MDB
-- /WR asserted without valid write data on MDB
+- /WR asserted during /WR_PULSE without valid write data on MDB
 - more than one source driving MDB
 - no source driving MDB during a write
 - unstable MFB during an active memory operation
@@ -172,6 +173,7 @@ Invalid interface conditions are design errors.
 - AB is an input to memory.
 - /RD is an input to memory.
 - /WR is an input to memory.
+- /WR_PULSE is an input to memory.
 - MDB is driven by memory only during reads.
 - MDB is observed by memory during writes.
 - Memory uses MEM_ADDR = {MFB, AB} to select a word.
@@ -183,6 +185,6 @@ Invalid interface conditions are design errors.
 
 ## 11. Summary
 
-The memory interface consists of MFB, AB, MDB, /RD, and /WR.
+The memory interface consists of MFB, AB, MDB, /RD, /WR, and /WR_PULSE.
 
 Memory observes MFB and AB to form MEM_ADDR. On reads, memory drives MDB with the selected word. On writes, memory observes MDB and stores the presented word. The memory subsystem does not decide where the interface values came from.

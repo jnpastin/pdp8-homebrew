@@ -12,6 +12,8 @@ It serves as the authoritative source for:
 
 ## 2. Structure
 
+Before editing, read the [Documentation Conventions](./00-overview/97-documentation-conventions.md). Some of these documents are parsed to build the control store, and ordinary prose edits can change it.
+
 - `00-overview` - High-level system overview and goals
 - `01-architecture` - Programmer-visible machine model
 - `02-isa` - Instruction set architecture

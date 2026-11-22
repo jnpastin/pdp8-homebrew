@@ -51,6 +51,7 @@ The following signals remain within the CPU timing-generation and timing-distrib
 - TSTEP
 - TSEQ
 - CW_VALID
+- DB_VALID
 
 These signals:
 - must not be placed on the backplane
@@ -61,14 +62,14 @@ Physical distribution of Class C signals is implementation-dependent.
 
 ### 3.2 Architecturally Distributed Timing Signals
 
-The following signals are distributed to external I/O controllers:
+The following signals are distributed outside the CPU:
 
-- TS
-- TP
-- WR_VALID, used by DMA controllers that drive `/WR`
+- TS, to external I/O controllers
+- TP, the single commit clock, to external I/O controllers
+- /WR_PULSE, to memory
 
 These signals:
-- are available through the external I/O interface
+- are available through the external I/O interface (TS and TP) or the memory interface (/WR_PULSE)
 - may be placed on the backplane
 - may be relied upon by external controllers only as defined by the [I/O Timing Contract](../07-io/03-io-timing.md)
 
@@ -109,7 +110,8 @@ Signals:
 - TS
 - TP
 - CW_VALID
-- WR_VALID
+- DB_VALID
+- /WR_PULSE
 
 ---
 
@@ -136,7 +138,7 @@ Authoritative definitions are maintained in:
 
 - MCLK, TCLK, TSTEP, and TSEQ are CPU-local unless another architectural interface explicitly requires them.
 - MCLK, TCLK, TSTEP, and TSEQ must not be relied upon by independent modules.
-- TS, TP, and WR_VALID are architecturally distributed timing signals.
+- TS, TP, and /WR_PULSE are architecturally distributed timing signals.
 - TS and TP are available to external I/O controllers.
 - External controllers may use TS and TP only according to the [I/O Timing Contract](../07-io/03-io-timing.md).
 - Class C signals define timing structure rather than system behavior.
@@ -148,4 +150,4 @@ Authoritative definitions are maintained in:
 
 ## 7. Summary
  
-Class C signals define the timing framework of the system. MCLK, TCLK, TSTEP, and TSEQ remain CPU-local, while TS and TP are architecturally distributed to external I/O controllers. Timing definitions, behavior, and architecture are defined in Section 9 and the applicable external interface contracts.
+Class C signals define the timing framework of the system. MCLK, TCLK, TSTEP, and TSEQ remain CPU-local, while TS and TP are architecturally distributed to external I/O controllers and /WR_PULSE to memory. Timing definitions, behavior, and architecture are defined in Section 9 and the applicable external interface contracts.

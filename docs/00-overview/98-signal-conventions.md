@@ -92,8 +92,9 @@ All Class A buses follow this model:
 
 ## 7. Pull Resistors
 
-- weak pull-up resistors are used
-- ensure defined HIGH state when bus is undriven
+- pull-ups ensure a defined HIGH state when a line is undriven
+- a weak pull-up is used where a line needs only an idle level
+- a line that changes value by being released, such as `/INT_REQ`, needs a pull-up of 220 Ω or a termination at least as strong, because a weak one takes about 400 ns to rise, longer than a TS
 
 ### 7.1 Rationale
 
@@ -111,7 +112,7 @@ All Class A buses follow this model:
 
 - interrupt-capable controllers may pull the line LOW
 - no controller may actively drive the line HIGH
-- a pull-up defines the deasserted HIGH state
+- a pull-up of the strength given in section 7 defines the deasserted HIGH state
 - the line remains LOW while any controller asserts an interrupt request
 
 Electrically, the line is wired-AND because it is HIGH only when all controllers release it. Functionally, asserted-low interrupt requests combine as a wired-OR.

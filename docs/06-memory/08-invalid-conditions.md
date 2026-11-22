@@ -30,8 +30,8 @@ The following are invalid:
 
 - /RD and /WR asserted at the same time
 - /RD asserted without a valid MEM_ADDR
-- /WR asserted without a valid MEM_ADDR
-- /WR asserted without valid write data present on MDB
+- /WR asserted during /WR_PULSE without a valid MEM_ADDR
+- /WR asserted during /WR_PULSE without valid write data present on MDB
 - memory driving MDB during a write
 - memory driving MDB while idle (neither /RD nor /WR asserted)
 - no valid MDB driver during a write
@@ -48,8 +48,8 @@ The following are invalid:
 
 The following are invalid:
 
-- MFB changing while /RD or /WR is asserted
-- AB changing while /RD or /WR is asserted
+- MFB changing while /RD is asserted, or during /WR_PULSE with /WR asserted
+- AB changing while /RD is asserted, or during /WR_PULSE with /WR asserted
 - MDB write data changing during the active write-data stability window
 - memory failing to hold MDB stable for the required setup/hold interval around the commit TP during a read
 - the MDB source failing to hold write data stable for the required setup/hold interval around the commit TP during a write

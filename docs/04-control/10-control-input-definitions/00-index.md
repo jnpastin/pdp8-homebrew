@@ -174,6 +174,7 @@ Defined in: [External Inputs](./04-external-inputs.md)
 ### 6.3 Front Panel Data
 - [FP_IF](./04-external-inputs.md#fp_if)
 - [FP_DF](./04-external-inputs.md#fp_df)
+- [FP_SR](./04-external-inputs.md#fp_sr)
 
 ### 6.4 External Requests
 - [/INT_REQ](./04-external-inputs.md#int_req)
@@ -185,7 +186,6 @@ Defined in: [External Inputs](./04-external-inputs.md)
 - [IO_WRITE_REQ](./04-external-inputs.md#io_write_req)
 - [IO_SKIP_REQ](./04-external-inputs.md#io_skip_req)
 - [IO_CLEAR_AC_REQ](./04-external-inputs.md#io_clear_ac_req)
-- [/IO_WAIT](./04-external-inputs.md#io_wait)
 
 ---
 
@@ -203,7 +203,7 @@ The following control inputs are defined here but are not read by any execution 
 | `MBZ` | derived-flag logic | `ISZ_SKIP_REQ` |
 | `IR_ADDR`, `IR_ZERO_PAGE` | datapath | EA formation by `IR_ADDR_TO_EA_ADDR` |
 | `FP_IF`, `FP_DF` | datapath | values loaded by `FP_IF_TO_IF`, `FP_IF_TO_DIF`, `FP_DF_TO_DF` |
+| `FP_SR` | datapath | values used by `FP_SR_TO_PC`, `FP_SR_TO_MB`, `MEM_WRITE_FROM_FP_SR`, and `OPR_PASS` (OSR) |
 | `IR_DF`, `IR_IF` | datapath | values loaded by `IR_DF_TO_DF` (`DF_SRC = IR_DF`) and `IR_IF_TO_DIF` (`DIF_SRC = IR_IF`) |
-| `/IO_WAIT` | timing hardware | TSTEP progression |
 
 The control-word equivalence analyzer reports these as `unreferenced`. An input that appears there and is not listed in this table is a specification gap.

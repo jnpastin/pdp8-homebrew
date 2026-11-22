@@ -63,7 +63,7 @@ Each error names the major state, TS, IR, PC, both slice addresses, and the rule
 
 ### 4.4 Not Modelled
 
-TSTEP-level timing (`T_CS`, `CW_VALID`, `WR_VALID`, `/IO_WAIT`, slow cycles). DMA major states are modelled: with a DMA arbiter attached (`Cpu(dma=...)`, [sim/io](../io/README.md) §4), its aggregate `/DMA_REQ` addresses the sequencer, and during DMA the datapath word must release the memory interface (a `SpecViolation` otherwise) while the selected controller's transfer commits at TP2. Single Step halts inside a DMA burst are not yet tested. I/O controllers are separate models attached through the CPU's external-IOT interface ([sim/io](../io/README.md)).
+TSTEP-level timing (`T_CS`, `CW_VALID`, `DB_VALID`, `/WR_PULSE`, the two register ranks). DMA major states are modelled: with a DMA arbiter attached (`Cpu(dma=...)`, [sim/io](../io/README.md) §4), its aggregate `/DMA_REQ` addresses the sequencer, and during DMA the datapath word must release the memory interface (a `SpecViolation` otherwise) while the selected controller's transfer commits at TP2. Single Step halts inside a DMA burst are not yet tested. I/O controllers are separate models attached through the CPU's external-IOT interface ([sim/io](../io/README.md)).
 
 ## 5. Known Specification Gaps
 

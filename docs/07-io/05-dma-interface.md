@@ -36,6 +36,11 @@ During a DMA read, memory supplies MDB.
 
 The CPU does not drive MFB, AB, MDB, /RD, or /WR during DMA ownership.
 
+The controller drives these interfaces during DMA TS2 only, which includes TP2:
+
+- Everything it drives derives from state committed by TP1: MS, TS, the grant, and its address, direction, and write data. It is therefore static through the transfer.
+- It releases them as TS2 ends, two timing states before CPU ownership resumes.
+
 ---
 
 ## 4. Addressing
@@ -121,6 +126,7 @@ At TP2:
 - exactly one DMA word transfer commits
 - for a read, the controller captures MDB
 - for a write, memory captures MDB
+- the controller's `/DMA_REQ[n]` changes to reflect the transfer: deasserted after the last word, or when the next transfer is not prepared ([Controller Contract §9.2](./04-controller-contract.md#92-dma-request))
 
 A valid controller selection must not reach TP2 without completing one DMA word transfer.
 
@@ -152,8 +158,7 @@ At TP4, CPU control samples aggregate `/DMA_REQ` and commits:
 
 The selected controller and arbiter prepare all selection-release and ownership-release decisions before TP4.
 
-A controller may release early only after completing the current TP2 transfer.  
-If the controller cannot immediately complete another transfer, it must deassert its request before another selection is made.
+A controller that cannot immediately complete another transfer has deasserted its request since TP2 (section 6.3), so the arbiter ends the selection at TP3.
 
 ---
 

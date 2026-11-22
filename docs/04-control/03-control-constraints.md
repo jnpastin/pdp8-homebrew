@@ -394,64 +394,6 @@ Constraints:
 - `/DB_READ` and `/DB_WRITE` must be derived from committed pending-transfer state.
 - `IOT_TRANSFER` must not remain pending after its associated transfer commit TP unless replaced by a newly accepted request.
 
-#### I/O Wait Binding
-
-`/IO_WAIT` may inhibit TSTEP progression only at eligible non-TP setup positions during external-IOT EXECUTE.
-
-Constraints:
-
-- `/IO_WAIT` must not alter RUN.
-- `/IO_WAIT` must not alter MS.
-- `/IO_WAIT` must not directly modify architectural state.
-- `/IO_WAIT` must not suppress, extend, or repeat a TP.
-- All control outputs and external values required by the pending phase must remain stable while TSTEP is held.
-- TSTEP progression must resume normally when `/IO_WAIT` is deasserted.
-
----
-
-### 12.6 Domain Separation Constraint
-
-Binding between architectural signals and μops:
-
-- does not merge domains
-- does not redefine signal semantics
-- does not introduce implicit control behavior
-
-Each domain retains its role:
-
-- Architectural signals:
-  - initiate external operations
-
-- μops:
-  - define internal state changes
-
-The binding rule is a **consistency requirement**, not a mechanism.
-
----
-
-### 12.7 Determinism Requirement
-
-For any valid execution state:
-
-- the active architectural signals and μops must form a consistent pair
-- no partially defined external operation may exist
-
-This ensures:
-
-(control word + prior state) → exactly one valid system behavior
-
----
-
-### 12.8 Extension Rule
-
-Any future externally observable operation (e.g., DMA) must define:
-
-- required architectural signal(s)
-- required μop(s)
-- explicit binding rules identical in structure to this section
-
-No external operation may be defined without such a binding.
-
 ---
 
 ## 13. External Inputs (EXT)
@@ -460,7 +402,7 @@ Constraint:
 - EXT must be stable during control evaluation.
 
 Constraint:
-- EXT must be synchronized to the control timing model.
+- EXT must be captured at a TP, or be a registered controller output that changes only as a TP ends ([External Inputs §2](./10-control-input-definitions/04-external-inputs.md#2-timing-model)).
 
 Constraint:
 - EXT must not introduce non-deterministic behavior.

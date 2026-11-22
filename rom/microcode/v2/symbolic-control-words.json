@@ -17,7 +17,7 @@
       "execution_case_id": "fetch-defer:3.1",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 44
+        "line": 56
       },
       "base_context": "((MS = FETCH AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -232,7 +232,7 @@
       "execution_case_id": "fetch-defer:3.2",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 62
+        "line": 74
       },
       "base_context": "((MS = FETCH AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -441,7 +441,7 @@
       "execution_case_id": "fetch-defer:3.3",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 73
+        "line": 85
       },
       "base_context": "((MS = FETCH AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -731,7 +731,7 @@
       "execution_case_id": "fetch-defer:3.4",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 99
+        "line": 118
       },
       "base_context": "((MS = FETCH AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -1000,7 +1000,7 @@
       "execution_case_id": "fetch-defer:4.2",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 134
+        "line": 153
       },
       "base_context": "((MS = DEFER AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -1171,7 +1171,7 @@
       "execution_case_id": "fetch-defer:4.3",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 144
+        "line": 163
       },
       "base_context": "((MS = DEFER AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -1372,7 +1372,7 @@
       "execution_case_id": "fetch-defer:4.4",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 154
+        "line": 173
       },
       "base_context": "((MS = DEFER AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -1593,7 +1593,7 @@
       "execution_case_id": "fetch-defer:4.5",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 170
+        "line": 189
       },
       "base_context": "((MS = DEFER AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -5032,14 +5032,7 @@
         "DIF_LOAD": [],
         "EA_ADDR_LOAD": [],
         "IB_LOAD": [],
-        "IDB_DRIVE": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "IDB_DRIVE": [],
         "IE_LOAD": [],
         "IF_LOAD": [],
         "II_LOAD": [],
@@ -5055,48 +5048,20 @@
         "AB_SRC": [],
         "AC_SRC": [
           {
-            "value": "0",
+            "value": "5",
             "when": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 4) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_CLEAR"
           }
         ],
-        "ALU_A_SRC": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
-        "ALU_B_SRC": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
-        "ALU_OP": [
-          {
-            "value": "3",
-            "when": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "ALU_A_SRC": [],
+        "ALU_B_SRC": [],
+        "ALU_OP": [],
         "DF_SRC": [],
         "DIF_SRC": [],
         "EA_ADDR_SRC": [],
         "IF_SRC": [],
-        "IDB_SRC": [
-          {
-            "value": "7",
-            "when": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "IDB_SRC": [],
         "L_OP": [],
         "MA_SRC": [],
         "MB_SRC": [],
@@ -6091,7 +6056,7 @@
       "execution_case_id": "iot:external:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 135
+        "line": 133
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -6246,7 +6211,7 @@
       "execution_case_id": "iot:external:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 135
+        "line": 133
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -6314,14 +6279,7 @@
         "DIF_LOAD": [],
         "EA_ADDR_LOAD": [],
         "IB_LOAD": [],
-        "IDB_DRIVE": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 2) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "IDB_DRIVE": [],
         "IE_LOAD": [],
         "IF_LOAD": [],
         "II_LOAD": [],
@@ -6350,48 +6308,20 @@
         "AB_SRC": [],
         "AC_SRC": [
           {
-            "value": "0",
+            "value": "5",
             "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 2) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
             "origin": "conditional micro-operation mapping",
             "source": "AC_CLEAR"
           }
         ],
-        "ALU_A_SRC": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 2) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
-        "ALU_B_SRC": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 2) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
-        "ALU_OP": [
-          {
-            "value": "3",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 2) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "ALU_A_SRC": [],
+        "ALU_B_SRC": [],
+        "ALU_OP": [],
         "DF_SRC": [],
         "DIF_SRC": [],
         "EA_ADDR_SRC": [],
         "IF_SRC": [],
-        "IDB_SRC": [
-          {
-            "value": "7",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 2) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "IDB_SRC": [],
         "L_OP": [],
         "MA_SRC": [],
         "MB_SRC": [],
@@ -6480,7 +6410,7 @@
       "execution_case_id": "iot:external:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 135
+        "line": 133
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -6554,14 +6484,7 @@
         "DIF_LOAD": [],
         "EA_ADDR_LOAD": [],
         "IB_LOAD": [],
-        "IDB_DRIVE": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "IDB_DRIVE": [],
         "IE_LOAD": [],
         "IF_LOAD": [],
         "II_LOAD": [],
@@ -6608,7 +6531,7 @@
         "AB_SRC": [],
         "AC_SRC": [
           {
-            "value": "0",
+            "value": "5",
             "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
             "origin": "conditional micro-operation mapping",
             "source": "AC_CLEAR"
@@ -6620,42 +6543,14 @@
             "source": "DB_READ_TO_AC"
           }
         ],
-        "ALU_A_SRC": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
-        "ALU_B_SRC": [
-          {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
-        "ALU_OP": [
-          {
-            "value": "3",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "ALU_A_SRC": [],
+        "ALU_B_SRC": [],
+        "ALU_OP": [],
         "DF_SRC": [],
         "DIF_SRC": [],
         "EA_ADDR_SRC": [],
         "IF_SRC": [],
-        "IDB_SRC": [
-          {
-            "value": "7",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "IDB_SRC": [],
         "L_OP": [],
         "MA_SRC": [],
         "MB_SRC": [],
@@ -6783,7 +6678,7 @@
       "execution_case_id": "iot:external:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 135
+        "line": 133
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -6857,14 +6752,7 @@
         "DIF_LOAD": [],
         "EA_ADDR_LOAD": [],
         "IB_LOAD": [],
-        "IDB_DRIVE": [
-          {
-            "value": "1",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "IDB_DRIVE": [],
         "IE_LOAD": [],
         "IF_LOAD": [],
         "II_LOAD": [],
@@ -6894,7 +6782,7 @@
         "AB_SRC": [],
         "AC_SRC": [
           {
-            "value": "0",
+            "value": "5",
             "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
             "origin": "conditional micro-operation mapping",
             "source": "AC_CLEAR"
@@ -6908,12 +6796,6 @@
         ],
         "ALU_A_SRC": [
           {
-            "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "AC_CLEAR"
-          },
-          {
             "value": "2",
             "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND IO_SKIP_REQ = 1)",
             "origin": "conditional micro-operation mapping",
@@ -6923,24 +6805,12 @@
         "ALU_B_SRC": [
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "AC_CLEAR"
-          },
-          {
-            "value": "0",
             "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND IO_SKIP_REQ = 1)",
             "origin": "conditional micro-operation mapping",
             "source": "PC_INC"
           }
         ],
         "ALU_OP": [
-          {
-            "value": "3",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "AC_CLEAR"
-          },
           {
             "value": "2",
             "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND IO_SKIP_REQ = 1)",
@@ -6952,14 +6822,7 @@
         "DIF_SRC": [],
         "EA_ADDR_SRC": [],
         "IF_SRC": [],
-        "IDB_SRC": [
-          {
-            "value": "7",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND IO_CLEAR_AC_REQ = 1)",
-            "origin": "conditional micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "IDB_SRC": [],
         "L_OP": [],
         "MA_SRC": [],
         "MB_SRC": [],
@@ -7116,7 +6979,7 @@
       "execution_case_id": "iot:9.1:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 176
+        "line": 174
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -7271,7 +7134,7 @@
       "execution_case_id": "iot:9.1:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 176
+        "line": 174
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -7442,7 +7305,7 @@
       "execution_case_id": "iot:9.1:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 176
+        "line": 174
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -7597,7 +7460,7 @@
       "execution_case_id": "iot:9.1:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 176
+        "line": 174
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -7808,7 +7671,7 @@
       "execution_case_id": "iot:9.2:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 194
+        "line": 192
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -7963,7 +7826,7 @@
       "execution_case_id": "iot:9.2:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 194
+        "line": 192
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -8149,7 +8012,7 @@
       "execution_case_id": "iot:9.2:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 194
+        "line": 192
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -8304,7 +8167,7 @@
       "execution_case_id": "iot:9.2:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 194
+        "line": 192
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -8515,7 +8378,7 @@
       "execution_case_id": "iot:9.3:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 217
+        "line": 215
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -8670,7 +8533,7 @@
       "execution_case_id": "iot:9.3:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 217
+        "line": 215
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -8870,7 +8733,7 @@
       "execution_case_id": "iot:9.3:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 217
+        "line": 215
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -9025,7 +8888,7 @@
       "execution_case_id": "iot:9.3:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 217
+        "line": 215
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -9236,7 +9099,7 @@
       "execution_case_id": "iot:9.4:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 246
+        "line": 244
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -9391,7 +9254,7 @@
       "execution_case_id": "iot:9.4:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 246
+        "line": 244
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -9576,7 +9439,7 @@
       "execution_case_id": "iot:9.4:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 246
+        "line": 244
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -9731,7 +9594,7 @@
       "execution_case_id": "iot:9.4:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 246
+        "line": 244
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -9942,7 +9805,7 @@
       "execution_case_id": "iot:9.5:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 275
+        "line": 273
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -10010,14 +9873,7 @@
         "DIF_LOAD": [],
         "EA_ADDR_LOAD": [],
         "IB_LOAD": [],
-        "IDB_DRIVE": [
-          {
-            "value": "1",
-            "when": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "IDB_DRIVE": [],
         "IE_LOAD": [],
         "IF_LOAD": [],
         "II_LOAD": [],
@@ -10033,48 +9889,20 @@
         "AB_SRC": [],
         "AC_SRC": [
           {
-            "value": "0",
+            "value": "5",
             "when": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_CLEAR"
           }
         ],
-        "ALU_A_SRC": [
-          {
-            "value": "0",
-            "when": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
-        "ALU_B_SRC": [
-          {
-            "value": "0",
-            "when": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
-        "ALU_OP": [
-          {
-            "value": "3",
-            "when": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "ALU_A_SRC": [],
+        "ALU_B_SRC": [],
+        "ALU_OP": [],
         "DF_SRC": [],
         "DIF_SRC": [],
         "EA_ADDR_SRC": [],
         "IF_SRC": [],
-        "IDB_SRC": [
-          {
-            "value": "7",
-            "when": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "IDB_SRC": [],
         "L_OP": [],
         "MA_SRC": [],
         "MB_SRC": [],
@@ -10148,7 +9976,7 @@
       "execution_case_id": "iot:9.5:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 275
+        "line": 273
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -10319,7 +10147,7 @@
       "execution_case_id": "iot:9.5:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 275
+        "line": 273
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -10474,7 +10302,7 @@
       "execution_case_id": "iot:9.5:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 275
+        "line": 273
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -10685,7 +10513,7 @@
       "execution_case_id": "iot:9.6:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 298
+        "line": 296
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -10840,7 +10668,7 @@
       "execution_case_id": "iot:9.6:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 298
+        "line": 296
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -11086,7 +10914,7 @@
       "execution_case_id": "iot:9.6:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 298
+        "line": 296
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -11241,7 +11069,7 @@
       "execution_case_id": "iot:9.6:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 298
+        "line": 296
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -11452,7 +11280,7 @@
       "execution_case_id": "iot:9.7:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 329
+        "line": 327
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -11607,7 +11435,7 @@
       "execution_case_id": "iot:9.7:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 329
+        "line": 327
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -11762,7 +11590,7 @@
       "execution_case_id": "iot:9.7:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 329
+        "line": 327
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -11917,7 +11745,7 @@
       "execution_case_id": "iot:9.7:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 329
+        "line": 327
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -12128,7 +11956,7 @@
       "execution_case_id": "iot:9.8:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 353
+        "line": 351
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -12283,7 +12111,7 @@
       "execution_case_id": "iot:9.8:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 353
+        "line": 351
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -12438,7 +12266,7 @@
       "execution_case_id": "iot:9.8:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 353
+        "line": 351
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -12593,7 +12421,7 @@
       "execution_case_id": "iot:9.8:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 353
+        "line": 351
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -12661,14 +12489,7 @@
         "DIF_LOAD": [],
         "EA_ADDR_LOAD": [],
         "IB_LOAD": [],
-        "IDB_DRIVE": [
-          {
-            "value": "1",
-            "when": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "IDB_DRIVE": [],
         "IE_LOAD": [
           {
             "value": "1",
@@ -12698,48 +12519,20 @@
         "AB_SRC": [],
         "AC_SRC": [
           {
-            "value": "0",
+            "value": "5",
             "when": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_CLEAR"
           }
         ],
-        "ALU_A_SRC": [
-          {
-            "value": "0",
-            "when": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
-        "ALU_B_SRC": [
-          {
-            "value": "0",
-            "when": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
-        "ALU_OP": [
-          {
-            "value": "3",
-            "when": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "ALU_A_SRC": [],
+        "ALU_B_SRC": [],
+        "ALU_OP": [],
         "DF_SRC": [],
         "DIF_SRC": [],
         "EA_ADDR_SRC": [],
         "IF_SRC": [],
-        "IDB_SRC": [
-          {
-            "value": "7",
-            "when": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1)",
-            "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "IDB_SRC": [],
         "L_OP": [
           {
             "value": "0",
@@ -12878,7 +12671,7 @@
       "execution_case_id": "iot:10.1:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 393
+        "line": 391
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -13033,7 +12826,7 @@
       "execution_case_id": "iot:10.1:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 393
+        "line": 391
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -13316,7 +13109,7 @@
       "execution_case_id": "iot:10.1:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 393
+        "line": 391
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -13471,7 +13264,7 @@
       "execution_case_id": "iot:10.1:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 393
+        "line": 391
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -15613,7 +15406,14 @@
             "source": "02:8.4"
           }
         ],
-        "MS_NEXT": [],
+        "MS_NEXT": [
+          {
+            "value": "0",
+            "when": "((RUN = 0 AND FP_EXAMINE = 1) AND (RUN = 0 AND (FP_EXAMINE = 1 OR FP_DEPOSIT = 1)))",
+            "origin": "direct-control definition",
+            "source": "01:3.2.12"
+          }
+        ],
         "RUN_NEXT": [
           {
             "value": "0",
@@ -15636,7 +15436,14 @@
             "source": "01:3.4.5"
           }
         ],
-        "MS_LOAD": []
+        "MS_LOAD": [
+          {
+            "value": "1",
+            "when": "((RUN = 0 AND FP_EXAMINE = 1) AND (RUN = 0 AND (FP_EXAMINE = 1 OR FP_DEPOSIT = 1)))",
+            "origin": "direct-control definition",
+            "source": "01:3.2.12"
+          }
+        ]
       },
       "selected_micro_operations": {
         "MEM_READ_TO_MB": "(RUN = 0 AND FP_EXAMINE = 1)",
@@ -15645,6 +15452,7 @@
         "PC_TO_MA": "(RUN = 0 AND FP_EXAMINE = 1)"
       },
       "applicable_direct_control_definitions": [
+        "01:3.2.12",
         "01:3.3.10",
         "01:3.4.2",
         "01:3.4.5",
@@ -15880,7 +15688,14 @@
             "source": "02:8.4"
           }
         ],
-        "MS_NEXT": [],
+        "MS_NEXT": [
+          {
+            "value": "0",
+            "when": "((RUN = 0 AND FP_DEPOSIT = 1) AND (RUN = 0 AND (FP_EXAMINE = 1 OR FP_DEPOSIT = 1)))",
+            "origin": "direct-control definition",
+            "source": "01:3.2.12"
+          }
+        ],
         "RUN_NEXT": [
           {
             "value": "0",
@@ -15903,7 +15718,14 @@
             "source": "01:3.4.5"
           }
         ],
-        "MS_LOAD": []
+        "MS_LOAD": [
+          {
+            "value": "1",
+            "when": "((RUN = 0 AND FP_DEPOSIT = 1) AND (RUN = 0 AND (FP_EXAMINE = 1 OR FP_DEPOSIT = 1)))",
+            "origin": "direct-control definition",
+            "source": "01:3.2.12"
+          }
+        ]
       },
       "selected_micro_operations": {
         "FP_SR_TO_MB": "(RUN = 0 AND FP_DEPOSIT = 1)",
@@ -15913,6 +15735,7 @@
         "PC_TO_MA": "(RUN = 0 AND FP_DEPOSIT = 1)"
       },
       "applicable_direct_control_definitions": [
+        "01:3.2.12",
         "01:3.3.10",
         "01:3.4.2",
         "01:3.4.5",
@@ -15997,14 +15820,7 @@
         "DIF_LOAD": [],
         "EA_ADDR_LOAD": [],
         "IB_LOAD": [],
-        "IDB_DRIVE": [
-          {
-            "value": "1",
-            "when": "(RUN = 0 AND FP_CLEAR = 1)",
-            "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "IDB_DRIVE": [],
         "IE_LOAD": [
           {
             "value": "1",
@@ -16034,48 +15850,20 @@
         "AB_SRC": [],
         "AC_SRC": [
           {
-            "value": "0",
+            "value": "5",
             "when": "(RUN = 0 AND FP_CLEAR = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_CLEAR"
           }
         ],
-        "ALU_A_SRC": [
-          {
-            "value": "0",
-            "when": "(RUN = 0 AND FP_CLEAR = 1)",
-            "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
-        "ALU_B_SRC": [
-          {
-            "value": "0",
-            "when": "(RUN = 0 AND FP_CLEAR = 1)",
-            "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
-        "ALU_OP": [
-          {
-            "value": "3",
-            "when": "(RUN = 0 AND FP_CLEAR = 1)",
-            "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "ALU_A_SRC": [],
+        "ALU_B_SRC": [],
+        "ALU_OP": [],
         "DF_SRC": [],
         "DIF_SRC": [],
         "EA_ADDR_SRC": [],
         "IF_SRC": [],
-        "IDB_SRC": [
-          {
-            "value": "7",
-            "when": "(RUN = 0 AND FP_CLEAR = 1)",
-            "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          }
-        ],
+        "IDB_SRC": [],
         "L_OP": [
           {
             "value": "0",
@@ -16231,12 +16019,6 @@
             "value": "1",
             "when": "(RUN = 0 AND FP_START = 1)",
             "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          },
-          {
-            "value": "1",
-            "when": "(RUN = 0 AND FP_START = 1)",
-            "origin": "micro-operation mapping",
             "source": "MQ_CLEAR"
           }
         ],
@@ -16283,19 +16065,13 @@
         "AB_SRC": [],
         "AC_SRC": [
           {
-            "value": "0",
+            "value": "5",
             "when": "(RUN = 0 AND FP_START = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_CLEAR"
           }
         ],
         "ALU_A_SRC": [
-          {
-            "value": "0",
-            "when": "(RUN = 0 AND FP_START = 1)",
-            "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          },
           {
             "value": "0",
             "when": "(RUN = 0 AND FP_START = 1)",
@@ -16308,22 +16084,10 @@
             "value": "0",
             "when": "(RUN = 0 AND FP_START = 1)",
             "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          },
-          {
-            "value": "0",
-            "when": "(RUN = 0 AND FP_START = 1)",
-            "origin": "micro-operation mapping",
             "source": "MQ_CLEAR"
           }
         ],
         "ALU_OP": [
-          {
-            "value": "3",
-            "when": "(RUN = 0 AND FP_START = 1)",
-            "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          },
           {
             "value": "3",
             "when": "(RUN = 0 AND FP_START = 1)",
@@ -16336,12 +16100,6 @@
         "EA_ADDR_SRC": [],
         "IF_SRC": [],
         "IDB_SRC": [
-          {
-            "value": "7",
-            "when": "(RUN = 0 AND FP_START = 1)",
-            "origin": "micro-operation mapping",
-            "source": "AC_CLEAR"
-          },
           {
             "value": "7",
             "when": "(RUN = 0 AND FP_START = 1)",
@@ -16609,7 +16367,7 @@
       "execution_case_id": "console:15",
       "source": {
         "path": "docs/03-microarchitecture/09-console-execution.md",
-        "line": 555
+        "line": 557
       },
       "base_context": "((((((RUN = 0 AND FP_START = 0) AND FP_CLEAR = 0) AND FP_CONTINUE = 0) AND FP_LOAD_ADDRESS = 0) AND FP_EXAMINE = 0) AND FP_DEPOSIT = 0)",
       "defaults": {

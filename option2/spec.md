@@ -1,6 +1,6 @@
 # Option 2 Architecture Specification: One-Cycle OPR and Direct JMP
 
-Status: **draft for the user's review** (phase 1 of [plan.md](plan.md)). Nothing in `docs/`, `rom/`, `tools/`, or `sim/` changes on the strength of this document until the user approves it. Section 11 lists the decisions that need approval.
+Status: **approved, and implemented through phase 9** of [plan.md](plan.md). This is the design record of the branch; `docs/` is the authority for the resulting machine. Section 11 lists the decisions.
 
 Companion documents: [timing.md](timing.md) (per-TS critical paths and the TS-length table) and [plan.md](plan.md) (phases, slices, phase 0 results).
 
@@ -50,8 +50,8 @@ A new combinational **class decode** on the live IR produces `IR_CLASS[2:0]`:
 
 Codes 6 and 7 are spare. Every OPR function is selected by IR bits in the pass unit (section 4.1); a Group 3 OPR always loads MQ, and the pass unit's MQ output returns MQ unchanged when MQL is not set (revised 2026-11-21, slice C3: the earlier class 6, Group 3 with MQL, existed only to assert `MQ_LOAD` for MQL).
 
-Two further predecodes, from the same gates, feed the sequencer (section 6.2):
-- `IR_ONE_STATE = class 1, 3, 4, or 5`, meaning the instruction ends at FETCH TP4.
+Two further predecodes, from the same gates, feed the sequencer (section 5.4):
+- `IR_NO_EXECUTE` = class 1 to 5 (every JMP and OPR): the instruction never enters EXECUTE. It ends at FETCH TP4, except a JMP I, which ends at DEFER TP4.
 - `IR_OPR_HLT`, the group 2 HLT bit, which v1 already decodes, but through `MAPR`.
 
 During phases 6 to 8 (slices C1 to C3), a group that has not yet moved is decoded as class 0. It keeps EXECUTE, so each intermediate design is complete.
@@ -201,16 +201,16 @@ The sequencer address has three spare bits (CSO §5.6: `A2..A0 = 0`). v2 uses tw
 | Bit | v2 input | Source | Used |
 |---|---|---|---|
 | A3 `IR_SEQ` | unchanged: `MAPR[7]` in EXECUTE, `IR_INDIRECT` otherwise | | FETCH TS4: DEFER or EXECUTE |
-| A2 | `IR_ONE_STATE` (FETCH) / `IR_IS_JMP` (DEFER), live predecode | class decode | FETCH TP4 and DEFER TP4: does the instruction end here? |
+| A2 | `IR_NO_EXECUTE`, live predecode | class decode | FETCH TP4 and DEFER TP4: does the instruction end here? |
 | A1 | `IR_OPR_HLT`, live predecode | class decode and IR bit 10 | FETCH TS3: HLT capture (v1 did this in EXECUTE TS3 through `MAPR[7]`) |
 
 Sequencer next-state decisions:
 - **FETCH TP4:**
-  - if `IR_ONE_STATE`: the instruction-boundary rule (section 6.1);
-  - else if `IR_INDIRECT` or JMP I: DEFER;
+  - if `IR_NO_EXECUTE` and not `IR_INDIRECT`: the instruction-boundary rule (section 6.1);
+  - else if `IR_INDIRECT` (which includes JMP I): DEFER;
   - else: EXECUTE.
 - **DEFER TP4:**
-  - if `IR_IS_JMP`: the instruction-boundary rule;
+  - if `IR_NO_EXECUTE` (here, always a JMP I): the instruction-boundary rule;
   - else: EXECUTE.
 - **EXECUTE TP4:** the instruction-boundary rule, as v1.
 
@@ -222,7 +222,7 @@ The `IR_SEQ` meaning of `MAPR[7]` in EXECUTE TS3 (`IR_OPR_HLT`) is no longer nee
 |---|---|---|
 | Datapath control word | 44 / 48 bits | 46 / 48 after slice C3, then 44 after the phase 9 cleanup |
 | Datapath address | 15 / 15 | 15 / 15 (same fields; `VARIANT` takes 3 class bits outside EXECUTE) |
-| Datapath variants used outside EXECUTE | 1 | 7 (the classes) |
+| Datapath variants used outside EXECUTE | 1 | 6 (classes 0 to 5; 6 and 7 are spare) |
 | Mapping ROM address | IR 12 + TS 2 + `A0` = 0 | unchanged |
 | Mapping ROM output | 8 / 8 | 8 / 8 (sequencer decode bit used in TS4 only) |
 | Sequencer address | 12 of 15 used | 14 of 15 |
@@ -273,9 +273,9 @@ Full analysis: [timing.md](timing.md).
 - Phase 0 fixed the target: the ISZ + JMP loop must take 3.75 to 3.85 µs, that is, 2·FETCH + EXECUTE ≈ 76 TSTEPs at 50 ns.
 - **3a** gives FETCH and non-autoindex DEFER fast lengths, and EXECUTE and autoindex DEFER slow lengths, as the 8/E's fast and slow cycles do. DEC: "FETCH and non-autoindex DEFER are fast; EXECUTE and autoindex DEFER are slow"; MRIs are "one fast FETCH (1.2 µs) and one slow EXECUTE (1.4 µs)" (KK8-E, M8330, MM1).
 - **The TS-length table:**
-  - a small timing ROM indexed by the next state and TS, a class bit (autoindex DEFER), and a 2-bit speed-mode input;
-  - its output is a TSTEP terminal count, loaded at each TP for the following TS;
-  - the speed mode gives at least three modes: optimized, uniform slow (today's 28 steps per state), and single-step debug.
+  - a small timing ROM indexed by the current state and TS, a class bit (autoindex DEFER), and a 2-bit speed-mode input;
+  - its output is the TSTEP terminal count of the current TS;
+  - the speed mode gives two modes, optimized and uniform slow (28 steps per state); the other two codes are reserved.
   
   DEC precedent for a selectable speed: the 8/E's slow-cycle jumper (M8330).
 - At reduced TCLK during hardware bring-up, time-based tests (D2AB routines 4 and 5) are not expected to pass. Every other test is clock-independent.

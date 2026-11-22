@@ -51,7 +51,6 @@ External IOT communication involves:
 - `IO_WRITE_REQ`
 - `IO_SKIP_REQ`
 - `IO_CLEAR_AC_REQ`
-- `/IO_WAIT`
 - shared TS signals
 - shared TP signals
 
@@ -75,7 +74,6 @@ The selected controller may assert:
 - `IO_WRITE_REQ`
 - `IO_SKIP_REQ`
 - `IO_CLEAR_AC_REQ`
-- `/IO_WAIT`
 
 Controller responses request CPU behavior. They do not directly modify CPU state.
 

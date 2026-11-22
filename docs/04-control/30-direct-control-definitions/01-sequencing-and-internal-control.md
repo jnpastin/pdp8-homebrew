@@ -103,7 +103,7 @@ Related definitions:
 
 #### 3.1.1 Instruction Completion
 
-An instruction completes at the TP4 of its last major state: FETCH for a direct JMP, DEFER for a JMP I, and EXECUTE for every other instruction ([Major State Model](../../03-microarchitecture/00-state-model.md)). As a context, *instruction completion* is:
+An instruction completes at the TP4 of its last major state: FETCH for a direct JMP or an OPR, DEFER for a JMP I, and EXECUTE for every other instruction ([Major State Model](../../03-microarchitecture/00-state-model.md)). As a context, *instruction completion* is:
 
 ```text
 TS = 4
@@ -484,12 +484,45 @@ Constraints:
 
 - Every major-state transition while running loads `MS` at TP4.
 - This includes the TP4 at which the processor halts, so the halted `MS` is the state in which execution resumes.
-- While halted, `MS` is held except when START loads it.
+- While halted, `MS` is held except when START, EXAMINE, or DEPOSIT loads it with FETCH (sections 3.2.12 and 3.3.3).
 
 Sources:
 
 - [Sequencing Control Signals](../20-control-output-definitions/03-sequencing-control-signals.md#44-major-state-load-ms_load)
 - [Major State Timing](../../09-timing/03-major-state-timing.md#8-halted-state-and-console-transactions)
+
+---
+
+#### 3.2.12 Examine and Deposit Return to FETCH
+
+Applicable context:
+
+```text
+RUN = 0
+(FP_EXAMINE = 1 OR FP_DEPOSIT = 1)
+```
+
+Assignments:
+
+```text
+MS_NEXT = FETCH
+MS_LOAD = 1
+```
+
+Commit:
+
+```text
+MS <- FETCH at TPC
+```
+
+EXAMINE and DEPOSIT change PC, MA, EA_ADDR, and MB, which a DEFER or EXECUTE halted by Single Step would use. Loading FETCH makes a following CONTINUE start a new instruction at PC, as on the PDP-8/E, where CONT after EXAM or DEP causes a FETCH cycle (maintenance manual, volume 1, §3.8.2).
+
+A held DMA selection is kept, as after START: the burst continues at the next DMA entry ([DMA Arbitration §13.1](../../07-io/06-dma-arbitration.md#131-halt-between-dma-cycles)).
+
+Sources:
+
+- [Console Execution](../../03-microarchitecture/09-console-execution.md#3-console-operation-execution-model)
+- [External Inputs](../10-control-input-definitions/04-external-inputs.md)
 
 ---
 
@@ -754,7 +787,7 @@ and:
 FETCH -> DEFER -> EXECUTE
 ```
 
-and, for JMP:
+and, for a direct JMP or an OPR, then for a JMP I:
 
 ```text
 FETCH
@@ -960,7 +993,7 @@ Constraints:
 
 #### 3.4.3 STOP Request Capture
 
-A synchronized STOP request is captured at a TP before the instruction-completion TP.
+STOP, as captured in the panel input register ([External Inputs §2](../10-control-input-definitions/04-external-inputs.md#2-timing-model)), commits to `HLT_REQ` at a TP before the instruction-completion TP.
 
 Applicable context:
 
@@ -1510,7 +1543,7 @@ This applies to the documented memory access performed by a direct:
 - DCA
 - JMS
 
-JMP performs no memory access during EXECUTE.
+JMP does not enter EXECUTE, so it has no memory access here.
 
 Constraints:
 
@@ -1657,7 +1690,7 @@ This applies to the final resolved memory access performed by an indirect:
 - ISZ
 - DCA
 
-JMS is excluded: it writes its return address in the instruction field whether or not it is indirect (section 4.5.5.4). This matches the PDP-8/e, where the data field applies only to AND, TAD, ISZ, and DCA operands. JMP performs no memory access during EXECUTE.
+JMS is excluded: it writes its return address in the instruction field whether or not it is indirect (section 4.5.5.4). This matches the PDP-8/e, where the data field applies only to AND, TAD, ISZ, and DCA operands. JMP does not enter EXECUTE, so it has no memory access here.
 
 Constraints:
 
@@ -1881,7 +1914,7 @@ IR_INDIRECT = 1:
 
 AND, TAD, ISZ, and DCA select the field according to direct or indirect addressing. JMS always writes its return address in IF.
 
-JMP performs no memory access during EXECUTE and therefore requires no EXECUTE-stage `MFB_SRC` selection.
+JMP does not enter EXECUTE and therefore requires no EXECUTE-stage `MFB_SRC` selection.
 
 The summary applies only to documented memory operations.
 

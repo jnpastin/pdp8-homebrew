@@ -37,7 +37,6 @@ The controller may assert:
 - `IO_WRITE_REQ`
 - `IO_SKIP_REQ`
 - `IO_CLEAR_AC_REQ`
-- `/IO_WAIT`
 
 Each assertion must satisfy the definitions in [External IOT Interface](./02-external-iot-interface.md) and [I/O Timing](./03-io-timing.md).
 
@@ -49,7 +48,7 @@ For a read:
 
 - only the selected controller drives DB
 - the controller supplies valid data before the commit TP
-- the controller releases DB after the required hold interval
+- the controller releases DB no earlier than the end of the commit TP, which supplies the hold interval
 
 For a write:
 
@@ -70,6 +69,8 @@ Controller-local state changes:
 - use pre-TP state
 - commit simultaneously with CPU actions at the same TP
 - do not depend on a result committed at the same TP
+- are captured at the leading edge of the TP
+- become visible only as the TP ends, in every response, request, and driven value ([Timing Architecture §7.6](../09-timing/02-timing-architecture.md#76-rule-6--two-ranks))
 
 ---
 
@@ -124,16 +125,9 @@ The controller does not perform or control the resulting CPU state change beyond
 
 ---
 
-## 8. I/O Wait
+## 8. Response Time
 
-A controller may assert `/IO_WAIT` only:
-
-- while selected
-- while `IOT_ACTIVE` is asserted
-- during a non-TP setup TSTEP
-- when additional setup time is required before the next TP
-
-The controller must deassert `/IO_WAIT` when the pending operation is ready to proceed.
+A controller has no wait signal. It must respond within the fixed IOT timing, and an operation that takes longer completes later and reports completion through a flag ([I/O Timing §5](./03-io-timing.md#5-fixed-iot-timing)).
 
 ---
 
@@ -187,6 +181,8 @@ A controller may assert /DMA_REQ[n] only when:
 Once selected, the controller must complete exactly one DMA word transfer at TP2.  
 The controller must preserve its readiness from request assertion through completion of the selected transfer.
 
+At the TP2 that completes the transfer, `/DMA_REQ[n]` changes to reflect it: it deasserts when that was the last word, or when the next transfer is not prepared. The arbiter decides during TS3, from values committed by TP2, whether the burst continues ([DMA Arbitration §11](./06-dma-arbitration.md#11-arbiter-burst-count)), so a request that changed only at TP3 would keep a finished controller selected. The address and word count still update at TP3.
+
 The request remains asserted until:
 
 - the complete DMA operation finishes
@@ -196,7 +192,7 @@ The request remains asserted until:
 
 A selected controller may keep /DMA_REQ[n] asserted across selection termination when additional immediately transferable work remains.  
 Selection termination does not consume the controller request.  
-A controller that cannot immediately complete another transfer must deassert /DMA_REQ[n] after completing the current transfer and request service again when the next transfer is prepared.  
+A controller that cannot immediately complete another transfer must deassert /DMA_REQ[n] at the TP2 that completes the current transfer, and request service again when the next transfer is prepared.  
 The DMA arbiter produces `DMA_ENABLE`.
 
 Separate combinational aggregation logic continuously derives aggregate CPU-facing `/DMA_REQ` from `DMA_ENABLE` and `/DMA_REQ[14:0]`.
@@ -207,7 +203,7 @@ The controller does not generate aggregate `/DMA_REQ`.
 
 Controller interrupt contributions and `/DMA_REQ[n]` are registered controller outputs.
 
-Aggregate `/INT_REQ` must satisfy the CPU interrupt-input synchronization requirements before participating in CPU control decisions.
+Aggregate `/INT_REQ` is the wired OR of those registered interrupt contributions. Like aggregate `/DMA_REQ`, it is not passed through an additional synchronization stage, and it must settle before the TP at which CPU control samples it.
 
 Aggregate `/DMA_REQ` is a combinational CPU input derived from `DMA_ENABLE` and the registered controller `/DMA_REQ[n]` outputs. It is not passed through an additional synchronization stage.
 
@@ -225,7 +221,7 @@ A DMA-capable controller additionally must:
 - preserve transfer readiness from request assertion through TP2
 - recognize ownership only when /DMA_GRANT is asserted and DMA_GRANT_ID matches its configured priority
 - reject DMA_GRANT_ID value 15 as the no-controller-selected state
-- drive DMA-owned interfaces only while validly selected
+- drive DMA-owned interfaces only during DMA TS2, while validly selected
 - complete exactly one DMA word transfer at TP2 after being selected
 - maintain its complete-operation address and remaining word count
 - update its address and remaining word count only for the transfer completed at TP2
@@ -280,14 +276,13 @@ An unsynchronized physical-device signal must not directly drive:
 - `IO_WRITE_REQ`
 - `IO_CLEAR_AC_REQ`
 - `IO_SKIP_REQ`
-- `/IO_WAIT`
 - `/INT_REQ`
 - `/DMA_REQ[n]`
 
 Synchronization of a physical-device event is the responsibility of the controller that interprets that event.
 
-Synchronization of aggregate `/INT_REQ` and `/IO_WAIT` before use by CPU control or timing remains the responsibility of the receiving CPU-side interface.
+Aggregate `/INT_REQ` is not synchronized through an additional stateful stage. It is the wired OR of registered controller outputs, which change only as a TP ends.
 
 Aggregate `/DMA_REQ` is not synchronized through an additional stateful stage. It is derived combinationally from `DMA_ENABLE` and registered controller `/DMA_REQ[n]` outputs and must satisfy the CPU’s TP4 setup and hold requirements.
 
-The synchronization mechanism and metastability-mitigation implementation belong to the controller or receiving-interface design and are outside this architectural contract.
+The synchronization mechanism and metastability-mitigation implementation belong to the controller design and are outside this architectural contract.

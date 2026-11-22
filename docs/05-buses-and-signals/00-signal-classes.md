@@ -157,7 +157,7 @@ Signals connecting the system to the human operator interface.
 
 - Asynchronous inputs
 - Low frequency
-- Require synchronization before use
+- Captured at a TP before use ([External Inputs §2](../04-control/10-control-input-definitions/04-external-inputs.md#2-timing-model))
 
 ### 6.3 Signals
 
@@ -190,7 +190,7 @@ Signals connecting the system to the human operator interface.
 
 - Must NOT be placed on the backplane
 - Must terminate at a CPU-local panel interface
-- Must be synchronized and debounced before use
+- Must be captured in the panel input register, or, for a console command, synchronized and debounced when accepted ([External Inputs §2](../04-control/10-control-input-definitions/04-external-inputs.md#2-timing-model))
 - Must not directly drive datapath elements
 
 ---

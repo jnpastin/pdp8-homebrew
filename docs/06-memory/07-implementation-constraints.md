@@ -38,7 +38,7 @@ For every valid memory read:
 For every valid memory write:
 
 - the implementation must use MEM_ADDR to select one stored word
-- the implementation must store the 12-bit value presented on MDB while /WR is asserted
+- the implementation must store the 12-bit value presented on MDB during /WR_PULSE when /WR is asserted
 - the implementation must modify exactly one selected memory word
 
 ---
@@ -78,7 +78,7 @@ The selected memory technology must satisfy the memory timing contract.
 The implementation must ensure that:
 
 - read data is valid on MDB while /RD is asserted
-- write data is captured from MDB while /WR is asserted
+- write data is captured from MDB during /WR_PULSE when /WR is asserted
 - MFB and AB stability requirements are met
 - the memory device access time fits within the active read window
 - the memory device write requirements fit within the active write window

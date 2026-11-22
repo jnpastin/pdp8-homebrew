@@ -20,7 +20,19 @@ Execution begins in FETCH for every instruction.
 
 Flow:
 
-    FETCH → (DEFER if indirect) → (EXECUTE unless JMP or Group 1 OPR)
+    FETCH → (DEFER if indirect) → (EXECUTE unless JMP or OPR)
+
+The path of each instruction:
+
+| Instruction | `IR_CLASS` | Major states | Completes at |
+|---|---|---|---|
+| AND, TAD, ISZ, DCA, JMS | 000 | FETCH, DEFER if indirect, EXECUTE | EXECUTE TP4 |
+| IOT | 000 | FETCH, EXECUTE | EXECUTE TP4 |
+| JMP | 001 | FETCH | FETCH TP4 |
+| JMP I | 010 | FETCH, DEFER | DEFER TP4 |
+| OPR Group 1 | 011 | FETCH | FETCH TP4 |
+| OPR Group 2 | 100 | FETCH | FETCH TP4 |
+| OPR Group 3 | 101 | FETCH | FETCH TP4 |
 
 Responsibilities:
 
@@ -28,7 +40,7 @@ Responsibilities:
   - load IR
   - increment PC
   - form EA_ADDR
-  - complete a direct JMP or a Group 1 OPR
+  - complete a direct JMP or an OPR
   - determine next MS
 
 - DEFER:
@@ -88,11 +100,18 @@ IR_CLASS = 001 AND CIFP = 1 -> II_CLEAR
 ```
 
 Description:
-- Forms the base EA from IR and the page of MA (the instruction's address).
-- A Group 1 OPR (`IR_CLASS = 011`) loads AC and L from the OPR pass unit, which performs the whole instruction in one pass ([Group 1 Execution](./07-opr/01-group1-execution.md)); the formed EA_ADDR is unused.
-- A Group 2 OPR (`IR_CLASS = 100`) loads AC from the OPR pass unit (CLA, OSR) and loads `SKIP` with its skip decision, made from the AC and L held before this TP ([Group 2 Execution](./07-opr/02-group2-execution.md)); a HLT sets `HLT_REQ` at this TP ([Sequencing and Internal Control §3.4.4](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#344-hlt-instruction-request-capture)); the formed EA_ADDR is unused.
-- A Group 3 OPR (`IR_CLASS = 101`) loads AC and MQ from the OPR pass unit (CLA, MQA, MQL, SWP) ([Group 3 Execution](./07-opr/03-group3-execution.md)); the formed EA_ADDR is unused.
-- A direct JMP (`IR_CLASS = 001`) loads PC with the same formed address and applies a pending instruction-field change. The same TP3 clears `II`, so an interrupt may be recognized at this instruction's completion ([Interrupt Enable and Inhibit §12](../08-interrupts-and-skip/03-interrupt-enable-and-inhibit.md#12-deferred-field-application)); the KM8-E negates INT INHIBIT at TP3 of a JMP or JMS.
+- Forms the base EA from IR and the page of MA (the instruction's address). An OPR does not use it.
+- What else happens at TP3 depends on the instruction:
+
+| Instruction | At TP3 | Details |
+|---|---|---|
+| Group 1 OPR | AC and L load from the OPR pass unit | [Group 1 Execution](./07-opr/01-group1-execution.md) |
+| Group 2 OPR | AC loads from the pass unit; `SKIP` loads the skip decision; a HLT sets `HLT_REQ` | [Group 2 Execution](./07-opr/02-group2-execution.md), [HLT capture](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#344-hlt-instruction-request-capture) |
+| Group 3 OPR | AC and MQ load from the pass unit | [Group 3 Execution](./07-opr/03-group3-execution.md) |
+| Direct JMP | PC loads the formed address; a pending field change is applied and `II` clears | [Deferred Field Application](../08-interrupts-and-skip/03-interrupt-enable-and-inhibit.md#12-deferred-field-application) |
+
+- Every input is the value held before TP3, so the skip decision does not see a CLA in the same instruction.
+- Because `II` clears at TP3, an interrupt may be recognized when the JMP completes at TP4, as on the KM8-E, which negates INT INHIBIT at TP3 of a JMP or JMS.
 
 ---
 
@@ -192,7 +211,10 @@ Description:
 
 - Writes the incremented value back to memory when auto-index is required.
 - Updates EA_ADDR register with the final resolved address.
-- A JMP I (`IR_CLASS = 010`) loads PC with the final resolved address (MB, after any auto-index increment at TP3), applies a pending instruction-field change, and completes. The field is applied at TP4, not TP3, because the auto-index write-back in this TS addresses the pointer's field through IF (`MFB_SRC = IF`); an IF change at TP3 would write the pointer into the new field. `CIFP` is cleared at the same TP4, because it gates `DIF_TO_IF`. An interrupt recognized at this TP4 saves the new field, because the INTERRUPT state copies IF into IB after the TP.
+- A JMP I (`IR_CLASS = 010`) loads PC with the final resolved address (MB, after any auto-index increment at TP3), applies a pending instruction-field change, and completes.
+  - The field waits until TP4 because the auto-index write-back in this TS must still use the old field (`MFB_SRC = IF`).
+  - `CIFP` waits with it, because `CIFP` gates `DIF_TO_IF`.
+  - An interrupt recognized at this TP4 saves the new field, because the INTERRUPT state copies IF into IB after the TP.
 - Otherwise transitions to EXECUTE.
 
 ---
@@ -201,9 +223,9 @@ Description:
 
 - IR is valid after TP2 of FETCH
 - PC is incremented at FETCH TP1
-- PC is incremented exactly once per instruction
+- FETCH TP1 increments PC exactly once per instruction; a taken skip adds a separate increment
 - EA is fully resolved before EXECUTE
-- A direct JMP completes at FETCH TP4 and a JMP I at DEFER TP4
+- A direct JMP or an OPR completes at FETCH TP4, and a JMP I at DEFER TP4
 - All state changes occur at TP
 - Control decisions are based only on stable register values
 

@@ -9,7 +9,7 @@ Defines timing behavior of each Major State using TS/TP model.
 - TS = setup/stabilization window
 - TP = state transition event
 
-All state changes occur exclusively at TP.
+All state changes occur exclusively at TP: captured at its leading edge, visible as it ends, when TS changes.
 
 ---
 
@@ -32,14 +32,19 @@ All state changes occur exclusively at TP.
 
 ### 3.5 TS3 — Address Formation
 - EA formation from IR[6:0] and the page of MA
+- OPR: the pass unit and, for Group 2, the skip decision
 
 ### 3.6 TP3
 - EA_ADDR loaded
+- Direct JMP: PC loaded with the formed address; a pending instruction field is applied
+- OPR: AC and L loaded from the pass unit; Group 2 also loads SKIP and captures HLT; Group 3 also loads MQ
 
 ### 3.7 TS4 — Finalization
+- Group 2 OPR with SKIP set: ALU forms PC + 1
 
 ### 3.8 TP4
-- MS transition decision
+- Group 2 OPR with SKIP set: PC loaded with PC + 1
+- MS transition decision; a direct JMP or an OPR completes here
 
 ---
 
@@ -72,7 +77,8 @@ All state changes occur exclusively at TP.
 
 ### 4.8 TP4
 - EA_ADDR loaded from MB (final resolved effective address)
-- MS transition to EXECUTE
+- JMP I: PC loaded from MB, a pending instruction field applied, and the instruction completes
+- Otherwise: MS transition to EXECUTE
 
 ---
 
@@ -101,7 +107,6 @@ IR_IS_EXTERNAL_IOT = 1
 - `IOA` and `IOP` are valid.
 - Controllers evaluate address match.
 - The selected controller decodes IOP.
-- `/IO_WAIT` may hold an eligible non-TP setup TSTEP.
 - TS1 is selection and decode only; the selected controller requests no transfer, AC clear, or skip:
   - `IO_READ_REQ != 1 AND IO_WRITE_REQ != 1 IF TS = 1`
   - `IO_CLEAR_AC_REQ != 1 AND IO_SKIP_REQ != 1 IF TS = 1`
@@ -114,7 +119,6 @@ IR_IS_EXTERNAL_IOT = 1
 
 - The selected controller may assert `IO_READ_REQ` or `IO_WRITE_REQ` for a transfer during TS3.
 - The selected controller may assert `IO_CLEAR_AC_REQ` for an operation assigned to TP2.
-- The selected controller may assert `/IO_WAIT` during an eligible non-TP setup TSTEP.
 - `IO_SKIP_REQ` is valid only during TS4:
   - `IO_SKIP_REQ != 1 IF TS = 2`
 
@@ -133,9 +137,8 @@ Acceptance of `IO_READ_REQ` or `IO_WRITE_REQ` at TP2 does not transfer DB data a
 - During `/DB_READ`, the selected controller drives valid data onto DB.
 - During `/DB_WRITE`, the CPU drives AC onto DB.
 - The selected controller may assert `IO_READ_REQ` or `IO_WRITE_REQ` for a transfer during TS4.
-- The selected controller may assert `IO_CLEAR_AC_REQ` only when neither a read nor write transfer is pending:
-  - `IO_CLEAR_AC_REQ != 1 IF IOT_READ_PENDING = 1 OR IOT_WRITE_PENDING = 1`
-- The selected controller may assert `/IO_WAIT` during an eligible non-TP setup TSTEP.
+- The selected controller may assert `IO_CLEAR_AC_REQ` only when no read transfer is pending, because a read cannot use an AC cleared at the same TP. A pending write uses the AC committed at TP2:
+  - `IO_CLEAR_AC_REQ != 1 IF IOT_READ_PENDING = 1`
 - `IO_SKIP_REQ` is valid only during TS4:
   - `IO_SKIP_REQ != 1 IF TS = 3`
 
@@ -156,12 +159,11 @@ Acceptance of a new request at TP3 does not affect the transfer committing at TP
 - `IOT_WRITE_PENDING` causes CPU control to assert `/DB_WRITE`.
 - During `/DB_READ`, the selected controller drives valid data onto DB.
 - During `/DB_WRITE`, the CPU drives AC onto DB.
-- The selected controller may assert `IO_CLEAR_AC_REQ` only when no read transfer or `IO_SKIP_REQ` is pending:
-  - `IO_CLEAR_AC_REQ != 1 IF IOT_READ_PENDING = 1 OR IO_SKIP_REQ = 1`
+- The selected controller may assert `IO_CLEAR_AC_REQ` only when no read transfer is pending, because a read and a clear both load AC. A clear may commit with a skip, because the clear does not use the ALU:
+  - `IO_CLEAR_AC_REQ != 1 IF IOT_READ_PENDING = 1`
 - The selected controller may assert `IO_SKIP_REQ` from stable registered controller state.
 - No read or write request is made during TS4, because its transfer would fall outside the major state; `IOT_TRANSFER` clears to `NONE` at TP4:
   - `IO_READ_REQ != 1 AND IO_WRITE_REQ != 1 IF TS = 4`
-- `/IO_WAIT` may hold an eligible non-TP setup TSTEP.
 - TP4 device actions and CPU sequencing decisions use pre-TP4 inputs.
 
 #### 5.2.8 TP4
@@ -214,7 +216,7 @@ If a burst continues:
 
 ### 7.3 TS2
 
-The granted controller:
+The granted controller, in this TS only:
 
 - drives MFB;
 - drives AB;
@@ -256,11 +258,11 @@ The DMA arbiter determines whether DMA service continues.
 
 At a terminating TP4:
 
-- the previously selected controller releases MFB, AB, MDB, /RD, and /WR
+- the previously selected controller has driven none of MFB, AB, MDB, /RD, and /WR since it released them at the end of TS2
 - the arbiter sets DMA_GRANT_ID to 15
 - CPU ownership resumes during the following FETCH TS1
 
-Aggregate `/DMA_REQ` remains deasserted throughout the intervening FETCH, optional DEFER, and EXECUTE major states (EXECUTE is omitted for a JMP) while `DMA_ENABLE = 0`.
+Aggregate `/DMA_REQ` remains deasserted throughout the intervening FETCH, optional DEFER, and EXECUTE major states (EXECUTE is omitted for a JMP or an OPR) while `DMA_ENABLE = 0`.
 
 During the TS4 that completes the instruction, in which [`INSTR_END`](../04-control/20-control-output-definitions/02-architectural-control-signals.md#410-instruction-end-instr_end) is asserted:
 
@@ -281,7 +283,7 @@ Single Step may commit `RUN ← 0` at DMA TP4. When the burst continues, `MS` ho
 - the selected controller holds its request and prepared transfer
 - the arbiter holds `DMA_GRANT_ID`, burst-enabled state, and burst count
 - no DMA transfer occurs while halted
-- CONTINUE resumes at DMA TS1 with the same selection
+- CONTINUE resumes at DMA TS1 with the same selection, unless an EXAMINE or DEPOSIT made FETCH the held state
 
 See [DMA Execution §4](../03-microarchitecture/10-dma-execution.md#4-halting-between-dma-cycles).
 
@@ -304,13 +306,13 @@ While `RUN = 0`:
 - TSEQ does not advance
 - no main-sequence TP occurs
 - MS and TS are held
-- front-panel interaction does not modify TSEQ, MS, or TS except through START
+- front-panel interaction does not modify TSEQ, MS, or TS, except that START, EXAMINE, and DEPOSIT load MS with FETCH
 
 When a console TP commits `RUN ← 1`, TSEQ resumes at the first TSTEP of TS1:
 
 ```text
 START     → FETCH TS1
-CONTINUE  → TS1 of the held MS
+CONTINUE  → TS1 of the held MS (FETCH after an EXAMINE or DEPOSIT)
 ```
 
 ### 8.2 Console Transaction
@@ -322,11 +324,11 @@ Sequence:
 ```text
 accepted command latched
     →
-console transaction timer runs for the slow TS2 duration (9 TSTEPs)
+console transaction timer runs for 7 setup TSTEPs
     →
-TPC
+TPC (two TSTEPs)
     →
-latched command cleared
+latched command cleared as TPC ends
 ```
 
 Properties:
@@ -334,7 +336,7 @@ Properties:
 - The console transaction is the single TS-equivalent evaluation window for the command.
 - The latched command is stable from the start of the transaction through TPC.
 - The control word is evaluated from the latched command for the whole transaction.
-- The transaction duration equals the slow TS2 duration (9 TSTEPs, [Timing Architecture §5.1](./02-timing-architecture.md#51-structure)), so a console memory access meets the same timing as the longest main-sequence memory access.
+- The transaction lasts 9 TSTEPs, with a two-step TPC ([Timing Architecture §5.1](./02-timing-architecture.md#51-structure)). That allows 7 steps of setup, as in the longest main-sequence read, and the same write pulse and hold as a main-sequence write.
 - A console memory read drives AB and MFB for the whole transaction, and MB captures MDB at TPC, matching TS2 and TP2.
 - A console memory write commits at TPC, matching TP2.
 - TPC commits every control-word result that a main-sequence TP commits, including `RUN_NEXT`, `HLT_REQ_NEXT`, and, when `MS_LOAD = 1`, `MS_NEXT`.

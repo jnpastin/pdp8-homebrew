@@ -9,7 +9,7 @@ These signals coordinate:
 - I/O device selection
 
 Architectural control signals:
-- originate from the control word
+- are specified by the control word, or derived as section 3.2 and their definitions state
 - are visible outside the CPU
 - do not expose internal datapath behavior
 
@@ -56,22 +56,24 @@ All architectural signals are level-based.
 
 - asserted during TS
 - observed during TS
-- must be stable before TP
+- must be stable before TP and through its end
 - have no edge-triggered semantics
 
 The control word may take transient values for up to `T_CS` after each TS boundary ([Timing Architecture §11](../../09-timing/02-timing-architecture.md#11-control-word-settling)). Signals that act while asserted are therefore presented only within a validity window:
 
 | Signal | Presented when |
 |---|---|
-| `/RD`, `/DB_READ`, `/DB_WRITE` | the control word asserts it and `CW_VALID` is asserted |
-| CPU drive onto MDB (`MDB_SRC` = MB or FP_SR) | the control word selects it and `CW_VALID` is asserted |
-| `/WR` | the control word asserts it and `WR_VALID` is asserted |
-| `/INITIALIZE`, CAF and front-panel CLEAR | the control word asserts it and `CW_VALID` is asserted |
+| `/RD` | the control word asserts it, `CW_VALID` is asserted, and the CPU is not in the EXECUTE of an IOT |
+| `/DB_READ` | `IOT_TRANSFER = READ` and `DB_VALID` is asserted |
+| `/DB_WRITE` | `IOT_TRANSFER = WRITE` and `DB_VALID` is asserted |
+| CPU drive onto MDB (`MDB_SRC` = MB or FP_SR) | the control word selects it, `CW_VALID` is asserted, and the CPU is not in the EXECUTE of an IOT |
+| `/WR` | the control word asserts it; memory acts on it only during `/WR_PULSE`, so it needs no window |
+| `/INITIALIZE`, CAF and front-panel CLEAR | `INITIALIZE_ASSERTED` (section 4.9), decoded by gates, and `CW_VALID` is asserted |
 | `/INITIALIZE`, power-on | the power-on reset is active ([Timing Terminology §3.4](../../09-timing/01-terminology.md#34-power-on-reset)) |
 | `/DMA_GRANT`, `IOT_ACTIVE`, `INSTR_END` | always; derived from registered state, so they do not glitch (sections 4.5, 4.8, and 4.10) |
 | `IOA`, `IOP` | always; taken from IR |
 
-Each window is a gate on the control-store output: an OR with the inverted window for an active-low signal, an AND for an active-high one.
+Each window is a gate on the signal: an OR with the inverted window for an active-low signal, an AND for an active-high one. The DB strobes are decoded outside the control store, because the control-store address carries controller responses that may change while their window is open. The control word's `/DB_READ` and `/DB_WRITE` fields specify the same values. `/INITIALIZE` is decoded for the same reason. `/RD` and the MDB drive are gated off by `MS_EFF_IS_EXECUTE AND IR_IS_IOT`, so a changing response or request cannot glitch them. An IOT's EXECUTE has no memory operation. The gate does not act in FETCH, so the IOT itself is read normally, nor in DEFER, INTERRUPT, DMA, or while halted.
 
 Timing definitions:
 - [Timing Model](../../09-timing/README.md)
@@ -159,7 +161,7 @@ When asserted:
 **Description:** Indicates that the CPU is requesting a memory write operation.
 
 When asserted:
-- memory must store the selected data into the address selected by `AB_SRC` and `MFB_SRC`
+- memory must store the selected data into the address selected by `AB_SRC` and `MFB_SRC`, during `/WR_PULSE`
 
 **Preconditions**
 - the address selected by `AB_SRC` and `MFB_SRC` is valid
@@ -168,7 +170,7 @@ When asserted:
 
 **Timing**
 - asserted during the TS corresponding to a write operation
-- data must be stable before TP
+- data must be stable before TP and through its end
 
 **Constraints**
 - must not be asserted simultaneously with `/RD`
@@ -544,7 +546,7 @@ INSTR_END =
     )
 ```
 
-`INSTR_END` is decoded by gates from `MS_EFF`, TS, and the predecodes `IR_NO_EXECUTE` and `IR_INDIRECT` ([IR-Derived Fields](../10-control-input-definitions/02-ir-derived-fields.md#ir_no_execute)). Every input is registered state that changes only at a TP, so `INSTR_END` does not glitch within a TS. It is not stored in the control word: a control-store output would feed back through the arbiter's `DMA_ENABLE` and aggregate `/DMA_REQ` into the sequencer slice's address within the same TS4. It is deasserted while halted (`MS_EFF = HALTED`).
+`INSTR_END` is decoded by gates from `MS_EFF`, TS, and the predecodes `IR_NO_EXECUTE` and `IR_INDIRECT` ([IR-Derived Fields](../10-control-input-definitions/02-ir-derived-fields.md#ir_no_execute)). Every input is registered state that changes only as a TP ends, so `INSTR_END` does not glitch within a TS. It is not stored in the control word: a control-store output would feed back through the arbiter's `DMA_ENABLE` and aggregate `/DMA_REQ` into the sequencer slice's address within the same TS4. It is deasserted while halted (`MS_EFF = HALTED`).
 
 The derivation restates the instruction-completion condition of [Sequencing and Internal Control §3](../30-direct-control-definitions/01-sequencing-and-internal-control.md#3-sequencing-control); the two must agree.
 

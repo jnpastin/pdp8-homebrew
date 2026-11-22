@@ -70,7 +70,17 @@ Stage E's selection follows the [Group 1 ISA](../../02-isa/01-group-1.md) notes 
 | 0 | 0 | 1 | BSW |
 | 1 | 1 | either | none (note 4: no rotate or swap; the other stages still act) |
 
-Each stage's control is its IR bit qualified by the class: `IR_OPR_CLA` by `IR_CLASS` = 011, 100, or 101, `IR_OPR_OSR` by 100, `IR_OPR_MQA` and `IR_OPR_MQL` by 101, and the others by 011. The unit also has an MQ output, used only by Group 3 ([Group 3 Execution §4](./03-group3-execution.md#4-opr-pass)). Stage B (the OR inputs) belongs to Groups 2 and 3 and is not selected by a Group 1 instruction.
+The unit is shared by the three groups. Each stage's control is its IR bit qualified by the instruction's class:
+
+| Stage | Group 1 (`011`) | Group 2 (`100`) | Group 3 (`101`) |
+|---|---|---|---|
+| A | CLA, CLL | CLA | CLA, MQL |
+| B | none | OSR | MQA |
+| C | CMA, CML | none | none |
+| D | IAC | none | none |
+| E | rotates, BSW | none | none |
+
+The unit also has an MQ output, used only by Group 3 ([Group 3 Execution §4](./03-group3-execution.md#4-opr-pass)). Stage B (the OR inputs) belongs to Groups 2 and 3 and is not selected by a Group 1 instruction.
 
 When `OPR_PASS` is not selected, AC and L do not load from the pass unit, so its output has no effect.
 
@@ -78,7 +88,7 @@ When `OPR_PASS` is not selected, AC and L do not load from the pass unit, so its
 
 ## 5. Composition Rules
 
-- All stages act in one pass, at FETCH TP3; they compose in the order A, C, D, E
+- All stages act in one pass, at FETCH TP3; they compose in the order A, C, D, E (Group 1 does not use stage B)
 - AC and L are each loaded once, at that TP
 - No two μops write AC or L in the same TS
 

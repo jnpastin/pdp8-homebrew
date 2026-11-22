@@ -25,8 +25,6 @@ The following are invalid:
 - a phase-specific response unintentionally causing actions at multiple TPs
 - a TP action depending on a result committed at that same TP
 - `IO_SKIP_REQ` based on unregistered or unstable controller state
-- `/IO_WAIT` asserted by a nonselected controller
-- `/IO_WAIT` suppressing, extending, or repeating a TP
 - more than one TSTEP increment on one TCLK rising edge
 
 ---
@@ -84,7 +82,6 @@ The following are invalid:
 - a controller interrupt contribution remaining asserted after /INITIALIZE commits
 - a controller /DMA_REQ output remaining asserted after /INITIALIZE commits
 - a controller entering a state other than its documented initialized state
-- /INITIALIZE being extended, repeated, or suppressed by /IO_WAIT
 - /INITIALIZE remaining asserted beyond its single assigned TSTEP
 
 ---

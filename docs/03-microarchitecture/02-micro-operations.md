@@ -159,7 +159,7 @@ AC, MB
 State Manipulation
 
 **Description:**  
-Sets the accumulator to zero, discarding any previous value.
+Sets the accumulator to zero, discarding any previous value. The zero is the AC input multiplexer's hardwired input (`AC_SRC` = ZERO), not an ALU result, so an AC clear can share a TS with an ALU operation such as `PC_INC`.
 
 **Target:**  
 AC
@@ -577,7 +577,7 @@ AC, L, /INT_REQ, IE, IB
 
 **Preconditions:**
 - AC was cleared by AC_CLEAR at the preceding TP.
-- /INT_REQ is synchronized and stable during the active TS.
+- /INT_REQ is stable during the active TS ([External Inputs §7](../04-control/10-control-input-definitions/04-external-inputs.md#int_req)).
 
 **Constraints:**
 - Bits 10, 8, and 6 remain clear because AC was cleared at the preceding TP and this micro-operation does not set them.

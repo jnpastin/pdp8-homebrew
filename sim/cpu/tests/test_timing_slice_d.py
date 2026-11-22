@@ -2,7 +2,7 @@
 
 docs/09-timing/02-timing-architecture.md §5.1: fast states (FETCH, DEFER with
 AUTO_INDEX_REQUIRED = 0) 5/8/6/5 TSTEPs = 1.2 us; slow states (DEFER with
-AUTO_INDEX_REQUIRED = 1, EXECUTE, INTERRUPT, DMA) 6/9/7/6 = 1.4 us; TSTEP 50 ns.
+AUTO_INDEX_REQUIRED = 1, EXECUTE, INTERRUPT, DMA) 6/8/7/7 = 1.4 us; TSTEP 50 ns.
 """
 
 import unittest
@@ -27,7 +27,7 @@ class V2Durations(unittest.TestCase):
     def test_table(self):
         d = D.select("v2")
         self.assertEqual(d.ts_ns["FETCH"], (250, 400, 300, 250))      # 5/8/6/5 TSTEPs
-        self.assertEqual(d.ts_ns["EXECUTE"], (300, 450, 350, 300))    # 6/9/7/6 TSTEPs
+        self.assertEqual(d.ts_ns["EXECUTE"], (300, 400, 350, 350))    # 6/8/7/7 TSTEPs
         self.assertEqual(d.state_ns()["DEFER"], 1200)
         for slow in (D.DEFER_AUTOINDEX, "EXECUTE", "INTERRUPT", "DMA"):
             self.assertEqual(d.state_ns()[slow], 1400, slow)

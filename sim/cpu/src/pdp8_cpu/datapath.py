@@ -260,8 +260,10 @@ class _Eval:
             return u(lambda a, d: a | (d << 3), ac, st["DF"])
         if src == 4:                                     # IB_TO_AC: AC[5:0] <- AC[5:0] OR IB
             return u(lambda a, b: a | b, ac, st["IB"])
-        if src == 5:                                     # V1-ONLY: AC_MQ_SWAP: AC <- MQ
-            return st["MQ"]                              # V1-ONLY: reserved in v2
+        if src == 5:
+            if self.design.name == "v1":                 # V1-ONLY: AC_MQ_SWAP: AC <- MQ
+                return st["MQ"]
+            return 0                                     # ZERO: AC_CLEAR's hardwired 0, not the ALU
         if src == 7:                                     # OPR_PASS: AC <- the OPR pass unit
             return self.opr_pass()[0]
         return u(lambda a, g: a | g, ac, self.gtf_flags())  # GTF_FLAGS_TO_AC: AC <- AC OR GTF_FLAGS

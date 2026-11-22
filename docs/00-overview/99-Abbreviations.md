@@ -113,11 +113,19 @@ DP_OVL_SEL[1:0] = [Datapath Overlay Select](../04-control/08-control-store-organ
 
 FP_CMD[2:0] = [Front-Panel Command Code](../04-control/08-control-store-organization.md#52-front-panel-command-code)
 
+INSTR_END = [Instruction End](../04-control/20-control-output-definitions/02-architectural-control-signals.md#410-instruction-end-instr_end)
+
+IR_CLASS[2:0] = [Instruction Class](../04-control/10-control-input-definitions/02-ir-derived-fields.md#ir_class)
+
+IR_NO_EXECUTE = [Instruction Never Enters EXECUTE](../04-control/10-control-input-definitions/02-ir-derived-fields.md#ir_no_execute)
+
 IR_SEQ = [Sequencer Instruction Decode](../04-control/08-control-store-organization.md#542-execute-selection)
 
 MS_EFF[2:0] = [Effective Major State](../04-control/08-control-store-organization.md#51-major-state-and-timing-state-codes)
 
 MS_EFF_IS_EXECUTE = [Effective Major State Is EXECUTE](../04-control/08-control-store-organization.md#51-major-state-and-timing-state-codes)
+
+OPR_PASS = [OPR Pass Unit Load](../03-microarchitecture/02-micro-operations.md#opr_pass)
 
 SEQ_OVL[2:0] = [Sequencer Overlay](../04-control/08-control-store-organization.md#56-sequencer-slice-address)
 
@@ -147,7 +155,13 @@ T_CS  = [Control-Store Settle Time](../09-timing/01-terminology.md#55-control-st
 
 CW_VALID = [Control Word Valid](../09-timing/01-terminology.md#56-control-word-valid-cw_valid)
 
-WR_VALID = [Write Valid](../09-timing/01-terminology.md#57-write-valid-wr_valid)
+/WR_PULSE = [Write Pulse](../09-timing/01-terminology.md#57-write-pulse-wr_pulse)
+
+DB_VALID  = [DB Transfer Window](../09-timing/01-terminology.md#58-db-transfer-window-db_valid)
+
+TP    = [Timing Pulse: the one commit clock](../09-timing/01-terminology.md#44-generation)
+
+r1, r2   = [Capture rank and output rank of a register](../09-timing/02-timing-architecture.md#76-rule-6--two-ranks)
 
 
 ---

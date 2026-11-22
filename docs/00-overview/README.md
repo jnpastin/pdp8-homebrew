@@ -14,6 +14,7 @@ It is intended as the entry point for understanding:
 
 - [Design Principles](./00-design-principles.md) - Design philosophy and guiding principles
 - [System Overview](./01-system-overview.md) - System goals, scope, and high-level description
+- [Documentation Conventions](./97-documentation-conventions.md) - How the docs are organized, and how to keep them readable by people and by the ROM tools
 - [Signal Conventions](./98-signal-conventions.md) - Conventions for polarity, naming, and electrical behavior
 - [Abbreviations](./99-Abbreviations.md) - Global dictionary of all abbreviations used throughout the design
 

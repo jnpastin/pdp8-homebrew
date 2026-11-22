@@ -129,7 +129,7 @@ No hardware fairness policy exists among interrupting controllers.
 
 ## 8. Interrupt and DMA Relationship
 
-Interrupt recognition and DMA request recognition are evaluated at the same EXECUTE major-state completion boundary.
+Interrupt recognition and DMA request recognition are evaluated at the same instruction-completion TP4.
 
 When both of the following are true at that boundary:
 
@@ -178,7 +178,7 @@ The interrupt system must satisfy all of the following:
 - Hardware does not assign priority among interrupting controllers.
 - Interrupt-controller priority is determined by software polling order.
 - Interrupt recognition occurs only at the defined sequencing boundary.
-- A valid interrupt request takes precedence over an eligible DMA request at the same EXECUTE completion boundary.
+- A valid interrupt request takes precedence over an eligible DMA request at the same instruction-completion TP4.
 - Interrupt recognition selects INTERRUPT execution but does not perform interrupt-entry state changes directly.
 - Interrupt entry does not acknowledge or clear controller state.
 - Sampling a persistent interrupt request does not consume it.
@@ -198,6 +198,6 @@ The interrupt architecture uses:
 - software identification of interrupt sources
 - software-defined controller priority
 - persistent controller requests
-- fixed interrupt precedence over DMA at a simultaneous EXECUTE completion boundary
+- fixed interrupt precedence over DMA at a shared instruction-completion TP4
 
 Detailed register, control, execution, timing, electrical, and controller behavior remains defined by the applicable owning documents.

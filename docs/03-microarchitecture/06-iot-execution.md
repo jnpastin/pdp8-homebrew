@@ -44,8 +44,6 @@ The selected controller may request:
 - `IO_SKIP_REQ`
 - `IO_CLEAR_AC_REQ`
 
-The selected controller may also assert `/IO_WAIT` during eligible setup steps.
-
 The CPU remains responsible for all CPU-local state changes. A controller response does not directly modify CPU state.
 
 ---

@@ -44,7 +44,6 @@ An IOT to an unassigned address produces no controller response:
 - no DB capture
 - no AC-clear request
 - no skip request
-- no wait request
 - no controller state change
 - no interrupt effect
 - no DMA effect

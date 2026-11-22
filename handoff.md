@@ -6,7 +6,7 @@ Branch: `one-cycle-fetch`. This branch evaluates and, if the user approves, impl
 
 **The branch is disposable.** The user may decide not to adopt option 2. Then the branch is deleted and work resumes on `main`. `main` is expected to stay mostly still meanwhile; rebase onto it before any merge.
 
-## 1. Where Things Stand (2026-11-20)
+## 1. Where Things Stand (2026-11-22)
 
 | Phase ([option2/plan.md](option2/plan.md)) | Status |
 |---|---|
@@ -21,7 +21,7 @@ Branch: `one-cycle-fetch`. This branch evaluates and, if the user approves, impl
 | 6: slice C1 | **Done** (section 1.5; committed `dd96d13`). |
 | 7: slice C2 | **Done** (section 1.6; committed `761c3d1`). |
 | 8: slice C3 | **Done** (section 1.7; committed `7d0b558`). |
-| 9: full verification | **In progress** (section 1.8): ALU cleanup made; final verification running. |
+| 9: full verification | **Done** (section 1.8; `a28b8da`). **Docs review in progress, uncommitted (section 1.9)**; then checkpoint 7. |
 | 10: v1 cleanup | Not started. |
 
 ### 1.2 Slice A (phase 3), 2026-11-20
@@ -93,7 +93,7 @@ OPR Group 3 completes in FETCH: `OPR_PASS` loads AC (stage A: CLA or MQL zero AC
 
 ### 1.8 Phase 9 (full verification, ALU cleanup), 2026-11-21
 
-Uncommitted. Stop for the user's check and commit, and checkpoint 7, when the final verification passes.
+The changes are committed (`a28b8da`); this record of the final results is not. Waiting for the user's check and checkpoint 7.
 
 - **Baseline on the 46-bit design (`7d0b558`), v2 in lock-step under PyPy, seed 1 unless noted:**
   - All suites OK under v1 and v2 (tools 17; sim/cpu 128, memory 3, reference 18, io 29, system 77 with 1 skipped); MAINDEC suite OK for both; D2AB timing: v1 halt 2607, v2 pass.
@@ -102,9 +102,35 @@ Uncommitted. Stop for the user's check and commit, and checkpoint 7, when the fi
   - Bounded, not full passes: D1AA 8 million instructions, D1FB and D1BC 15 million, all PASS.
 - **Judging fix (approved by the user):** D0FC, D0HC, and D0JC failed at their first full pass because `maindec.py` had no markers for their end-of-pass text (`FC`, `HC`, `JC`: each write-up §9). v1 and v2 printed the same text at the same instruction counts. Markers and `PassCriteria` tests added; no CPU change.
 - **ALU cleanup (spec decision 13, option C):** `ALU_OP` 2 bits (ADD, AND, INC, CLEAR), `ALU_B_SRC` 1 bit (NONE, MB), `AC_SRC` 5 reserved. Docs: MCS, CSO §4.2 and §7.2, control word §2.1, registers. Pipeline promoted by the user. Packing: 44 of 48 bits, EXECUTE variants 4/19/8/7. Simulator: encodings per design (v1's are `V1-ONLY`); `sim/cpu/tests/test_alu_cleanup_phase9.py`; sim/cpu is now 135 tests.
-- **Final verification on the 44-bit design:** running (started 2026-11-21, about 21:32). The baseline's list repeated, with D1FB and D1BC raised to 110 million instructions to try for a full pass. It has no result until recorded here; if interrupted, run it again.
+- **Final verification on the 44-bit design (finished 2026-11-21, 23:44; v2 in lock-step under PyPy, seed 1 unless noted):**
+  - Tools 17 suites OK. sim/cpu 135, memory 3, reference 18, io 29, system 79 (1 skipped) OK under v1 and v2; MAINDEC suite under PyPy OK for both; D2AB timing: v1 halts at 2607 as expected, v2 passes.
+  - D2AB PRG0 end to end, seeds 1 and 2: PASS, 46,988,085 instructions each.
+  - Full passes, at the baseline's pass and instruction counts: D0AB, D0BB, D0DB, D0EB, D0FC, D0GC, D0HC, D0JC, D1EC (2 each); D0IB, D1HA (1 each).
+  - D0CC: fast test only (§5.1), to its end message (`SIMAD`). The normal test was not run.
+  - **Bounded runs, not full passes; no error in any:** D1AA 8 million instructions (no write-up, no known pass marker); D1BC 110 million (no `5`, which its note says follows each successful cycle, so no cycle finished); D1FB 110 million (one `5`). **D1FB's `5` is not an end of pass:** write-up §7 calls it a run-time tick about every 5 minutes, although `Outcome` counts it as a pass marker.
+  - The tested tree is `a28b8da`: the diff hash taken at launch equals that commit's diff from `7d0b558` less `handoff.md` and the then-untracked new test file, and no other tracked file is newer than the launch.
+- **Packing and budget review:** datapath 44 of 48 bits in six devices (v1's width; no seventh device); EXECUTE variants 4/19/8/7; 90,212 addresses verified; no packer diagnostics. Matches spec §5.1 and decision 13.
 - **Host note:** the laptop idle-sleeps after 15 minutes (GPO) and crashed in Modern Standby on 2026-11-21. For long runs hold a `SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED)` request, with the user's consent, and stay on AC.
 - **Diagrams:** `option2/diagrams.md` P9-1, P9-2, and the consolidated final list.
+
+### 1.9 Documentation review, 2026-11-22 (uncommitted)
+
+- **Applied, approved:** groups A to E, R1 to R3. One R1 line is held: 08/06's rule on recognition at the TP that applies a field change (review item Q explains it; awaiting the user).
+- **Applied, delegated:** TS_CODE comes from the 2-bit TS code register (CSO, timing terminology). No diagram change; recorded in `option2/diagrams.md`.
+- **Added, requested:** `docs/00-overview/97-documentation-conventions.md`. **Read it before editing docs.** Parsed prose breaks silently, and a dry run does not catch it.
+- **Promotion done by the user (verified identical to scratch, dry run clean):** one v2 pipeline run changed control-input-schema, execution-definitions, timing-constraints and symbolic-control-words (line references, consumer lists). In scratch the second run was unchanged and the images byte-identical.
+- **All docs read in full. Findings are proposals only:** `option2/docs-review.md` (IDs Q, D, A1, A2, H, P, O). Apply by the IDs the user approves; no patches are drafted for them.
+- **Decisions waiting:** D2 is a reproduced ROM defect (external IOT clear with skip); D1 is fixed pending promotion. D3 (RK8E current address) needs the DEC manual. D6 (commit edge) precedes the timing migration.
+- **Invariant the user relies on:** in TSn, everything derives from values committed by TP(n-1). A controller response never depends on DB in the same TS. Check every proposal against it: the simulator can't (no delays, no DB visible to a controller during a TS).
+- **Constraint audit:** review section C. Items are talked through one at a time.
+- **Timing model agreed with the user (2026-11-22):** NOTHING visible changes during TP. Every register has two ranks: r1 captures at TP's leading edge, r2 publishes as TP ends, together with the TS change. The memory write is the first half of TP. Never propose capture on the trailing edge, single-rank registers with bus latches, or both ranks on one edge (all raised and rejected). Single Step is one major state, as on the 8/E.
+- **Approved 2026-11-22:** two-step TP only in TSs that can write; slow 6/8/7/7; DB strobes from IOT_TRANSFER; decision 11a (EXECUTE bit registered between the ranks); memory interface admits MRAM (15 ns pulse, 12 ns hold), part not chosen.
+- **C5 applied 2026-11-22** (26 files), after the user asked for a readability check first. The user still has to promote once (control-word schema, line references only) and commit. Correction 2 applied too, after the user's question 'don't we need /rd during iots?' was answered: the gate acts only in an IOT's EXECUTE, never its FETCH, and masked nothing in simulation.
+- **C2, C3, C4, C11, D2 applied 2026-11-22** (44 files), `/IO_WAIT` removed (user chose A, B kept as the documented fallback). The user must promote (the v2 pipeline needs three runs to settle: 7, then 2 stages) and commit. Open for the user: FP_SR `control_uses` = `value`; diagram items in `option2/diagrams.md`. Still to add there: the address-formation and overlay diagrams for C5 (read their XML first).
+- **Never quote a timing margin without running** `option2/experiments/timing_budget.py`: hand-picked paths were wrong three times.
+- **Open:** C11 (EXAMINE during Single Step loses EA_ADDR), C2 (the budget assumes its recommendation).
+- **Added to the pre-merge punch list by the user:** schema cleanup (plan phase 10, review O6).
+- **User direction:** `option2/` and this handoff are removed before merge and the docs become authoritative. timing.md moves to `docs/09-timing` in phase 10, recomputed (D6, D7). This handoff is for agents; don't rewrite it for people.
 
 ### 1.1 Commits on this branch
 
@@ -177,8 +203,8 @@ Notes for the review:
 
 ## 4. Next Steps
 
-1. **The user checks and commits slice C3** (section 1.7).
-2. **Phase 9, full verification** (plan.md; section 1.8): finish the final verification on the 44-bit design, record it, and stop for the user's check and commit; then checkpoint 7 (merge, and whether to plan option 1, IOT in FETCH, later).
+1. **Walk `option2/docs-review.md` with the user one item at a time** (section 1.9; D1 is done and promoted. Current: C5 with D6 and D12. Then D2, C1 and C2, C3 and C4, the rest). The user checks and commits, then decides checkpoint 7: merge, and whether to plan option 1 (IOT in FETCH) later.
+2. **Phase 10, v1 cleanup and rebase** (plan.md): only after the user says so.
 3. (Done) **Slice C3** (plan phase 8): OPR Group 3 in FETCH (one class `101`; the pass unit's MQ output; `OPR_PASS_TO_MQ`).
 3. (Done) **Slice C2** (plan phase 7): OPR Group 2 in FETCH: the SKIP register (loaded at FETCH TP3 from `SKIP_TAKEN`; `SKIP_LOAD`), the `RUN` multiplexer on overlay group 1 (decision 6), CLA and OSR through the pass unit (stage B), PC increment at FETCH TS4 on SKIP, HLT captured at FETCH TP3 (sequencer A1 = `IR_OPR_HLT`), class `100`; skip and interrupt at the same TP4 (decision 4); 08/05-skip-model's EXECUTE TP4 wording. Exhaustive test of the Group 2 encodings.
 3. (Done) **Slice C1** (plan phase 6): OPR group 1 in FETCH through the OPR pass unit (decision 1; `OPR_PASS` as `AC_SRC` = 7 and `L_OP` = 1; class 3; `IR_NO_EXECUTE` gains OPR; amend design principle §3.1). Exhaustive test of the 256 group 1 encodings.

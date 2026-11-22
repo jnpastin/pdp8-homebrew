@@ -22,10 +22,9 @@ MA → AB → Memory
 ## 3. Memory Data Path
 MDB → MB → CPU
 
-During instruction fetch, `MDB → IR` at FETCH TP2, in parallel with MB.
-
 - MDB is transient
 - MB stores stable value
+- Exception: during instruction fetch IR also loads directly from MDB (`MDB → IR`), at FETCH TP2, in parallel with MB
 
 ---
 

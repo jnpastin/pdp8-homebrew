@@ -1,6 +1,6 @@
 # Group 2 OPR Encoding Model
 
-Group 2 is divided into two sub-groups, the AND sub-group and the OR sub-group.  When combining operations into a single instruction, the AND sub-group treats all conditions for operations that happen in the same TP as a logical AND.  The same is true of the OR sub-group, they are all treated as a logical OR.  The sub-group flag is bit 3, bit 0 is always `0`.  Regardless of the state of bit 3, the operations take effect in a fixed order: the skip test on the original AC and L; then `CLA`; then `OSR`; then `HLT`.
+Group 2 is divided into two sub-groups, the AND sub-group and the OR sub-group.  When combining operations into a single instruction, the AND sub-group treats all of its selected skip conditions as a logical AND.  The same is true of the OR sub-group, they are all treated as a logical OR.  The sub-group flag is bit 3, bit 0 is always `0`.  Regardless of the state of bit 3, the operations take effect in a fixed order: the skip test on the original AC and L; then `CLA`; then `OSR`; then `HLT`.
 
 ---
 

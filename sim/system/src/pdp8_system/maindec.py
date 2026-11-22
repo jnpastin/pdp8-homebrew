@@ -4,7 +4,8 @@ Every entry follows the program's write-up (sim/test_programs/<directory>/…-d.
 8). A run loads the tape through the console, operates the switches as the write-up directs,
 and runs, normally in lock-step with the reference model. The result is judged as the operator
 would: any halt is an error halt (the write-ups list them), and any Teletype output other than
-the program's documented pass markers and start-up characters is an error printout.
+the program's documented markers and start-up characters is an error printout. A marker ends a
+pass in every program except D1FB, whose "5" marks elapsed run time (its write-up §7).
 """
 
 from __future__ import annotations
@@ -32,7 +33,7 @@ class Diagnostic:
     title: str
     switches: int = 0                  # SR for CLEAR and CONTINUE (write-up §4.1, §4.3)
     deposits: tuple = ()               # (address, value) set up before starting (§4.3, §5)
-    markers: frozenset = frozenset()   # characters that mark a completed pass (§8)
+    markers: frozenset = frozenset()   # progress characters: a completed pass, or D1FB's time tick
     ignored: frozenset = frozenset()   # start-up characters and the line breaks around markers
     continue_halts: frozenset = frozenset()  # PC after a documented halt, after which CONTINUE
     continue_switches: int | None = None  # SR set before CONTINUE at a documented halt
@@ -101,8 +102,8 @@ DIAGNOSTICS = {
     # §4.1: start at 0200 (IF = DF = 0); it types a banner and "SETUP SR & CONT" and halts (at
     # 2634); then SR06-08 = 0 and SR09-11 = 7 select stacks 0-7, and CONTINUE. It reports the stacks
     # it found and selected (STACK_INFO; observed "8 STACKS IN THIS SYSTEM") and tests in silence.
-    # §7: a "5" about every five minutes of real run time (about 100 million instructions), so a
-    # run is judged by its errors. §5: error typeouts ("PR LOC ADDR GOOD BAD TEST", "RELOCATION
+    # §7: a "5" about every five minutes of real run time (about 100 million instructions). It is a
+    # time tick, not an end of pass, though Outcome.markers counts it: a run is judged by its errors. §5: error typeouts ("PR LOC ADDR GOOD BAD TEST", "RELOCATION
     # ERROR") and the program continues.
     "d1fb": Diagnostic("maindec-8e-d1fb", "Extended Memory Address Test", markers=frozenset({ord("5") | 0o200}),
                        ignored=NEWLINE, continue_halts=frozenset({0o2635}), continue_switches=0o0007,

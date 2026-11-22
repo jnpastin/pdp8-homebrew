@@ -800,20 +800,20 @@ During TS3:
 
 - CPU control asserts `/DB_WRITE`
 - the CPU drives AC onto DB
-- the controller evaluates the selected maintenance function from DB
 - the controller asserts `IO_CLEAR_AC_REQ`
-- for the lower-data-buffer read function, the controller asserts `IO_READ_REQ`
+- the controller asserts `IO_READ_REQ` for every DMAN, independent of DB
 
 At TP3:
 
+- the controller registers the maintenance function from DB
 - the selected maintenance operation commits or is initiated
 - AC is cleared
-- CPU control accepts the read request when the lower-data-buffer read function is selected
+- CPU control accepts the read request
 
-For the lower-data-buffer read function, during TS4:
+During TS4:
 
 - CPU control asserts `/DB_READ`
-- the controller drives the maintenance-visible lower data-buffer value onto DB
+- the controller drives DB from the function registered at TP3: the lower data-buffer value for the read function, otherwise 0000
 
 At TP4:
 
@@ -827,7 +827,7 @@ Because AC was cleared at TP3, the resulting value is:
 AC <- DB
 ```
 
-The controller must preserve the selected read operation through TP4 without exposing additional programmer-visible state.
+The controller must preserve the registered function through TP4 without exposing additional programmer-visible state. Its responses cannot depend on the function, because the function is on DB only during TS3 and a response must not depend on DB in the same TS ([Controller Contract](../04-controller-contract.md)).
 
 ### 23.5 Unsupported DMAN Combinations
 
@@ -899,7 +899,7 @@ Once selected, the controller must complete exactly one DMA word transfer at TP2
 The controller must preserve its transfer readiness from request assertion through completion of the selected transfer.
 
 The controller keeps its request asserted while additional immediately transferable words remain.  
-After completing the current transfer, the controller must deassert its request when it cannot immediately complete another word transfer.  
+At the TP2 that completes the current transfer, the controller deasserts its request when it cannot immediately complete another word transfer, including after the last word.  
 The controller reasserts its request when another complete word transfer is prepared.
 
 ### 26.3 Grant Acceptance
@@ -1214,7 +1214,6 @@ An unsupported operation produces:
 - no DB capture
 - no `IO_CLEAR_AC_REQ`
 - no `IO_SKIP_REQ`
-- no `/IO_WAIT`
 - no controller state change
 - no register change
 - no interrupt effect

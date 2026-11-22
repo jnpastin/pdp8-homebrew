@@ -53,20 +53,20 @@ The timing diagrams show the actual electrical levels of both signal classes.
 
 On each rising edge of TCLK:
 
-- TSTEP advances to the next step of the current TS, or after the TS's last step (its TP) to step 1 of the next TS, unless a defined timing rule holds an eligible setup position.
+- TSTEP advances to the next step of the current TS, or after the last step of the TS's TP to step 1 of the next TS.
 - Exactly one TSTEP remains active.
-- A TP position cannot be held by `/IO_WAIT`.
 
 ---
 
 ### 4.2 Timing Pulses
 
-Each TS's last TSTEP is its TP:
+Each TS ends with its TP:
 
-TPn = active when TSn's step N is active ([Timing Terminology §3.5](./01-terminology.md#35-timing-rom))
+TPn = active during the last W steps of TSn ([Timing Terminology §3.5](./01-terminology.md#35-timing-rom))
 
 TP is:
-- one timing step wide
+- one timing step wide, or two in a TS that can write memory (section 5.1)
+- driven by a flip-flop ([Timing Terminology §4.4](./01-terminology.md#44-generation))
 - aligned to the rising edge of TCLK
 - the only event trigger in the system
 
@@ -80,14 +80,24 @@ Each timing state is a run of N timing steps, N read from the timing ROM ([Timin
 
 | Context | Mode 0 (optimized) | Mode 1 (uniform slow) |
 |---|---|---|
-| FETCH; DEFER with `AUTO_INDEX_REQUIRED = 0` | **5/8/6/5 = 24 (1.20 µs)** | 6/9/7/6 = 28 (1.40 µs) |
-| DEFER with `AUTO_INDEX_REQUIRED = 1`; EXECUTE; INTERRUPT; DMA | **6/9/7/6 = 28 (1.40 µs)** | 6/9/7/6 = 28 (1.40 µs) |
+| FETCH; DEFER with `AUTO_INDEX_REQUIRED = 0` | **5/8/6/5 = 24 (1.20 µs)** | 6/8/7/7 = 28 (1.40 µs) |
+| DEFER with `AUTO_INDEX_REQUIRED = 1`; EXECUTE; INTERRUPT; DMA | **6/8/7/7 = 28 (1.40 µs)** | 6/8/7/7 = 28 (1.40 µs) |
+
+The lengths include TP. TP is two steps wide, in both modes, in the TSs that can write memory, and one step wide in every other TS:
+
+| Context | TSs with a two-step TP | Writer |
+|---|---|---|
+| DEFER with `AUTO_INDEX_REQUIRED = 1` | TS4 | auto-index write-back |
+| EXECUTE, whatever the instruction | TS3, TS4 | DCA and JMS in TS3; ISZ in TS4 |
+| INTERRUPT | TS3 | return address |
+| DMA | TS2 | controller |
+| Console transaction | TPC | DEPOSIT |
 
 `TIMING_MODE` codes 2 and 3 are reserved. Mode 0 is the normal mode; mode 1 is for hardware bring-up.
 
-The two lengths follow the PDP-8/E's fast and slow memory cycles (KK8-E; M8330): FETCH and non-autoindex DEFER are fast, EXECUTE and autoindex DEFER slow. The slow cycle lengthens the TSs of a state that writes memory, or may write it (the auto-index write-back, the MRI and interrupt writes, a DMA transfer). Under mode 0 a memory-reference instruction takes 2.6 µs, as on the PDP-8/E, and the ISZ + JMP loop of a timing routine takes 2 × 24 + 28 = 76 TSTEPs = 3.80 µs, the PDP-8/E figure that MAINDEC-8E-D2AB checks.
+The two lengths follow the PDP-8/E's fast and slow memory cycles (KK8-E; M8330): FETCH and non-autoindex DEFER are fast, EXECUTE and autoindex DEFER slow. The slow cycle lengthens the TSs of a state that writes memory, or may write it (the auto-index write-back, the MRI and interrupt writes, a DMA transfer). Under mode 0 a directly addressed memory-reference instruction takes 2.6 µs, as on the PDP-8/E, and the ISZ + JMP loop of a timing routine takes 2 × 24 + 28 = 76 TSTEPs = 3.80 µs, the PDP-8/E figure that MAINDEC-8E-D2AB checks.
 
-Each length is the TS's longest critical path, from its control word and memory access to the setup of its TP, rounded up to whole TSTEPs and padded to these totals; [option2/timing.md](../../option2/timing.md) §4 gives the paths and margins. TS2 is the longest, to accommodate the memory access.
+Each length allows the TS's longest path, from its control word and memory access to the leading edge of its TP, within the limits of section 11.4, and is padded to these totals. TS2 is the longest setup interval, to accommodate the memory access.
 
 See: [cpu-timing-overview](../../diagrams/timing/cpu-timing/export/cpu-timing-overview.png)
 
@@ -122,7 +132,7 @@ TSn:
   data stabilizes
 
 TPn:
-  data is latched (state change occurs)
+  data is captured at the leading edge, and published as TP ends
 
 TS(n+1):
   results are used
@@ -144,19 +154,19 @@ As shown in the CPU timing overview diagram:
 
 ### 7.1 Rule 1 — Event-Driven Updates
 
-All state changes occur on TP events.
+All state changes occur on TP events: a register captures at the leading edge of TP and publishes as TP ends, and a memory write completes within the TP.
 
 ---
 
 ### 7.2 Rule 2 — Setup Before Event
 
-All inputs must be stable before TP.
+All inputs must be stable before the leading edge of TP and through the end of TP. They must derive only from state committed by the previous TP. Apart from TP itself, an edge or level that arises during a TS commits nothing and selects nothing.
 
 ---
 
 ### 7.3 Rule 3 — Phase Transition
 
-TS transitions occur after TP on the next clock edge.
+TS transitions occur as TP ends: one TSTEP after its leading edge, or two for a two-step TP. That is also when the state committed at the TP becomes visible.
 
 ---
 
@@ -166,9 +176,42 @@ No state changes occur directly from TS levels.
 
 ---
 
-### 7.5 Rule 5 — No Falling Edge Dependence
+### 7.5 Rule 5 — Capture Only on the Leading Edge
 
-Only the TP rising edge is significant.
+Only the TP rising (leading) edge captures data. The end of TP captures nothing from the datapath: it publishes what the leading edge captured.
+
+---
+
+### 7.6 Rule 6 — Two Ranks
+
+Every register that holds machine state, in the CPU, the controllers, and the DMA arbiter, has two ranks. The timing generator's own flip-flops (TSEQ, TP, the TS code, and the validity windows) have one.
+
+| Rank | Clocked at | Takes | Read by |
+|---|---|---|---|
+| r1, capture | the leading edge of TP, if the register is selected to load | the register's selected input | r2 only |
+| r2, output | the end of every TP | r1 | everything else: datapath, buses, control store, decodes, displays |
+
+One signal is decoded between the ranks: `MS_EFF_IS_EXECUTE` ([Control Store Organization §5.1](../04-control/08-control-store-organization.md#51-major-state-and-timing-state-codes)).
+
+In a two-step TP:
+
+```text
+                           leading       one TSTEP           end
+                              |               |               |
+TP (two-step)     ____________|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|_____________
+TS                =================== TSn ====================X== TS(n+1) ==
+r1 input          = settling =|========= valid, held =========X
+r1                === old ====X==================== new ====================
+r2 (visible)      =================== old ====================X==== new ====
+/WR_PULSE         ‾‾‾‾‾‾‾‾‾‾‾‾|_______________|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+```
+
+A one-step TP ends one TSTEP after its leading edge and has no write pulse.
+
+- r2 does not change during TP, so no r1 input, bus value, select, or control-word bit changes during TP. This supplies the hold time of every capture, on and off the CPU board.
+- r1 does not change between the leading edge and the end of TP, so r2 has no race with it. The two ranks must not be clocked by the same edge.
+- A register may be both a source and a destination at one TP, and a register selected onto a bus may load at that TP: the source is r2, which still holds the old value.
+- Where the documents say that a register loads, or that state commits, at TPn, r1 captures at TPn's leading edge and the value is visible from TS(n+1).
 
 ---
 
@@ -203,7 +246,7 @@ Major State changes occur at defined TP events.
 Timing speed is controlled by the length of each TS, read from the timing ROM ([Timing Terminology §3.5](./01-terminology.md#35-timing-rom)).
 
 - Fast: a FETCH or non-autoindex DEFER (5/8/6/5 TSTEPs, mode 0)
-- Slow: every other major state (6/9/7/6 TSTEPs)
+- Slow: every other major state (6/8/7/7 TSTEPs)
 
 The selection is dynamic, by major state and `AUTO_INDEX_REQUIRED`, within the static `TIMING_MODE` (section 5.1).
 
@@ -214,36 +257,6 @@ The selection is dynamic, by major state and `AUTO_INDEX_REQUIRED`, within the s
 - TS duration changes as a result of TSTEP changes
 - TP count per cycle changes
 - MS behavior remains unchanged
-
----
-
-### 9.3 I/O Wait Integration
-
-During external-IOT EXECUTE, the selected controller may assert `/IO_WAIT` to extend an eligible non-TP setup interval.
-
-Properties:
-
-- MCLK continues.
-- TCLK continues.
-- TSTEP remains at the current eligible setup position.
-- TS remains in the current phase.
-- No state change occurs while the non-TP setup position is held.
-- When `/IO_WAIT` is deasserted, TSTEP progression resumes normally.
-- `/IO_WAIT` is ignored at TP positions.
-- A TP position advances normally and generates exactly one TP event.
-
-Constraints:
-
-- `/IO_WAIT` does not modify RUN.
-- `/IO_WAIT` does not alter MS.
-- `/IO_WAIT` does not directly modify architectural state.
-- `/IO_WAIT` must be synchronized before influencing TSTEP progression.
-- All pending-operation inputs must remain stable while waiting.
-- TSTEP transition logic must evaluate the pre-edge TSTEP value.
-- At most one TSTEP increment may occur on a TCLK rising edge.
-- Fast timing must not skip a TSTEP currently held by `/IO_WAIT`.
-
-Detailed controller behavior is defined in [I/O Timing](../07-io/03-io-timing.md)
 
 ---
 
@@ -277,7 +290,7 @@ The control word is formed combinationally from registered state, the timing sta
 
 Every control signal is one of:
 
-- **TP-qualified:** acts only when a TP or TPC commits a result. A transient value has no effect provided the signal is stable before the TP. Register load enables, source selects, ALU fields, value fields, and the sequencing fields are TP-qualified.
+- **TP-qualified:** acts only when a TP or TPC commits a result. A transient value has no effect provided the signal is stable before the TP. Register load enables, source selects, ALU fields, value fields, the sequencing fields, and `/WR` are TP-qualified.
 - **Immediate-effect:** acts while it is asserted, for example by driving a bus or strobing memory. An immediate-effect signal is presented only within its validity window.
 
 The immediate-effect signals and their windows are defined in [Architectural Control Signals §3.2](../04-control/20-control-output-definitions/02-architectural-control-signals.md#32-timing-model).
@@ -286,13 +299,20 @@ An immediate-effect signal must depend only on MS, RUN, TS, IR, registered state
 
 ### 11.3 Validity Windows
 
-- `CW_VALID` opens a fixed number of TSTEPs into each TS, at least `T_CS` after the TS begins, and closes after the TP TSTEP. It opens 150 ns (three TSTEPs) into every TS: the control word and its bus-enable decodes settle within about 104 ns ([option2/timing.md](../../option2/timing.md) §3.1). Signals whose receiver captures them at the TP stay valid through that TP.
-- `WR_VALID` closes one TSTEP earlier. Memory stores a word when `/WR` deasserts, so `/WR` must end while address and data are still stable; ending at the TP itself would race the registers that change at that TP.
-- Both windows are produced by flip-flops clocked by TCLK, so their edges are fixed TSTEP positions.
+- `CW_VALID` opens 150 ns (three TSTEPs) into every TS, at least `T_CS` after the TS begins, and closes as TP ends. Signals whose receiver captures them at the TP stay valid through that TP.
+- `CW_VALID` is produced by a flip-flop clocked by TCLK, so its edges are fixed TSTEP positions.
+- `/WR` needs no window. Memory acts on it only during [`/WR_PULSE`](./01-terminology.md#57-write-pulse-wr_pulse), the first step of a two-step TP, when it is stable (section 7.6).
+- `DB_VALID` opens 100 ns into every TS for `/DB_READ` and `/DB_WRITE` ([Timing Terminology §5.8](./01-terminology.md#58-db-transfer-window-db_valid)).
 
 ### 11.4 Timing Budget
 
-Budgets are expressed in TSTEPs. Each TS must contain enough TSTEPs for:
+Budgets are expressed in TSTEPs.
+
+- A path starts as the previous TP ends, when the output ranks and TS change.
+- It must settle by the leading edge of this TS's TP.
+- A TS of N steps with a W-step TP therefore allows N − W steps, less the output rank's clock-to-output delay.
+
+Those steps must be enough for:
 
 - `T_CS`, before `CW_VALID` opens
 - the work done inside the window, such as a memory access in TS2 or the datapath evaluation before TP
@@ -300,6 +320,14 @@ Budgets are expressed in TSTEPs. Each TS must contain enough TSTEPs for:
 The number of TSTEPs in each TS is a design parameter. Adding a TSTEP to one TS lengthens the cycle by one TCLK period, which is the preferred way to gain margin.
 
 A control input that changes during a TS, such as a controller response, must be stable at least `T_CS` before the TP that accepts it.
+
+The budget also sets these limits on the physical design:
+
+- at most 5 ns for each backplane or ribbon crossing
+- at most 200 pF on an open-collector line, pulled up by 220 Ω or a termination at least as strong
+- at most 50 pF on a logic output, or a buffer included in the budget
+- ACT or F parts on every register and timed path, including both ranks in the controllers and the arbiter
+- terminated clock and write-pulse lines, with Schmitt-trigger clock receivers on other boards
 
 ---
 

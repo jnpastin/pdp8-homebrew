@@ -139,7 +139,6 @@ The following are invalid:
 - a TP action depending on a result committed at that same TP
 - an unselected external controller responding to, or modifying local state because of, an IOT
 - an external IOT response signal (`IO_READ_REQ`, `IO_WRITE_REQ`, `IO_SKIP_REQ`, `IO_CLEAR_AC_REQ`) directly modifying CPU architectural state rather than requesting CPU or timing behavior
-- `/IO_WAIT` altering `RUN`, `MS`, or architectural state directly, or suppressing, extending, or repeating a TP
 - a binding rule for a new externally observable operation omitting a required architectural signal, required μop, or explicit binding rule
 
 ---

@@ -21,11 +21,22 @@ Related:
 
 ## 2. Timing Model
 
-External inputs must be stable for the duration of the timing state in which they are evaluated.
+Every external input changes only as a TP ends and settles before the next TP, so control and the datapath use one value for each TS ([Timing Architecture §7.6](../../09-timing/02-timing-architecture.md#76-rule-6--two-ranks)). An input is made stable in one of three ways:
+
+| Inputs | How they are made stable |
+|---|---|
+| `FP_STOP`, `FP_SINGLE_STEP`, `FP_SINGLE_INSTRUCTION`, `FP_SR`, `FP_IF`, `FP_DF` | captured in the panel input register |
+| the console commands (section 4.1) | synchronized, debounced, and latched when accepted |
+| `/DMA_REQ`, `/INT_REQ`, and the external-IOT responses | derived from registered controller, arbiter, and CPU state, which changes only as a TP ends; no further synchronization |
+
+The panel input register has two ranks, like every register:
+
+- While running, it loads at every TP.
+- While halted, it loads when a console command is accepted: the capture rank on the clock edge that latches the command, the output rank one TCLK period later. The transaction's control word does not depend on it, and its TPC follows seven setup TSTEPs.
+- The switches are asynchronous to TCLK. A capture rank that goes metastable has at least one TSTEP to settle before the output rank takes its value.
+- A switch that changes too late for one capture is seen at the next.
 
 Constraints:
-- External inputs must be synchronized to the control timing model before use.
-- External inputs must not change during the control evaluation window.
 - External inputs must not directly update registers.
 - External inputs must not bypass the control function.
 - External inputs must not introduce asynchronous state changes.
@@ -182,6 +193,7 @@ The accepted FP_CLEAR command:
 - may be recognized during normal execution
 - must not halt execution immediately
 - contributes only to halt-request behavior
+- captured in the panel input register (section 2)
 
 ### FP_LOAD_ADDRESS
 
@@ -270,6 +282,7 @@ These inputs do not initiate execution.
 - does not initiate execution
 - does not modify instruction behavior
 - affects only run/stop behavior
+- captured in the panel input register (section 2)
 
 ### FP_SINGLE_STEP
 
@@ -290,6 +303,7 @@ These inputs do not initiate execution.
 - does not initiate execution
 - does not modify instruction behavior
 - affects only run/stop behavior
+- captured in the panel input register (section 2)
 
 ---
 
@@ -313,7 +327,7 @@ Front-panel data inputs provide externally selected values used by console opera
 - [FP_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#fp_if_to_dif)
 
 **Constraints:**
-- must be stable when sampled
+- captured in the panel input register (section 2)
 - must not directly modify IF
 
 ### FP_DF
@@ -331,8 +345,29 @@ Front-panel data inputs provide externally selected values used by console opera
 - [FP_DF_TO_DF](../../03-microarchitecture/02-micro-operations.md#fp_df_to_df)
 
 **Constraints:**
-- must be stable when sampled
+- captured in the panel input register (section 2)
 - must not directly modify DF
+
+### FP_SR
+
+**Name:** Front Panel Switch Register
+**Type:** External Data Input
+**Bit Width:** 12
+
+**Purpose:** Provides the value set on the front-panel switch register.
+
+**Value Encoding:**
+- 000000000000-111111111111 → switch register value
+
+**Consumed By:**
+- [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc)
+- [FP_SR_TO_MB](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_mb)
+- [MEM_WRITE_FROM_FP_SR](../../03-microarchitecture/02-micro-operations.md#mem_write_from_fp_sr)
+- [OPR_PASS](../../03-microarchitecture/02-micro-operations.md#opr_pass), for OSR
+
+**Constraints:**
+- captured in the panel input register (section 2)
+- must not directly modify any register
 
 ---
 
@@ -385,7 +420,9 @@ Front-panel data inputs provide externally selected values used by console opera
 - [GTF_FLAGS](../20-control-output-definitions/01-microarchitectural-control-signals.md#gtf_flags)
 
 **Constraints:**
-- must be synchronized before use by control
+- is the wired OR of registered controller interrupt outputs, which change only as a TP ends
+- must not pass through an additional stateful synchronization stage
+- must settle, through its pull-up ([Signal Conventions §7](../../00-overview/98-signal-conventions.md#7-pull-resistors)), before the TP at which control samples it
 - must not directly modify processor state
 
 ---
@@ -518,36 +555,6 @@ Shared properties:
 - Must not cause AC clear and `DB_READ_TO_AC` to commit at the same TP.
 - May coincide with `IO_WRITE_REQ`.
 - Must not directly modify AC.
-
-### /IO_WAIT
-
-**Name:** I/O Wait Request  
-**Type:** External Timing Request Input  
-**Bit Width:** 1  
-**Polarity:** Active-low
-
-**Purpose:** Holds the current eligible non-TP setup TSTEP until the selected controller is ready.
-
-**Value Encoding:**
-
-- `0` -> hold the current eligible non-TP setup TSTEP
-- `1` -> normal TSTEP progression
-
-**Consumed By:**
-
-- TSTEP progression logic
-
-**Constraints:**
-
-- Valid only when `IOT_ACTIVE = 1`.
-- Valid only from the address-matched controller.
-- Ignored when the current TSTEP is a TP position.
-- Must not extend, suppress, or repeat a TP.
-- Must be synchronized before influencing TSTEP progression.
-- Must not modify RUN.
-- Must not directly modify MS or architectural state.
-
-Detailed behavior is defined in [I/O Timing](../../07-io/03-io-timing.md)
 
 ---
 

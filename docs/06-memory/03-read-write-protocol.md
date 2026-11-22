@@ -91,7 +91,7 @@ During a valid write operation:
 - memory observes AB
 - memory forms MEM_ADDR = {MFB, AB}
 - memory observes the 12-bit value present on MDB
-- memory stores that value at M[MEM_ADDR]
+- memory stores that value at M[MEM_ADDR] during /WR_PULSE ([Memory Timing §4](./04-memory-timing.md#4-active-write-window))
 
 The value present on MDB is the memory subsystem input for the write operation.
 
@@ -151,8 +151,8 @@ The following protocol conditions are invalid:
 
 - /RD and /WR asserted together
 - /RD asserted without a valid MEM_ADDR
-- /WR asserted without a valid MEM_ADDR
-- /WR asserted without valid write data on MDB
+- /WR asserted during /WR_PULSE without a valid MEM_ADDR
+- /WR asserted during /WR_PULSE without valid write data on MDB
 - memory driving MDB during a write
 - memory driving MDB while idle
 - no valid MDB driver during a write

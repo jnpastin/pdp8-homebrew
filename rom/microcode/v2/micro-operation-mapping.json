@@ -55,28 +55,8 @@
           "value": "1"
         },
         {
-          "field": "IDB_DRIVE",
-          "value": "1"
-        },
-        {
           "field": "AC_SRC",
-          "value": "0"
-        },
-        {
-          "field": "ALU_A_SRC",
-          "value": "0"
-        },
-        {
-          "field": "ALU_B_SRC",
-          "value": "0"
-        },
-        {
-          "field": "ALU_OP",
-          "value": "3"
-        },
-        {
-          "field": "IDB_SRC",
-          "value": "7"
+          "value": "5"
         }
       ],
       "source": {

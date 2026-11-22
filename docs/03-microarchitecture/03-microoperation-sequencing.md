@@ -104,6 +104,8 @@ For any TSn:
 - reads observe values committed at TP(n-1)
 - writes become visible only after TPn
 
+Everything in TSn, including its TP, derives only from state committed by TP(n-1). A write is captured at the leading edge of TPn and becomes visible as TPn ends ([Timing Architecture §7.6](../09-timing/02-timing-architecture.md#76-rule-6--two-ranks)). Apart from TP itself, no edge or level that arises during a TS commits or selects anything.
+
 Implications:
 
 - all μops in TSn operate on the same stable inputs
@@ -168,7 +170,7 @@ Rules:
 
 Constraints:
 
-- EXT must be stable for the duration of the TS in which it is evaluated
+- EXT must be stable for the duration of the TS in which it is evaluated ([External Inputs §2](../04-control/10-control-input-definitions/04-external-inputs.md#2-timing-model))
 - EXT must not introduce implicit or asynchronous state changes
 
 

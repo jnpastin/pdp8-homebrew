@@ -302,7 +302,7 @@ IR_CLASS = {IR_OPR_GROUP2 OR IR_OPR_GROUP3,
 
 - [Fetch & Defer](../../03-microarchitecture/04-fetch-defer.md): FETCH TS3 (including `OPR_PASS`), DEFER TS3 and TS4
 
-**Realization:** Decoded by predecode gates from the live IR, valid from FETCH TP2. Whenever `MS_EFF_IS_EXECUTE = 0` it drives the datapath slice's `VARIANT[2:0]`, with `VARIANT[4:3] = 0` ([Control Store Organization §5.4.2](../08-control-store-organization.md#542-execute-selection)).
+**Realization:** Decoded by predecode gates from the live IR, valid from FETCH TP2. The three lines of the derivation are bits 2, 1, and 0 of the code: bit 2 is set for Groups 2 and 3; bit 1 for JMP I and Group 1; bit 0 for direct JMP, Group 1, and Group 3. Whenever `MS_EFF_IS_EXECUTE = 0` it drives the datapath slice's `VARIANT[2:0]`, with `VARIANT[4:3] = 0` ([Control Store Organization §5.4.2](../08-control-store-organization.md#542-execute-selection)).
 
 ---
 
@@ -379,7 +379,7 @@ IR_INDIRECT = IR_IS_MRI AND IR[8]
 **Consumed By:**
 - [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr)
 
-**Realization:** Unlike the other IR-derived fields, which reach the control store only through the mapping ROM, `IR_INDIRECT` is also decoded by predecode gates from the live IR and drives the sequencer slice's `IR_SEQ` input directly whenever `MS_EFF_IS_EXECUTE = 0`. FETCH TS4 selects DEFER or EXECUTE from it; outside EXECUTE, the mapping register holds EXECUTE entries, which carry no indirect decode ([Control Store Organization §5.4.2](../08-control-store-organization.md#542-execute-selection)).
+**Realization:** Like `IR_CLASS`, `IR_NO_EXECUTE`, and `IR_OPR_HLT`, `IR_INDIRECT` is decoded by predecode gates from the live IR. It drives the sequencer slice's `IR_SEQ` input directly whenever `MS_EFF_IS_EXECUTE = 0`. FETCH TS4 selects DEFER or EXECUTE from it; outside EXECUTE, the mapping register holds EXECUTE entries, which carry no indirect decode ([Control Store Organization §5.4.2](../08-control-store-organization.md#542-execute-selection)).
 
 ---
 
@@ -629,11 +629,8 @@ IR_IS_OPR = (IR[11:9] == 111)
 
 **Consumed By:**
 
-- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
 - [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
-- [L_CLEAR](../../03-microarchitecture/02-micro-operations.md#l_clear)
-- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
-- [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
+- [IR_NO_EXECUTE](#ir_no_execute)
 
 ---
 
@@ -785,7 +782,7 @@ IR_OPR_CLA = IR_IS_OPR AND IR[7]
 - 1 → clear AC  
 
 **Consumed By:**
-- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
+- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass) (stage A)
 
 ---
 
@@ -809,7 +806,7 @@ IR_OPR_CLL = IR_OPR_GROUP1 AND IR[6]
 - 1 → clear Link  
 
 **Consumed By:**
-- [L_CLEAR](../../03-microarchitecture/02-micro-operations.md#l_clear)
+- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass) (stage A)
 
 ---
 
@@ -882,10 +879,8 @@ IR_OPR_GROUP1 = IR_IS_OPR AND (IR[8] == 0)
 
 **Consumed By:**
 
-- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
 - [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
-- [L_CLEAR](../../03-microarchitecture/02-micro-operations.md#l_clear)
-- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
+- [IR_CLASS](#ir_class)
 
 
 ---
@@ -1143,7 +1138,7 @@ IR_OPR_SKIP_MODE = IR_OPR_GROUP2 AND IR[3]
 
 **Consumed By:**
 
-- [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
+- [OPR_SKIP_REQ](./03-derived-flags.md#opr_skip_req)
 
 ---
 
@@ -1168,7 +1163,7 @@ IR_OPR_SMA = IR_OPR_GROUP2 AND IR[6]
 
 **Consumed By:**
 
-- [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
+- [OPR_SKIP_REQ](./03-derived-flags.md#opr_skip_req)
 
 ---
 
@@ -1193,7 +1188,7 @@ IR_OPR_SNL = IR_OPR_GROUP2 AND IR[4]
 
 **Consumed By:**
 
-- [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
+- [OPR_SKIP_REQ](./03-derived-flags.md#opr_skip_req)
 
 ---
 
@@ -1218,7 +1213,7 @@ IR_OPR_SZA = IR_OPR_GROUP2 AND IR[5]
 
 **Consumed By:**
 
-- [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
+- [OPR_SKIP_REQ](./03-derived-flags.md#opr_skip_req)
 
 ---
 

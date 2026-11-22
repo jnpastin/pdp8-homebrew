@@ -398,7 +398,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 2 → IF (field-merge)
 3 → DF (field-merge)
 4 → IB (field-merge)
-5 → reserved
+5 → ZERO
 6 → GTF_FLAGS
 7 → OPR pass unit (OPR)
 ```
@@ -410,11 +410,12 @@ All numeric encodings in this section are octal unless otherwise noted.
   - IF, DF → AC[5:3]
   - IB → AC[5:3] (saved IF), AC[2:0] (saved DF)
 - GTF_FLAGS is ORed into AC and is used only after AC_CLEAR has committed at the preceding TP.
+- ZERO is a hardwired 0. AC_CLEAR uses it, not the ALU, so an AC clear can commit at the same TP as an ALU operation such as PC_INC.
 
 **Used by μops:**
 - [OPR_PASS](../../03-microarchitecture/02-micro-operations.md#opr_pass) = 7
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 0
-- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 0
+- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 5
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 0
 - [DB_READ_TO_AC](../../03-microarchitecture/02-micro-operations.md#db_read_to_ac) = 1
 - [DF_TO_AC](../../03-microarchitecture/02-micro-operations.md#df_to_ac) = 3
@@ -451,7 +452,6 @@ All numeric encodings in this section are octal unless otherwise noted.
 
 **Used by μops:**
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 0
-- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 0
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 0
 - [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc) = 1
 - [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 0
@@ -484,7 +484,6 @@ All numeric encodings in this section are octal unless otherwise noted.
 
 **Used by μops:**
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 1
-- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 0
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 1
 - [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc) = 0
 - [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 0
@@ -517,7 +516,6 @@ All numeric encodings in this section are octal unless otherwise noted.
 
 **Used by μops:**
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 1
-- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 3
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 0
 - [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc) = 2
 - [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 3
@@ -828,7 +826,7 @@ Bits 5:0 are the save field held in IB, not the current IF and DF ([IOT Instruct
 
 **Constraints:**
 - GTF_FLAGS is a combinational datapath value and is not stored state.
-- /INT_REQ must be synchronized and stable when GTF_FLAGS is consumed.
+- /INT_REQ must be stable when GTF_FLAGS is consumed ([External Inputs §7](../10-control-input-definitions/04-external-inputs.md#int_req)).
 - GTF_FLAGS has no effect unless AC_SRC selects GTF_FLAGS and AC_LOAD is asserted.
 - GTF_FLAGS is ORed into AC.
 - AC must have been cleared at the preceding TP when GTF_FLAGS is consumed by GTF.
@@ -888,7 +886,6 @@ Bits 5:0 are the save field held in IB, not the current IF and DF ([IOT Instruct
 
 **Used by μops:**
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 1
-- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 1
 - [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb) = 1
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 1
 - [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc) = 1
@@ -933,7 +930,6 @@ Bits 5:0 are the save field held in IB, not the current IF and DF ([IOT Instruct
 
 **Used by μops:**
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 7
-- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear) = 7
 - [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb) = 0
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 7
 - [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc) = 4
@@ -2487,7 +2483,9 @@ Additional constraints:
 - No independently selected second operand is consumed  
 
 **Used by μops:**
-- [AC_CLEAR](../../03-microarchitecture/02-micro-operations.md#ac_clear)
+- [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc)
+- [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear)
+- [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
 
 ---
 
@@ -2532,8 +2530,10 @@ L_LOAD = 0 leaves L unchanged
 ```
 
 **Used by μops:**
+- [AC_TO_L](../../03-microarchitecture/02-micro-operations.md#ac_to_l)
 - [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb)
 - [L_CLEAR](../../03-microarchitecture/02-micro-operations.md#l_clear)
+- [OPR_PASS](../../03-microarchitecture/02-micro-operations.md#opr_pass)
 
 ---
 

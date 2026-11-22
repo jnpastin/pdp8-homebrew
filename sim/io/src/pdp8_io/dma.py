@@ -94,6 +94,11 @@ class DmaArbiter:
                 requesting = sorted(x.dma_priority for x in self.controllers if x.dma_request())
                 if requesting:
                     self.grant_id = requesting[0]        # ARB §9: lowest-numbered request wins
+            elif tp == 1 and not c.dma_request():        # ARB §13.3: drop a held selection, no request
+                self.grant_id = NO_CONTROLLER
+                self.burst_count = 0
+            elif tp == 3 and c is None:                  # ARB §13.3: no selection ends the burst
+                self.burst_enabled = False
             elif tp == 2 and c is not None:              # DMA §6.3: exactly one word transfers
                 c.dma_transferred(transferred)
             elif tp == 3 and c is not None:              # DMA §6.4, ARB §11

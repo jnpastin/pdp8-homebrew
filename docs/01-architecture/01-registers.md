@@ -5,6 +5,8 @@ Defines all system state.
 
 All stable values in the system must reside in registers.
 
+Every register has a capture rank and an output rank ([Timing Architecture §7.6](../09-timing/02-timing-architecture.md#76-rule-6--two-ranks)). A load at TPn captures at that TP's leading edge and becomes visible as the TP ends. The widths below are the architectural widths, of one rank.
+
 ---
 
 ## 2. Architectural Registers
@@ -189,12 +191,12 @@ Role: External input register from front panel
 Visibility: External (read-only to CPU)
 
 Invariants:
-- Reflects external switch state at sampling time
-- No guarantee of stability outside explicit read
+- Captured with the other panel inputs at every TP while running, and when a console command is accepted while halted ([External Inputs §2](../04-control/10-control-input-definitions/04-external-inputs.md#2-timing-model))
+- Stable from one capture to the next
 
 Constraints:
 - Cannot be written by CPU
-- Sampled only during specific instructions
+- Used only by OSR and by the LOAD ADDRESS and DEPOSIT console operations
 
 Writers:
 - External hardware only
@@ -308,11 +310,11 @@ Visibility: Control-visible
 Invariants:  
 - Prevents interrupt recognition when set  
 - Used in conjunction with IE to determine interrupt eligibility  
-- Stable during instruction execution  
+- Changes only at the set and clear points listed below
 
 Constraints:
 - Set only by ION, CIF, RMF, and RTF instructions
-- Cleared during FETCH when no deferred instruction-field change is pending (CIFP = 0), when a JMP or JMS with a pending field change completes it (at FETCH TP3 of a direct JMP, DEFER TP3 of a JMP I, or EXECUTE TP1 of a JMS), and by the START console operation
+- Cleared during FETCH when no deferred instruction-field change is pending (CIFP = 0), by a JMP or JMS that applies a pending field change (at FETCH TP3 of a direct JMP, DEFER TP3 of a JMP I, or EXECUTE TP1 of a JMS), and by the START console operation
 - Must not be directly modified by datapath logic  
 
 Writers:
@@ -355,7 +357,7 @@ Constraints:
 - `IOT_TRANSFER` records transfer direction only.
 - It does not contain DB data.
 - It does not identify the selected controller.
-- It does not itself assert `/DB_READ` or `/DB_WRITE`.
+- It does not drive DB. `/DB_READ` and `/DB_WRITE` are decoded from it and presented within `DB_VALID` ([Architectural Control Signals §3.2](../04-control/20-control-output-definitions/02-architectural-control-signals.md#32-timing-model)).
 - It must not persist beyond the external-IOT EXECUTE major state.
 - Set to `00` by the power-on reset.
 
@@ -540,7 +542,7 @@ Invariants:
 
 Constraints:
 - Changes only at cycle boundaries
-- Loaded from MS_NEXT at a TP only when MS_LOAD = 1; held otherwise, including while halted
+- Loaded from MS_NEXT at a TP only when MS_LOAD = 1; held otherwise. While halted, only START, EXAMINE, and DEPOSIT load it, with FETCH
 - Set to FETCH by the power-on reset
 - Not directly influenced by datapath combinational logic
 - Initially only 0-4 are valid values 5-7 are reserved

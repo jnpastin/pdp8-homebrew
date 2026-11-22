@@ -46,9 +46,9 @@ TIMING_CONTEXTS = MAJOR_STATES + (DEFER_AUTOINDEX,)
 UNIFORM_1200 = {ms: (300, 300, 300, 300) for ms in TIMING_CONTEXTS}  # V1-ONLY
 
 # Timing Architecture §5.1, TIMING_MODE 0 (optimized), TSTEP = 50 ns: fast 5/8/6/5 TSTEPs
-# (1.2 us) for FETCH and non-autoindex DEFER; slow 6/9/7/6 (1.4 us) for every other state.
+# (1.2 us) for FETCH and non-autoindex DEFER; slow 6/8/7/7 (1.4 us) for every other state.
 FAST = (250, 400, 300, 250)
-SLOW = (300, 450, 350, 300)
+SLOW = (300, 400, 350, 350)
 MODE_0 = {"FETCH": FAST, "DEFER": FAST, DEFER_AUTOINDEX: SLOW, "EXECUTE": SLOW,
           "INTERRUPT": SLOW, "DMA": SLOW}
 

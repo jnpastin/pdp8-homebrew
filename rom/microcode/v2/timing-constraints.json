@@ -13,7 +13,7 @@
       "requirement": "IO_READ_REQ != 1 AND IO_WRITE_REQ != 1",
       "source": {
         "path": "docs/09-timing/03-major-state-timing.md",
-        "line": 106
+        "line": 111
       }
     },
     {
@@ -22,7 +22,7 @@
       "requirement": "IO_CLEAR_AC_REQ != 1 AND IO_SKIP_REQ != 1",
       "source": {
         "path": "docs/09-timing/03-major-state-timing.md",
-        "line": 107
+        "line": 112
       }
     },
     {
@@ -31,16 +31,16 @@
       "requirement": "IO_SKIP_REQ != 1",
       "source": {
         "path": "docs/09-timing/03-major-state-timing.md",
-        "line": 119
+        "line": 123
       }
     },
     {
       "id": "timing:5.2.5.1",
-      "context": "MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1 AND TS = 3 AND (IOT_READ_PENDING = 1 OR IOT_WRITE_PENDING = 1)",
+      "context": "MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1 AND TS = 3 AND (IOT_READ_PENDING = 1)",
       "requirement": "IO_CLEAR_AC_REQ != 1",
       "source": {
         "path": "docs/09-timing/03-major-state-timing.md",
-        "line": 137
+        "line": 141
       }
     },
     {
@@ -49,16 +49,16 @@
       "requirement": "IO_SKIP_REQ != 1",
       "source": {
         "path": "docs/09-timing/03-major-state-timing.md",
-        "line": 140
+        "line": 143
       }
     },
     {
       "id": "timing:5.2.7.1",
-      "context": "MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1 AND TS = 4 AND (IOT_READ_PENDING = 1 OR IO_SKIP_REQ = 1)",
+      "context": "MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1 AND TS = 4 AND (IOT_READ_PENDING = 1)",
       "requirement": "IO_CLEAR_AC_REQ != 1",
       "source": {
         "path": "docs/09-timing/03-major-state-timing.md",
-        "line": 160
+        "line": 163
       }
     },
     {
@@ -67,7 +67,7 @@
       "requirement": "IO_READ_REQ != 1 AND IO_WRITE_REQ != 1",
       "source": {
         "path": "docs/09-timing/03-major-state-timing.md",
-        "line": 163
+        "line": 166
       }
     },
     {
@@ -76,7 +76,7 @@
       "requirement": "IR_INDIRECT = 1",
       "source": {
         "path": "docs/09-timing/03-major-state-timing.md",
-        "line": 358
+        "line": 360
       }
     },
     {
@@ -85,7 +85,7 @@
       "requirement": "IOT_READ_PENDING = 0 AND IOT_WRITE_PENDING = 0",
       "source": {
         "path": "docs/09-timing/03-major-state-timing.md",
-        "line": 364
+        "line": 366
       }
     },
     {
@@ -94,7 +94,7 @@
       "requirement": "IOT_WRITE_PENDING = 0",
       "source": {
         "path": "docs/09-timing/03-major-state-timing.md",
-        "line": 368
+        "line": 370
       }
     },
     {
@@ -103,7 +103,7 @@
       "requirement": "IR_NO_EXECUTE = 0",
       "source": {
         "path": "docs/09-timing/03-major-state-timing.md",
-        "line": 374
+        "line": 376
       }
     }
   ],

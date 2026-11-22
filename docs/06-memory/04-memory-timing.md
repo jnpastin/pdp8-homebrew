@@ -33,18 +33,19 @@ When /RD is not asserted, memory must not drive MDB.
 
 ## 4. Active Write Window
 
-/WR defines the active write window.
+/WR requests a write. [`/WR_PULSE`](../09-timing/01-terminology.md#57-write-pulse-wr_pulse), the first step of a two-step TP, is the active write window:
 
-During a valid write operation, while /WR is asserted:
+```text
+write enable = (/WR = 0) AND (/WR_PULSE = 0)
+```
 
-- MFB must remain stable
-- AB must remain stable
-- MDB must contain valid write data
-- memory must observe MDB as the value to be stored at MEM_ADDR
+MFB, AB, MDB, and /WR are stable from before the leading edge of TP through the end of TP ([Timing Architecture §7.6](../09-timing/02-timing-architecture.md#76-rule-6--two-ranks)). Therefore:
 
-When /WR is not asserted, memory must not perform a write.
+- the write depends only on values committed by the previous TP
+- gating /WR with the pulse cannot glitch, and a change on /WR outside the pulse has no effect
+- address and data are held for the second step of TP after the write ends
 
-Memory stores the word when /WR deasserts. The CPU and DMA controllers end /WR one TSTEP before the TP that commits the write (`WR_VALID`, [Timing Terminology §5.7](../09-timing/01-terminology.md#57-write-valid-wr_valid)), so MFB, AB, and MDB remain stable for at least one TSTEP after /WR deasserts.
+The write commits at that TP. When /WR is not asserted during the pulse, memory must not perform a write.
 
 ---
 
@@ -54,7 +55,7 @@ MFB and AB together define MEM_ADDR.
 
 For any valid read or write operation, MFB and AB must remain stable for the entire active operation window.
 
-If MFB or AB changes while /RD or /WR is asserted, the memory operation is invalid.
+If MFB or AB changes while /RD is asserted, or during a write pulse with /WR asserted, the memory operation is invalid.
 
 ---
 
@@ -68,7 +69,7 @@ Memory is not required to preserve MDB after /RD is deasserted.
 
 ## 7. Write Data Stability
 
-During a valid write operation, MDB must contain the value to be stored while /WR is asserted.
+During a valid write operation, MDB must contain the value to be stored from before the leading edge of TP through the end of TP.
 
 The memory subsystem stores the value presented on MDB at the selected MEM_ADDR.
 
@@ -107,12 +108,26 @@ The selected physical memory technology must satisfy the timing contract defined
 
 Technology-specific timing parameters, such as access time, output enable delay, write pulse width, setup time, and hold time, are implementation constraints. They must be chosen so that the logical memory behavior remains valid at the system timing rate.
 
+Memory is an asynchronous part with separate write-enable timing. The interface admits any device, volatile or persistent, within these limits:
+
+| Parameter | Device may require at most |
+|---|---:|
+| Write pulse | 15 ns |
+| Address valid to end of write | 18 ns |
+| Data valid to end of write | 10 ns |
+| Address hold after write | 12 ns |
+| Data hold after write | 0 ns |
+| Address access | 35 ns |
+| Output-enable access | 15 ns |
+
+A 3.3 V device needs level translation, and any persistent device needs write protection while power rises and falls.
+
 ---
 
 ## 11. Invariants
 
 - /RD defines the active read window.
-- /WR defines the active write window.
+- /WR selects a write; /WR_PULSE is the active write window.
 - MFB must remain stable during an active memory operation.
 - AB must remain stable during an active memory operation.
 - MDB must be valid during an active write window.
@@ -127,4 +142,4 @@ Technology-specific timing parameters, such as access time, output enable delay,
 
 Memory timing is defined at the memory interface.
 
-/RD controls when memory drives read data. /WR controls when memory stores write data. MFB and AB must remain stable for the active operation window, and MDB direction is determined by whether the operation is a read or a write.
+/RD controls when memory drives read data. /WR selects whether memory stores write data at a TP, and /WR_PULSE times the write. MFB and AB must remain stable for the active operation window, and MDB direction is determined by whether the operation is a read or a write.

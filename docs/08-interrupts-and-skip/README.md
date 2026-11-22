@@ -25,7 +25,7 @@ Section 8 defines:
 - software identification and servicing of interrupt sources
 - interrupt precedence over DMA at [instruction-completion TP4](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#311-instruction-completion)
 - the common architectural result of a taken skip
-- the absence of persistent skip state
+- the one stored skip decision (`SKIP`)
 - Section 8-specific illegal conditions
 
 Section 8 does not define:
@@ -56,7 +56,7 @@ Software identifies and services the requesting controller or controllers. Hardw
 
 A valid interrupt takes precedence over DMA at the same instruction-completion TP4 boundary. The INTERRUPT major state exits unconditionally to FETCH, so neither interrupt nor DMA service may begin directly from INTERRUPT.
 
-A taken skip increments `PC` exactly once in addition to the normal FETCH increment. Skip conditions are evaluated and consumed at their assigned execution point; no persistent skip state exists.
+A taken skip increments `PC` exactly once in addition to the normal FETCH increment. Skip conditions are evaluated and consumed at their assigned execution point. The only stored one is a Group 2 OPR's `SKIP`, held from FETCH TP3 to FETCH TP4.
 
 ## 5. Core Invariants
 
@@ -71,7 +71,7 @@ A taken skip increments `PC` exactly once in addition to the normal FETCH increm
 - CIF, RMF, RTF inhibit interrupt recognition until the staged instruction field is applied by JMP or JMS.
 - `IE`, `II`, and `CIFP` do not control DMA eligibility.
 - Every taken skip produces exactly one additional `PC_INC`.
-- No persistent skip state exists.
+- No skip decision persists beyond its instruction.
 - All same-TP decisions use pre-TP state.
 - All state changes occur only at defined TP events.
 

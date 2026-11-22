@@ -100,7 +100,7 @@ START
 CONTINUE
 ```
 
-Each console operation executes as one console transaction ([Major State Timing §8](../09-timing/03-major-state-timing.md#8-halted-state-and-console-transactions)). The main timing sequence is held while halted and is not modified by console operations, so a halted Single Step or Single Instruction resumes exactly where it stopped.
+Each console operation executes as one console transaction ([Major State Timing §8](../09-timing/03-major-state-timing.md#8-halted-state-and-console-transactions)). The main timing sequence is held while halted, so CONTINUE resumes a halted Single Step or Single Instruction exactly where it stopped, unless an EXAMINE or DEPOSIT came between. Those change PC, MA, EA_ADDR, and MB, which an interrupted DEFER or EXECUTE would use, so they load FETCH as the held major state, as START does. CONTINUE then starts a new instruction at PC, as on the PDP-8/E ([Sequencing and Internal Control §3.2.12](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#3212-examine-and-deposit-return-to-fetch)).
 
 Only one console command is accepted at a time; the first accepted wins ([External Inputs §4.1](../04-control/10-control-input-definitions/04-external-inputs.md#41-console-command-acceptance)).
 
@@ -229,7 +229,7 @@ PC      ← PC + 1
 
 The memory read drives AB from PC and MFB from IF, not MA or EA. This allows all micro-operations to occur simultaneously within a single TS. AB_SRC = PC and MFB_SRC = IF, while normal memory operations select AB_SRC and MFB_SRC per the active phase.
 
-The processor remains halted.
+The processor remains halted, with FETCH as the held major state (section 3).
 
 ---
 
@@ -275,7 +275,7 @@ The memory write and MB update both consume FP_SR as their source, allowing the 
 
 The memory write drives AB from PC and MFB from IF, not MA or EA. This allows all micro-operations to occur simultaneously within a single TS. AB_SRC = PC and MFB_SRC = IF, while normal memory operations select AB_SRC and MFB_SRC per the active phase.
 
-The processor remains halted.
+The processor remains halted, with FETCH as the held major state (section 3).
 
 ---
 
@@ -404,6 +404,8 @@ Result:
 Execution resumes from the current machine state.
 ```
 
+The major state resumed is the held one, which is FETCH after an EXAMINE or DEPOSIT (section 3).
+
 The processor enters the Running state.
 
 Continue does not modify:
@@ -452,7 +454,7 @@ FETCH → DEFER → EXECUTE
 ```
 
 ```text
-FETCH (direct JMP)
+FETCH (direct JMP, OPR)
 ```
 
 ```text
@@ -509,7 +511,7 @@ DMA
 
 each execute individually.
 
-A DMA major state is a step of its own, matching DEC's SING STEP, which halts at the end of every memory cycle, including data break cycles. When the halt leaves `MS = DMA` with the burst still selected, the burst is suspended: `/DMA_GRANT` is deasserted while halted, the controller and arbiter hold their state, and CONTINUE resumes the burst at DMA TS1. See [DMA Execution §4](./10-dma-execution.md#4-halting-between-dma-cycles).
+A DMA major state is a step of its own, matching DEC's SING STEP, which halts at the end of every memory cycle, including data break cycles. When the halt leaves `MS = DMA` with the burst still selected, the burst is suspended: `/DMA_GRANT` is deasserted while halted, the controller and arbiter hold their state, and CONTINUE resumes the burst at DMA TS1, or at the next DMA entry after an EXAMINE or DEPOSIT. See [DMA Execution §4](./10-dma-execution.md#4-halting-between-dma-cycles).
 
 Resumption requires:
 

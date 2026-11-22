@@ -109,7 +109,7 @@ The following architectural decisions are fixed:
   - Control is implemented as a ROM lookup:
     CONTROL = ROM[MS, TS, IR, FLAGS]
   - No hardwired control logic is used for instruction sequencing
-  - The OPR pass unit's stage functions are selected directly by IR bits; the control store decides when the pass acts (`OPR_PASS`), as it decides every register load ([Group 1 Execution](../03-microarchitecture/07-opr/01-group1-execution.md))
+  - One exception, inside the datapath: the OPR pass unit's stage functions are selected directly by IR bits; the control store decides when the pass acts (`OPR_PASS`), as it decides every register load ([Group 1 Execution](../03-microarchitecture/07-opr/01-group1-execution.md))
 
 - Timing model: TS/TP event-driven model (defined in 09-timing)
 

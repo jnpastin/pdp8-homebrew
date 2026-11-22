@@ -54,12 +54,12 @@ The DMA arbiter maintains:
 - active burst count
 - configured burst limit for each DMA priority channel
 
-Arbiter state changes only at TP events.
+Arbiter state changes only at TP events: captured at the leading edge, visible as the TP ends.
 
 The retained DMA burst-enabled state:
 
 - remains set while the current DMA burst may continue
-- clears at DMA TP3 when the current burst terminates
+- clears at DMA TP3 when the current burst terminates, or when no controller is selected (section 13.3)
 - sets at the TP4 that ends an instruction (`INSTR_END` asserted)
 
 ---
@@ -244,7 +244,7 @@ At DMA TP3:
 - `DMA_ENABLE` clears when the burst terminates
 - `DMA_ENABLE` remains set when the burst continues
 
-A controller may deassert its request only after completing the transfer for which it was selected. A controller with remaining work keeps its request asserted only while another transfer is immediately ready. Otherwise, it deasserts its request and requests service again when the next transfer is prepared.
+A controller may deassert its request only at the TP2 that completes the transfer for which it was selected, and must deassert it then if it has no further transfer ready, so the decision in TS3 sees it ([Controller Contract §9.2](./04-controller-contract.md#92-dma-request)). A controller with remaining work keeps its request asserted only while another transfer is immediately ready. Otherwise, it deasserts its request and requests service again when the next transfer is prepared.
 
 ### 11.1 Configurable Burst Limits
 
@@ -276,10 +276,10 @@ Execution then proceeds through:
 ```text
 FETCH
 -> DEFER, when required
--> EXECUTE, unless the instruction is a JMP
+-> EXECUTE, unless the instruction is a JMP or an OPR
 ```
 
-`DMA_ENABLE` remains deasserted until the TS4 in which `INSTR_END` is asserted: EXECUTE TS4, FETCH TS4 of a direct JMP, or DEFER TS4 of a JMP I.
+`DMA_ENABLE` remains deasserted until the TS4 in which `INSTR_END` is asserted: EXECUTE TS4, FETCH TS4 of a direct JMP or an OPR, or DEFER TS4 of a JMP I.
 
 During that TS4:
 
@@ -309,7 +309,7 @@ When a controller selection terminates:
 - retained DMA burst-enabled state clears at DMA TP3
 - combinational `DMA_ENABLE` is deasserted during the following DMA TS4
 - aggregate `/DMA_REQ` is deasserted during DMA TS4
-- the previously selected controller releases MFB, AB, MDB, `/RD`, and `/WR` at DMA TP4
+- the previously selected controller has driven none of MFB, AB, MDB, `/RD`, and `/WR` since it released them at the end of DMA TS2
 - the arbiter sets `DMA_GRANT_ID` to `15` at DMA TP4
 - CPU control deasserts `/DMA_GRANT` when control exits `MS = DMA`
 - CPU ownership begins in the following FETCH TS1
@@ -327,7 +327,7 @@ While the CPU is halted:
 - `/DMA_GRANT` is deasserted, so the selected controller must not drive DMA-owned interfaces
 - console transaction TPs do not advance arbiter state, except for system initialization (section 13.2)
 
-When CONTINUE resumes at DMA TS1, the held selection continues the burst as though no halt had occurred. When START resumes at FETCH TS1, the held selection continues at the next DMA entry.
+When CONTINUE resumes at DMA TS1, the held selection continues the burst as though no halt had occurred. When START, or CONTINUE after an EXAMINE or DEPOSIT, resumes at FETCH TS1, the held selection continues at the next DMA entry, if its controller still requests then (section 13.3).
 
 ### 13.2 System Initialization
 
@@ -339,12 +339,23 @@ When `/INITIALIZE` is asserted, at the TP ending the assertion (EXECUTE TP4 for 
 
 Controllers deassert their `/DMA_REQ[n]` outputs at the same TP. A DMA major state that follows without a pending request completes with no transfer ([DMA Execution §5](../03-microarchitecture/10-dma-execution.md#5-dma-major-state-without-a-selected-controller)).
 
+### 13.3 Held Selection Without a Request
+
+A selection can outlive its request: a burst suspended by Single Step and resumed through FETCH (section 13.1) keeps its selection, and the program can cancel the controller's operation before the next DMA entry.
+
+At DMA TP1, if the held selection's controller no longer requests:
+
+- the arbiter drops the selection: `DMA_GRANT_ID` ← 15, and the burst count clears
+- it does not arbitrate in that state, because a burst has just ended (section 12)
+
+At DMA TP3 of a state with no selected controller, whether dropped or never made, the arbiter clears retained burst-enabled state. Aggregate `/DMA_REQ` is therefore deasserted in TS4 even if a new request has arrived, and control returns to FETCH ([DMA Execution §5](../03-microarchitecture/10-dma-execution.md#5-dma-major-state-without-a-selected-controller)).
+
 ---
 
 ## 14. Invariants
 
 - Arbiter state changes only at TP events.
-- Retained DMA burst-enabled state clears at DMA TP3 when the current burst terminates.
+- Retained DMA burst-enabled state clears at DMA TP3 when the current burst terminates, or when no controller is selected.
 - Retained DMA burst-enabled state remains set at DMA TP3 when the current burst continues.
 - Retained DMA burst-enabled state sets at a TP4 at which `INSTR_END` is asserted.
 - `DMA_ENABLE` is a combinational arbiter output, not stored state.

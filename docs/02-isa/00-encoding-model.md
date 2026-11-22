@@ -128,7 +128,7 @@ Each remaining bit represents an independent operation, these operations may be 
 
 ## 7. Execute Timing States
 
-TS defines execution ordering within EXECUTE.
+TS defines execution ordering within each major state. Operations combined in one OPR act in their defined order within a single pass in FETCH.
 
 Operations assigned to different TS execute in strict order.
 

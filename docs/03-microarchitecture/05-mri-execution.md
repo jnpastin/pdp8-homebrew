@@ -134,7 +134,7 @@ A pending instruction-field change is applied at TP1, so the TS3 return-address 
 
 ---
 
-JMP (IR[11:9] = 101) does not enter EXECUTE; it completes in FETCH (direct) or DEFER (indirect) ([Fetch & Defer §3.3, §4.4](./04-fetch-defer.md)).
+JMP (IR[11:9] = 101) does not enter EXECUTE; it completes in FETCH (direct) or DEFER (indirect) ([Fetch & Defer §3.3, §4.5](./04-fetch-defer.md)).
 
 ---
 

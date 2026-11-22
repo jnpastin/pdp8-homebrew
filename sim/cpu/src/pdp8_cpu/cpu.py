@@ -3,7 +3,7 @@
 Step granularity is one timing state, committing at its TP (handoff §5; MCS §7). The control word
 for TS n is combinational and valid during TS n; there is no pipeline register
 (docs/04-control/08-control-store-organization.md, CSO §5.4.3). TSTEP-level timing (T_CS,
-CW_VALID, WR_VALID, /IO_WAIT) is below this granularity and not modelled.
+CW_VALID, DB_VALID, /WR_PULSE) is below this granularity and not modelled.
 """
 
 from __future__ import annotations

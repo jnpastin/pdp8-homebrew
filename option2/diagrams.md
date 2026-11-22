@@ -186,6 +186,44 @@ The five 4:1 multiplexers, read from the edges: `m7rejeYPD5JNTGzo8jMm-1` → DP_
 
 ---
 
+## Two ranks, wide write TP, 6/8/7/7 (applied 2026-11-22)
+
+Read from the WaveDrom sources. All of them already hold values through the end of TP. All of them draw the old slow lengths (6/9/7/6) and one-step TPs.
+
+| Diagram source | Change |
+|---|---|
+| `cpu-timing-overview.json` | Slow lengths 6/8/7/7; show a two-step TP (EXECUTE TS3 and TS4) |
+| `io_timing.json`, `io_wait_timing.json` | EXECUTE lengths 6/8/7/7; TP3 and TP4 two steps; `/DB_READ`, `/DB_WRITE` and DB from 100 ns into TS4 |
+| `dma_timing.json` | DMA lengths 6/8/7/7; TP2 two steps; add `/WR_PULSE` over its first step |
+| `memory_timing.png` in `memory_timing/source` (WaveDrom text with a `.png` name) | Show a write TS with a two-step TP and `/WR_PULSE` over its first step; give the source a `.json` name |
+
+---
+
+## `/IO_WAIT` removed (review C2, applied 2026-11-22)
+
+Read from the sources.
+
+| Diagram source | Current content | Change |
+|---|---|---|
+| `diagrams/io/io_wait_timing/source/io_wait_timing.json` | the external-IOT timing with `/IO_WAIT` holding TS3 (title "External IOT Timing with WAIT") | Obsolete: no document references it now. Delete it, with its export, or keep it as history |
+| `diagrams/io/io_subsystem/source/io_subsystem.xml` | cell `ld4gAUsl70I4UcyXSL3b-61`, label "IO_READ_REQ, IO_WRITE_REQ, IO_SKIP_REQ, IO_CLEAR_AC_REQ, IO_WAIT, interrupt contribution" | Remove "IO_WAIT, " |
+
+Checked with no change for C2, C11, and D2: `CPU_Architecture.xml` (its FP_SR box, "Front Panel Switch Register (FP_SR) 12 bits", shows no capture detail; no AC input multiplexer is drawn) and every other source (no EXAMINE, DEPOSIT, CONTINUE, or burst labels).
+
+---
+
+## TS code (decided 2026-11-22)
+
+`TS_CODE` comes straight from the TS code register; the two OR gates are gone from CSO §1.1, §5.1 and §8.
+
+| Diagram source | Current content | Change |
+|---|---|---|
+| `control-store-mapping.xml` | `07B4lpnJHN1g52silYbh-2`, "TS [2 Bits]" into the mapping ROM | None: already a 2-bit code |
+| `control-store-organization.xml` | `Smnm8CKmp2vPJFrs1iI9-9`, "TS [2 Bits]" into the slices | None: already a 2-bit code |
+| `control-store-address-formation.xml` | No TS element and no OR gate | None |
+
+---
+
 ## Final list (phase 9, 2026-11-21)
 
 No diagram source has changed on this branch (`git diff main -- diagrams` is empty), so every entry above is still open. Superseded entries are folded into the entry that replaces them. Per diagram:

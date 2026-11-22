@@ -1,6 +1,6 @@
 # Option 2 Timing Analysis: TS Lengths and Critical Paths
 
-Status: **revision 2, draft for the user's review** (phase 1). Companion to [spec.md](spec.md) §8 and §11.1, and [plan.md](plan.md) (phase 0).
+Status: **revision 2, reviewed 2026-11-20** (phase 1); the analysis as made, with names kept current. Companion to [spec.md](spec.md) §8 and §11.1, and [plan.md](plan.md) (phase 0).
 
 Revision 2 (2026-11-20; control-store part updated to the AS7C256C-15PCN) assumes **decision 12: the control store runs from fast SRAM** shadowed from the EEPROMs at power-on ([spec.md](spec.md) §11.1). Revision 1 assumed the machine ran from the 150 ns EEPROMs; its figures are kept in section 7 for comparison.
 
@@ -67,7 +67,7 @@ Address-formation paths, ACT (unchanged from revision 1):
 | `MAPR` → `DP_OVL_SEL` → overlay mux select | 574 + 157 data + 153 select | 41 |
 | **Class decode** → `VARIANT` (v2 FETCH TS3 and later) | IR 574 + 138 + two gate levels + 157 data | **52** |
 | `MS` → `MS_EFF` → `MS_EFF_IS_EXECUTE` → `DP_OVL_SEL` → overlay select | 574 + 157 + compare (about 2 gates) + 157 select + 153 select | 74 |
-| Combinational condition through the overlay, for example `ISZ_SKIP_REQUIRED` (MB zero detect) | 574 + 12-bit NOR tree (about 30) + 153 data | 58 |
+| Combinational condition through the overlay, for example `ISZ_SKIP_REQ` (MB zero detect) | 574 + 12-bit NOR tree (about 30) + 153 data | 58 |
 
 - **With decision 11** (registered `MS_EFF_IS_EXECUTE` and overlay conditions): `T_addr` ≤ 52 ns, set by the class decode, so **`T_CW` = 81 ns**.
 - **Without decision 11:** `T_addr` = 74 ns, so `T_CW` = 103 ns. Section 4.3 shows this still meets 3a.

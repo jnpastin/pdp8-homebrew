@@ -26,7 +26,7 @@ FLAGS provide stable, register-derived interpretations of system state.
 
 FLAGS must:
 
-- Be derived only from registers or synchronized external inputs
+- Be derived only from registers or external inputs made stable as [External Inputs §2](./04-external-inputs.md#2-timing-model) defines
 - Not depend on:
   - DB / MDB
   - μop intermediate values

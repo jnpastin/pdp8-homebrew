@@ -1,6 +1,7 @@
 """Phase 9 ALU cleanup (option2/spec.md decision 13), v2: the OPR-only ALU codes are gone.
 
-- MCS ALU_OP (2 bits: ADD, AND, INC, CLEAR), ALU_B_SRC (1 bit: NONE, MB), AC_SRC (5 reserved)
+- MCS ALU_OP (2 bits: ADD, AND, INC, CLEAR), ALU_B_SRC (1 bit: NONE, MB); AC_SRC 5, reserved by
+  decision 13, is ZERO since review item D2
 - MCS §7.3.1 (the operations that remain)
 - CSO §7.2 (44 datapath bits)
 """
@@ -26,7 +27,7 @@ class Encodings(unittest.TestCase):
         self.assertEqual((f["ALU_OP"].width, f["ALU_OP"].values),
                          (2, {0: "ADD", 1: "AND", 2: "INC", 3: "CLEAR"}))
         self.assertEqual((f["ALU_B_SRC"].width, f["ALU_B_SRC"].values), (1, {0: "NONE", 1: "MB"}))
-        self.assertTrue(f["AC_SRC"].is_reserved(5))
+        self.assertEqual(f["AC_SRC"].values[5], "ZERO")
 
     def test_packed_width(self):
         store = ControlStore.load(design=DS.select("v2"))
@@ -67,9 +68,9 @@ class Datapath(unittest.TestCase):
             with self.assertRaises(SpecViolation):
                 self.through_alu(op, 0)
 
-    def test_ac_src_5_is_rejected(self):
-        with self.assertRaises(SpecViolation):
-            self.run_word(AC_LOAD=1, AC_SRC=5)
+    def test_ac_src_5_loads_zero_without_the_alu(self):
+        loads = self.run_word(AC_LOAD=1, AC_SRC=5, PC_INC=1, ALU_A_SRC=2, ALU_OP=2).loads
+        self.assertEqual((loads["AC"], loads["PC"]), (0, 0o201))
 
 
 if __name__ == "__main__":

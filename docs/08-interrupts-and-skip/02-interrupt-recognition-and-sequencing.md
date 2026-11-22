@@ -40,8 +40,8 @@ Interrupt recognition occurs only at the [instruction-completion TP4](../04-cont
 
 An interrupt request must not cause entry into the INTERRUPT major state:
 
-- during FETCH
-- during DEFER
+- during FETCH, except at the TP4 that completes a direct JMP or an OPR
+- during DEFER, except at the TP4 that completes a JMP I
 - before the current instruction reaches instruction-completion TP4
 - directly from a change in the aggregate interrupt request
 - directly from a controller state change

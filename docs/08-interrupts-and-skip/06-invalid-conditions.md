@@ -8,16 +8,16 @@ This document identifies illegal interrupt and skip conditions defined by Sectio
 
 The following conditions are illegal:
 
-- `MS = EXECUTE` at TP4, `INTERRUPT_REQUEST_VALID = 1`, `IR_IS_CAF = 0`, and `MS_NEXT != INTERRUPT`
-- `MS = EXECUTE` at TP4, `INTERRUPT_REQUEST_VALID = 1`, `IR_IS_CAF = 0`, aggregate `/DMA_REQ = 0`, and `MS_NEXT = DMA`
+- instruction completion, `INTERRUPT_REQUEST_VALID = 1`, `IR_IS_CAF = 0`, and `MS_NEXT != INTERRUPT`
+- instruction completion, `INTERRUPT_REQUEST_VALID = 1`, `IR_IS_CAF = 0`, aggregate `/DMA_REQ = 0`, and `MS_NEXT = DMA`
 - `MS = EXECUTE` at TP4, `IR_IS_CAF = 1`, and `MS_NEXT = INTERRUPT`
-- `MS = EXECUTE` at TP4, `INTERRUPT_REQUEST_VALID = 0`, aggregate `/DMA_REQ = 0`, and `MS_NEXT != DMA`
-- `MS = EXECUTE` at TP4, `INTERRUPT_REQUEST_VALID = 0`, aggregate `/DMA_REQ = 1`, and `MS_NEXT != FETCH`
+- instruction completion, `INTERRUPT_REQUEST_VALID = 0`, aggregate `/DMA_REQ = 0`, and `MS_NEXT != DMA`
+- instruction completion, `INTERRUPT_REQUEST_VALID = 0`, aggregate `/DMA_REQ = 1`, and `MS_NEXT != FETCH`
 - `MS = INTERRUPT` at TP4 and `MS_NEXT != FETCH`
-- entry into `INTERRUPT` from a major state other than `EXECUTE`
+- entry into `INTERRUPT` from a major state that does not complete the instruction (only FETCH of a direct JMP or OPR, DEFER of a JMP I, and EXECUTE complete one)
 - interrupt recognition at a timing pulse other than an [instruction-completion TP4](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#311-instruction-completion)
 - any interrupt-entry state change before entry into the `INTERRUPT` major state
-- `CIFP = 1` and FETCH selecting `II_CLEAR`
+- `CIFP = 1` and FETCH TS1 selecting `II_CLEAR`
 - a pending instruction-field change staged by CIF, RMF, or RTF being applied by an instruction other than JMP or JMS
 - a JMP or JMS applying a pending instruction-field change without clearing `CIFP`
 - interrupt recognition at a TP that applies a pending instruction-field change
@@ -60,7 +60,7 @@ The following conditions are illegal:
 - `IO_SKIP_REQ` producing a skip outside external-IOT TS4 and TP4
 - an unselected controller producing an effective `IO_SKIP_REQ`
 - a skip result remaining effective after its assigned TP
-- interrupt or DMA major-state selection canceling a valid skip committed at the same EXECUTE TP4
+- interrupt or DMA major-state selection canceling a valid skip committed at the same TP4
 
 ## 5. Summary
 

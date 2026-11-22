@@ -83,7 +83,7 @@ TS defines the execution phase within a major state.
 
 Properties:
 - TS progression is driven exclusively by the timing subsystem
-- TS is independent of instruction semantics
+- The order of TS1 to TS4 is independent of instruction semantics; their lengths depend on the major state and auto-indexing ([Timing Architecture §5.1](../09-timing/02-timing-architecture.md#51-structure))
 - TS determines ordering of operations within a major state
 
 ---
@@ -130,7 +130,7 @@ Properties:
 - Flags are valid only when their source registers are stable
 
 Constraints:
-- No dedicated flag register may exist
+- No dedicated flag register may exist. `SKIP` is an architecturally defined register, not a copy of a flag ([Registers](../01-architecture/01-registers.md#skip--skip))
 - Flags must not be used until corresponding register updates complete at TP
 
 ---
@@ -157,7 +157,7 @@ The following invariants must always hold:
 - Exactly one TS is active
 - All architectural state resides in registers
 - All state changes occur only at TP
-- TS progression does not depend on instruction behavior
+- The order of timing states does not depend on instruction behavior
 - MS transitions occur only at TP4
 
 ---

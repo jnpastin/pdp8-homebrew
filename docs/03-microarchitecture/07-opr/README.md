@@ -31,7 +31,8 @@ Properties:
 
 - Each bit represents an independent operation
 - Multiple operations may be combined in a single instruction
-- μops are selected directly from IR bit values
+- Every OPR completes in FETCH and never enters EXECUTE
+- The control store selects the pass by instruction group; IR bits select the operations inside the [OPR pass unit](./01-group1-execution.md#4-opr-pass)
 - No intermediate decoding into symbolic instructions is performed
 
 ---
@@ -49,14 +50,14 @@ Execution behavior is defined in:
 Each group defines:
 
 - Valid bit combinations
-- μop selection rules
-- TS assignment of operations
+- Pass-unit stages and the bits that select them
+- What acts at FETCH TP3, and at FETCH TP4
 
 ---
 
 ## 5. Constraints
   
-- All behavior must be expressed as μops
+- Register loads must be expressed as μops; IR bits select the operations composed within a pass
 - Multiple μops may be active within the same TS
 - No μop conflicts are permitted
 - All operations are derived directly from IR bits
@@ -67,6 +68,6 @@ Each group defines:
   
 OPR execution is defined as:
 
-- direct mapping from IR bits to μop selection
+- one pass through the OPR pass unit, loaded at FETCH TP3
 - composition of multiple operations within a single instruction
-- TS-ordered execution with TP-committed state updates
+- completion at FETCH TP4, where a taken Group 2 skip increments PC

@@ -1,6 +1,6 @@
 # Plan: One-Cycle OPR and JMP (Option 2), Incremental
 
-Branch `one-cycle-fetch`. Draft for the user's review; nothing here changes `docs/`, `rom/`, `tools/`, or `sim/` until approved.
+Branch `one-cycle-fetch`. Phases 0 to 9 are done; phase 10 is not started. The phase texts below are the plan as made, corrected where they would mislead.
 
 ## How this differs from handoff §7
 
@@ -64,7 +64,7 @@ Halts 2650 and 2652 come from a later routine (5) whose window lies on either si
    - F 1.25 / X 1.25 passes.
    
    The acceptance test therefore fixes the total, not the split. This is the fallback if FETCH cannot reach 1.2 µs (section "Timing budget" below).
-5. **Caveat:** where the window falls depends on the KL8E model's `flag_bits` = 9.25, which is the middle of D2AB's accepted range, not a measured KL8-E value. The experiment models no interrupt or DMA timing; PRG0 uses neither.
+6. **Caveat:** where the window falls depends on the KL8E model's `flag_bits` = 9.25, which is the middle of D2AB's accepted range, not a measured KL8-E value. The experiment models no interrupt or DMA timing; PRG0 uses neither.
 
 **Checkpoint 0 (decided 2026-11-19):** option 2, decision **3a**. Slice D is required, and OPR is split by group (slices C1 to C3).
 
@@ -105,7 +105,7 @@ Additions this plan needs:
 - **TS lengths:** the per-(MS, TS) step table and critical paths described in "Timing budget" (phase 0), meeting 2F + X = 76 steps.
 - **Phase 0's results** as an appendix.
 
-**Status (2026-11-19): drafted, awaiting review.** [spec.md](spec.md) and [timing.md](timing.md). Open decisions are listed in spec.md §11 (1, 2, 3', 4, 6 to 11).
+**Status: done; approved 2026-11-20.** [spec.md](spec.md) and [timing.md](timing.md). The decisions are recorded in spec.md §11.
 
 **Checkpoint 1: the user approves, or the work stops.**
 
@@ -142,7 +142,7 @@ Each step is a small patch, and each ends with all suites green and nothing obse
 - The step 2.2 check against `main`'s images was made by packing the unchanged v1 artifacts with the patched packer; v1 artifacts are untouched in git.
 - Results are recorded in `handoff.md`.
 
-## Slice pattern (phases 3 to 6)
+## Slice pattern (phases 3 to 8)
 
 Every slice goes through the same steps:
 1. **Docs** (v2 only): propose each affected file and apply it once the user agrees (dependency order: 01, 03, 04, 08, 09, 07-io/06). Run a pipeline dry run for v2 after each file.
@@ -161,8 +161,8 @@ Every slice goes through the same steps:
 
 ## Phase 4, slice B: direct JMP in FETCH, JMP I completes in DEFER
 
-- Instruction-class decode (decision 2a), the sequencer's class input, mapping-ROM `A0` table select, and `PC ← EA` at FETCH TP3.
-- Field change, `CIFP_CLEAR`, and `II_CLEAR` at FETCH TP3 for direct JMP and DEFER TP3 for JMP I. JMP's EXECUTE is removed.
+- Instruction-class decode (decision 2a), the sequencer's class input, and `PC ← EA` at FETCH TP3.
+- Field change, `CIFP_CLEAR`, and `II_CLEAR` at FETCH TP3 for direct JMP. For JMP I, `II_CLEAR` at DEFER TP3, and the other two at DEFER TP4. JMP's EXECUTE is removed.
 - The instruction boundary moves to FETCH TP4 or DEFER TP4 for JMP. The reference model's costs become JMP = 1 and JMP I = 2.
 - **Why before OPR:** it introduces the new boundary rule with the fewest new datapath parts, so boundary bugs and datapath bugs stay separate.
 - **Targeted tests:** interrupt recognized after a direct JMP and after JMP I; gap L (CIF then JMP) both ways; ION then JMP (one-instruction delay); autoindex JMP I; a DMA request at a FETCH-TP4 boundary; Single Step and Single Instruction over JMP; HLT and STOP during a JMP loop. Full lock-step and MAINDECs.
@@ -211,6 +211,14 @@ The FETCH TS3 class decode distinguishes the groups by IR bits 3 and 11 (PDP-8 n
 
 - Remove `rom/microcode/v1/`, the v1 `Design` records, every `V1-ONLY` line and test, and the selector. Rename v2 as the user decides.
 - **Verification:** `grep -r V1-ONLY` returns nothing; the full v2 suite and the MAINDEC regression pass unchanged; a pipeline dry run succeeds.
+- **Schema cleanup** (user, 2026-11-22): remove stale information from the maintained schema objects. Fix the docs or generators and regenerate; the user promotes. Found so far:
+  - **Description:** both schema generators hard-code "for version 1 CPU control", so the v2 schemas say it.
+  - **Stage:** four maintained artifacts say `generation_stage: candidate-generation`.
+  - **`control_uses`:** carried forward from the previous schema and never re-derived. The 11 OPR stage-select inputs still say `predicate`, though only the pass unit uses them. `SKIP`, `ISZ_SKIP_REQ` and `OPR_SKIP_REQ` have none (the pipeline's three warnings). Review the other classifications with no direct reference; some are legitimate through derivations.
+  - **Reserved values:** in eight output fields and `IR_CLASS`. Keep real spare codes, and remove leftovers of retired ones.
+  - **Unselected micro-operations:** no case selects `IOT_TRANSFER_CAPTURE` or `IOT_TRANSFER_CLEAR`. Establish whether they are stale or realized by direct control.
+  - **Text copied from docs:** stale consumers and constraints (docs-review A1 and A2; `IR_IS_IOT` has no consumer).
+  - **Verification:** every removed item explained; ROM images byte-identical; the three warnings gone.
 - Rebase onto `main`.
 - **Checkpoint 10:** the user merges into `main`.
 

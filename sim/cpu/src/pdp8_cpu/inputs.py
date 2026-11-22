@@ -28,7 +28,6 @@ class ExternalInputs:
     io_write_req: int = 0
     io_skip_req: int = 0
     io_clear_ac_req: int = 0
-    io_wait_n: int = 1      # /IO_WAIT (TSTEP-level; not modelled at TS granularity)
     db_input: int | None = None  # value a selected controller drives on DB, if any
 
 

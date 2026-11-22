@@ -519,7 +519,7 @@ Source:
 
 When a controller selection terminates:
 
-- the selected controller releases `MFB`, `AB`, `MDB`, `/RD`, and `/WR` at DMA TP4
+- the selected controller has driven none of `MFB`, `AB`, `MDB`, `/RD`, and `/WR` since it released them at the end of DMA TS2
 - the arbiter sets `DMA_GRANT_ID` to the no-controller-selected value at DMA TP4
 - CPU control deasserts `/DMA_GRANT` when control exits `MS = DMA`
 - CPU ownership resumes during the following FETCH TS1
@@ -748,7 +748,7 @@ Encoding:
 
 `/INITIALIZE`:
 
-- originates from the control word
+- is specified by the control word and presented by the equivalent decode, outside the control store
 - is not a micro-operation
 - is asserted for one timing state
 - initializes controller state according to the controller contracts; the CPU-register effects are the micro-operations of the same TS

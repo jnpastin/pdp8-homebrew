@@ -26,7 +26,7 @@ class EncodingTests(unittest.TestCase):
         self.assertTrue(E.datapath_fields("v1")["AC_SRC"].is_reserved(7))  # V1-ONLY
         self.assertFalse(E.DATAPATH_FIELDS["AC_SRC"].is_reserved(6))
         self.assertTrue(E.DATAPATH_FIELDS["MA_SRC"].is_reserved(3))
-        self.assertTrue(E.DATAPATH_FIELDS["AC_SRC"].is_reserved(5))        # v2: decision 13
+        self.assertFalse(E.DATAPATH_FIELDS["AC_SRC"].is_reserved(5))       # v2: ZERO (review D2)
         self.assertFalse(E.datapath_fields("v1")["AC_SRC"].is_reserved(5))  # V1-ONLY
         self.assertTrue(E.datapath_fields("v1")["ALU_OP"].is_reserved(0o13))  # V1-ONLY
         self.assertTrue(E.DATAPATH_FIELDS["IOT_TRANSFER_VAL"].is_reserved(3))

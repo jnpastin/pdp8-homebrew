@@ -51,7 +51,7 @@ DATAPATH_FIELDS = {f.name: f for f in [
     _f("AB_SRC", 1, {0: "MA", 1: "PC"}, "MCS AB_SRC"),
     _f("AC_LOAD", 1, LOAD, "MCS AC_LOAD"),
     _f("AC_SRC", 3, {0: "IDB", 1: "DB", 2: "IF (field-merge)", 3: "DF (field-merge)",
-                     4: "IB (field-merge)", 5: "reserved", 6: "GTF_FLAGS",
+                     4: "IB (field-merge)", 5: "ZERO", 6: "GTF_FLAGS",
                      7: "OPR pass unit (OPR)"}, "MCS AC_SRC"),
     _f("ALU_A_SRC", 2, {0: "AC", 1: "MB", 2: "PC", 3: "reserved"}, "MCS ALU_A_SRC"),
     _f("ALU_B_SRC", 1, {0: "NONE", 1: "MB"}, "MCS ALU_B_SRC"),

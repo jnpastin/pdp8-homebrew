@@ -213,7 +213,7 @@ This model operates over [00-state-model](./00-state-model.md):
 - MS defines execution phase
 
 Constraints:
-- TS progression is independent of execution
+- The order of timing states is independent of execution
 - MS transitions occur only at TP4
 
 ---

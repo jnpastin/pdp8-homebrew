@@ -20,7 +20,7 @@ DMA is entered only at instruction completion (the TP4 of the instruction's last
 
 Flow:
 
-    EXECUTE → DMA → (DMA while the burst continues) → FETCH
+    instruction completion (FETCH, DEFER, or EXECUTE TP4) → DMA → (DMA while the burst continues) → FETCH
 
 CPU control during DMA:
 
@@ -40,7 +40,7 @@ No CPU register changes during DMA. No μop is selected in any timing state.
 - (no μops)
 
 Description:
-- The arbiter selects a controller, or keeps the selection of a continuing burst; `DMA_GRANT_ID` commits at TP1.
+- The arbiter selects a controller, or keeps the selection of a continuing burst if its controller still requests; `DMA_GRANT_ID` commits at TP1. A held selection whose request is gone is dropped ([DMA Arbitration §13.3](../07-io/06-dma-arbitration.md#133-held-selection-without-a-request)).
 
 ---
 
@@ -90,9 +90,9 @@ When Single Step halts at DMA TP4 while the burst continues, `MS` holds `DMA`:
 - `/DMA_GRANT` is deasserted while halted, so no controller may drive the memory interface.
 - The selected controller keeps its request and its prepared next transfer.
 - The arbiter keeps `DMA_GRANT_ID`, its burst-enabled state, and its burst count.
-- Console Examine and Deposit use the memory interface normally.
-- CONTINUE resumes at DMA TS1 with `/DMA_GRANT` asserted, and the burst continues with the same selection.
-- START resumes at FETCH TS1. The selection is kept, and the burst continues at the next DMA entry.
+- Console Examine and Deposit use the memory interface normally, and load FETCH as the held major state.
+- CONTINUE, with no EXAMINE or DEPOSIT since the halt, resumes at DMA TS1 with `/DMA_GRANT` asserted, and the burst continues with the same selection.
+- START, or CONTINUE after an EXAMINE or DEPOSIT, resumes at FETCH TS1. The selection is kept, and the burst continues at the next DMA entry, if its controller still requests then ([DMA Arbitration §13.3](../07-io/06-dma-arbitration.md#133-held-selection-without-a-request)).
 - CLEAR initializes the controllers and the arbiter ([DMA Arbitration §13.2](../07-io/06-dma-arbitration.md#132-system-initialization)), so a later CONTINUE runs one DMA major state with no selected controller.
 
 ---
@@ -101,9 +101,11 @@ When Single Step halts at DMA TP4 while the burst continues, `MS` holds `DMA`:
 
 A DMA major state can begin with no pending request; for example, when CAF or CLEAR initializes the requesting controller after `/DMA_REQ` was sampled.
 
-In that case:
+It can also begin with a held selection whose controller no longer requests, which TP1 drops ([DMA Arbitration §13.3](../07-io/06-dma-arbitration.md#133-held-selection-without-a-request)).
 
-- TS1 arbitration finds no request, and `DMA_GRANT_ID` remains `15`
+In either case:
+
+- `DMA_GRANT_ID` is `15` from TP1
 - no memory transfer occurs at TP2
-- no controller or arbiter count changes at TP3
-- aggregate `/DMA_REQ` is deasserted during TS4, so control returns to FETCH at TP4
+- no controller or burst count changes at TP3, and the arbiter clears its retained burst-enabled state
+- aggregate `/DMA_REQ` is deasserted during TS4, even if a new request has arrived, so control returns to FETCH at TP4

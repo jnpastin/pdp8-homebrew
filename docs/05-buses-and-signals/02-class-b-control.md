@@ -166,7 +166,6 @@ Authoritative definitions are maintained in:
 - `IO_WRITE_REQ`
 - `IO_SKIP_REQ`
 - `IO_CLEAR_AC_REQ`
-- `/IO_WAIT`
 
 ### 6.5 DMA Arbitration Signals
 
@@ -196,7 +195,7 @@ Aggregate `/DMA_REQ` is continuously derived from `DMA_ENABLE` and `/DMA_REQ[14:
 - shared TS signals
 - shared TP signals
 
-MS provides the current CPU major-state context. The DMA arbiter uses `MS = EXECUTE` and `TS4` to assert combinational `DMA_ENABLE`, allowing pending DMA requests to participate in the TP4 major-state transition decision.
+MS provides the current CPU major-state context. The DMA arbiter uses `INSTR_END` to assert combinational `DMA_ENABLE`, allowing pending DMA requests to participate in the TP4 major-state transition decision.
  
 `MS` does not grant DMA ownership. DMA ownership requires `/DMA_GRANT` asserted and a matching valid `DMA_GRANT_ID`.
 
@@ -215,7 +214,7 @@ DMA_GRANT_ID value 15 indicates that no controller is selected.
 ### 6.6 Signal Responsibilities
 
 - IOA, IOP, IOT_ACTIVE, /DB_READ, and /DB_WRITE are CPU outputs during external-IOT execution.
-- IO_READ_REQ, IO_WRITE_REQ, IO_SKIP_REQ, IO_CLEAR_AC_REQ, and /IO_WAIT are selected-controller outputs and CPU inputs.
+- IO_READ_REQ, IO_WRITE_REQ, IO_SKIP_REQ, and IO_CLEAR_AC_REQ are selected-controller outputs and CPU inputs.
 - /DMA_REQ[14:0] are controller-to-arbiter priority-channel requests.
 - `DMA_ENABLE` is the arbiter-to-aggregation-logic qualification output.
 - Aggregate `/DMA_REQ` is the aggregation-logic-to-CPU request.
@@ -228,7 +227,7 @@ DMA_GRANT_ID value 15 indicates that no controller is selected.
 - During DMA, only the controller selected by /DMA_GRANT and DMA_GRANT_ID may drive /RD and /WR.
 - During CPU memory operations, CPU control drives /RD and /WR.
 - `MS[2:0]` is a CPU-generated control field distributed to the DMA arbiter.
-- The DMA arbiter uses `MS = EXECUTE` and `TS4` to assert combinational `DMA_ENABLE`.
+- The DMA arbiter uses `INSTR_END` to assert combinational `DMA_ENABLE`.
 - `DMA_ENABLE` is not stored state.
 - The DMA arbiter must not modify or participate in generating `MS`.
 - /INITIALIZE is the CPU-generated, active-low system initialization signal distributed to all controllers.

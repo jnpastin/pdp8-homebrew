@@ -150,7 +150,7 @@ The instruction-level behavior is defined in [IOT Instruction Detail](../02-isa/
 
 While `CIFP` remains set:
 
-- FETCH does not clear `II`
+- FETCH TS1 does not clear `II`
 - interrupt recognition remains inhibited
 - the deferred field value remains pending for application by the next JMP or JMS
 
@@ -169,7 +169,7 @@ RMF:
 
 While `CIFP` remains set:
 
-- FETCH does not clear `II`
+- FETCH TS1 does not clear `II`
 - interrupt recognition remains inhibited
 - the saved instruction field remains pending for application by the next JMP or JMS
 
@@ -193,7 +193,7 @@ RTF:
 - sets IE
 
 While CIFP remains set:
-- FETCH does not clear II
+- FETCH TS1 does not clear II
 - interrupt recognition remains inhibited
 - the restored instruction field remains pending for application by the next JMP or JMS
 
@@ -213,13 +213,21 @@ At that operation:
 
 The JMP execution sequences are defined in [Fetch & Defer](../03-microarchitecture/04-fetch-defer.md) (a JMP completes in FETCH or DEFER), and the JMS sequence in [MRI Execution](../03-microarchitecture/05-mri-execution.md).
 
-All three commit at FETCH TP3 of a direct JMP or EXECUTE TP1 of a JMS. A JMP I clears `II` at DEFER TP3 and applies the field and clears `CIFP` at DEFER TP4, after the auto-index write-back of its pointer in DEFER TS4, which must still use the old field ([Fetch & Defer §4.5](../03-microarchitecture/04-fetch-defer.md#45-ts4)). In every case `II` is clear before the instruction's completion, so interrupt recognition may occur at the instruction-completion TP4 of that same JMP or JMS if all eligibility conditions are satisfied. The interrupt entry then saves the new instruction field in `IB` and the transfer address (JMP) or the address after the return-address word (JMS) in location `0000`, so no field change is lost.
+When each commits:
+
+| Instruction | `II` cleared | `IF` loaded and `CIFP` cleared | Instruction completes |
+|---|---|---|---|
+| Direct JMP | FETCH TP3 | FETCH TP3 | FETCH TP4 |
+| JMP I | DEFER TP3 | DEFER TP4 | DEFER TP4 |
+| JMS | EXECUTE TP1 | EXECUTE TP1 | EXECUTE TP4 |
+
+A JMP I changes the field last, so that the auto-index write-back of its pointer still uses the old field ([Fetch & Defer §4.5](../03-microarchitecture/04-fetch-defer.md#45-ts4)). In every case `II` is clear before the instruction's completion, so interrupt recognition may occur at the instruction-completion TP4 of that same JMP or JMS if all eligibility conditions are satisfied. The interrupt entry then saves the new instruction field in `IB` and the transfer address (JMP) or the address after the return-address word (JMS) in location `0000`, so no field change is lost.
 
 The JMP timing matches the PDP-8/E, where the KM8-E negates its interrupt inhibit during any JMP or JMS ("negated at TP3 whenever a JMP or JMS instruction occurs", KM8-E Memory Extension Theory of Operation §2.9), and MAINDEC-8E-D1HA checks that the interrupt follows the field-changing JMP.
 
 ## 13. FETCH-Time Inhibit Clearing
 
-FETCH clears `II` only when `CIFP` is clear.
+FETCH TS1 clears `II` only when `CIFP` is clear. A direct JMP also clears it in FETCH TS3 when `CIFP` is set, as it applies the pending field (section 12).
 
 The FETCH execution rule is defined in [Fetch and Defer](../03-microarchitecture/04-fetch-defer.md#31-ts1).
 
@@ -239,8 +247,8 @@ FETCH-time inhibit clearing does not:
   
 II may be set by ION, CIF, RMF, or RTF.  
 The architectural effect depends on CIFP:
-- when CIFP is clear, FETCH may clear II
-- when CIFP is set, FETCH preserves II
+- when CIFP is clear, FETCH TS1 clears II
+- when CIFP is set, FETCH TS1 preserves II until a JMP or JMS clears it (section 12)
   
 No separate source identifier is stored for II.  
 The required behavior is determined by the committed II and CIFP state rather than by remembering which instruction originally set II.
@@ -271,10 +279,10 @@ The following invariants apply:
 - IOF clears IE without clearing controller requests.
 - SKON tests the pre-TP IE state and clears IE at the same TP.
 - CIF, RMF, and RTF set II and CIFP.
-- FETCH must not clear II while CIFP is set.
+- FETCH TS1 must not clear II while CIFP is set.
 - A pending instruction-field change established by CIF, RMF, or RTF inhibits interrupt recognition until JMP or JMS applies the deferred field.
-- A JMP or JMS that applies a pending instruction-field change clears II at FETCH TP3 (direct JMP), DEFER TP3 (JMP I), or EXECUTE TP1 (JMS), and applies the field and clears CIFP at the same TP, except that a JMP I does so at DEFER TP4; interrupt recognition may occur at that instruction's completion TP4.
-- Interrupt recognition after a deferred field change may occur only at a later eligible instruction-completion TP4 boundary.
+- A JMP or JMS that applies a pending instruction-field change clears II and CIFP and loads IF at the TPs in section 12. Interrupt recognition may occur at that instruction's completion TP4.
+- Interrupt recognition after a deferred field change may occur at the completion TP4 of the JMP or JMS that applies it, or at a later eligible one.
 - Interrupt enable and inhibit state do not control DMA eligibility.
 - All changes to IE, II, and CIFP occur only at TP events.
 - All same-TP decisions use pre-TP state.

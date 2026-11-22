@@ -160,6 +160,34 @@ class Initialization(unittest.TestCase):
 
 
 class TestMasterContract(unittest.TestCase):
+    def test_a_held_selection_without_a_request_is_dropped(self):
+        # ARB §13.3: a canceled controller's held selection is dropped at TP1, with no transfer,
+        # no new arbitration, and burst-enabled cleared at TP3, so a new request waits for FETCH.
+        a, b = DmaTestMaster(0), DmaTestMaster(1)
+        arb = DmaArbiter([a, b])
+        a.load([write(1), write(2), write(3)])
+        execute_tp4(arb)
+        self.assertEqual(dma_state(arb), 0)                          # the burst continues
+        self.assertEqual(arb.grant_id, 0)
+        a.initialize()                                               # the program cancels a
+        b.load([write(5)])
+        memory = {}
+        self.assertEqual(dma_state(arb, memory), 1)                  # control returns to FETCH
+        self.assertEqual((arb.grant_id, arb.burst_count, arb.burst_enabled), (NO_CONTROLLER, 0, False))
+        self.assertEqual((memory, b.queue), ({}, [write(5)]))
+
+    def test_a_state_with_no_selection_ends_the_burst(self):
+        # ARB §13.3, DMX §5: with nothing selected, TP3 clears burst-enabled, so a request that
+        # arrives during the state does not keep the CPU in DMA.
+        a = DmaTestMaster(0)
+        arb = DmaArbiter([a])
+        execute_tp4(arb)
+        for tp in (1, 2, 3):
+            arb.commit(tp, False, True, False)
+        a.load([write(1)])
+        self.assertEqual(arb.aggregate_n(False, True, 4), 1)
+        self.assertFalse(arb.burst_enabled)
+
     def test_request_deasserts_after_the_last_transfer(self):
         # DMA §7, ARB §11: after the TP2 transfer of its last word, the request deasserts
         # before the TP3 update.
