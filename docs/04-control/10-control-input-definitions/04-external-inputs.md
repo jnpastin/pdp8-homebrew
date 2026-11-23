@@ -37,7 +37,7 @@ The panel input register has two ranks, like every register:
 - A switch that changes too late for one capture is seen at the next.
 
 Constraints:
-- External inputs must not directly update registers.
+- An external input reaches a register only as data selected by a control-word micro-operation, such as `/INT_REQ` in GTF, or FP_SR in OSR and the console operations. It never loads a register by itself.
 - External inputs must not bypass the control function.
 - External inputs must not introduce asynchronous state changes.
 

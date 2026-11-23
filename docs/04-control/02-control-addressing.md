@@ -170,7 +170,7 @@ Interpretation:
 
 Constraint:
 - All conditional behavior must be represented through CTRL_ADDR selection.
-- No control decisions may be computed outside the control store.
+- No control decisions may be computed outside the control store, except by the realizations in [Control Model §8.4](./01-control-model.md#84-realizations-outside-the-control-word).
 
 ---
 
@@ -457,7 +457,7 @@ Constraint:
 **Address overlay.** An address field may carry different condition inputs in different control contexts. A multiplexer selects which inputs drive the field.
 
 Constraint:
-- The overlay selection is a function only of MS, TS, and the mapping-stage variant code; it never depends on a condition input.
+- The overlay selection is a function only of MS, TS, RUN, and the mapping-stage variant code; it never depends on a condition input ([Control Model §8.4](./01-control-model.md#84-realizations-outside-the-control-word)).
 - For each selection, the mapping from address bits to inputs is fixed and documented.
 - Every input that can change the control word in a given context must be presented on the address in that context.
 - An address bit not driven by a meaningful input in a context must not change the control word in that context.

@@ -335,7 +335,7 @@ The Status Register is cleared by:
 | `7` | File Not Ready | The selected drive or its media is not ready |
 | `8` | Seek Fail | The selected drive failed to reach the requested cylinder |
 | `9` | Not Used | Always reads as `0` |
-| `10` | RDYS/R/W | Reports the RK8E-defined selected-drive ready, seek, read, or write state |
+| `10` | Head In Motion | The selected drive is seeking: set when a seek-only operation or a recalibration starts, cleared when it completes |
 | `11` | Control Done | The active operation completed or terminated with an error |
 
 ### 11.2 Error Condition
@@ -361,8 +361,8 @@ OR STATUS[8]
 `STATUS[11]` is set when required by RK8E-compatible behavior, including:
 
 - completion of a data transfer
-- completion of a seek-only operation when enabled by the Command Register
-- completion of recalibration when enabled
+- the start of a seek-only operation or a recalibration (section 15.1)
+- completion of a seek-only operation or recalibration, when `COMMAND[7]` is set
 - an error that terminates an active operation
 
 For a write operation, Control Done must not be set until all accepted write data has been committed to the emulated media.
@@ -402,8 +402,8 @@ The controller must not expose implementation-specific status through this bit.
 Control Done is set when required by RK8E-compatible behavior, including:
 
 - successful completion of a data transfer
-- completion of a seek-only operation
-- completion of a recalibrate operation when enabled by the Command Register
+- the start of a seek-only operation or a recalibration (section 15.1)
+- completion of a seek-only operation or a recalibration, when `COMMAND[7]` is set
 - an error that terminates an active operation
 
 Control Done remains set until cleared by a defined controller operation.
@@ -467,6 +467,21 @@ If one of those operations is attempted while the controller is busy:
 - Control Busy Error is set
 - the active operation continues
 - Control Done is set when the active operation later completes or terminates
+
+### 15.1 Seeks Do Not Keep the Controller Busy
+
+A seek-only operation (Command Register function `011`) and a recalibration (DCLD) occupy the controller only at the TP that starts them. At that TP:
+
+- Control Done is set
+- `STATUS[10]` (Head In Motion) is set
+- the controller is not busy, so the program may start another operation, including a seek on another drive
+
+The drive then seeks on its own. When it reaches the cylinder:
+
+- `STATUS[10]` clears
+- Control Done is set again if `COMMAND[7]` (Enable Done on Seek Done) is set
+
+This follows the RK8-E's seek-only programming sequence: after DLAG, wait for Transfer Done, clear it, and then either wait for Done again with Command Register bit 4 set, or poll status bit 1, "which is zero when the seek is complete" (PDP-8/E Small Computer Handbook (1973), RK8-E, "Seek Only" and "Overlapped Seeks", pp. 6-73 and 6-74). DEC's bit 4 and bit 1, numbered from the most significant bit, are `COMMAND[7]` and `STATUS[10]` here. For DCLD the handbook gives only "Recalibrate Selected Drive to track 000 and clear Status Register" (p. 6-72); treating it as a seek to cylinder `000` follows SIMH.
 
 `DCLC` may abort an active operation.
 
@@ -541,8 +556,11 @@ During TS3:
 
 At TP3:
 
+- the Status Register clears, for every DCLR function, before the selected function acts
 - the selected DCLR operation commits
 - AC clears
+
+The Status Register clear follows DEC, whose DCLS and DCLD both clear it ({H}, p. 6-72), and SIMH, whose DCLR clears status before every function, including a refused one.
 
 The selected operation uses the pre-TP3 DB value. The commit is at TP3, not TP4, so that the instruction-completion decision at TP4 sees the cleared Done and Error, and, after DCLC, the deasserted DMA request ([Controller Contract §9.1](../04-controller-contract.md#91-interrupt-contribution)).  
 No intermediate selector register is required.
@@ -557,7 +575,7 @@ CONTROL_DONE <- 0
 ERROR <- 0
 ```
 
-DCLS does not abort an active disk operation unless required by a specific RK8E status-clearing rule.
+DCLS does not abort an active disk operation unless required by a specific RK8E status-clearing rule. If the controller is busy, Control Busy Error is set after the clear, as in SIMH.
 
 #### 18.2.2 DCLC
 
@@ -581,26 +599,26 @@ No additional error is raised solely because DCLC discarded uncommitted write da
 
 #### 18.2.3 DCLD
 
-DCLD is refused while the controller is busy (section 15). At TP3:
+DCLD is refused while the controller is busy (section 15). At TP3, after the Status Register clear (section 18.2):
 
 - no recalibration starts
 - Control Busy Error is set
 - the active operation continues
 - AC clears
 
-Otherwise, at TP3:
+Otherwise, at TP3, after the Status Register clear:
 
-- recalibration of the selected drive to cylinder `000` is initiated
-- the controller becomes busy
-- Control Done is cleared as required by RK8E-compatible operation
+- recalibration of the selected drive to cylinder `000` starts, as a seek (section 15.1)
+- Control Done and `STATUS[10]` are set
+- the controller does not become busy
 
 Recalibration completes asynchronously relative to the initiating IOT.
 
 When recalibration completes:
 
 - the selected drive is positioned logically at cylinder `000`
-- Control Done is set according to the Command Register completion-enable behavior
-- controller busy state ends
+- `STATUS[10]` clears
+- Control Done is set again if `COMMAND[7]` is set
 
 No physical head movement is required by this contract.
 

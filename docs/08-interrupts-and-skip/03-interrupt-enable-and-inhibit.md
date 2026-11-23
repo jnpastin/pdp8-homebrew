@@ -286,6 +286,7 @@ The following invariants apply:
 - SKON tests the pre-TP IE state and clears IE at the same TP.
 - CIF, RMF, and RTF set II and CIFP.
 - FETCH TS1 must not clear II while CIFP is set.
+- START clears II and leaves CIFP set. This is harmless: START also clears IE, and ION sets II again before interrupts can be enabled, after which FETCH TS1 does not clear it while CIFP is set. The pending field is still applied by the next JMP or JMS, as on the PDP-8/E, whose next JMP or JMS loads IF from its instruction buffer.
 - A pending instruction-field change established by CIF, RMF, or RTF inhibits interrupt recognition until JMP or JMS applies the deferred field.
 - A JMP or JMS that applies a pending instruction-field change clears II and CIFP and loads IF at the TPs in section 12. Interrupt recognition may occur at that instruction's completion TP4.
 - Interrupt recognition after a deferred field change may occur at the completion TP4 of the JMP or JMS that applies it, or at a later eligible one.

@@ -391,7 +391,7 @@ A field shares bits only through wiring. No decoder or gate follows the control 
 | Datapath slice | 6 × 28C256 + 6 × AS7C256C |
 | Sequencer slice | 1 × 28C256 + 1 × AS7C256C |
 | Timing ROM ([Timing Terminology §3.5](../09-timing/01-terminology.md#35-timing-rom)) | 1 × 28C256 + 1 × AS7C256C |
-| Shadow copy (section 8.1) | 15-bit copy counter; tri-state address buffers for each SRAM; `LOADING` flip-flop and write-strobe logic |
+| Shadow copy (section 8.1) | 15-bit copy counter; tri-state address buffers for each SRAM; `LOADING` flip-flop, the flip-flop that enables the SRAM outputs one TCLK later, and write-strobe logic |
 | `MS_EFF` select | 3-bit 2:1 multiplexer |
 | `SEQ_OVL` select | 3-bit 2:1 multiplexer |
 | State-group `RUN` select (section 6.3) | 3-bit 2:1 multiplexer |
@@ -415,8 +415,17 @@ The control store and the timing ROM run from fast SRAMs. Each SRAM is loaded fr
 - Only the `LOADING` flip-flop and the copy write strobe reach an SRAM's `/WE`, which has a pull-up. No control-word field and no bus reaches it, and the control store is not in the memory address space.
 - While `LOADING` is set, TSEQ is held, `CW_VALID` is deasserted, and `/INITIALIZE` is asserted, so no control word from a partly loaded SRAM acts. The reset ends after the copy, and the CLEAR transaction that follows reads the loaded SRAMs.
 - Each EEPROM's `/WE` is tied high, so it cannot be written in circuit.
+- The EEPROM and the SRAM share the data pins, so their output enables are driven from `LOADING` in opposite senses, with a gap between them:
 
-In normal running each SRAM has `/CE` and `/OE` asserted and `/WE` deasserted, so its address access time (15 ns) applies; the address buffer adds 9 ns ([option2/timing.md](../../option2/timing.md) §2, §3).
+| Signal | During the copy (`LOADING` = 1) | After the copy |
+|---|---|---|
+| EEPROM `/OE` | asserted: the EEPROM drives the data pins | deasserted as `LOADING` clears |
+| SRAM `/OE` | deasserted: the SRAM's outputs are off while it is written | asserted one TCLK period later, by a second flip-flop that follows `LOADING` |
+| SRAM `/WE` | pulsed by the copy write strobe | held high |
+
+The second flip-flop keeps the two devices from driving the pins together during the change-over. The power-on reset ends only after the SRAM outputs are enabled.
+
+In normal running each SRAM has `/CE` and `/OE` asserted and `/WE` deasserted, so its address access time (15 ns) applies; the address buffer adds 9 ns, within the limits of [Timing Architecture §11.4](../09-timing/02-timing-architecture.md#114-timing-budget).
 
 DEC precedent: the KL10 processor loaded its microcode into control RAM from its front-end PDP-11 at power-up. The PDP-8/E's control is hardwired and has no control store.
 

@@ -314,6 +314,26 @@ CTRL_ADDR → CONTROL_WORD
 - At TP(n):
   - all state updates occur simultaneously
 
+### 8.4 Realizations Outside the Control Word
+
+Some control is realized outside the control store, as gates, registers, or a small ROM. Each entry below is permitted, and the general rules that forbid decisions, IR bits, or stored state outside the control store do not apply to it.
+
+| Realization | What it is | Defined in |
+|---|---|---|
+| Predecode gates | `IR_CLASS`, `IR_INDIRECT`, `IR_NO_EXECUTE`, and `IR_OPR_HLT`, from IR | [IR-Derived Fields](./10-control-input-definitions/02-ir-derived-fields.md) |
+| OPR pass unit | IR bits used directly as datapath stage selects, qualified by `IR_CLASS` | [OPR Execution](../03-microarchitecture/07-opr/README.md) |
+| Registered control state | `MAPR`, `MS_EFF_IS_EXECUTE`, and `SKIP` | [Control Store Organization §5](./08-control-store-organization.md), [Registers](../01-architecture/01-registers.md) |
+| RUN-selected overlays | `SEQ_OVL`, and the state group forced while halted | [Control Store Organization §5.6 and §6](./08-control-store-organization.md) |
+| Decoded outputs | `/DMA_GRANT`, `IOT_ACTIVE`, `/DB_READ`, `/DB_WRITE`, `/INITIALIZE`, and `INSTR_END` | [Architectural Control Signals](./20-control-output-definitions/02-architectural-control-signals.md) |
+| Timing ROM | the length of each TS and the width of its TP | [Timing Terminology §3.5](../09-timing/01-terminology.md#35-timing-rom) |
+
+Each realization:
+
+- is a function only of state committed by the previous TP, or of a static jumper
+- is specified in its own definition
+- makes no decision that the control store also makes
+- is verified by the control-store packer wherever it affects the control word ([Control Store Organization §9](./08-control-store-organization.md#9-verification))
+
 ---
 
 ## 9. Persistence of Information

@@ -99,7 +99,7 @@ Additional constraints:
 - must represent reduced instruction information only
 
 Constraint:
-- Raw IR bits must not be used in control decisions.
+- Raw IR bits must not be used in control decisions, except by the predecode gates and the OPR pass unit ([Control Model §8.4](./01-control-model.md#84-realizations-outside-the-control-word)).
 
 ---
 
@@ -113,7 +113,7 @@ Additional constraints:
 
 - must be derived only from stable register state or direct reflection of stable one-bit state registers
 - must not depend on transient datapath signals
-- must not be stored or latched
+- must not be stored or latched, except as the output of a register listed in [Control Model §8.4](./01-control-model.md#84-realizations-outside-the-control-word), such as `SKIP`
 - must be stable during the control evaluation window
 
 Constraint:

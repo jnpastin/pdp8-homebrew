@@ -192,7 +192,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((MS = FETCH AND TS = 1) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((MS = FETCH AND TS = 1) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -400,7 +400,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((MS = FETCH AND TS = 2) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((MS = FETCH AND TS = 2) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -651,7 +651,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((MS = FETCH AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((MS = FETCH AND TS = 3) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -937,7 +937,7 @@
           },
           {
             "value": "0",
-            "when": "(((MS = FETCH AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((MS = FETCH AND TS = 4) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -1133,7 +1133,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((MS = DEFER AND TS = 1) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((MS = DEFER AND TS = 1) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -1332,7 +1332,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((MS = DEFER AND TS = 2) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((MS = DEFER AND TS = 2) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -1554,7 +1554,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((MS = DEFER AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((MS = DEFER AND TS = 3) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -1877,7 +1877,7 @@
           },
           {
             "value": "0",
-            "when": "(((MS = DEFER AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((MS = DEFER AND TS = 4) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -2077,7 +2077,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 1) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 1) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -2282,7 +2282,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 2) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 2) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -2491,7 +2491,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 3) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -2697,7 +2697,7 @@
           },
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 4) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -2873,7 +2873,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 1) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 1) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -3078,7 +3078,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 2) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 2) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -3301,7 +3301,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 3) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -3507,7 +3507,7 @@
           },
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 4) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -3683,7 +3683,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 1) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 1) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -3888,7 +3888,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 2) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 2) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -4097,7 +4097,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 3) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -4365,7 +4365,7 @@
           },
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 4) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -4547,7 +4547,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 1) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 1) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -4732,7 +4732,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 2) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 2) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -4923,7 +4923,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 3) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -5146,7 +5146,7 @@
           },
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 011) AND TS = 4) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -5366,7 +5366,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 1) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 1) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -5554,7 +5554,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 2) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 2) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -5773,7 +5773,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 3) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -6011,7 +6011,7 @@
           },
           {
             "value": "0",
-            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 4) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -6175,7 +6175,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 1) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 1) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -6370,7 +6370,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 2) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 2) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -6631,7 +6631,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -6928,7 +6928,7 @@
           },
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -7098,7 +7098,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 1) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 1) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -7267,7 +7267,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 2) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 2) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -7424,7 +7424,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 3) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -7628,7 +7628,7 @@
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 4) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -7790,7 +7790,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 1) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 1) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -7973,7 +7973,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 2) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 2) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -8131,7 +8131,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 3) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -8335,7 +8335,7 @@
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 4) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -8497,7 +8497,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 1) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 1) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -8694,7 +8694,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 2) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 2) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -8852,7 +8852,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 3) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -9056,7 +9056,7 @@
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 4) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -9218,7 +9218,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 1) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 1) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -9401,7 +9401,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 2) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 2) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -9558,7 +9558,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 3) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -9762,7 +9762,7 @@
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 4) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -9938,7 +9938,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -10109,7 +10109,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 2) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 2) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -10266,7 +10266,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 3) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -10470,7 +10470,7 @@
           },
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -10632,7 +10632,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 1) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 1) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -10871,7 +10871,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -11033,7 +11033,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 3) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -11237,7 +11237,7 @@
           },
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -11399,7 +11399,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 1) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 1) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -11554,7 +11554,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 2) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 2) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -11709,7 +11709,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 3) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -11913,7 +11913,7 @@
           },
           {
             "value": "0",
-            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 4) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -12075,7 +12075,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 1) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 1) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -12230,7 +12230,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 2) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 2) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -12385,7 +12385,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 3) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -12625,7 +12625,7 @@
           },
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -12790,7 +12790,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 1) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 1) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -13063,7 +13063,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 2) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 2) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -13228,7 +13228,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 3) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -13432,7 +13432,7 @@
           },
           {
             "value": "0",
-            "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 4) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -13636,7 +13636,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((MS = INTERRUPT AND TS = 1) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((MS = INTERRUPT AND TS = 1) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -13857,7 +13857,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((MS = INTERRUPT AND TS = 2) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((MS = INTERRUPT AND TS = 2) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -14046,7 +14046,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((MS = INTERRUPT AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((MS = INTERRUPT AND TS = 3) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -14246,7 +14246,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((MS = INTERRUPT AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((MS = INTERRUPT AND TS = 4) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -14414,7 +14414,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((MS = DMA AND TS = 1) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((MS = DMA AND TS = 1) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -14570,7 +14570,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((MS = DMA AND TS = 2) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((MS = DMA AND TS = 2) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -14726,7 +14726,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((MS = DMA AND TS = 3) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((MS = DMA AND TS = 3) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -14901,7 +14901,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((MS = DMA AND TS = 4) AND RUN = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((MS = DMA AND TS = 4) AND RUN = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -15152,7 +15152,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((RUN = 0 AND FP_LOAD_ADDRESS = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((RUN = 0 AND FP_LOAD_ADDRESS = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -15425,7 +15425,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((RUN = 0 AND FP_EXAMINE = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((RUN = 0 AND FP_EXAMINE = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -15707,7 +15707,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((RUN = 0 AND FP_DEPOSIT = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((RUN = 0 AND FP_DEPOSIT = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -15913,7 +15913,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((RUN = 0 AND FP_CLEAR = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((RUN = 0 AND FP_CLEAR = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -16177,7 +16177,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((RUN = 0 AND FP_START = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((RUN = 0 AND FP_START = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -16338,7 +16338,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "((RUN = 0 AND FP_CONTINUE = 1) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "((RUN = 0 AND FP_CONTINUE = 1) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },
@@ -16486,7 +16486,7 @@
         "HLT_REQ_NEXT": [
           {
             "value": "0",
-            "when": "(((((((RUN = 0 AND FP_START = 0) AND FP_CLEAR = 0) AND FP_CONTINUE = 0) AND FP_LOAD_ADDRESS = 0) AND FP_EXAMINE = 0) AND FP_DEPOSIT = 0) AND (HLT_REQ = 0 AND NOT ((RUN = 1 AND (IR_OPR_HLT = 1 OR FP_STOP = 1)))))",
+            "when": "(((((((RUN = 0 AND FP_START = 0) AND FP_CLEAR = 0) AND FP_CONTINUE = 0) AND FP_LOAD_ADDRESS = 0) AND FP_EXAMINE = 0) AND FP_DEPOSIT = 0) AND ((HLT_REQ = 0 AND NOT ((((RUN = 1 AND MS = FETCH) AND TS = 3) AND IR_OPR_HLT = 1))) AND NOT (((RUN = 1 AND FP_STOP = 1) AND NOT ((TS = 4 AND ((MS = EXECUTE OR ((MS = FETCH AND IR_NO_EXECUTE = 1) AND IR_INDIRECT = 0)) OR (MS = DEFER AND IR_NO_EXECUTE = 1))))))))",
             "origin": "direct-control definition",
             "source": "01:3.4.2"
           },

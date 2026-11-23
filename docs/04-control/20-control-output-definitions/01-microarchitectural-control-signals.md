@@ -94,8 +94,9 @@ Constraint:
 
 Constraint:
 
-- All control signals must have valid encodings in every cycle.
-- Undefined or reserved encodings must not be used.
+- Every control signal has a defined logic level in every cycle; no output floats.
+- A field must hold a valid encoding of its own wherever its Value Required When condition holds. Undefined or reserved encodings must not be used there.
+- Where the condition does not hold, the field has no effect and may hold any encoding, because physical bit sharing may place another field in its bits ([Control Word §5.6](../04-control-word.md#56-physical-bit-sharing)).
 
 ---
 
@@ -197,7 +198,7 @@ Behavior:
 
 Constraints:
 
-- Data value signals must always represent valid values within their defined domain  
+- Data value signals must represent valid values within their defined domain wherever their Value Required When condition holds
 - Data value signals must not produce side effects on the system  
 - Data value signals must not bypass select signal interpretation  
 - Data value signals only influence system behavior when:
@@ -232,14 +233,13 @@ All three signal classes are required for meaningful behavior.
 
 When an operation is not enabled:
 
-- Select signals must still contain valid encodings  
-- Data value signals must still present valid values  
-- No state change occurs  
-- No implicit behavior is permitted  
+- Select and data value signals have defined logic levels, but need not hold valid encodings: they have no effect ([Control Word §5.6](../04-control-word.md#56-physical-bit-sharing))
+- No state change occurs
+- No implicit behavior is permitted
 
 Constraint:
 
-- All signals must be defined every cycle, regardless of relevance  
+- All signals have defined logic levels every cycle, regardless of relevance
 
 ---
 
@@ -446,7 +446,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 ```
 
 **Constraints:**
-- Must be valid every cycle
+- Must be valid wherever its Value Required When condition holds
 - Required for all ALU operations
 - L is not an operand; the ALU reads L on its dedicated link input ([§7.3.1](#731-alu-evaluation))
 
@@ -1890,9 +1890,12 @@ Every control cycle must be fully specified.
 Constraint:
 
 ```
-Every signal has a valid value in every cycle,
-regardless of whether it is used.
+Every signal has a defined logic level in every cycle.
+Every field whose Value Required When condition holds
+has a valid value of its own encoding.
 ```
+
+A field whose condition does not hold has no effect, and may hold any encoding ([Control Word §5.6](../04-control-word.md#56-physical-bit-sharing)).
 
 ---
 
@@ -3093,14 +3096,14 @@ Constraint:
 ```
 For every TS:
     all signals are present
-    all signals contain valid encodings
+    every field whose condition holds contains a valid encoding
 ```
 
 Implications:
 
-- No “don’t care” states  
-- No omitted signals  
-- No partially defined control words  
+- No omitted signals
+- No partially defined control words
+- A field whose condition does not hold is a "don't care" for that word only, because it has no effect ([Control Word §5.6](../04-control-word.md#56-physical-bit-sharing))
 
 ---
 

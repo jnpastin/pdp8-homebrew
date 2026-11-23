@@ -83,7 +83,7 @@ Visibility: Control-visible
 
 Invariants:
 - Set from execution of CIF, RMF, or RTF until the deferred field is applied at the next JMP/JMS
-- While set, interrupt recognition is inhibited by holding `II` set across the deferred-field-change interval  
+- While set, interrupt recognition is inhibited by holding `II` set across the deferred-field-change interval, except after START (see the II constraints)  
 
 Constraints:
 - Set only by CIF, RMF, or RTF execution
@@ -315,6 +315,7 @@ Invariants:
 Constraints:
 - Set only by ION, CIF, RMF, and RTF instructions
 - Cleared during FETCH when no deferred instruction-field change is pending (CIFP = 0), by a JMP or JMS that applies a pending field change (at FETCH TP3 of a direct JMP, DEFER TP3 of a JMP I, or EXECUTE TP1 of a JMS), and by the START console operation
+- START clears II and leaves CIFP set. This is harmless: START also clears IE, and ION sets II again before interrupts can be enabled, after which FETCH TS1 does not clear it while CIFP is set. The pending field is still applied by the next JMP or JMS, as on the PDP-8/E, whose next JMP or JMS loads IF from its instruction buffer.
 - Must not be directly modified by datapath logic  
 
 Writers:

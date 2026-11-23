@@ -962,11 +962,17 @@ Applicable context:
 
 ```text
 HLT_REQ = 0
+NOT (RUN = 1 AND MS = FETCH AND TS = 3 AND IR_OPR_HLT = 1)
 NOT (
     RUN = 1
-    AND (
-        IR_OPR_HLT = 1
-        OR FP_STOP = 1
+    AND FP_STOP = 1
+    AND NOT (
+        TS = 4
+        AND (
+            MS = EXECUTE
+            OR (MS = FETCH AND IR_NO_EXECUTE = 1 AND IR_INDIRECT = 0)
+            OR (MS = DEFER AND IR_NO_EXECUTE = 1)
+        )
     )
 )
 ```
@@ -986,7 +992,7 @@ HLT_REQ <- 0 at TP
 Constraints:
 
 - Preservation of the clear state is explicit.
-- While running, the clear state is preserved only when neither a HLT instruction nor STOP is present.
+- While running, the clear state is preserved everywhere except the two capture contexts: a HLT at FETCH TS3 (section 3.4.4), and STOP at any TP other than an instruction-completion TP4 (section 3.4.3). A HLT in IR at any other TS, and STOP at instruction completion, therefore preserve it explicitly.
 - While halted, the clear state is preserved at every console TP; STOP and HLT requests are not captured while halted.
 
 ---
