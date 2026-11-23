@@ -217,13 +217,19 @@ When each commits:
 
 | Instruction | `II` cleared | `IF` loaded and `CIFP` cleared | Instruction completes |
 |---|---|---|---|
-| Direct JMP | FETCH TP3 | FETCH TP3 | FETCH TP4 |
+| Direct JMP | FETCH TP3 | FETCH TP4 | FETCH TP4 |
 | JMP I | DEFER TP3 | DEFER TP4 | DEFER TP4 |
 | JMS | EXECUTE TP1 | EXECUTE TP1 | EXECUTE TP4 |
 
-A JMP I changes the field last, so that the auto-index write-back of its pointer still uses the old field ([Fetch & Defer §4.5](../03-microarchitecture/04-fetch-defer.md#45-ts4)). In every case `II` is clear before the instruction's completion, so interrupt recognition may occur at the instruction-completion TP4 of that same JMP or JMS if all eligibility conditions are satisfied. The interrupt entry then saves the new instruction field in `IB` and the transfer address (JMP) or the address after the return-address word (JMS) in location `0000`, so no field change is lost.
+Both JMPs load the field at the TP4 that completes them. A JMP I could not load it sooner: the auto-index write-back of its pointer, in DEFER TS4, still uses the old field ([Fetch & Defer §4.5](../03-microarchitecture/04-fetch-defer.md#45-ts4)). In every case `II` is clear before the instruction's completion, so interrupt recognition may occur at the instruction-completion TP4 of that same JMP or JMS if all eligibility conditions are satisfied. The interrupt entry then saves the new instruction field in `IB` and the transfer address (JMP) or the address after the return-address word (JMS) in location `0000`, so no field change is lost.
 
-The JMP timing matches the PDP-8/E, where the KM8-E negates its interrupt inhibit during any JMP or JMS ("negated at TP3 whenever a JMP or JMS instruction occurs", KM8-E Memory Extension Theory of Operation §2.9), and MAINDEC-8E-D1HA checks that the interrupt follows the field-changing JMP.
+The JMP timing matches the PDP-8/E (KM8-E Memory Extension, Theory of Operation):
+
+- The KM8-E negates its interrupt inhibit "at TP3 whenever a JMP or JMS instruction occurs" (§2.10.1).
+- It loads IF at the TP4 of FETCH for a direct JMP or JMS, and of DEFER for an indirect one (§2.10.3).
+- MAINDEC-8E-D1HA checks that the interrupt follows the field-changing JMP.
+
+A JMS differs: it clears `II` and loads IF at EXECUTE TP1, one TP after the KM8-E's TP4. No program can see the difference, because nothing between those TPs uses IF or II. Matching it would need the control store to recognize a JMS in FETCH and DEFER, which `IR_CLASS` does not ([IR-Derived Fields](../04-control/10-control-input-definitions/02-ir-derived-fields.md#ir_class)).
 
 ## 13. FETCH-Time Inhibit Clearing
 

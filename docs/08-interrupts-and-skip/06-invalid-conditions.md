@@ -20,7 +20,8 @@ The following conditions are illegal:
 - `CIFP = 1` and FETCH TS1 selecting `II_CLEAR`
 - a pending instruction-field change staged by CIF, RMF, or RTF being applied by an instruction other than JMP or JMS
 - a JMP or JMS applying a pending instruction-field change without clearing `CIFP`
-- interrupt recognition at a TP that applies a pending instruction-field change
+- interrupt recognition at a TP4 when `II` was set before that TP
+- interrupt entry after a JMP or JMS with a pending field change saving the old instruction field in `IB`
 
 ## 3. Illegal Interrupt-Entry and Return Conditions
 

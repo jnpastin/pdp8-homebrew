@@ -76,14 +76,6 @@
         },
         {
           "predicate": "IR_CLASS = 001 AND CIFP = 1",
-          "micro_operation": "DIF_TO_IF"
-        },
-        {
-          "predicate": "IR_CLASS = 001 AND CIFP = 1",
-          "micro_operation": "CIFP_CLEAR"
-        },
-        {
-          "predicate": "IR_CLASS = 001 AND CIFP = 1",
           "micro_operation": "II_CLEAR"
         }
       ]
@@ -92,7 +84,7 @@
       "id": "fetch-defer:3.4",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 118
+        "line": 116
       },
       "execution_model": "major-state",
       "context": [
@@ -104,6 +96,14 @@
         {
           "predicate": "IR_CLASS = 100 AND SKIP = 1",
           "micro_operation": "PC_INC"
+        },
+        {
+          "predicate": "IR_CLASS = 001 AND CIFP = 1",
+          "micro_operation": "DIF_TO_IF"
+        },
+        {
+          "predicate": "IR_CLASS = 001 AND CIFP = 1",
+          "micro_operation": "CIFP_CLEAR"
         }
       ]
     },
@@ -111,7 +111,7 @@
       "id": "fetch-defer:4.2",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 153
+        "line": 154
       },
       "execution_model": "major-state",
       "context": [
@@ -127,7 +127,7 @@
       "id": "fetch-defer:4.3",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 163
+        "line": 164
       },
       "execution_model": "major-state",
       "context": [
@@ -143,7 +143,7 @@
       "id": "fetch-defer:4.4",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 173
+        "line": 174
       },
       "execution_model": "major-state",
       "context": [
@@ -166,7 +166,7 @@
       "id": "fetch-defer:4.5",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 189
+        "line": 190
       },
       "execution_model": "major-state",
       "context": [
@@ -1525,7 +1525,7 @@
       "id": "console:10",
       "source": {
         "path": "docs/03-microarchitecture/09-console-execution.md",
-        "line": 331
+        "line": 333
       },
       "execution_model": "console-transaction",
       "context": [
@@ -1546,7 +1546,7 @@
       "id": "console:11",
       "source": {
         "path": "docs/03-microarchitecture/09-console-execution.md",
-        "line": 378
+        "line": 380
       },
       "execution_model": "console-transaction",
       "context": [
@@ -1561,7 +1561,7 @@
       "id": "console:15",
       "source": {
         "path": "docs/03-microarchitecture/09-console-execution.md",
-        "line": 557
+        "line": 559
       },
       "execution_model": "console-transaction",
       "context": [

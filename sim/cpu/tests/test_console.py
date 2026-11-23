@@ -38,6 +38,44 @@ class PowerOnTests(unittest.TestCase):
         for name in ("PC", "IF", "DF", "MQ", "MAPR", "IR", "CIFP", "II"):
             self.assertIsNone(st[name], name)
 
+    def test_controllers_initialize_at_the_power_on_clear(self):
+        # Timing Terminology §3.4 (review D4): the reset ends with a CLEAR transaction, and each
+        # controller initializes at its TPC, the only TP it sees during power-on.
+        class Device:
+            def __init__(self):
+                self.commits = []
+
+            def selects(self, device):
+                return False
+
+            def present(self, bus):
+                from types import SimpleNamespace
+                return SimpleNamespace(io_read_req=0, io_write_req=0, io_skip_req=0,
+                                       io_clear_ac_req=0, db=None, int_req=False)
+
+            def commit(self, bus, tp, db_write, initialize):
+                self.commits.append((tp, initialize))
+
+            def at_boundary(self, now_ns=0):
+                pass
+
+            def interrupt_request(self):
+                return False
+
+            def initialize(self):
+                raise AssertionError("initialized outside a TP")
+
+            def state(self):
+                return {}
+
+        device = Device()
+        cpu = Cpu(ControlStore.load(), Memory(), devices=[device])
+        cpu.power_on()
+        self.assertEqual(len(device.commits), 1)
+        self.assertTrue(device.commits[0][1])
+        self.assertEqual((cpu.st["RUN"], cpu.st["MS"], cpu.st["AC"], cpu.st["L"], cpu.st["IE"]),
+                         (0, E.FETCH, 0, 0, 0))
+
     def test_undefined_address_inputs_are_enumerated(self):
         # While halted after power-on, the state overlay group carries CIFP and AUTO_INDEX_REQUIRED,
         # both undefined; every combination must give the same effect (CSO §5.7, §9).

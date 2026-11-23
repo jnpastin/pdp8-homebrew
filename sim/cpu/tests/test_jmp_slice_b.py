@@ -4,8 +4,9 @@ or DEFER (JMP I).
 - docs/03-microarchitecture/04-fetch-defer.md §3.3, §3.4, §4.4, §4.5
 - docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md §3.1.1
   (instruction completion), §3.2, §3.3, §3.4
-- docs/08-interrupts-and-skip/03-interrupt-enable-and-inhibit.md §12 (JMP applies a pending field
-  change at FETCH TP3 or DEFER TP3, so an interrupt may follow at the same JMP's completion)
+- docs/08-interrupts-and-skip/03-interrupt-enable-and-inhibit.md §12 (a JMP with a pending field
+  change clears II at FETCH TP3 or DEFER TP3 and loads IF at the TP4 that completes it, so an
+  interrupt may follow at that completion and saves the new field)
 """
 
 import unittest
@@ -111,7 +112,7 @@ class InterruptAtJmpCompletion(unittest.TestCase):
         self.assertEqual(cpu.memory.read(0, 0), 0o400)
 
     def test_cif_then_jmp_applies_the_field_and_allows_the_interrupt(self):
-        # Gap L, KM8-E §2.9: the JMP that applies a pending field change clears II at TP3, so the
+        # Gap L, KM8-E §2.10.1: the JMP that applies a pending field change clears II at TP3, so the
         # interrupt is recognized at that JMP's completion and saves the new field in IB.
         cpu = machine({0o200: CIF_2, 0o201: JMP_300, 0o1: HLT}, fields=(0, 2))
         self.enable(cpu)
@@ -120,6 +121,17 @@ class InterruptAtJmpCompletion(unittest.TestCase):
         self.assertEqual(cpu.memory.read(0, 0), 0o300)
         self.assertEqual(cpu.st["IB"] >> 3, 2)                          # saved IF = the new field
         self.assertEqual(cpu.st["IF"], 0)                               # interrupt entry: field 0
+
+    def test_direct_jmp_loads_the_field_at_fetch_tp4(self):
+        # Review D11, KM8-E §2.10.3: II clears at FETCH TP3, IF loads and CIFP clears at FETCH TP4.
+        cpu = machine({0o200: CIF_2, 0o201: JMP_300, (2, 0o300): HLT}, fields=(0, 2))
+        for _ in range(8):                                              # the CIF
+            cpu.step_ts()
+        for _ in range(3):                                              # the JMP's FETCH TS1 to TS3
+            cpu.step_ts()
+        self.assertEqual((cpu.st["II"], cpu.st["CIFP"], cpu.st["IF"], cpu.st["PC"]), (0, 1, 0, 0o300))
+        cpu.step_ts()                                                   # FETCH TS4
+        self.assertEqual((cpu.st["CIFP"], cpu.st["IF"], cpu.st["MS"]), (0, 2, E.FETCH))
 
     def test_cif_then_jmp_without_interrupt_fetches_from_the_new_field(self):
         cpu = machine({0o200: CIF_2, 0o201: JMP_300, (2, 0o300): NOP, (2, 0o301): HLT}, fields=(0, 2))

@@ -92,7 +92,7 @@ Constraints:
 
 Writers:
 - IOT execution (CIF, RMF, or RTF; CIFP_SET micro-operation)
-- FETCH TP3 (direct JMP), DEFER TP4 (JMP I), and MRI execution TP1 (JMS); CIFP_CLEAR micro-operation
+- FETCH TP4 (direct JMP), DEFER TP4 (JMP I), and MRI execution TP1 (JMS); CIFP_CLEAR micro-operation
 - Interrupt entry (CIFP_CLEAR micro-operation)
 - Console Load Address (CIFP_CLEAR micro-operation)
 
@@ -138,7 +138,7 @@ Invariants:
 Constraints:
 - Loaded by CIF from IR, RMF from IB, RTF from AC[5:3], and Load Address from FP_IF
 - Cleared at interrupt entry
-- Applied to IF only at the JMP or JMS that concludes a pending deferred field change: at FETCH TP3 of a direct JMP, DEFER TP4 of a JMP I, or EXECUTE TP1 of a JMS
+- Applied to IF only at the JMP or JMS that concludes a pending deferred field change: at FETCH TP4 of a direct JMP, DEFER TP4 of a JMP I, or EXECUTE TP1 of a JMS
 - Must not change during FETCH, DEFER, or EXECUTE except at the defined load, clear, and apply points  
 
 Writers:
@@ -266,7 +266,7 @@ Invariants:
 
 Constraints:
 - Set only by ION or RTF
-- Cleared by IOF, SKON, interrupt entry, system initialization (CAF, front-panel CLEAR), console START, or the power-on reset
+- Cleared by IOF, SKON, interrupt entry, system initialization (CAF, front-panel CLEAR, and the CLEAR that ends the power-on reset), or console START
 - Changes only at defined TP events
 
 Writers:
@@ -289,11 +289,11 @@ Visibility: Global
 Invariants:
 - Supplies high-order bits of instruction fetch address
 - Supplies high-order bits for direct MRI access and indirect pointer access
-- Constant for the duration of an instruction cycle, except that a JMP or JMS applies a pending deferred field change: at FETCH TP3 of a direct JMP, DEFER TP4 of a JMP I, or EXECUTE TP1 of a JMS
+- Constant for the duration of an instruction cycle, except that a JMP or JMS applies a pending deferred field change: at FETCH TP4 of a direct JMP, DEFER TP4 of a JMP I, or EXECUTE TP1 of a JMS
 
 Constraints:
 - Modified only by field control instructions
-- Must not change except where a JMP or JMS applies a pending deferred field change: at FETCH TP3 of a direct JMP, DEFER TP4 of a JMP I, or EXECUTE TP1 of a JMS
+- Must not change except where a JMP or JMS applies a pending deferred field change: at FETCH TP4 of a direct JMP, DEFER TP4 of a JMP I, or EXECUTE TP1 of a JMS
 
 Writers:
 - Field instruction control logic

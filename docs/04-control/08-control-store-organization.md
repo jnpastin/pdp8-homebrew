@@ -413,7 +413,7 @@ The control store and the timing ROM run from fast SRAMs. Each SRAM is loaded fr
 - A 15-bit copy counter drives every SRAM's address through tri-state buffers, which are disabled after the copy so that the address formation drives the address. Each EEPROM, addressed by the same counter, drives its SRAM's data pins. All nine devices copy in parallel, about 7 ms in all.
 - The copy runs only during the power-on reset, from the supply supervisor. It never runs at `/INITIALIZE`: CAF and front-panel CLEAR assert `/INITIALIZE` while the machine is running from the SRAMs.
 - Only the `LOADING` flip-flop and the copy write strobe reach an SRAM's `/WE`, which has a pull-up. No control-word field and no bus reaches it, and the control store is not in the memory address space.
-- While `LOADING` is set, TSEQ is held, `CW_VALID` is deasserted, and `/INITIALIZE` is asserted, so no control word from a partly loaded SRAM acts.
+- While `LOADING` is set, TSEQ is held, `CW_VALID` is deasserted, and `/INITIALIZE` is asserted, so no control word from a partly loaded SRAM acts. The reset ends after the copy, and the CLEAR transaction that follows reads the loaded SRAMs.
 - Each EEPROM's `/WE` is tied high, so it cannot be written in circuit.
 
 In normal running each SRAM has `/CE` and `/OE` asserted and `/WE` deasserted, so its address access time (15 ns) applies; the address buffer adds 9 ns ([option2/timing.md](../../option2/timing.md) §2, §3).

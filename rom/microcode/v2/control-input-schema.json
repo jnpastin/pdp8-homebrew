@@ -4770,7 +4770,7 @@
           "meaning": "START command not asserted",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 109
+            "line": 111
           }
         },
         {
@@ -4778,7 +4778,7 @@
           "meaning": "START command asserted",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 110
+            "line": 112
           }
         }
       ],
@@ -4790,14 +4790,14 @@
           "text": "meaningful only when RUN = 0",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 118
+            "line": 120
           }
         },
         {
           "text": "must be treated as a momentary command input",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 119
+            "line": 121
           }
         }
       ],
@@ -4807,7 +4807,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 113
+            "line": 115
           }
         },
         {
@@ -4815,7 +4815,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 114
+            "line": 116
           }
         },
         {
@@ -4823,7 +4823,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 115
+            "line": 117
           }
         }
       ],
@@ -4834,7 +4834,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-          "line": 100,
+          "line": 102,
           "heading": "FP_START"
         }
       }
@@ -4862,7 +4862,7 @@
           "meaning": "CLEAR command not asserted",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 130
+            "line": 132
           }
         },
         {
@@ -4870,7 +4870,7 @@
           "meaning": "CLEAR command asserted",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 131
+            "line": 133
           }
         }
       ],
@@ -4882,56 +4882,56 @@
           "text": "meaningful only when RUN = 0",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 137
+            "line": 139
           }
         },
         {
           "text": "ignored when RUN = 1",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 138
+            "line": 140
           }
         },
         {
           "text": "must be synchronized and debounced before use",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 139
+            "line": 141
           }
         },
         {
           "text": "must be treated as a momentary command input",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 140
+            "line": 142
           }
         },
         {
           "text": "generates one /INITIALIZE pulse per distinct accepted press",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 141
+            "line": 143
           }
         },
         {
           "text": "must not retrigger while the synchronized input remains asserted",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 142
+            "line": 144
           }
         },
         {
           "text": "is re-armed only after the synchronized input is released",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 143
+            "line": 145
           }
         },
         {
           "text": "must not directly modify processor or controller state",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 144
+            "line": 146
           }
         }
       ],
@@ -4941,7 +4941,7 @@
           "target": "../20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 134
+            "line": 136
           }
         }
       ],
@@ -4952,7 +4952,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-          "line": 121,
+          "line": 123,
           "heading": "FP_CLEAR"
         }
       }
@@ -4980,7 +4980,7 @@
           "meaning": "CONTINUE command not asserted",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 165
+            "line": 167
           }
         },
         {
@@ -4988,7 +4988,7 @@
           "meaning": "CONTINUE command asserted",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 166
+            "line": 168
           }
         }
       ],
@@ -5000,14 +5000,14 @@
           "text": "meaningful only when RUN = 0",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 174
+            "line": 176
           }
         },
         {
           "text": "must be treated as a momentary command input",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 175
+            "line": 177
           }
         }
       ],
@@ -5017,7 +5017,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 169
+            "line": 171
           }
         },
         {
@@ -5025,7 +5025,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 170
+            "line": 172
           }
         },
         {
@@ -5033,7 +5033,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 171
+            "line": 173
           }
         }
       ],
@@ -5044,7 +5044,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-          "line": 156,
+          "line": 158,
           "heading": "FP_CONTINUE"
         }
       }
@@ -5072,7 +5072,7 @@
           "meaning": "STOP command not asserted",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 186
+            "line": 188
           }
         },
         {
@@ -5080,7 +5080,7 @@
           "meaning": "STOP command asserted",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 187
+            "line": 189
           }
         }
       ],
@@ -5092,28 +5092,28 @@
           "text": "may be recognized during normal execution",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 193
+            "line": 195
           }
         },
         {
           "text": "must not halt execution immediately",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 194
+            "line": 196
           }
         },
         {
           "text": "contributes only to halt-request behavior",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 195
+            "line": 197
           }
         },
         {
           "text": "captured in the panel input register (section 2)",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 196
+            "line": 198
           }
         }
       ],
@@ -5123,7 +5123,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 190
+            "line": 192
           }
         }
       ],
@@ -5134,7 +5134,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-          "line": 177,
+          "line": 179,
           "heading": "FP_STOP"
         }
       }
@@ -5162,7 +5162,7 @@
           "meaning": "LOAD ADDRESS command not asserted",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 207
+            "line": 209
           }
         },
         {
@@ -5170,7 +5170,7 @@
           "meaning": "LOAD ADDRESS command asserted",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 208
+            "line": 210
           }
         }
       ],
@@ -5182,21 +5182,21 @@
           "text": "meaningful only when RUN = 0",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 214
+            "line": 216
           }
         },
         {
           "text": "ignored during normal execution",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 215
+            "line": 217
           }
         },
         {
           "text": "must be treated as a momentary command input",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 216
+            "line": 218
           }
         }
       ],
@@ -5206,7 +5206,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 211
+            "line": 213
           }
         }
       ],
@@ -5217,7 +5217,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-          "line": 198,
+          "line": 200,
           "heading": "FP_LOAD_ADDRESS"
         }
       }
@@ -5245,7 +5245,7 @@
           "meaning": "EXAMINE command not asserted",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 227
+            "line": 229
           }
         },
         {
@@ -5253,7 +5253,7 @@
           "meaning": "EXAMINE command asserted",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 228
+            "line": 230
           }
         }
       ],
@@ -5265,21 +5265,21 @@
           "text": "meaningful only when RUN = 0",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 234
+            "line": 236
           }
         },
         {
           "text": "ignored during normal execution",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 235
+            "line": 237
           }
         },
         {
           "text": "must be treated as a momentary command input",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 236
+            "line": 238
           }
         }
       ],
@@ -5289,7 +5289,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 231
+            "line": 233
           }
         }
       ],
@@ -5300,7 +5300,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-          "line": 218,
+          "line": 220,
           "heading": "FP_EXAMINE"
         }
       }
@@ -5328,7 +5328,7 @@
           "meaning": "DEPOSIT command not asserted",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 247
+            "line": 249
           }
         },
         {
@@ -5336,7 +5336,7 @@
           "meaning": "DEPOSIT command asserted",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 248
+            "line": 250
           }
         }
       ],
@@ -5348,21 +5348,21 @@
           "text": "meaningful only when RUN = 0",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 254
+            "line": 256
           }
         },
         {
           "text": "ignored during normal execution",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 255
+            "line": 257
           }
         },
         {
           "text": "must be treated as a momentary command input",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 256
+            "line": 258
           }
         }
       ],
@@ -5372,7 +5372,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 251
+            "line": 253
           }
         }
       ],
@@ -5383,7 +5383,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-          "line": 238,
+          "line": 240,
           "heading": "FP_DEPOSIT"
         }
       }
@@ -5411,7 +5411,7 @@
           "meaning": "disabled",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 275
+            "line": 277
           }
         },
         {
@@ -5419,7 +5419,7 @@
           "meaning": "enabled",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 276
+            "line": 278
           }
         }
       ],
@@ -5431,28 +5431,28 @@
           "text": "does not initiate execution",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 282
+            "line": 284
           }
         },
         {
           "text": "does not modify instruction behavior",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 283
+            "line": 285
           }
         },
         {
           "text": "affects only run/stop behavior",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 284
+            "line": 286
           }
         },
         {
           "text": "captured in the panel input register (section 2)",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 285
+            "line": 287
           }
         }
       ],
@@ -5462,7 +5462,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 279
+            "line": 281
           }
         }
       ],
@@ -5473,7 +5473,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-          "line": 266,
+          "line": 268,
           "heading": "FP_SINGLE_INSTRUCTION"
         }
       }
@@ -5501,7 +5501,7 @@
           "meaning": "disabled",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 296
+            "line": 298
           }
         },
         {
@@ -5509,7 +5509,7 @@
           "meaning": "enabled",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 297
+            "line": 299
           }
         }
       ],
@@ -5521,28 +5521,28 @@
           "text": "does not initiate execution",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 303
+            "line": 305
           }
         },
         {
           "text": "does not modify instruction behavior",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 304
+            "line": 306
           }
         },
         {
           "text": "affects only run/stop behavior",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 305
+            "line": 307
           }
         },
         {
           "text": "captured in the panel input register (section 2)",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 306
+            "line": 308
           }
         }
       ],
@@ -5552,7 +5552,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 300
+            "line": 302
           }
         }
       ],
@@ -5563,7 +5563,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-          "line": 287,
+          "line": 289,
           "heading": "FP_SINGLE_STEP"
         }
       }
@@ -5593,7 +5593,7 @@
           "meaning": "instruction field value",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 323
+            "line": 325
           }
         }
       ],
@@ -5604,14 +5604,14 @@
           "text": "captured in the panel input register (section 2)",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 330
+            "line": 332
           }
         },
         {
           "text": "must not directly modify IF",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 331
+            "line": 333
           }
         }
       ],
@@ -5621,7 +5621,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#fp_if_to_if",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 326
+            "line": 328
           }
         },
         {
@@ -5629,7 +5629,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#fp_if_to_dif",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 327
+            "line": 329
           }
         }
       ],
@@ -5640,7 +5640,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-          "line": 314,
+          "line": 316,
           "heading": "FP_IF"
         }
       }
@@ -5670,7 +5670,7 @@
           "meaning": "data field value",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 342
+            "line": 344
           }
         }
       ],
@@ -5681,14 +5681,14 @@
           "text": "captured in the panel input register (section 2)",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 348
+            "line": 350
           }
         },
         {
           "text": "must not directly modify DF",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 349
+            "line": 351
           }
         }
       ],
@@ -5698,7 +5698,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#fp_df_to_df",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 345
+            "line": 347
           }
         }
       ],
@@ -5709,7 +5709,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-          "line": 333,
+          "line": 335,
           "heading": "FP_DF"
         }
       }
@@ -5739,7 +5739,7 @@
           "meaning": "switch register value",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 360
+            "line": 362
           }
         }
       ],
@@ -5750,14 +5750,14 @@
           "text": "captured in the panel input register (section 2)",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 369
+            "line": 371
           }
         },
         {
           "text": "must not directly modify any register",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 370
+            "line": 372
           }
         }
       ],
@@ -5767,7 +5767,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 363
+            "line": 365
           }
         },
         {
@@ -5775,7 +5775,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#fp_sr_to_mb",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 364
+            "line": 366
           }
         },
         {
@@ -5783,7 +5783,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#mem_write_from_fp_sr",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 365
+            "line": 367
           }
         },
         {
@@ -5791,7 +5791,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 366
+            "line": 368
           }
         }
       ],
@@ -5802,7 +5802,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-          "line": 351,
+          "line": 353,
           "heading": "FP_SR"
         }
       }
@@ -5831,7 +5831,7 @@
           "meaning": "interrupt request pending",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 415
+            "line": 417
           }
         },
         {
@@ -5839,7 +5839,7 @@
           "meaning": "no interrupt request pending",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 416
+            "line": 418
           }
         }
       ],
@@ -5851,28 +5851,28 @@
           "text": "is the wired OR of registered controller interrupt outputs, which change only as a TP ends",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 423
+            "line": 425
           }
         },
         {
           "text": "must not pass through an additional stateful synchronization stage",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 424
+            "line": 426
           }
         },
         {
           "text": "must settle, through its pull-up ([Signal Conventions §7](../../00-overview/98-signal-conventions.md#7-pull-resistors)), before the TP at which control samples it",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 425
+            "line": 427
           }
         },
         {
           "text": "must not directly modify processor state",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 426
+            "line": 428
           }
         }
       ],
@@ -5882,7 +5882,7 @@
           "target": "./03-derived-flags.md#interrupt_request_valid",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 419
+            "line": 421
           }
         },
         {
@@ -5890,7 +5890,7 @@
           "target": "../20-control-output-definitions/01-microarchitectural-control-signals.md#gtf_flags",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 420
+            "line": 422
           }
         }
       ],
@@ -5901,7 +5901,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-          "line": 405,
+          "line": 407,
           "heading": "/INT_REQ"
         }
       }
@@ -5929,7 +5929,7 @@
           "meaning": "DMA request pending",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 386
+            "line": 388
           }
         },
         {
@@ -5937,7 +5937,7 @@
           "meaning": "no DMA request pending",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 387
+            "line": 389
           }
         }
       ],
@@ -5949,56 +5949,56 @@
           "text": "participates in EXT",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 396
+            "line": 398
           }
         },
         {
           "text": "contributes to CTRL_ADDR formation",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 397
+            "line": 399
           }
         },
         {
           "text": "is derived combinationally from DMA_ENABLE and registered controller /DMA_REQ[n] outputs",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 398
+            "line": 400
           }
         },
         {
           "text": "must not pass through an additional stateful synchronization stage",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 399
+            "line": 401
           }
         },
         {
           "text": "must satisfy the applicable setup and hold requirements before CPU control samples it at TP4",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 400
+            "line": 402
           }
         },
         {
           "text": "must not directly modify processor state",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 401
+            "line": 403
           }
         },
         {
           "text": "must not directly assert memory, address, or data-bus control",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 402
+            "line": 404
           }
         },
         {
           "text": "may be deasserted while controller /DMA_REQ[n] lines remain asserted when DMA_ENABLE = 0",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 403
+            "line": 405
           }
         }
       ],
@@ -6008,7 +6008,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 390
+            "line": 392
           }
         },
         {
@@ -6016,7 +6016,7 @@
           "target": "../20-control-output-definitions/02-architectural-control-signals.md#45-dma_grant",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 391
+            "line": 393
           }
         },
         {
@@ -6024,7 +6024,7 @@
           "target": "../20-control-output-definitions/03-sequencing-control-signals.md#41-next-major-state-ms_next",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 392
+            "line": 394
           }
         }
       ],
@@ -6035,7 +6035,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-          "line": 376,
+          "line": 378,
           "heading": "/DMA_REQ"
         }
       }
@@ -6063,7 +6063,7 @@
           "meaning": "no read requested",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 455
+            "line": 457
           }
         },
         {
@@ -6071,7 +6071,7 @@
           "meaning": "device-to-CPU read requested",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 456
+            "line": 458
           }
         }
       ],
@@ -6083,63 +6083,63 @@
           "text": "Valid only when IOT_ACTIVE is asserted.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 466
+            "line": 468
           }
         },
         {
           "text": "Valid only from the address-matched controller.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 467
+            "line": 469
           }
         },
         {
           "text": "Phase-specific.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 468
+            "line": 470
           }
         },
         {
           "text": "Mutually exclusive with IO_WRITE_REQ.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 469
+            "line": 471
           }
         },
         {
           "text": "Must be asserted early enough for the complete DB transfer to occur within the current external-IOT EXECUTE major state.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 470
+            "line": 472
           }
         },
         {
           "text": "Must be stable before and through the TP at which CPU control accepts the request.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 471
+            "line": 473
           }
         },
         {
           "text": "Must not cause the controller to drive DB during the request phase.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 472
+            "line": 474
           }
         },
         {
           "text": "Must not directly modify AC.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 473
+            "line": 475
           }
         },
         {
           "text": "The selected controller drives DB only while CPU control asserts /DB_READ during the following transfer phase.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 474
+            "line": 476
           }
         }
       ],
@@ -6149,7 +6149,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 460
+            "line": 462
           }
         },
         {
@@ -6157,7 +6157,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 461
+            "line": 463
           }
         },
         {
@@ -6165,7 +6165,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 462
+            "line": 464
           }
         }
       ],
@@ -6176,7 +6176,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-          "line": 444,
+          "line": 446,
           "heading": "IO_READ_REQ"
         }
       }
@@ -6204,7 +6204,7 @@
           "meaning": "no write requested",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 487
+            "line": 489
           }
         },
         {
@@ -6212,7 +6212,7 @@
           "meaning": "CPU-to-device write requested",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 488
+            "line": 490
           }
         }
       ],
@@ -6224,56 +6224,56 @@
           "text": "Valid only when IOT_ACTIVE is asserted.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 498
+            "line": 500
           }
         },
         {
           "text": "Valid only from the address-matched controller.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 499
+            "line": 501
           }
         },
         {
           "text": "Phase-specific.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 500
+            "line": 502
           }
         },
         {
           "text": "Mutually exclusive with IO_READ_REQ.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 501
+            "line": 503
           }
         },
         {
           "text": "Must be asserted early enough for the complete DB transfer to occur within the current external-IOT EXECUTE major state.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 502
+            "line": 504
           }
         },
         {
           "text": "Must be stable before and through the TP at which CPU control accepts the request.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 503
+            "line": 505
           }
         },
         {
           "text": "Must not cause the controller to capture DB during the request phase.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 504
+            "line": 506
           }
         },
         {
           "text": "The selected controller captures DB only at the TP following the transfer phase in which CPU control asserts /DB_WRITE.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 505
+            "line": 507
           }
         }
       ],
@@ -6283,7 +6283,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 492
+            "line": 494
           }
         },
         {
@@ -6291,7 +6291,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 493
+            "line": 495
           }
         },
         {
@@ -6299,7 +6299,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 494
+            "line": 496
           }
         }
       ],
@@ -6310,7 +6310,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-          "line": 476,
+          "line": 478,
           "heading": "IO_WRITE_REQ"
         }
       }
@@ -6338,7 +6338,7 @@
           "meaning": "no skip requested",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 516
+            "line": 518
           }
         },
         {
@@ -6346,7 +6346,7 @@
           "meaning": "skip requested",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 517
+            "line": 519
           }
         }
       ],
@@ -6358,42 +6358,42 @@
           "text": "Valid only during TS4 of an external IOT.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 525
+            "line": 527
           }
         },
         {
           "text": "Valid only from the address-matched controller.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 526
+            "line": 528
           }
         },
         {
           "text": "Must be based on controller state captured at TP3.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 527
+            "line": 529
           }
         },
         {
           "text": "Causes only CPU PC_INC.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 528
+            "line": 530
           }
         },
         {
           "text": "Must not depend on a result committed at TP4.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 529
+            "line": 531
           }
         },
         {
           "text": "Must not directly modify PC.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 530
+            "line": 532
           }
         }
       ],
@@ -6403,7 +6403,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 521
+            "line": 523
           }
         }
       ],
@@ -6414,7 +6414,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-          "line": 507,
+          "line": 509,
           "heading": "IO_SKIP_REQ"
         }
       }
@@ -6442,7 +6442,7 @@
           "meaning": "no AC clear requested",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 541
+            "line": 543
           }
         },
         {
@@ -6450,7 +6450,7 @@
           "meaning": "AC clear requested",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 542
+            "line": 544
           }
         }
       ],
@@ -6462,56 +6462,56 @@
           "text": "Valid only when IOT_ACTIVE = 1.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 550
+            "line": 552
           }
         },
         {
           "text": "Valid only from the address-matched controller.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 551
+            "line": 553
           }
         },
         {
           "text": "Phase-specific.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 552
+            "line": 554
           }
         },
         {
           "text": "May coincide with IO_READ_REQ during the read-request TS; AC clear commits when the read request is accepted, and the DB read commits during the following TS and TP.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 553
+            "line": 555
           }
         },
         {
           "text": "Must not be asserted during the transfer TS following an accepted IO_READ_REQ.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 554
+            "line": 556
           }
         },
         {
           "text": "Must not cause AC clear and DB_READ_TO_AC to commit at the same TP.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 555
+            "line": 557
           }
         },
         {
           "text": "May coincide with IO_WRITE_REQ.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 556
+            "line": 558
           }
         },
         {
           "text": "Must not directly modify AC.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 557
+            "line": 559
           }
         }
       ],
@@ -6521,7 +6521,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 546
+            "line": 548
           }
         }
       ],
@@ -6532,7 +6532,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-          "line": 532,
+          "line": 534,
           "heading": "IO_CLEAR_AC_REQ"
         }
       }
@@ -6586,7 +6586,7 @@
       ],
       "source": {
         "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-        "line": 95
+        "line": 97
       }
     }
   ],

@@ -118,14 +118,10 @@ class Cpu:
     # -- lifecycle ---------------------------------------------------------------------------
 
     def power_on(self):
-        """Timing Terminology §3.4. The console latch holds no command; /INITIALIZE is asserted,
-        so each controller is in its initialized state when the reset ends."""
+        """Timing Terminology §3.4. The reset loads CLEAR into the console latch and ends with that
+        transaction: controllers and the DMA arbiter initialize at its TPC, and AC, L, and IE clear."""
         self.st.power_on()
-        self.panel.latched = None
-        for device in self.devices:
-            device.initialize()
-        if self.dma is not None:
-            self.dma.initialize()
+        self.press("CLEAR")
 
     @property
     def running(self) -> bool:

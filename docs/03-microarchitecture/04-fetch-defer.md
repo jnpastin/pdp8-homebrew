@@ -94,8 +94,6 @@ IR_CLASS = 001 -> IR_ADDR_TO_PC
 IR_CLASS = 011 OR IR_CLASS = 100 OR IR_CLASS = 101 -> OPR_PASS
 IR_CLASS = 100 -> OPR_SKIP_REQ_TO_SKIP
 IR_CLASS = 101 -> OPR_PASS_TO_MQ
-IR_CLASS = 001 AND CIFP = 1 -> DIF_TO_IF
-IR_CLASS = 001 AND CIFP = 1 -> CIFP_CLEAR
 IR_CLASS = 001 AND CIFP = 1 -> II_CLEAR
 ```
 
@@ -108,7 +106,7 @@ Description:
 | Group 1 OPR | AC and L load from the OPR pass unit | [Group 1 Execution](./07-opr/01-group1-execution.md) |
 | Group 2 OPR | AC loads from the pass unit; `SKIP` loads the skip decision; a HLT sets `HLT_REQ` | [Group 2 Execution](./07-opr/02-group2-execution.md), [HLT capture](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#344-hlt-instruction-request-capture) |
 | Group 3 OPR | AC and MQ load from the pass unit | [Group 3 Execution](./07-opr/03-group3-execution.md) |
-| Direct JMP | PC loads the formed address; a pending field change is applied and `II` clears | [Deferred Field Application](../08-interrupts-and-skip/03-interrupt-enable-and-inhibit.md#12-deferred-field-application) |
+| Direct JMP | PC loads the formed address; with a field change pending, `II` clears (the field loads at TP4) | [Deferred Field Application](../08-interrupts-and-skip/03-interrupt-enable-and-inhibit.md#12-deferred-field-application) |
 
 - Every input is the value held before TP3, so the skip decision does not see a CLA in the same instruction.
 - Because `II` clears at TP3, an interrupt may be recognized when the JMP completes at TP4, as on the KM8-E, which negates INT INHIBIT at TP3 of a JMP or JMS.
@@ -124,6 +122,8 @@ Conditional μops:
 
 ```text
 IR_CLASS = 100 AND SKIP = 1 -> PC_INC
+IR_CLASS = 001 AND CIFP = 1 -> DIF_TO_IF
+IR_CLASS = 001 AND CIFP = 1 -> CIFP_CLEAR
 ```
 
 Control Decisions:
@@ -138,6 +138,7 @@ Control Decisions:
 Description:
 - Determines the next major state. The instruction-completion rules (interrupt entry, DMA entry, halts) are defined in [Sequencing and Internal Control §3](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#3-sequencing-control)
 - A Group 2 OPR whose `SKIP` is set increments PC at this TP4, concurrently with the instruction-completion decision. An interrupt recognized at the same TP4 saves the incremented PC as the return address; no special case applies ([Skip Model §14](../08-interrupts-and-skip/05-skip-model.md#14-relationship-to-interrupt-and-dma-recognition))
+- A direct JMP with a pending field change loads IF and clears `CIFP` at this TP4, the TP that completes it, as the KM8-E does ([Interrupt Enable and Inhibit §12](../08-interrupts-and-skip/03-interrupt-enable-and-inhibit.md#12-deferred-field-application)). An interrupt recognized at the same TP4 saves the new field, because INTERRUPT reads IF after it.
 
 ---
 

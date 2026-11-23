@@ -462,7 +462,7 @@ IOT_ACTIVE = MS_EFF_IS_EXECUTE AND IR_IS_EXTERNAL_IOT
 **Sources:**
 - CAF during EXECUTE TS4
 - an accepted front-panel CLEAR operation during its console transaction while RUN = 0
-- the power-on reset ([Timing Terminology §3.4](../../09-timing/01-terminology.md#34-power-on-reset))
+- the power-on reset, which ends with a CLEAR transaction ([Timing Terminology §3.4](../../09-timing/01-terminology.md#34-power-on-reset))
 
 **Assertion Condition:**
 
@@ -487,7 +487,7 @@ While halted, `FP_CLEAR` is the latched accepted console command ([External Inpu
 **Behavior:**
 - causes each I/O controller to enter its documented initialized state
 
-The CPU's AC, L, and IE are cleared by the `AC_CLEAR`, `L_CLEAR`, and `IE_CLEAR` micro-operations of CAF and CLEAR in the same TS, and by the power-on reset; `/INITIALIZE` has no direct CPU-register effect.
+The CPU's AC, L, and IE are cleared by the `AC_CLEAR`, `L_CLEAR`, and `IE_CLEAR` micro-operations of CAF and CLEAR in the same TS, including the CLEAR that ends the power-on reset; `/INITIALIZE` has no direct CPU-register effect.
 
 **Preserved Processor State:**
 - II

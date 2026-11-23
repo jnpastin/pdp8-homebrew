@@ -39,8 +39,9 @@ class CpuState:
         return dict(self.regs, TS=self.ts)
 
     def power_on(self):
-        """Timing Terminology §3.4: TSEQ at TS1; RUN = 0, MS = FETCH, HLT_REQ = 0,
-        IOT_TRANSFER = NONE; AC, L, and IE cleared directly by the reset; all else undefined."""
+        """Timing Terminology §3.4, during the reset: TSEQ at TS1; RUN = 0, MS = FETCH,
+        HLT_REQ = 0, IOT_TRANSFER = NONE; all else undefined. AC, L, and IE are cleared by the CLEAR
+        transaction that ends the reset (Cpu.power_on)."""
         for name in REGISTER_WIDTHS:
             self.regs[name] = None
         self.ts = 1
@@ -48,6 +49,3 @@ class CpuState:
         self["MS"] = E.FETCH
         self["HLT_REQ"] = 0
         self["IOT_TRANSFER"] = E.IOT_NONE
-        self["AC"] = 0
-        self["L"] = 0
-        self["IE"] = 0

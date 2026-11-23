@@ -304,6 +304,8 @@ single TS-equivalent console transaction
 
 The μops clear AC, L, and IE at TPC. `/INITIALIZE` initializes the I/O controllers.
 
+The power-on reset ends with one CLEAR transaction, loaded into the command latch by the reset rather than accepted from the key ([Timing Terminology §3.4](../09-timing/01-terminology.md#34-power-on-reset)).
+
 Acceptance:
 - FP_CLEAR is accepted only when RUN = 0.
 - FP_CLEAR is ignored when RUN = 1.

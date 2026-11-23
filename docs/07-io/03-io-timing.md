@@ -27,7 +27,7 @@ For CAF:
 - No CAF initialization effect occurs before TP4.
 - /INITIALIZE is deasserted when EXECUTE TS4 ends.
 
-For an accepted front-panel CLEAR operation:
+For an accepted front-panel CLEAR operation, and the CLEAR transaction that ends the power-on reset ([Timing Terminology §3.4](../09-timing/01-terminology.md#34-power-on-reset)):
 - the processor is halted
 - /INITIALIZE is asserted for the whole console transaction ([Major State Timing §8](../09-timing/03-major-state-timing.md#8-halted-state-and-console-transactions))
 - all processor and controller initialization effects commit at the console TP (TPC) ending that transaction; TPC is presented to controllers as a TP event

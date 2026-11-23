@@ -504,14 +504,7 @@
             "source": "OPR_PASS"
           }
         ],
-        "CIFP_LOAD": [
-          {
-            "value": "1",
-            "when": "(((MS = FETCH AND TS = 3) AND RUN = 1) AND (IR_CLASS = 001 AND CIFP = 1))",
-            "origin": "conditional micro-operation mapping",
-            "source": "CIFP_CLEAR"
-          }
-        ],
+        "CIFP_LOAD": [],
         "DF_LOAD": [],
         "DIF_LOAD": [],
         "EA_ADDR_LOAD": [
@@ -525,14 +518,7 @@
         "IB_LOAD": [],
         "IDB_DRIVE": [],
         "IE_LOAD": [],
-        "IF_LOAD": [
-          {
-            "value": "1",
-            "when": "(((MS = FETCH AND TS = 3) AND RUN = 1) AND (IR_CLASS = 001 AND CIFP = 1))",
-            "origin": "conditional micro-operation mapping",
-            "source": "DIF_TO_IF"
-          }
-        ],
+        "IF_LOAD": [],
         "II_LOAD": [
           {
             "value": "1",
@@ -600,14 +586,7 @@
             "source": "IR_ADDR_TO_EA_ADDR"
           }
         ],
-        "IF_SRC": [
-          {
-            "value": "1",
-            "when": "(((MS = FETCH AND TS = 3) AND RUN = 1) AND (IR_CLASS = 001 AND CIFP = 1))",
-            "origin": "conditional micro-operation mapping",
-            "source": "DIF_TO_IF"
-          }
-        ],
+        "IF_SRC": [],
         "IDB_SRC": [],
         "L_OP": [
           {
@@ -637,14 +616,7 @@
             "source": "IR_ADDR_TO_PC"
           }
         ],
-        "CIFP_VAL": [
-          {
-            "value": "0",
-            "when": "(((MS = FETCH AND TS = 3) AND RUN = 1) AND (IR_CLASS = 001 AND CIFP = 1))",
-            "origin": "conditional micro-operation mapping",
-            "source": "CIFP_CLEAR"
-          }
-        ],
+        "CIFP_VAL": [],
         "IE_VAL": [],
         "II_VAL": [
           {
@@ -705,8 +677,6 @@
         "MS_LOAD": []
       },
       "selected_micro_operations": {
-        "CIFP_CLEAR": "(((MS = FETCH AND TS = 3) AND RUN = 1) AND (IR_CLASS = 001 AND CIFP = 1))",
-        "DIF_TO_IF": "(((MS = FETCH AND TS = 3) AND RUN = 1) AND (IR_CLASS = 001 AND CIFP = 1))",
         "II_CLEAR": "(((MS = FETCH AND TS = 3) AND RUN = 1) AND (IR_CLASS = 001 AND CIFP = 1))",
         "IR_ADDR_TO_EA_ADDR": "((MS = FETCH AND TS = 3) AND RUN = 1)",
         "IR_ADDR_TO_PC": "(((MS = FETCH AND TS = 3) AND RUN = 1) AND IR_CLASS = 001)",
@@ -731,7 +701,7 @@
       "execution_case_id": "fetch-defer:3.4",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 118
+        "line": 116
       },
       "base_context": "((MS = FETCH AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -787,14 +757,28 @@
       },
       "field_assignments": {
         "AC_LOAD": [],
-        "CIFP_LOAD": [],
+        "CIFP_LOAD": [
+          {
+            "value": "1",
+            "when": "(((MS = FETCH AND TS = 4) AND RUN = 1) AND (IR_CLASS = 001 AND CIFP = 1))",
+            "origin": "conditional micro-operation mapping",
+            "source": "CIFP_CLEAR"
+          }
+        ],
         "DF_LOAD": [],
         "DIF_LOAD": [],
         "EA_ADDR_LOAD": [],
         "IB_LOAD": [],
         "IDB_DRIVE": [],
         "IE_LOAD": [],
-        "IF_LOAD": [],
+        "IF_LOAD": [
+          {
+            "value": "1",
+            "when": "(((MS = FETCH AND TS = 4) AND RUN = 1) AND (IR_CLASS = 001 AND CIFP = 1))",
+            "origin": "conditional micro-operation mapping",
+            "source": "DIF_TO_IF"
+          }
+        ],
         "II_LOAD": [],
         "IOT_TRANSFER_LOAD": [],
         "IR_LOAD": [],
@@ -841,7 +825,14 @@
         "DF_SRC": [],
         "DIF_SRC": [],
         "EA_ADDR_SRC": [],
-        "IF_SRC": [],
+        "IF_SRC": [
+          {
+            "value": "1",
+            "when": "(((MS = FETCH AND TS = 4) AND RUN = 1) AND (IR_CLASS = 001 AND CIFP = 1))",
+            "origin": "conditional micro-operation mapping",
+            "source": "DIF_TO_IF"
+          }
+        ],
         "IDB_SRC": [],
         "L_OP": [],
         "MA_SRC": [],
@@ -850,7 +841,14 @@
         "MFB_SRC": [],
         "MQ_SRC": [],
         "PC_SRC": [],
-        "CIFP_VAL": [],
+        "CIFP_VAL": [
+          {
+            "value": "0",
+            "when": "(((MS = FETCH AND TS = 4) AND RUN = 1) AND (IR_CLASS = 001 AND CIFP = 1))",
+            "origin": "conditional micro-operation mapping",
+            "source": "CIFP_CLEAR"
+          }
+        ],
         "IE_VAL": [],
         "II_VAL": [],
         "IOT_TRANSFER_VAL": [],
@@ -972,6 +970,8 @@
         ]
       },
       "selected_micro_operations": {
+        "CIFP_CLEAR": "(((MS = FETCH AND TS = 4) AND RUN = 1) AND (IR_CLASS = 001 AND CIFP = 1))",
+        "DIF_TO_IF": "(((MS = FETCH AND TS = 4) AND RUN = 1) AND (IR_CLASS = 001 AND CIFP = 1))",
         "PC_INC": "(((MS = FETCH AND TS = 4) AND RUN = 1) AND (IR_CLASS = 100 AND SKIP = 1))"
       },
       "applicable_direct_control_definitions": [
@@ -1000,7 +1000,7 @@
       "execution_case_id": "fetch-defer:4.2",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 153
+        "line": 154
       },
       "base_context": "((MS = DEFER AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -1171,7 +1171,7 @@
       "execution_case_id": "fetch-defer:4.3",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 163
+        "line": 164
       },
       "base_context": "((MS = DEFER AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -1372,7 +1372,7 @@
       "execution_case_id": "fetch-defer:4.4",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 173
+        "line": 174
       },
       "base_context": "((MS = DEFER AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -1593,7 +1593,7 @@
       "execution_case_id": "fetch-defer:4.5",
       "source": {
         "path": "docs/03-microarchitecture/04-fetch-defer.md",
-        "line": 189
+        "line": 190
       },
       "base_context": "((MS = DEFER AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -15946,7 +15946,7 @@
       "execution_case_id": "console:10",
       "source": {
         "path": "docs/03-microarchitecture/09-console-execution.md",
-        "line": 331
+        "line": 333
       },
       "base_context": "(RUN = 0 AND FP_START = 1)",
       "defaults": {
@@ -16219,7 +16219,7 @@
       "execution_case_id": "console:11",
       "source": {
         "path": "docs/03-microarchitecture/09-console-execution.md",
-        "line": 378
+        "line": 380
       },
       "base_context": "(RUN = 0 AND FP_CONTINUE = 1)",
       "defaults": {
@@ -16367,7 +16367,7 @@
       "execution_case_id": "console:15",
       "source": {
         "path": "docs/03-microarchitecture/09-console-execution.md",
-        "line": 557
+        "line": 559
       },
       "base_context": "((((((RUN = 0 AND FP_START = 0) AND FP_CLEAR = 0) AND FP_CONTINUE = 0) AND FP_LOAD_ADDRESS = 0) AND FP_EXAMINE = 0) AND FP_DEPOSIT = 0)",
       "defaults": {

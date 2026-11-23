@@ -92,12 +92,14 @@ While the power-on reset is active:
 
 - TSEQ is held at the first TSTEP of TS1
 - `RUN = 0`, `MS = FETCH`, `HLT_REQ = 0`, and `IOT_TRANSFER` is `NONE`
-- the console command latch holds no command
+- the console command latch is loaded with CLEAR, as though the command had been accepted
 - the control store and the timing ROM are copied from their EEPROMs into their shadow SRAMs (about 7 ms); the reset ends only after the copy completes ([Control Store Organization §8.1](../04-control/08-control-store-organization.md#81-shadow-copy))
 - every value the reset sets is set in both ranks of its register ([Timing Architecture §7.6](./02-timing-architecture.md#76-rule-6--two-ranks))
-- AC, L, and IE are cleared directly by the power-on reset, and `/INITIALIZE` is asserted so that each I/O controller is in its initialized state when the reset ends ([System Initialization](../04-control/20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize))
+- `/INITIALIZE` is asserted
 
-When it ends, the processor is halted in FETCH and waits for a console command. Every other register is undefined, including PC, IF, DF, MQ, and `MAPR`; the operator sets the start address with LOAD ADDRESS. This matches the PDP-8/e, which comes up halted after a power-on initialization.
+When it ends, the console transaction timer runs the latched CLEAR as an ordinary console transaction ([Console Execution §9](../03-microarchitecture/09-console-execution.md#9-clear-operation)). At its TPC, every I/O controller and the DMA arbiter enter their initialized states, and AC, L, and IE clear ([System Initialization](../04-control/20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize)). Controllers act on `/INITIALIZE` only at a TP, and the reset itself has none.
+
+The processor is then halted in FETCH and waits for a console command. Every other register is undefined, including PC, IF, DF, MQ, and `MAPR`; the operator sets the start address with LOAD ADDRESS. This matches the PDP-8/E, which comes up halted and asserts INITIALIZE at power-up, the same signal as its CLEAR key (maintenance manual, volume 1, §3.16).
 
 ### 3.5 Timing ROM
 

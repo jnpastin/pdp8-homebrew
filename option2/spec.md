@@ -70,11 +70,11 @@ v2 FETCH, IR loaded at TP2, as DEC does:
 |---|---|---|---|---|
 | TS1 | `MA ← PC`, PC increment (both from the pre-TP1 PC); `II_CLEAR` if `CIFP = 0` (as v1) | | | |
 | TS2 | memory read: `MB ← MDB` **and `IR ← MDB`** at TP2 | | | |
-| TS3 | | OPR pass: AC, L, MQ at TP3; group 2 skip sense into **SKIP** at TP3; group 2 HLT captured (`HLT_REQ_NEXT`) | `PC ← EA_FORMED` (page from **MA**); if `CIFP`: `DIF_TO_IF`, `CIFP_CLEAR`; `II_CLEAR`, all at TP3 | `EA_ADDR ← EA_FORMED` (page from MA) at TP3 |
-| TS4 | | if `SKIP`: PC increment. **Instruction boundary** | **Instruction boundary** | next state: DEFER if `IR_INDIRECT` or class 2, else EXECUTE |
+| TS3 | | OPR pass: AC, L, MQ at TP3; group 2 skip sense into **SKIP** at TP3; group 2 HLT captured (`HLT_REQ_NEXT`) | `PC ← EA_FORMED` (page from **MA**); if `CIFP`: `II_CLEAR`, at TP3 | `EA_ADDR ← EA_FORMED` (page from MA) at TP3 |
+| TS4 | | if `SKIP`: PC increment. **Instruction boundary** | if `CIFP`: `DIF_TO_IF`, `CIFP_CLEAR` at TP4 (review D11). **Instruction boundary** | next state: DEFER if `IR_INDIRECT` or class 2, else EXECUTE |
 
 - **PC increment moves from TS4 to TS1.** In v2, IR is not loaded until TP2, so EA formation in TS3 can no longer take the page from PC, which has already advanced. It takes it from MA, which holds the instruction's address from TP1 until the next MA load. This matches DEC: "PC, plus 1 if SKIP, into CPMA at TP4" (KK8-E), with the instruction's address held in the memory address register.
-- **Direct JMP:** "the PC is modified during TS3" (KK8-E); the next cycle is FETCH. The field change and the clearing of `II` at TP3 follow KM8-E: INT INHIBIT is "negated at TP3 whenever a JMP or JMS instruction occurs". This is the rule gap L already applies on `main`.
+- **Direct JMP:** "the PC is modified during TS3" (KK8-E); the next cycle is FETCH. The clearing of `II` at TP3 follows KM8-E: INT INHIBIT is "negated at TP3 whenever a JMP or JMS instruction occurs" (§2.10.1). IF loads at TP4, as the KM8-E loads it (§2.10.3; review D11). This is the rule gap L already applies on `main`.
 - **OPR:** "OPR in FETCH TS3, one pass, loaded at TP3" (KK8-E; section 4.1).
 - **IR and MB both load from MDB at TP2.** MB still loads, so nothing that reads MB changes.
 

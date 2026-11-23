@@ -89,6 +89,8 @@ Acceptance:
 
 The first command accepted wins. A command asserted while a transaction is in progress is ignored and is not queued. Simultaneous acceptance cannot occur.
 
+The power-on reset loads CLEAR into the latch itself, so the first transaction after power-on is a CLEAR ([Timing Terminology §3.4](../../09-timing/01-terminology.md#34-power-on-reset)).
+
 The console command inputs seen by control are the latched accepted commands:
 
 - at most one is asserted

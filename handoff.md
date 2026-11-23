@@ -115,7 +115,7 @@ The changes are committed (`a28b8da`); this record of the final results is not. 
 
 ### 1.9 Documentation review, 2026-11-22 (uncommitted)
 
-- **Applied, approved:** groups A to E, R1 to R3. One R1 line is held: 08/06's rule on recognition at the TP that applies a field change (review item Q explains it; awaiting the user).
+- **Applied, approved:** groups A to E, R1 to R3. The held R1 line (08/06, review item Q) was applied 2026-11-22. D11 (option A) applied the same day: direct JMP's IF load moved to FETCH TP4. D4 (option A) too: power-on ends with a CLEAR transaction.
 - **Applied, delegated:** TS_CODE comes from the 2-bit TS code register (CSO, timing terminology). No diagram change; recorded in `option2/diagrams.md`.
 - **Added, requested:** `docs/00-overview/97-documentation-conventions.md`. **Read it before editing docs.** Parsed prose breaks silently, and a dry run does not catch it.
 - **Promotion done by the user (verified identical to scratch, dry run clean):** one v2 pipeline run changed control-input-schema, execution-definitions, timing-constraints and symbolic-control-words (line references, consumer lists). In scratch the second run was unchanged and the images byte-identical.
