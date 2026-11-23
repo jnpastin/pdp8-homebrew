@@ -249,6 +249,8 @@ D6 was first argued here from the `WR_VALID` wording, toward a commit at the end
 
 ## P. OPR pass unit: proposed `docs/03-microarchitecture/07-opr/00-pass-unit.md`
 
+**Applied 2026-11-23**, corrected before adding: the MQ output applies CLA itself (it is not independent of the stages), stage E's RAR-with-RAL case, the full input path, the SKIP output, HLT outside the unit, and a CLA MQL example. Linked from the OPR README only; the parsed group files are unchanged.
+
 The structure, inputs, outputs, and per-group behavior are microarchitecture, because they decide results: the stage order, what the skip logic sees, and SWP's simultaneous loads. Gates, parts, packages, and delays are electrical implementation and stay out. The group documents would keep their `OPR Pass` headings, which the extractor needs, and only their group-specific tables. The file name is outside the extractor's source list.
 
 ### Draft text

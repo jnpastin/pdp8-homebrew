@@ -32,12 +32,14 @@ Properties:
 - Each operation bit selects an independent operation; the group bits (IR[8] and IR[0]) and Group 2's reverse-sense bit (IR[3]) select how the other bits are read
 - Multiple operations may be combined in a single instruction
 - Every OPR completes in FETCH and never enters EXECUTE
-- The control store selects the pass by instruction group; IR bits select the operations inside the [OPR pass unit](./01-group1-execution.md#4-opr-pass)
+- The control store selects the pass by instruction group; IR bits select the operations inside the [OPR pass unit](./00-pass-unit.md)
 - No intermediate decoding into symbolic instructions is performed
 
 ---
 
 ## 4. Group Structure
+
+The [OPR Pass Unit](./00-pass-unit.md) describes the unit all three groups share: its stages, inputs, outputs, and what each group selects.
   
 OPR instructions are divided into groups based on IR bit patterns.
 
