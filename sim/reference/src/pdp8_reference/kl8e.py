@@ -2,8 +2,8 @@
 
 Source: docs/07-io/10-controllers/01-kl8e-uart.md (KL8E) §5-§26. Each IOT's effects are applied
 in two parts, following the commit points the contract gives: effects at TP2 or TP3 are visible
-to the interrupt-recognition decision at that instruction's completion; effects at TP4 (KIE,
-TLS, TPC, and KRB's flag clear) are not, and are returned as a `late` action.
+to the interrupt-recognition decision at that instruction's completion; effects at TP4 (only TPC's
+character) are not, and are returned as a `late` action. KIE, TLS, and KRB commit at TP3 (review C10).
 
 Output completion follows the same rule as the timing-state model (sim/io): an accepted character
 completes after `output_delay` instruction boundaries or, with a baud rate, at the simulated time
@@ -82,12 +82,11 @@ class KL8E:
                 self.keyboard_flag = 0
             elif op == 4:                                  # KRS
                 ref.ac |= self.keyboard_buffer
-            elif op == 5:                                  # KIE: enable <- AC[0] at TP4
-                value = ref.ac & 1
-                late = lambda: setattr(self, "interrupt_enable", value)
-            elif op == 6:                                  # KRB: AC cleared, read; flag cleared at TP4
+            elif op == 5:                                  # KIE: enable <- AC[0] at TP3
+                self.interrupt_enable = ref.ac & 1
+            elif op == 6:                                  # KRB: AC cleared, read; flag cleared at TP3
                 ref.ac = self.keyboard_buffer
-                late = lambda: setattr(self, "keyboard_flag", 0)
+                self.keyboard_flag = 0
         else:
             if op == 0:                                    # TFL
                 self.teleprinter_flag = 1
@@ -103,7 +102,10 @@ class KL8E:
                     self.output_countdown = self.output_delay if self.baud is None else 0
                     if clear_flag:
                         self.teleprinter_flag = 0
-                late = accept
+                if op == 6:                                # TLS: at TP3
+                    accept()
+                else:                                      # TPC: at TP4
+                    late = accept
             elif op == 5:                                  # TSK (§23): the interrupt condition
                 skip = self.interrupt_request()
         return skip, late

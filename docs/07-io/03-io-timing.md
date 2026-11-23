@@ -110,7 +110,7 @@ Device actions may commit at TP4 while CPU sequencing and interrupt decisions al
 Constraints:
 
 - TP4 sequencing and interrupt decisions must depend only on state and inputs available at completion of TP3.
-- A controller result committed at TP4 cannot affect the sequencing or interrupt decision committed at TP4.
+- A controller result committed at TP4 cannot affect the sequencing or interrupt decision committed at TP4. An IOT that clears an interrupt condition or a DMA request therefore commits the clear by TP3 ([Controller Contract §9.1](./04-controller-contract.md#91-interrupt-contribution)).
 - A controller may assert `/INT_REQ` during TS4 when the assertion depends only on registered controller state available before TP4.
 - DB ownership must end before ownership changes for the following major state.
 

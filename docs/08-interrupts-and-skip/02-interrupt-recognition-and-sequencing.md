@@ -110,6 +110,8 @@ This expression defines the required sequencing result. Its implementation remai
 
 CAF's `/INITIALIZE` clears IE and every controller interrupt request at its TP4, so an interrupt recognized there would enter the service routine with no requesting device. CAF therefore never selects INTERRUPT. This matches the PDP-8/e, where CAF asserts INITIALIZE at TP3 and it clears the interrupt-enable, delay, and request-synchronizing flip-flops before TP4.
 
+Every other IOT that clears an interrupt condition commits the clear by TP3 ([Controller Contract §9.1](../07-io/04-controller-contract.md#91-interrupt-contribution)), so the decision at its TP4 sees it.
+
 The precedence above applies only to the next-major-state decision at instruction-completion TP4.
  
 At INTERRUPT TP4, `MS_NEXT` is unconditionally `FETCH`. Interrupt and DMA eligibility are not evaluated for that transition. Therefore, INTERRUPT cannot transition directly to another INTERRUPT or to DMA. A subsequent interrupt or DMA request may be recognized only after execution reaches a later instruction-completion TP4 boundary.

@@ -219,6 +219,11 @@ The FETCH TS3 class decode distinguishes the groups by IR bits 3 and 11 (PDP-8 n
   - **Unselected micro-operations:** no case selects `IOT_TRANSFER_CAPTURE` or `IOT_TRANSFER_CLEAR`. Establish whether they are stale or realized by direct control.
   - **Text copied from docs:** stale consumers and constraints (docs-review A1 and A2; `IR_IS_IOT` has no consumer).
   - **Verification:** every removed item explained; ROM images byte-identical; the three warnings gone.
+- **Pipeline change reports** (user, 2026-11-23): a stage whose candidate differs from the maintained artifact only in source line references must be reported apart from one with a material change, so it is clear what is worth reviewing.
+  - **Stage summary:** distinguish the two, for example `promoted (line references only)` against `promoted (content changed)`, in both normal and `--dry-run` runs.
+  - **Diagnostics:** `CHANGED_DEFINITION`, `CHANGED_CASE`, `CHANGED_CONSTRAINT` and the like say which kind each change is, or are suppressed for line-only changes.
+  - **Rule:** compare the candidate and the maintained artifact with every source line-reference field removed. Content, including text copied from the docs, still counts as material.
+  - **Verification:** a docs edit that only moves lines reports no material change in any stage; a change like D2 (AC_CLEAR's assignments) reports material changes in exactly the stages it touches.
 - Rebase onto `main`.
 - **Checkpoint 10:** the user merges into `main`.
 

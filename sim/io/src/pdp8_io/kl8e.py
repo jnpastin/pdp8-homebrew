@@ -105,21 +105,21 @@ class KL8E:
                     r.io_skip_req = self.keyboard_flag
                 elif op == 2 and ts == 2:                        # KCC
                     r.io_clear_ac_req = 1
-                elif op in (4, 6):                               # KRS, KRB
-                    if op == 6 and ts == 2:
-                        r.io_clear_ac_req = 1
-                    if ts == 3:
-                        r.io_read_req = 1
-                elif op == 5 and ts == 3:                        # KIE
+                elif op == 4 and ts == 3:                        # KRS: read in TS4
+                    r.io_read_req = 1
+                elif op == 6 and ts == 2:                        # KRB: clear at TP2, read in TS3 (C10)
+                    r.io_clear_ac_req = 1
+                    r.io_read_req = 1
+                elif op == 5 and ts == 2:                        # KIE: write in TS3 (C10)
                     r.io_write_req = 1
             else:
                 if op == 1 and ts == 4:                          # TSF
                     r.io_skip_req = self.teleprinter_flag
                 elif op == 5 and ts == 4:                        # TSK (§23): the interrupt condition
                     r.io_skip_req = int(self.interrupt_request())
-                elif op in (4, 6) and ts == 3 and self.output_countdown is None:   # TPC, TLS
-                    r.io_write_req = 1
-            if ts == 4 and self._transfer == "read":
+                elif self.output_countdown is None and ((op == 4 and ts == 3) or (op == 6 and ts == 2)):
+                    r.io_write_req = 1                           # TPC: write in TS4; TLS: in TS3 (C10)
+            if self._transfer == ("read", ts):
                 r.db = self.keyboard_buffer
         self._asserted = r
         return r
@@ -135,24 +135,26 @@ class KL8E:
             return
         device, op = sel
         asserted = self._asserted
-        if tp == 3:
-            self._transfer = ("read" if asserted.io_read_req else "write" if asserted.io_write_req else None)
+        done = self._transfer[0] if self._transfer is not None and self._transfer[1] == tp else None
         if device == KEYBOARD:
             if op in (0, 2) and tp == 2:                         # KCF, KCC
                 self.keyboard_flag = 0
-            elif op == 5 and tp == 4 and self._transfer == "write":   # KIE
+            elif op == 5 and done == "write":                    # KIE, at TP3
                 self.interrupt_enable = db_write & 1
-            elif op == 6 and tp == 4 and self._transfer == "read":    # KRB
+            elif op == 6 and done == "read":                     # KRB, at TP3
                 self.keyboard_flag = 0
         else:
             if op == 0 and tp == 2:                              # TFL
                 self.teleprinter_flag = 1
             elif op == 2 and tp == 3:                            # TCF
                 self.teleprinter_flag = 0
-            elif op in (4, 6) and tp == 4 and self._transfer == "write":   # TPC, TLS
+            elif op in (4, 6) and done == "write":               # TPC at TP4, TLS at TP3
                 self.transmit_buffer = db_write & 0o377
                 self.output_countdown = self.output_delay if self.baud is None else 0
                 if op == 6:
                     self.teleprinter_flag = 0
-        if tp == 4:
+        # A request accepted at TP2 or TP3 transfers in the following TS (MST §5.2).
+        if tp in (2, 3) and (asserted.io_read_req or asserted.io_write_req):
+            self._transfer = ("read" if asserted.io_read_req else "write", tp + 1)
+        elif done is not None or tp == 4:
             self._transfer = None

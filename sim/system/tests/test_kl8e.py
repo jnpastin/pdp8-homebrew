@@ -69,11 +69,30 @@ class Interrupts(unittest.TestCase):
         m, kl = run({(0, 0o200): [0o7200, 0o6035, 0o6040, 0o6001, NOP, HLT], (0, 0o001): [HLT]})
         self.assertEqual((kl.interrupt_enable, m.state["PC"]), (0, 0o206))
 
-    def test_kie_takes_effect_after_its_own_completion(self):
-        # KIE commits at TP4, so it cannot cause recognition at its own boundary.
+    def test_kie_enabling_counts_at_its_own_completion(self):
+        # KL8E §15 (review C10): KIE commits at TP3, so an enabling KIE allows the interrupt at its
+        # own completion: CLA; KIE (off); TFL; ION; NOP; IAC; KIE (on) -> return address 0207.
         m, _ = run({(0, 0o200): [0o7200, 0o6035, 0o6040, 0o6001, NOP, 0o7001, 0o6035, NOP, HLT],
                      (0, 0o001): [HLT]})
-        self.assertEqual(m.memory.read(0, 0), 0o210)
+        self.assertEqual(m.memory.read(0, 0), 0o207)
+
+    def test_kie_disabling_counts_at_its_own_completion(self):
+        # Review C10: CLA; TFL; ION; KIE (off); HLT. The KIE is the first eligible completion, and
+        # its TP3 disable is seen there, so no interrupt is taken.
+        m, kl = run({(0, 0o200): [0o7200, 0o6040, 0o6001, 0o6035, HLT], (0, 0o001): [HLT]})
+        self.assertEqual((kl.interrupt_enable, m.state["PC"]), (0, 0o205))
+
+    def test_ion_krb_takes_no_interrupt(self):
+        # Review C10: the keyboard flag is the only request; KRB clears it at TP3, so the decision
+        # at KRB's TP4 sees no request.
+        m, kl = run({(0, 0o200): [0o6001, 0o6036, HLT], (0, 0o001): [HLT]}, typed=0o301)
+        self.assertEqual((m.state["AC"], kl.keyboard_flag, m.state["PC"]), (0o301, 0, 0o203))
+
+    def test_ion_tls_takes_no_interrupt(self):
+        # Review C10: TFL; ION; TLS. TLS clears the teleprinter flag at TP3, so its completion
+        # takes no interrupt; the flag sets again when the character completes.
+        m, kl = run({(0, 0o200): [0o6040, 0o6001, 0o6046, HLT], (0, 0o001): [HLT]})
+        self.assertEqual(m.state["PC"], 0o204)
 
     def test_caf_initializes_the_controller(self):
         kl = KL8E()

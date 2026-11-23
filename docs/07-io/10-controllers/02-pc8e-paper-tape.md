@@ -282,26 +282,28 @@ RSF does not modify controller state.
 
 ### 13.1 Controller Contract
 
-During TS3:
+During TS2:
 
 - the controller asserts `IO_READ_REQ`
 
-At TP3, CPU control accepts the read request.
+At TP2, CPU control accepts the read request.
 
-During TS4:
+During TS3:
 
 - CPU control asserts `/DB_READ`
 - the controller drives the reader buffer onto DB
 
-At TP4:
+At TP3:
 
 ```text
 AC <- AC OR DB
 READER_FLAG <- 0
 ```
 
-The character represented by the reader buffer is consumed at TP4.  
+The character represented by the reader buffer is consumed at TP3.  
 RRB does not request AC clear.
+
+The commit is at TP3, not TP4, so that the instruction-completion decision at TP4 sees the cleared reader flag ([Controller Contract §9.1](../04-controller-contract.md#91-interrupt-contribution)).
 
 ---
 
@@ -510,18 +512,18 @@ If the controller cannot accept the character:
 
 ### 22.1 Controller Contract
 
-During TS3:
+During TS2:
 
 - the controller asserts `IO_WRITE_REQ` when it can accept a character
 
-At TP3, CPU control accepts the write request.
+At TP2, CPU control accepts the write request.
 
-During TS4:
+During TS3:
 
 - CPU control asserts `/DB_WRITE`
 - the CPU drives AC onto DB
 
-At TP4, when the request was accepted:
+At TP3, when the request was accepted:
 
 ```text
 PUNCH_BUFFER <- DB[7:0]
@@ -529,6 +531,8 @@ PUNCH_FLAG <- 0
 ```
 
 The accepted character becomes the active programmer-visible punch operation.
+
+The commit is at TP3, not TP4, so that the instruction-completion decision at TP4 sees the cleared punch flag ([Controller Contract §9.1](../04-controller-contract.md#91-interrupt-contribution)).
 
 If the controller cannot accept the character:
 

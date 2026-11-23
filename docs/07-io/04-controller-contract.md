@@ -164,6 +164,11 @@ The controller-specific contract defines:
 
 The shared `/INT_REQ` signal is the aggregate of all controller interrupt contributions.
 
+An IOT that clears its controller's interrupt condition or interrupt enable must commit the clear by TP3. The instruction-completion decision at TP4 uses `/INT_REQ` as it stands during TS4, so a clear at TP4 would still be seen, and the CPU would enter INTERRUPT with no device requesting. The PDP-8/E likewise makes an IOT's transfer and samples the interrupt request at TP3 (maintenance manual, volume 1, §3.41.2 and §3.42).
+
+- An IOT may set a condition at TP4. The interrupt is then recognized at a later instruction completion.
+- CAF is the exception: its `/INITIALIZE` commits at TP4, and interrupt recognition excludes it ([Interrupt Recognition §6](../08-interrupts-and-skip/02-interrupt-recognition-and-sequencing.md#6-next-major-state-selection)).
+
 ### 9.2 DMA Request
 
 A DMA-capable controller asserts exactly one configured /DMA_REQ[n] while DMA service remains pending, where n is in the range 0 through 14.  
@@ -189,6 +194,8 @@ The request remains asserted until:
 - the controller completes the current transfer and cannot immediately complete another transfer
 - the operation is canceled
 - reset clears the operation
+
+An IOT that cancels the operation deasserts the request by TP3, for the same reason as an interrupt clear (section 9.1): the DMA decision at TP4 must see it.
 
 A selected controller may keep /DMA_REQ[n] asserted across selection termination when additional immediately transferable work remains.  
 Selection termination does not consume the controller request.  

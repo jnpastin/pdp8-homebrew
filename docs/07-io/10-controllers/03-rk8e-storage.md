@@ -523,30 +523,30 @@ DSKP does not clear Control Done or Error.
 
 ### 18.2 Controller Contract
 
-During TS3:
+During TS2:
 
 - the controller asserts `IO_WRITE_REQ`
 
-At TP3, CPU control accepts the write request.
+At TP2, CPU control accepts the write request.
 
-During TS4:
+During TS3:
 
 - CPU control asserts `/DB_WRITE`
 - the CPU drives AC onto DB
 - the controller asserts `IO_CLEAR_AC_REQ`
 - the controller decodes `DB[1:0]`
 
-At TP4:
+At TP3:
 
 - the selected DCLR operation commits
 - AC clears
 
-The selected operation uses the pre-TP4 DB value.  
+The selected operation uses the pre-TP3 DB value. The commit is at TP3, not TP4, so that the instruction-completion decision at TP4 sees the cleared Done and Error, and, after DCLC, the deasserted DMA request ([Controller Contract §9.1](../04-controller-contract.md#91-interrupt-contribution)).  
 No intermediate selector register is required.
 
 #### 18.2.1 DCLS
 
-At TP4:
+At TP3:
 
 ```text
 STATUS_REGISTER <- 0
@@ -558,7 +558,7 @@ DCLS does not abort an active disk operation unless required by a specific RK8E 
 
 #### 18.2.2 DCLC
 
-At TP4:
+At TP3:
 
 - the active controller operation is aborted
 - RK8E controller logic is cleared
@@ -578,7 +578,7 @@ No additional error is raised solely because DCLC discarded uncommitted write da
 
 #### 18.2.3 DCLD
 
-At TP4:
+At TP3:
 
 - recalibration of the selected drive to cylinder `000` is initiated
 - the controller becomes busy
@@ -710,19 +710,19 @@ DRST does not clear the Status Register.
 
 ### 22.1 Controller Contract
 
-During TS3:
+During TS2:
 
 - the controller asserts `IO_WRITE_REQ`
 
-At TP3, CPU control accepts the write request.
+At TP2, CPU control accepts the write request.
 
-During TS4:
+During TS3:
 
 - CPU control asserts `/DB_WRITE`
 - the CPU drives AC onto DB
 - the controller asserts `IO_CLEAR_AC_REQ`
 
-At TP4, when the controller is idle:
+At TP3, when the controller is idle:
 
 ```text
 COMMAND_REGISTER <- DB
@@ -740,7 +740,7 @@ If the controller is busy:
 - the existing operation continues
 - AC clears
 
-The pre-TP4 DB value is used.
+The pre-TP3 DB value is used. The commit is at TP3, not TP4, so that the instruction-completion decision at TP4 sees the cleared Done and Error ([Controller Contract §9.1](../04-controller-contract.md#91-interrupt-contribution)).
 
 ---
 

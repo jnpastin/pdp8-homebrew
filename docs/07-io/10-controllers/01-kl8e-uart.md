@@ -315,18 +315,18 @@ KRS does not modify controller state.
 
 ### 15.1 Controller Contract
 
-During TS3:
+During TS2:
 
 - the controller asserts `IO_WRITE_REQ`
 
-At TP3, CPU control accepts the write request.
+At TP2, CPU control accepts the write request.
 
-During TS4:
+During TS3:
 
 - CPU control asserts `/DB_WRITE`
 - the CPU drives AC onto DB
 
-At TP4:
+At TP3:
 
 ```text
 INTERRUPT_ENABLE <- DB[0]
@@ -334,6 +334,8 @@ INTERRUPT_ENABLE <- DB[0]
 
 All other DB bits are ignored.  
 KIE does not request AC clear.
+
+The commit is at TP3, not TP4, so that the instruction-completion decision at TP4 sees the cleared interrupt enable ([Controller Contract §9.1](../04-controller-contract.md#91-interrupt-contribution)). An enabling KIE can likewise allow an interrupt at its own completion.
 
 ---
 
@@ -344,6 +346,7 @@ KIE does not request AC clear.
 During TS2:
 
 - the controller asserts `IO_CLEAR_AC_REQ`
+- the controller asserts `IO_READ_REQ`
 
 At TP2:
 
@@ -351,25 +354,23 @@ At TP2:
 AC <- 0
 ```
 
+CPU control accepts the read request at the same TP.
+
 During TS3:
-
-- the controller asserts `IO_READ_REQ`
-
-At TP3, CPU control accepts the read request.
-
-During TS4:
 
 - CPU control asserts `/DB_READ`
 - the controller drives the keyboard receive register onto DB
 
-At TP4:
+At TP3:
 
 ```text
 AC <- AC OR DB
 KEYBOARD_FLAG <- 0
 ```
 
-The character represented by the keyboard receive register is consumed at TP4.
+The character represented by the keyboard receive register is consumed at TP3. AC was cleared at TP2, so AC receives the character.
+
+The commit is at TP3, not TP4, so that the instruction-completion decision at TP4 sees the cleared keyboard flag ([Controller Contract §9.1](../04-controller-contract.md#91-interrupt-contribution)).
 
 ---
 
@@ -548,18 +549,18 @@ TSK does not modify controller state.
 
 ### 24.1 Controller Contract
 
-During TS3:
+During TS2:
 
 - the controller asserts `IO_WRITE_REQ` when it can accept a character
 
-At TP3, CPU control accepts the write request.
+At TP2, CPU control accepts the write request.
 
-During TS4:
+During TS3:
 
 - CPU control asserts `/DB_WRITE`
 - the CPU drives AC onto DB
 
-At TP4, when the request was accepted:
+At TP3, when the request was accepted:
 
 ```text
 TELEPRINTER_TRANSMIT_REGISTER <- DB[7:0]
@@ -567,6 +568,8 @@ TELEPRINTER_FLAG <- 0
 ```
 
 The accepted character becomes the active programmer-visible output operation.
+
+The commit is at TP3, not TP4, so that the instruction-completion decision at TP4 sees the cleared teleprinter flag ([Controller Contract §9.1](../04-controller-contract.md#91-interrupt-contribution)).
 
 If the controller cannot accept the character:
 

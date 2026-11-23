@@ -107,7 +107,7 @@ D6 was first argued here from the `WR_VALID` wording, toward a commit at the end
 
 | ID | Evidence | Behavior | Recommendation |
 |---|---|---|---|
-| C10 | Tested | KRB, TLS, and KIE disabling clear their request at TP4, where interrupt recognition still sees the pre-TP4 value. After `ION; KRB` the interrupt is taken with no device requesting. KCC and TCF, which clear by TP3, don't do this. RRB, PLS, DLDC and DCLS have the same shape by reading. CAF is special-cased for exactly this (08/02 §6). | The invariant works as intended; the schedule is the cause. DEC transfers and samples the interrupt at TP3 (HMM1 §3.41.2, §3.42; the order within that edge was not determined). Move these transfers to a request in TS2 and a commit at TP3. |
+| C10 | Tested | KRB, TLS, and KIE disabling clear their request at TP4, where interrupt recognition still sees the pre-TP4 value. After `ION; KRB` the interrupt is taken with no device requesting. KCC and TCF, which clear by TP3, don't do this. RRB, PLS, DLDC and DCLS have the same shape by reading. CAF is special-cased for exactly this (08/02 §6). | **Applied 2026-11-23:** KRB, TLS, KIE, RRB, PLS, DLDC and DCLR (DCLS, DCLC, DCLD) request in TS2 and commit at TP3; Controller Contract §9.1 and §9.2 require any interrupt or DMA-request clear by TP3 (CAF excepted). Both KL8E models changed; four system tests and the unit harness updated. No ROM change. |
 
 ---
 

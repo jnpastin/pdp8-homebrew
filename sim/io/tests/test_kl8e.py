@@ -2,7 +2,8 @@
 
 Each test checks a rule of docs/07-io/10-controllers/01-kl8e-uart.md (KL8E §n). The CPU side is
 played by `iot()`: for TS1-TS4 it presents the bus, collects the controller's response, and
-commits the TP, driving AC on DB at TP4 as CPU control does for an accepted write.
+commits the TP. A read or write accepted at TP2 or TP3 transfers in the following TS (MST §5.2),
+and for a write the harness drives AC on DB in that TS, as CPU control does.
 """
 
 import sys
@@ -22,10 +23,10 @@ class Iot:
         self.responses = responses
 
     clear_ac = property(lambda self: self.responses[1].io_clear_ac_req)     # TS2
-    read = property(lambda self: self.responses[2].io_read_req)             # TS3
-    write = property(lambda self: self.responses[2].io_write_req)           # TS3
+    read = property(lambda self: int(any(r.io_read_req for r in self.responses[1:3])))    # TS2 or TS3
+    write = property(lambda self: int(any(r.io_write_req for r in self.responses[1:3])))  # TS2 or TS3
     skip = property(lambda self: self.responses[3].io_skip_req)             # TS4
-    db = property(lambda self: self.responses[3].db)                        # TS4
+    db = property(lambda self: next((r.db for r in self.responses if r.db is not None), None))
 
     def silent(self):
         return all((r.io_read_req, r.io_write_req, r.io_skip_req, r.io_clear_ac_req, r.db)
@@ -33,11 +34,14 @@ class Iot:
 
 
 def iot(kl, device, op, ac=0, iot_active=1, console=False):
-    responses = []
+    responses, write_ts = [], None
     for ts in (1, 2, 3, 4):
         bus = BusView(iot_active, device, op, ts, console)
-        responses.append(kl.present(bus))
-        kl.commit(bus, ts, ac if ts == 4 else None, False)
+        r = kl.present(bus)
+        responses.append(r)
+        kl.commit(bus, ts, ac if ts == write_ts else None, False)
+        if ts in (2, 3) and r.io_write_req:
+            write_ts = ts + 1
     return Iot(responses)
 
 
@@ -94,7 +98,7 @@ class Keyboard(unittest.TestCase):
         self.assertEqual((r.clear_ac, r.read, r.db, self.kl.keyboard_flag), (0, 1, 0o301, 1))
 
     def test_krb_clears_ac_reads_and_consumes(self):
-        # §16: AC cleared in TS2, read in TS3-TS4, character consumed (flag cleared) at TP4.
+        # §16 (review C10): AC cleared at TP2, read in TS3, character consumed (flag cleared) at TP3.
         r = iot(self.kl, KEYBOARD, 6)
         self.assertEqual((r.clear_ac, r.read, r.db, self.kl.keyboard_flag), (1, 1, 0o301, 0))
 
