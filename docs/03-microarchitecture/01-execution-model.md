@@ -271,11 +271,15 @@ This document must not redefine encoding semantics.
 
 ### 12.5 Instruction-Class Documents
 
-Execution for each instruction class is defined in separate documents:
+Execution for each major state and instruction class is defined in separate documents:
 
-- MRI Execution
-- IOT Execution
-- OPR Execution
+- [Fetch & Defer](./04-fetch-defer.md), including the JMPs and every OPR, which complete there
+- [MRI Execution](./05-mri-execution.md)
+- [IOT Execution](./06-iot-execution.md)
+- [OPR Execution](./07-opr/README.md)
+- [Interrupt Execution](./08-interrupt-execution.md)
+- [Console Execution](./09-console-execution.md)
+- [DMA Execution](./10-dma-execution.md)
 
 These documents define:
 

@@ -72,9 +72,9 @@ Description:
 Control Decisions:
 
     if /DMA_REQ asserted:
-        MS_next ← DMA
+        MS_NEXT ← DMA
     else:
-        MS_next ← FETCH
+        MS_NEXT ← FETCH
 
 Description:
 - Continues the burst or returns to FETCH; see [Sequencing and Internal Control §3.2.9 and §3.2.10](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#329-dma-continuation).

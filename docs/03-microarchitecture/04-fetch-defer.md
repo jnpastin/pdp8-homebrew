@@ -129,11 +129,11 @@ IR_CLASS = 001 AND CIFP = 1 -> CIFP_CLEAR
 Control Decisions:
 
     if IR_NO_EXECUTE == 1 and IR_INDIRECT == 0:
-        instruction completion (direct JMP, OPR): MS_next per the instruction-completion rules
+        instruction completion (direct JMP, OPR): MS_NEXT per the instruction-completion rules
     else if IR_INDIRECT == 1:
-        MS_next ← DEFER
+        MS_NEXT ← DEFER
     else:
-        MS_next ← EXECUTE
+        MS_NEXT ← EXECUTE
 
 Description:
 - Determines the next major state. The instruction-completion rules (interrupt entry, DMA entry, halts) are defined in [Sequencing and Internal Control §3](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#3-sequencing-control)
@@ -204,9 +204,9 @@ IR_CLASS = 010 AND CIFP = 1 -> CIFP_CLEAR
 Control Decisions:
 
     if IR_NO_EXECUTE == 1:
-        instruction completion (JMP I): MS_next per the instruction-completion rules
+        instruction completion (JMP I): MS_NEXT per the instruction-completion rules
     else:
-        MS_next ← EXECUTE
+        MS_NEXT ← EXECUTE
 
 Description:
 

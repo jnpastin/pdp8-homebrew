@@ -21,7 +21,7 @@ This document does NOT define:
 - control-flow behavior
 - timing behavior
 
-Authoritative signal classifications, constraints, and definitions are maintained in Section 4.
+Authoritative signal classifications, constraints, and definitions are maintained in the [control documents](../04-control/README.md).
 
 ---
 
@@ -250,4 +250,4 @@ Class B signals provide control information.
 
 Class B signals comprise the complete control-signal infrastructure of the system.
 
-This document defines the classification and organization of those signals. Signal definitions and behavior are defined in Section 4.
+This document defines the classification and organization of those signals. Signal definitions and behavior are defined in the [control documents](../04-control/README.md).

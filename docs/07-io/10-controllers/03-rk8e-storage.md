@@ -941,7 +941,7 @@ DMA_GRANT_ID = CONTROLLER_DMA_PRIORITY
 ```
 
 The controller does not accept DMA ownership while DMA_GRANT_ID is 15.  
-The controller must not drive DMA-owned interfaces without a matching valid controller selection..
+The controller must not drive DMA-owned interfaces without a matching valid controller selection.
 
 ### 26.4 DMA Read from Disk to Memory
 

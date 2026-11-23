@@ -4,6 +4,14 @@
 
 This document identifies architectural control-system conditions that are design errors.
 
+The ones most likely to occur:
+
+- a decision made outside the control store, other than by a realization in [Control Model §8.4](./01-control-model.md#84-realizations-outside-the-control-word) (sections 2 and 3)
+- a control input that changes during the TS that uses it (section 2)
+- a register loaded from two sources, or a bus with two drivers, at one TP (section 6)
+- a memory transfer or IOT response committing at a TP its binding does not assign (section 7)
+- CPU and DMA ownership of the memory interface overlapping (section 8)
+
 ---
 
 ## 2. Control Function and Input Domain Violations

@@ -24,11 +24,24 @@ Before editing, read the [Documentation Conventions](./00-overview/97-documentat
 - `07-io` - I/O system definition
 - `08-interrupts-and-skip` - Interrupt and skip behavior
 - `09-timing` - Clocking and timing model
-- `10-front-panel` - Operator interface definition
-- `11-backplane-and-physical` - Hardware structure
-- `12-verification` - Testing and validation
-- `13-implementation-plan` - Build phases and roadmap
+- `10-front-panel` - Operator interface definition (not yet written)
+- `11-backplane-and-physical` - Hardware structure (not yet written)
+- `12-verification` - Testing and validation (not yet written)
+- `13-implementation-plan` - Build phases and roadmap (not yet written)
 - `appendices` - Supporting material
+
+### 2.1 Reading Order
+
+To learn the machine, read in this order:
+
+1. [Overview](./00-overview/README.md): goals, principles, and status
+2. [Architecture](./01-architecture/README.md): the programmer-visible registers and data paths
+3. [ISA](./02-isa/README.md): what each instruction does
+4. [Microarchitecture](./03-microarchitecture/README.md): how each instruction executes, major state by major state
+5. [Control](./04-control/README.md): how the control store selects each control word
+6. [Timing](./09-timing/README.md): TSTEP, TS, and TP, and how they commit state
+
+Then, as needed: [buses and signals](./05-buses-and-signals/README.md), [memory](./06-memory/README.md), [I/O](./07-io/README.md), and [interrupts and skips](./08-interrupts-and-skip/README.md).
 
 ---
 

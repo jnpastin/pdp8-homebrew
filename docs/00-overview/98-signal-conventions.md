@@ -22,7 +22,7 @@ Active-high signals are used for point-to-point qualified actions and authorizat
  
 Encoded buses and fields do not have an asserted polarity. Their individual bits represent binary values.
  
-Behavioral text should use the terms asserted and deasserted unless the electrical level is specifically relevant.)
+Behavioral text should use the terms asserted and deasserted unless the electrical level is specifically relevant.
 
 ---
 
@@ -39,7 +39,7 @@ Behavioral text should use the terms asserted and deasserted unless the electric
 ### 3.2 Schematics
 
 - Active-low signals:
-  S̅̅I̅̅G̅̅N̅̅A̅̅L̅̅_̅̅N̅̅A̅̅M̅̅E̅̅ (overbar)
+  SIGNAL_NAME with a bar drawn over the whole name, written /SIGNAL_NAME in these documents
 
 ---
 
@@ -150,7 +150,7 @@ Aggregate `/DMA_REQ` is a single-driver signal. It is not a wired-OR or wired-AN
 
 ---
 
-## 8.4 System Initialization (/INITIALIZE)
+### 8.4 System Initialization (/INITIALIZE)
   
 /INITIALIZE is the active-low system-wide reset signal.
 

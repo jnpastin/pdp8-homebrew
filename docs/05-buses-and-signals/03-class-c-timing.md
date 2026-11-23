@@ -21,7 +21,7 @@ This document does NOT define:
 - execution sequencing
 - major state transitions
 
-Authoritative timing definitions are maintained in Section 9.
+Authoritative timing definitions are maintained in the [timing documents](../09-timing/README.md).
 
 ---
 
@@ -142,7 +142,7 @@ Authoritative definitions are maintained in:
 - TS and TP are available to external I/O controllers.
 - External controllers may use TS and TP only according to the [I/O Timing Contract](../07-io/03-io-timing.md).
 - Class C signals define timing structure rather than system behavior.
-- Timing behavior is defined by Section 9.
+- Timing behavior is defined by the [timing documents](../09-timing/README.md).
 - Execution behavior is defined by the control system.
 - Major State is part of the control architecture and is not a Class C signal.
 
@@ -150,4 +150,4 @@ Authoritative definitions are maintained in:
 
 ## 7. Summary
  
-Class C signals define the timing framework of the system. MCLK, TCLK, TSTEP, and TSEQ remain CPU-local, while TS and TP are architecturally distributed to external I/O controllers and /WR_PULSE to memory. Timing definitions, behavior, and architecture are defined in Section 9 and the applicable external interface contracts.
+Class C signals define the timing framework of the system. MCLK, TCLK, TSTEP, and TSEQ remain CPU-local, while TS and TP are architecturally distributed to external I/O controllers and /WR_PULSE to memory. Timing definitions, behavior, and architecture are defined in the [timing documents](../09-timing/README.md) and the applicable external interface contracts.

@@ -115,6 +115,10 @@ Group 2:
 - CLA, SMA, SZA, SNL, OSR, HLT
 - skip mode
 
+Group 3:
+
+- CLA, MQA, MQL (MQA and MQL together: SWP)
+
 ---
 
 ### 2.5 Memory Management
@@ -539,6 +543,12 @@ IR_IS_IOT = (IR[11:9] == 110)
 - 1 → IOT  
 
 **Consumed By:**
+- [IR_IS_CAF](#ir_is_caf)
+- [IR_IS_EXTERNAL_IOT](#ir_is_external_iot)
+- [IR_IS_GTF](#ir_is_gtf)
+- [IR_IS_MEMEXT_IOT](#ir_is_memext_iot)
+- [IR_IS_RTF](#ir_is_rtf)
+- the `/RD` and CPU `MDB` drive gate, `MS_EFF_IS_EXECUTE AND IR_IS_IOT` ([Architectural Control Signals §3.2](../20-control-output-definitions/02-architectural-control-signals.md#32-timing-model))
 
 ---
 
@@ -998,7 +1008,7 @@ IR_OPR_IAC = IR_OPR_GROUP1 AND IR[0]
 **Type:** OPR Bit Flag  
 **Bit Width:** 1  
 
-**Purpose:** Performs OR operation between switch multiplier quotient and accumulator.
+**Purpose:** ORs MQ into AC.
 
 **Derivation:**
 ```text
@@ -1356,8 +1366,8 @@ IR_WRITES_IF = (IR[11:6] == 110010 AND IR[2]==0 AND IR[1]==1)
 
 **Value Encoding:**
 
-- 0 → not CIF
-- 1 → CIF
+- 0 → does not write IF
+- 1 → writes IF: CIF, or CDF CIF
 
 **Consumed By:**
 - [IR_IF_TO_DIF](../../03-microarchitecture/02-micro-operations.md#ir_if_to_dif)

@@ -72,11 +72,11 @@ See the [addressing model](./05-addressing-model.md) doc for more details on add
 
 The final effective address is represented as:
 
-    EA_logical = (EA_fld, EA_ADDR)
+    EA_logical = (EA_FIELD, EA_ADDR)
 
 Where:
 - EA_ADDR is derived from offset and page selection
-- EA_fld is determined by IF or DF depending on addressing mode
+- EA_FIELD is determined by IF or DF depending on addressing mode
 
 ---
 

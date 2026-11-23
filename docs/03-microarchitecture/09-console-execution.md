@@ -14,9 +14,9 @@ It describes:
 - Timing relationships
 - Micro-operation sequences invoked by console controls
 
-Control implementation details are defined in Section 4.
+Control implementation details are defined in [Control](../04-control/README.md).
 
-Operator-visible behavior is defined in Section 10.
+Operator-visible front-panel behavior belongs to [Front Panel](../10-front-panel/README.md), which is not yet written.
 
 ---
 

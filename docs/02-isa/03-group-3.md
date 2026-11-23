@@ -24,7 +24,7 @@ Each flag performs a single operation. The operations take effect in a fixed ord
 | MQA | 2 | Logical OR AC and MQ, with result in AC.  MQ is not affected |
 | MQL | 2 | Clear MQ, then move the AC into MQ.  AC is cleared |
 
-When MQA and MQL are combined, the result is the SWP instruction (7521), which exchanges AC and MQ (AC and MQ each receive the other's prior value).
+When MQA and MQL are combined, the result is the SWP instruction (7521), which exchanges AC and MQ (section 2).
 
 Bits 5, 3, 2, and 1 are the SCA and operation-code bits of the KE8-E Extended Arithmetic Element (EAE). This machine has no EAE, so they select no operation; CLA, MQA, and MQL still execute. Software should keep them `0`, as DEC advises for machines without the EAE.
 
@@ -32,6 +32,6 @@ Bits 5, 3, 2, and 1 are the SCA and operation-code bits of the KE8-E Extended Ar
 
 ## 2. Combining Operations
 
- Similar to Group 1, combined operations take effect in their order.  `CLA MQL` will clear AC and then move that into MQ, effectively clearing both.  Conversely `CLA MQA` will clear the AC, then OR the MQ into the AC, resulting in AC = MQ.
- 
- `MQA` and `MQL` combined form `SWP` (7521), which exchanges AC and MQ. This parallels the Group 1 rotate encoding, where two bits that would otherwise conflict select a single combined operation. `SWP` may still be combined with `CLA`: since `CLA` acts before the exchange, `CLA SWP` (7721) results in AC = old MQ and MQ = 0.
+Similar to Group 1, combined operations take effect in their order.  `CLA MQL` will clear AC and then move that into MQ, effectively clearing both.  Conversely `CLA MQA` will clear the AC, then OR the MQ into the AC, resulting in AC = MQ.
+
+`MQA` and `MQL` combined form `SWP` (7521), which exchanges AC and MQ: each receives the other's prior value. This parallels the Group 1 rotate encoding, where two bits that would otherwise conflict select a single combined operation. `SWP` may still be combined with `CLA`: since `CLA` acts before the exchange, `CLA SWP` (7721) results in AC = old MQ and MQ = 0.

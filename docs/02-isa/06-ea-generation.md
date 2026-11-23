@@ -29,11 +29,11 @@ Where:
 
 The EA as a logical construct is formed by:
 
-1. Selecting a EA_ADDR address using the page bit (P)
+1. Selecting an EA_ADDR address using the page bit (P)
 2. Resolving direct or indirect addressing (mutually exclusive)
 3. Applying field selection (IF or DF)
 
-EA_logical = (EA_fld, EA_ADDR)
+EA_logical = (EA_FIELD, EA_ADDR)
 
 ![A visual representation of the EA generation flowchart](../../diagrams/isa/addressing-model/export/addressing-model.png)
 
@@ -91,10 +91,10 @@ IA is the address from which the instruction was fetched, the PC before it is in
 Direct addressing does not involve indirection.
 
 ```
-EA_field = IF
+EA_FIELD = IF
 EA_ADDR  = EA_ADDR
 
-EA = (EA_field, EA_ADDR)
+EA = (EA_FIELD, EA_ADDR)
 STOP
 ```
 
@@ -141,12 +141,12 @@ PTR_value = M[(IF, EA_ADDR)]
 ### 8.3 Step 2B.3: Final EA Formation
 
 ```
-EA_field = DF                       for AND, TAD, ISZ, DCA
-EA_field = IF (after any pending    for JMP, JMS
+EA_FIELD = DF                       for AND, TAD, ISZ, DCA
+EA_FIELD = IF (after any pending    for JMP, JMS
            field change)
 EA_ADDR  = PTR_value
 
-EA = (EA_field, EA_ADDR)
+EA = (EA_FIELD, EA_ADDR)
 STOP
 ```
 

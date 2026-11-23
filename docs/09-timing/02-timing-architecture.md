@@ -95,7 +95,11 @@ The lengths include TP. TP is two steps wide, in both modes, in the TSs that can
 
 `TIMING_MODE` codes 2 and 3 are reserved. Mode 0 is the normal mode; mode 1 is for hardware bring-up.
 
-The two lengths follow the PDP-8/E's fast and slow memory cycles (KK8-E; M8330): FETCH and non-autoindex DEFER are fast, EXECUTE and autoindex DEFER slow. The slow cycle lengthens the TSs of a state that writes memory, or may write it (the auto-index write-back, the MRI and interrupt writes, a DMA transfer). Under mode 0 a directly addressed memory-reference instruction takes 2.6 µs, as on the PDP-8/E, and the ISZ + JMP loop of a timing routine takes 2 × 24 + 28 = 76 TSTEPs = 3.80 µs, the PDP-8/E figure that MAINDEC-8E-D2AB checks.
+The two lengths follow the PDP-8/E's fast and slow memory cycles (KK8-E; M8330):
+
+- **Which states are slow:** FETCH and non-autoindex DEFER are fast; EXECUTE and autoindex DEFER are slow. The slow cycle lengthens the TSs of a state that writes memory, or may write it: the auto-index write-back, the MRI and interrupt writes, and a DMA transfer.
+- **Matching the PDP-8/E:** under mode 0, a directly addressed memory-reference instruction takes 2.6 µs, as on the PDP-8/E.
+- **The diagnostic check:** the ISZ + JMP loop of a timing routine takes 2 × 24 + 28 = 76 TSTEPs = 3.80 µs, the PDP-8/E figure that MAINDEC-8E-D2AB checks.
 
 Each length allows the TS's longest path, from its control word and memory access to the leading edge of its TP, within the limits of section 11.4, and is padded to these totals. TS2 is the longest setup interval, to accommodate the memory access.
 

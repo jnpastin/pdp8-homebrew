@@ -107,10 +107,12 @@ The length of each TS, and the width of its TP, are read from the timing ROM, a 
 
 | Address input | Width | Meaning |
 |---|---|---|
-| `MS_EFF` | 3 | the current major state (`MS` changes only at TP4, so during each TS it names the state whose TS is running) |
+| `MS_EFF` | 3 | the current major state |
 | TS code | 2 | the current timing state |
 | `AUTO_INDEX_REQUIRED` | 1 | selects the slow DEFER (Timing Architecture §5.1) |
 | `TIMING_MODE[1:0]` | 2 | the speed mode, set by a board jumper (Timing Architecture §5.1) |
+
+`MS` changes only at a TP4, or at a console TPC, so during each TS `MS_EFF` names the state whose TS is running.
 
 The ROM gives two values:
 

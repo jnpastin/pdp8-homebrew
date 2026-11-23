@@ -12,6 +12,18 @@ Definitions are provided in:
 - [Control Model](./01-control-model.md)
 - [Control Addressing](./02-control-addressing.md)
 
+### 1.1 Key Rules
+
+The rules below are the ones most designs break. The sections that follow state them all in detail.
+
+1. Control is a function only of `MS`, `TS`, `IR_FIELDS`, `FLAGS`, and `EXT`, and it selects one control word (sections 2 and 3).
+2. Every decision is made by selecting a control word in the control store. The only exceptions are the realizations in [Control Model §8.4](./01-control-model.md#84-realizations-outside-the-control-word) (section 8).
+3. Everything a TS uses was committed by the previous TP; nothing commits or selects during a TS (sections 4 and 11).
+4. `MS_NEXT`, `RUN_NEXT`, and `HLT_REQ_NEXT` come only from the control store (section 9).
+5. A register load has exactly one source, and a bus has at most one driver ([MCS §6.5 and §6.6](./20-control-output-definitions/01-microarchitectural-control-signals.md#65-idb-internal-data-bus-constraints)).
+6. Memory transfers and external-IOT responses commit only at the TPs their binding rules assign (section 12).
+7. A new behavior adds decisions to the control store, never logic outside it (section 14).
+
 ---
 
 ## 2. Functional Completeness

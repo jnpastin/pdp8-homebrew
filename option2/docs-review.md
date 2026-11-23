@@ -215,6 +215,8 @@ D6 was first argued here from the `WR_VALID` wording, toward a commit at the end
 
 ## H. Human readability
 
+**Mechanical items applied 2026-11-23:** H5, H8 to H15, H19 to H25. H16 dropped: §3.3.6 and §3.4.6 differ. H1, H2, H4, H6, H17 and H18 applied the same day; H3 skipped by the user (the DEC source key stays in `option2/spec.md` and the handoff, see O2).
+
 | ID | Where | Problem | Fix |
 |---|---|---|---|
 | H1 | docs/README | No reading order, no status, four empty sections look finished | A reading path, and mark 10 to 13 as empty |

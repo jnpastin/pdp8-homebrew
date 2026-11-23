@@ -24,19 +24,17 @@ Each flag performs a single operation. Operations with a lower Order take effect
 | CLL | 1 | Clear L |
 | CMA | 2 | One's complement AC |
 | CML | 2 | Complement L |
+| IAC | 3 | Increment AC (carry propagates into L) |
 | RAR | 4<sup>(1)</sup> | Rotate AC & L right |
 | RAL | 4<sup>(2)</sup> | Rotate AC & L left |
 | BSW | 4<sup>(3)</sup> | Swap 6 high bits of AC with 6 low bits of AC |
-| IAC | 3 | Increment AC (carry propagates into L) |
 
 1. If `RAR` is combined with `BSW`, the effect will be to rotate right twice
 2. If `RAL` is combined with `BSW`, the effect will be to rotate left twice
 3. In order for `BSW` to actually swap, `RAR` and `RAL` must both be `0`.  Also, BSW was added in the PDP-8/E, so software that is intended to be portable to older systems should avoid using it.  Prior systems used bit 1 solely as a modifier to bits 2 and 3.
 4. If `RAR` and `RAL` are both `1`, no rotate or swap occurs, whatever `BSW` holds; the other selected operations still execute.  DEC left this combination undocumented and its effect varied between models, so this machine does not replicate any of them, and software should not use it.
 
----
-
-## NOP
+### 1.1 NOP
 
 NOP is encoded as 7000.
 

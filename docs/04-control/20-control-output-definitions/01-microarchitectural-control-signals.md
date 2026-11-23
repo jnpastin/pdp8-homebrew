@@ -2202,24 +2202,12 @@ Constraints:
 
 ### 8.2 IDB Usage Constraints
 
-IDB is used for internal datapath transfers.
+The IDB rules are stated once, in [section 6.5](#65-idb-internal-data-bus-constraints).
 
-Constraints:
+Also:
 
-```
-At most one source may drive IDB per cycle
-```
-
-```
-If IDB_DRIVE = 1:
-    exactly one IDB_SRC must be selected
-```
-
-
-Additional constraints:
-
-- IDB must not be used for memory transfers  
-- IDB must not be used for I/O transfers  
+- IDB must not be used for memory transfers
+- IDB must not be used for I/O transfers
 
 ---
 
@@ -2289,22 +2277,7 @@ MDB → DB
 
 ### 8.6 Register Input Consistency Across Domains
 
-When a register is loaded, its input must originate from exactly one domain.
-
-Constraint:
-
-```
-If R_LOAD = 1:
-    exactly one of the following must be active:
-        - IDB path
-        - ALU output
-        - Control Data Values
-        - MDB input (if applicable)
-        - OPR pass unit (AC, L, MQ)
-        - the skip decision OPR_SKIP_REQ (SKIP only)
-```
-
-No mixing of domains is permitted within a single load.
+The register-input rules are stated once, in [section 6.6](#66-register-input-exclusivity).
 
 ---
 
@@ -2405,47 +2378,13 @@ PC_LOAD and PC_INC must not both be asserted
 
 ### 9.3 Register Source Exclusivity
 
-When a register is loaded, only one input source may be active.
-
-Constraint:
-
-```
-If R_LOAD = 1:
-    exactly one input source must drive R
-```
-
-Applies to:
-
-- AC, MB, MA, PC, EA, IR, MQ, L
-
-Invalid combinations include:
-
-```
-IDB + CONST
-IDB + MDB
-ALU + CONST
-```
+The register-input rules are stated once, in [section 6.6](#66-register-input-exclusivity).
 
 ---
 
 ### 9.4 IDB Signal Dependency
 
-IDB control signals are interdependent.
-
-Constraints:
-
-```
-If IDB_DRIVE = 1:
-    IDB_SRC must be valid
-```
-
-
-Invalid configurations:
-
-```
-IDB_DRIVE = 1 with no valid source
-multiple conceptual sources active
-```
+The IDB rules are stated once, in [section 6.5](#65-idb-internal-data-bus-constraints).
 
 **Used by μops:**
 - [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb)
@@ -2541,28 +2480,7 @@ L_LOAD = 0 leaves L unchanged
 
 ### 9.7 Domain Exclusivity at Register Input
 
-A register must not mix sources from different domains.
-
-Constraint:
-
-```
-If R_LOAD = 1:
-    input must come from exactly one domain:
-        IDB
-        ALU
-        MDB
-        Control
-        OPR pass unit
-        skip decision (SKIP)
-```
-
-Invalid:
-
-```
-IDB + MDB
-ALU + Control
-MDB + Control
-```
+The register-input rules are stated once, in [section 6.6](#66-register-input-exclusivity).
 
 ---
 

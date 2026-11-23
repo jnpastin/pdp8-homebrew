@@ -66,13 +66,13 @@ GTF and RTF use the PDP-8/E processor flags-word format.
 ┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┐
 │ 11 │ 10 │  9 │  8 │  7 │  6 │  5 │  4 │  3 │  2 │  1 │  0 │
 ├────┼────┼────┼────┼────┼────┼────┴────┴────┼────┴────┴────┤
-│ L  │ 0  │ IR │ 0  │ IE │ 0  │    IF (SF)   │    DF (SF)   │
+│ L  │ 0  │INT │ 0  │ IE │ 0  │    IF (SF)   │    DF (SF)   │
 └────┴────┴────┴────┴────┴────┴──────────────┴──────────────┘
 ```
 
 Where:
 - L is the current Link value.
-- IR is 1 when /INT_REQ is asserted and 0 when /INT_REQ is deasserted.
+- INT (bit 9; DEC calls it the interrupt request bit) is 1 when /INT_REQ is asserted and 0 when /INT_REQ is deasserted. It is named INT here so that it is not confused with the IR register.
 - IE is the current interrupt-enable value.
 - IF (SF) and DF (SF) are the save field: the instruction and data fields saved in `IB` at the last interrupt entry, as RIB reads them. GTF reports the save field, not the current IF and DF. RTF loads these bits as the restored instruction field (staged in DIF) and data field (section 3.1.2).
 - Bit 10 is 0 because the EAE Greater-Than flag is not implemented.
@@ -81,7 +81,7 @@ Where:
 
 `IB` is not initialized at power-on or by system initialization; it is first written at interrupt entry. Until then, GTF bits 5:0 are undefined. The PDP-8/E likewise loads its save field only at interrupt entry (KM8-E Memory Extension Theory of Operation §2.16, §2.19).
 
-The IR field reports raw interrupt-request presence. It does not report `INTERRUPT_REQUEST_VALID` and is independent of IE and II.
+The INT field reports raw interrupt-request presence. It does not report `INTERRUPT_REQUEST_VALID` and is independent of IE and II.
 
 #### 3.1.1 GTF
 

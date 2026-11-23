@@ -139,7 +139,7 @@ MS is updated separately from μops.
 
 Rules:
 
-- MS_next is determined during TS4 by control logic
+- MS_NEXT is determined during TS4 by control logic
 - MS is updated at TP4
 
 Constraint:

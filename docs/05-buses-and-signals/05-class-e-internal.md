@@ -21,7 +21,7 @@ This document does NOT define:
 - datapath operation
 - timing behavior
 
-Authoritative signal definitions are maintained in Section 4.
+Authoritative signal definitions are maintained in the [control documents](../04-control/README.md).
 
 ---
 
@@ -156,7 +156,7 @@ This document defines IDB as an architectural transport mechanism only.
 - Class E signals must not be relied upon by independent modules.
 - IDB is a CPU-internal transport mechanism.
 - IDB is not externally visible.
-- Signal behavior is defined by the authoritative documents in Section 4.
+- Signal behavior is defined by the authoritative [control documents](../04-control/README.md).
 
 ---
 
@@ -164,4 +164,4 @@ This document defines IDB as an architectural transport mechanism only.
 
 Class E signals provide the internal implementation infrastructure of the CPU.
 
-This document classifies local and internal signals and defines the Internal Data Bus (IDB). Signal behavior, control semantics, and operational definitions are maintained in Section 4.
+This document classifies local and internal signals and defines the Internal Data Bus (IDB). Signal behavior, control semantics, and operational definitions are maintained in the [control documents](../04-control/README.md).

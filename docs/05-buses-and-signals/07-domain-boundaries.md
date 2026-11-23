@@ -116,7 +116,7 @@ Domain crossings are determined by the control architecture.
 
 This document does not define crossing mechanisms.
 
-Authoritative definitions are maintained in Section 4.
+Authoritative definitions are maintained in the [control documents](../04-control/README.md).
 
 ---
 

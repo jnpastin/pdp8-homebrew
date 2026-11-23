@@ -143,7 +143,7 @@ Example conceptual form:
 
 ```
 if (TS == 4 and IR_FIELDS.indirect == 1)
-    MS_next = DEFER
+    MS_NEXT = DEFER
 endif
 ```
 
@@ -154,7 +154,7 @@ Instead:
 ```
 (MS, TS=4, IR_FIELDS.indirect=1, FLAGS, EXT)
 → CTRL_ADDR
-→ CONTROL_WORD { MS_next = DEFER, ... }
+→ CONTROL_WORD { MS_NEXT = DEFER, ... }
 ```
 
 Interpretation:
@@ -166,7 +166,7 @@ Interpretation:
   → selects a precomputed CONTROL_WORD  
 
 - CONTROL_WORD  
-  → defines outcomes (e.g., MS_next, control signals)
+  → defines outcomes (e.g., MS_NEXT, control signals)
 
 Constraint:
 - All conditional behavior must be represented through CTRL_ADDR selection.
@@ -185,7 +185,7 @@ The control process is strictly divided:
 
 - CONTROL_WORD defines:
   - control signals
-  - sequencing decisions (including MS_next)
+  - sequencing decisions (including MS_NEXT)
 
 Constraint:
 - CTRL_ADDR encodes which decision applies.
@@ -327,7 +327,7 @@ decision inputs → PACK → CTRL_ADDR → CONTROL_WORD → outcomes
 
 Constraint:
 - PACK must not encode outcomes.
-- All outcomes (including sequencing decisions such as MS_next) must exist only in CONTROL_WORD.
+- All outcomes (including sequencing decisions such as MS_NEXT) must exist only in CONTROL_WORD.
 
 ---
 

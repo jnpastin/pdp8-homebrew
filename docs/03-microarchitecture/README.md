@@ -39,7 +39,7 @@ Excludes:
 
 ## 4. Execution Model
 
-ustate = (MS, TS)
+μstate = (MS, TS)
 
 - MS: Major State
 - TS: Timing State
@@ -49,9 +49,23 @@ All state changes occur only at TP.
 
 Effective addresses are implemented as:
 
-    EA_logical = (EA_fld, EA_ADDR)
+    EA_logical = (EA_FIELD, EA_ADDR)
 
-Microarchitecture operates directly on EA_ADDR and selects EA_fld via IF/DF control.
+Microarchitecture operates directly on EA_ADDR and selects EA_FIELD via IF/DF control.
+
+### 4.1 Instruction Path
+
+Every instruction starts in FETCH, and completes at the TP4 of its last major state:
+
+| Instruction | Major states | Completes in |
+|---|---|---|
+| OPR (all groups), direct JMP | FETCH | FETCH |
+| JMP I | FETCH, DEFER | DEFER |
+| AND, TAD, ISZ, DCA, JMS, direct | FETCH, EXECUTE | EXECUTE |
+| AND, TAD, ISZ, DCA, JMS, indirect | FETCH, DEFER, EXECUTE | EXECUTE |
+| IOT | FETCH, EXECUTE | EXECUTE |
+
+At an instruction's completion, control enters INTERRUPT for a valid interrupt request, otherwise DMA for a DMA request, otherwise the next FETCH. INTERRUPT always returns to FETCH; DMA continues a burst or returns to FETCH.
 
 ---
 
@@ -100,3 +114,21 @@ Microarchitecture binds control behavior to timing structure.
 ## 9. Summary
 
 Microarchitecture defines structured execution as microstate sequences driven by control.
+
+---
+
+## 10. Documents
+
+| Document | Defines |
+|---|---|
+| [State Model](./00-state-model.md) | the major and timing states, and how they advance |
+| [Execution Model](./01-execution-model.md) | evaluation during a TS and commit at a TP |
+| [Micro-Operations](./02-micro-operations.md) | every micro-operation, its target, and its sources |
+| [Micro-Operation Sequencing](./03-microoperation-sequencing.md) | how micro-operations are selected and combined |
+| [Fetch & Defer](./04-fetch-defer.md) | FETCH and DEFER, including the JMPs and every OPR |
+| [MRI Execution](./05-mri-execution.md) | EXECUTE for AND, TAD, ISZ, DCA, and JMS |
+| [IOT Execution](./06-iot-execution.md) | EXECUTE for the IOTs, internal and external |
+| [OPR Execution](./07-opr/README.md) | the OPR pass unit and the three groups |
+| [Interrupt Execution](./08-interrupt-execution.md) | the INTERRUPT major state |
+| [Console Execution](./09-console-execution.md) | the console operations and the halted state |
+| [DMA Execution](./10-dma-execution.md) | the DMA major state |

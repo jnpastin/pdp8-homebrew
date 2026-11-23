@@ -38,7 +38,7 @@ Ownership is controlled through source-selection signals defined by the control 
 
 This document identifies the ownership mechanism for each transport mechanism.
 
-Permissible ownership selections are defined in Section 4.
+Permissible ownership selections are defined in the [control documents](../04-control/README.md).
 
 ---
 
@@ -50,7 +50,7 @@ A selected source drives a transport mechanism only when the corresponding drive
 
 Ownership therefore depends on both source selection and source enable conditions.
 
-Authoritative definitions are maintained in Section 4.
+Authoritative definitions are maintained in the [control documents](../04-control/README.md).
 
 ---
 
@@ -129,7 +129,7 @@ Ownership selection is performed by the control system.
 
 This document defines ownership structure only.
 
-Ownership selection values, constraints, and operational behavior are defined in Section 4.
+Ownership selection values, constraints, and operational behavior are defined in the [control documents](../04-control/README.md).
 
 ---
 
@@ -180,7 +180,7 @@ Ownership rules:
 - The selected controller is the sole MDB producer during a DMA write.
 
 Detailed DMA interface behavior is defined in [DMA Interface](../07-io/05-dma-interface.md).  
-Arbitration and selection behavior are defined in [DMA Arbitration](../07-io/06-dma-arbitration.md).)
+Arbitration and selection behavior are defined in [DMA Arbitration](../07-io/06-dma-arbitration.md).
 
 ---
 
@@ -190,7 +190,7 @@ Arbitration and selection behavior are defined in [DMA Arbitration](../07-io/06-
 - Ownership does not imply validity.
 - Every transport mechanism has a defined ownership control.
 - Ownership selection is determined by the control architecture.
-- Permissible ownership selections are defined in Section 4.
+- Permissible ownership selections are defined in the [control documents](../04-control/README.md).
 - DMA ownership behavior is defined separately.
 
 ---

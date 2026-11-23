@@ -129,6 +129,8 @@ SKON tests the pre-operation interrupt-enable state and then disables interrupts
 
 Its instruction-level behavior is defined in [IOT Instruction Detail](../02-isa/04-iot.md#3-device-0---processor-iots), and its execution sequence is defined in [IOT Execution](../03-microarchitecture/06-iot-execution.md#93-ir119--110-and-ioa--00-and-ir20--000).
 
+SKON:
+
 - clears `IE`
 - does not test `/INT_REQ`
 - does not acknowledge or clear a controller interrupt request
@@ -231,7 +233,7 @@ The JMP timing matches the PDP-8/E (KM8-E Memory Extension, Theory of Operation)
 
 A JMS differs: it clears `II` and loads IF at EXECUTE TP1, one TP after the KM8-E's TP4. No program can see the difference, because nothing between those TPs uses IF or II. Matching it would need the control store to recognize a JMS in FETCH and DEFER, which `IR_CLASS` does not ([IR-Derived Fields](../04-control/10-control-input-definitions/02-ir-derived-fields.md#ir_class)).
 
-## 13. FETCH-Time Inhibit Clearing
+## 13. Inhibit Clearing in FETCH TS1
 
 FETCH TS1 clears `II` only when `CIFP` is clear. A direct JMP also clears it in FETCH TS3 when `CIFP` is set, as it applies the pending field (section 12).
 
@@ -249,7 +251,7 @@ FETCH-time inhibit clearing does not:
 - acknowledge an interrupting controller
 - itself recognize an interrupt
 
-### 14. Combined ION, CIF, RMF, and RTF Effects
+## 14. Combined ION, CIF, RMF, and RTF Effects
   
 II may be set by ION, CIF, RMF, or RTF.  
 The architectural effect depends on CIFP:

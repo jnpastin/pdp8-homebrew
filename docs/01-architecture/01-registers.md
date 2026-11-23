@@ -92,7 +92,7 @@ Constraints:
 
 Writers:
 - IOT execution (CIF, RMF, or RTF; CIFP_SET micro-operation)
-- FETCH TP4 (direct JMP), DEFER TP4 (JMP I), and MRI execution TP1 (JMS); CIFP_CLEAR micro-operation
+- The JMP or JMS that applies the field, at the TP given in [Interrupt Enable and Inhibit §12](../08-interrupts-and-skip/03-interrupt-enable-and-inhibit.md#12-deferred-field-application) (CIFP_CLEAR micro-operation)
 - Interrupt entry (CIFP_CLEAR micro-operation)
 - Console Load Address (CIFP_CLEAR micro-operation)
 
@@ -138,7 +138,7 @@ Invariants:
 Constraints:
 - Loaded by CIF from IR, RMF from IB, RTF from AC[5:3], and Load Address from FP_IF
 - Cleared at interrupt entry
-- Applied to IF only at the JMP or JMS that concludes a pending deferred field change: at FETCH TP4 of a direct JMP, DEFER TP4 of a JMP I, or EXECUTE TP1 of a JMS
+- Applied to IF only at the JMP or JMS that concludes a pending deferred field change, at the TP given in [Interrupt Enable and Inhibit §12](../08-interrupts-and-skip/03-interrupt-enable-and-inhibit.md#12-deferred-field-application)
 - Must not change during FETCH, DEFER, or EXECUTE except at the defined load, clear, and apply points  
 
 Writers:
@@ -289,12 +289,12 @@ Visibility: Global
 Invariants:
 - Supplies high-order bits of instruction fetch address
 - Supplies high-order bits for direct MRI access and indirect pointer access
-- Constant for the duration of an instruction cycle, except that a JMP or JMS applies a pending deferred field change: at FETCH TP4 of a direct JMP, DEFER TP4 of a JMP I, or EXECUTE TP1 of a JMS
+- Constant for the duration of an instruction cycle, except that a JMP or JMS applies a pending deferred field change, at the TP given in [Interrupt Enable and Inhibit §12](../08-interrupts-and-skip/03-interrupt-enable-and-inhibit.md#12-deferred-field-application)
 - Also changed outside an instruction: cleared at interrupt entry, and loaded by the LOAD ADDRESS console operation
 
 Constraints:
 - Modified only by field control instructions
-- Must not change except where a JMP or JMS applies a pending deferred field change (at FETCH TP4 of a direct JMP, DEFER TP4 of a JMP I, or EXECUTE TP1 of a JMS), at interrupt entry, or at LOAD ADDRESS
+- Must not change except where a JMP or JMS applies a pending deferred field change, at interrupt entry, or at LOAD ADDRESS
 
 Writers:
 - Field instruction control logic (DIF_TO_IF)

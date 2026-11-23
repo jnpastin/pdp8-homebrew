@@ -26,7 +26,7 @@ EA_ADDR is a phase-dependent working value that becomes the final operand addres
 
 Final effective address is defined as:
 
-    EA_logical = (EA_fld, EA_ADDR)
+    EA_logical = (EA_FIELD, EA_ADDR)
 
 For clarity across fields, this specification uses a 5-digit octal notation:
 
