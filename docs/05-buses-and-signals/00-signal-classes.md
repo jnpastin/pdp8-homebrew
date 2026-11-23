@@ -47,8 +47,8 @@ Multi-bit shared signal groups used for data and addressing across independent m
 
 ### 3.3 Signals
 
-- Address Bus: A[11:0]
-- Data Bus: D[11:0]
+- Address Bus: AB[11:0]
+- I/O Data Bus: DB[11:0]
 - Memory Data Bus: MDB[11:0]
 - Memory Field Bus: MFB[2:0]
 
@@ -97,6 +97,7 @@ System-wide control signals that coordinate behavior across modules.
 - /DMA_REQ
 - /DMA_GRANT
 - MS[2:0]
+- INSTR_END
 
 ##### 4.3.4 System Control
 
@@ -165,6 +166,7 @@ Signals connecting the system to the human operator interface.
 
 - Start
 - Continue
+- Clear
 - Stop
 - Single Instruction
 - Single Step
@@ -175,6 +177,7 @@ Signals connecting the system to the human operator interface.
 #### 6.3.2 Data Input
 
 - FP_SR[11:0]
+- FP_IF[2:0] and FP_DF[2:0], the field switches
 
 #### 6.3.3 Status Outputs
 

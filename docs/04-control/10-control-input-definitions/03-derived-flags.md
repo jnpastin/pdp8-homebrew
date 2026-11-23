@@ -6,6 +6,7 @@ Defines fully pre-decoded control condition signals derived from:
 
 - IR-derived flags (02-ir_derived_fields.md)
 - Primitive FLAGS (01-flags.md)
+- the external input `/INT_REQ`, for `INTERRUPT_REQUEST_VALID` (04-external-inputs.md)
 
 Derived flags are combinational and reduce multi-input control conditions into single-bit inputs for control.
 
@@ -163,6 +164,8 @@ AND EAI
 - [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc)
 - [MEM_WRITE_FROM_MB](../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb)
 
+It is also an address input of the timing ROM, where it selects the slow DEFER ([Timing Terminology §3.5](../../09-timing/01-terminology.md#35-timing-rom)).
+
 ---
 
 ### INTERRUPT_REQUEST_VALID
@@ -240,5 +243,6 @@ All definitions use only:
 
 - IR-derived flags from 02
 - primitive FLAGS from 01
+- `/INT_REQ`, from the external inputs
 
 and introduce no new base signals.

@@ -102,8 +102,6 @@ Defined in:
 
 - [/RD](./02-architectural-control-signals.md#41-memory-read-rd)  
 - [/WR](./02-architectural-control-signals.md#42-memory-write-wr)  
-- [/DMA_GRANT](./02-architectural-control-signals.md#45-dma_grant)  
-- [INSTR_END](./02-architectural-control-signals.md#410-instruction-end-instr_end)  
 
 ---
 
@@ -115,6 +113,11 @@ Defined in:
 - [IOA[5:0]](./02-architectural-control-signals.md#46-io-address-bus-ioa50)  
 - [IOP[2:0]](./02-architectural-control-signals.md#47-io-operation-field-iop20)
 - [IOT_ACTIVE](./02-architectural-control-signals.md#48-external-iot-active-iot_active)
+
+### 4.3 DMA Interface
+
+- [/DMA_GRANT](./02-architectural-control-signals.md#45-dma_grant)  
+- [INSTR_END](./02-architectural-control-signals.md#410-instruction-end-instr_end)  
 
 ---
 

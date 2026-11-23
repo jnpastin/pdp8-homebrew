@@ -59,7 +59,7 @@ The predicates classify the instruction without replacing the underlying IR bit 
 - 1 - TAD Y - Twos Complement Add AC with contents of address Y
 - 2 - ISZ Y - Increment contents of address Y, skip next instruction if result is zero
 - 3 - DCA Y - Deposit AC contents into address Y, clear AC
-- 4 - JMS Y - Jump to subroutine at address Y, store PC+1 in address Y for return
+- 4 - JMS Y - Jump to subroutine at address Y, store PC+1 (the return address) in Y and continue at Y+1
 - 5 - JMP Y - Jump to address Y
 
 ### 4.2 Flag bits
@@ -126,7 +126,7 @@ Each remaining bit represents an independent operation, these operations may be 
 
 ---
 
-## 7. Execute Timing States
+## 7. Operation Ordering
 
 TS defines execution ordering within each major state. Operations combined in one OPR act in their defined order within a single pass in FETCH.
 

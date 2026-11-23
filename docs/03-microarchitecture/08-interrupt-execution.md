@@ -20,11 +20,13 @@ Execution behavior follows:
 Applies when:
 - MS = INTERRUPT  
 
-Entry into INTERRUPT is determined by control based on:
+Entry into INTERRUPT is determined by control at an instruction's completion, based on:
 - interrupt enable state (IE)
-- interrupt request signals  
+- interrupt inhibit state (II)
+- interrupt request signals
 
 Control conditions governing entry are defined in:
+- [Interrupt Recognition and Sequencing](../08-interrupts-and-skip/02-interrupt-recognition-and-sequencing.md)
 - [Control Model](../04-control/01-control-model.md)
 
 ---

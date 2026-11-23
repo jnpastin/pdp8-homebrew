@@ -88,7 +88,7 @@ All state changes occur exclusively at TP: captured at its leading edge, visible
 
 ### 5.1 TP4
 - Interrupt condition evaluated
-- Transition to INTERRUPT or FETCH
+- Transition to INTERRUPT, DMA, or FETCH
 
 ---
 

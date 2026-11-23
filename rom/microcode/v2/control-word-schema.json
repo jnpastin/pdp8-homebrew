@@ -1802,7 +1802,7 @@
       ],
       "constraints": [
         {
-          "text": "ALU is the source for all arithmetic/logical AC loads via the IDB",
+          "text": "The ALU, through the IDB, is the source of arithmetic and logical AC loads, except an OPR's, which come from the OPR pass unit (AC_SRC = 7)",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
             "line": 407
@@ -4329,131 +4329,6 @@
       }
     },
     {
-      "name": "/DMA_GRANT",
-      "category": "Memory Interface",
-      "width": 1,
-      "control_word_role": "derived",
-      "default_value": "1",
-      "explicit_value_required": "No",
-      "value_required_when": "Always",
-      "attributes": {
-        "mnemonic": "/DMA_GRANT",
-        "display_name": "DMA Grant",
-        "polarity": "Active-low",
-        "domain": "Architectural",
-        "description": "Indicates that the CPU is in MS = DMA and has released normal CPU ownership of the memory interface."
-      },
-      "values": [],
-      "constraints": [
-        {
-          "text": "must be generated only by the MS_EFF decode",
-          "source": {
-            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 316
-          }
-        },
-        {
-          "text": "must not be asserted during normal instruction execution",
-          "source": {
-            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 317
-          }
-        },
-        {
-          "text": "must not be asserted concurrently with CPU-initiated /RD or /WR",
-          "source": {
-            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 318
-          }
-        },
-        {
-          "text": "does not itself define DMA address, data, direction, or device selection",
-          "source": {
-            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 319
-          }
-        },
-        {
-          "text": "does not modify CPU architectural state",
-          "source": {
-            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 320
-          }
-        },
-        {
-          "text": "does not modify RUN or HLT_REQ",
-          "source": {
-            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 321
-          }
-        },
-        {
-          "text": "external DMA ownership and multi-device arbitration are outside CPU control and must be resolved before or during DMA service",
-          "source": {
-            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 322
-          }
-        }
-      ],
-      "used_by_micro_operations": [],
-      "sources": {
-        "index": {
-          "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 105
-        },
-        "definition": {
-          "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-          "section": "/DMA_GRANT",
-          "line": 270
-        }
-      }
-    },
-    {
-      "name": "INSTR_END",
-      "category": "Memory Interface",
-      "width": 1,
-      "control_word_role": "derived",
-      "default_value": "0",
-      "explicit_value_required": "No",
-      "value_required_when": "Always",
-      "attributes": {
-        "mnemonic": "INSTR_END",
-        "display_name": "Instruction End",
-        "polarity": "Active-high",
-        "domain": "Architectural",
-        "description": "Marks the TS4 of an instruction's last major state, at whose TP4 the instruction completes."
-      },
-      "values": [],
-      "constraints": [
-        {
-          "text": "must be generated only by this decode",
-          "source": {
-            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 558
-          }
-        },
-        {
-          "text": "does not modify CPU architectural state",
-          "source": {
-            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-            "line": 559
-          }
-        }
-      ],
-      "used_by_micro_operations": [],
-      "sources": {
-        "index": {
-          "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 106
-        },
-        "definition": {
-          "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
-          "section": "Instruction End (INSTR_END)",
-          "line": 522
-        }
-      }
-    },
-    {
       "name": "/DB_READ",
       "category": "I/O Interface",
       "width": 1,
@@ -4528,7 +4403,7 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 112
+          "line": 110
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
@@ -4612,7 +4487,7 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 113
+          "line": 111
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
@@ -4706,7 +4581,7 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 114
+          "line": 112
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
@@ -4765,7 +4640,7 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 115
+          "line": 113
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
@@ -4831,7 +4706,7 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 116
+          "line": 114
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
@@ -4883,12 +4758,137 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 117
+          "line": 115
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
           "section": "External IOT Active (IOT_ACTIVE)",
           "line": 404
+        }
+      }
+    },
+    {
+      "name": "/DMA_GRANT",
+      "category": "DMA Interface",
+      "width": 1,
+      "control_word_role": "derived",
+      "default_value": "1",
+      "explicit_value_required": "No",
+      "value_required_when": "Always",
+      "attributes": {
+        "mnemonic": "/DMA_GRANT",
+        "display_name": "DMA Grant",
+        "polarity": "Active-low",
+        "domain": "Architectural",
+        "description": "Indicates that the CPU is in MS = DMA and has released normal CPU ownership of the memory interface."
+      },
+      "values": [],
+      "constraints": [
+        {
+          "text": "must be generated only by the MS_EFF decode",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 316
+          }
+        },
+        {
+          "text": "must not be asserted during normal instruction execution",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 317
+          }
+        },
+        {
+          "text": "must not be asserted concurrently with CPU-initiated /RD or /WR",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 318
+          }
+        },
+        {
+          "text": "does not itself define DMA address, data, direction, or device selection",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 319
+          }
+        },
+        {
+          "text": "does not modify CPU architectural state",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 320
+          }
+        },
+        {
+          "text": "does not modify RUN or HLT_REQ",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 321
+          }
+        },
+        {
+          "text": "external DMA ownership and multi-device arbitration are outside CPU control and must be resolved before or during DMA service",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 322
+          }
+        }
+      ],
+      "used_by_micro_operations": [],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 119
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+          "section": "/DMA_GRANT",
+          "line": 270
+        }
+      }
+    },
+    {
+      "name": "INSTR_END",
+      "category": "DMA Interface",
+      "width": 1,
+      "control_word_role": "derived",
+      "default_value": "0",
+      "explicit_value_required": "No",
+      "value_required_when": "Always",
+      "attributes": {
+        "mnemonic": "INSTR_END",
+        "display_name": "Instruction End",
+        "polarity": "Active-high",
+        "domain": "Architectural",
+        "description": "Marks the TS4 of an instruction's last major state, at whose TP4 the instruction completes."
+      },
+      "values": [],
+      "constraints": [
+        {
+          "text": "must be generated only by this decode",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 558
+          }
+        },
+        {
+          "text": "does not modify CPU architectural state",
+          "source": {
+            "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+            "line": 559
+          }
+        }
+      ],
+      "used_by_micro_operations": [],
+      "sources": {
+        "index": {
+          "document": "docs/04-control/20-control-output-definitions/00-index.md",
+          "line": 120
+        },
+        "definition": {
+          "document": "docs/04-control/20-control-output-definitions/02-architectural-control-signals.md",
+          "section": "Instruction End (INSTR_END)",
+          "line": 522
         }
       }
     },
@@ -4976,7 +4976,7 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 130
+          "line": 133
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
@@ -5052,7 +5052,7 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 131
+          "line": 134
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
@@ -5128,7 +5128,7 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 132
+          "line": 135
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",
@@ -5190,7 +5190,7 @@
       "sources": {
         "index": {
           "document": "docs/04-control/20-control-output-definitions/00-index.md",
-          "line": 133
+          "line": 136
         },
         "definition": {
           "document": "docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md",

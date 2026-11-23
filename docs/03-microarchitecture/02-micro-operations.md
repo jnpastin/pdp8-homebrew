@@ -24,15 +24,14 @@ Each μop specifies:
 
 Specifically:
 - MDB → MB via MEM_READ_TO_MB
+- MDB → IR via MDB_TO_IR, at an instruction fetch only
 - DB  → AC via DB_READ_TO_AC
 
-No μop may directly ingest MDB_input into any register other than MB.
+No μop may directly ingest MDB_input into any register other than MB, and IR at an instruction fetch.
 No μop may directly ingest DB_input into any register other than AC.
 
 MB Lifetime Rule:
-A value placed in MB must be consumed by all dependent μops
-in the immediately following TS. No μop may rely on MB contents
-beyond that TS.  If MB is not consumed in the following TS, its contents are considered undefined for subsequent use.
+A value placed in MB holds until the next micro-operation that loads MB. A μop may use it in any later TS of the same instruction in which no load of MB intervenes. For example, DEFER reads the pointer into MB at TP2 and uses it at TP3 (auto-index increment) and TP4 (write-back, `MB_TO_EA_ADDR`). No μop may rely on MB across an instruction boundary.
 
 ---
 
@@ -50,7 +49,7 @@ Example:
     if (L != 0):
         PC_INC
 
-No intermediate state or flag storage is created.
+No intermediate state or flag storage is created. The one exception is `SKIP`: a Group 2 OPR's skip decision is loaded into `SKIP` at FETCH TP3 (`OPR_SKIP_REQ_TO_SKIP`) and used at FETCH TP4, because CLA may clear AC at the same TP3 ([Skip Model §12](../08-interrupts-and-skip/05-skip-model.md#12-skip-state)).
 
 ---
 
@@ -1047,7 +1046,7 @@ MDB
 Memory Operations
 
 **Description:**  
-Reads the value at the address specified by MA and places it into the memory buffer.
+Reads the value at the address on AB, from MA, or from PC for EXAMINE (`AB_SRC`), and places it into the memory buffer.
 
 **Target:**  
 MB
@@ -1100,7 +1099,7 @@ MA or PC, IF or DF, MB
 Memory Operations
 
 **Description:**  
-Writes the value currently present in the Front Panel Switch Register to the memory location specified by MA.
+Writes the value currently present in the Front Panel Switch Register to the memory location specified by PC (`AB_SRC` = PC), for DEPOSIT.
 
 **Target:**  
 M[MEM_ADDR]

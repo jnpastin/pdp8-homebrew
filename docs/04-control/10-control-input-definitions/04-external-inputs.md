@@ -390,7 +390,6 @@ Front-panel data inputs provide externally selected values used by console opera
 
 **Consumed By:**
 - DMA sequencing control
-- [/DMA_GRANT](../20-control-output-definitions/02-architectural-control-signals.md#45-dma_grant)
 - [MS_NEXT](../20-control-output-definitions/03-sequencing-control-signals.md#41-next-major-state-ms_next)
 
 **Constraints:**

@@ -58,8 +58,8 @@
           }
         },
         {
-          "text": "PC_INC μop",
-          "target": "../../03-microarchitecture/02-micro-operations.md#pc_inc",
+          "text": "OPR_SKIP_REQ",
+          "target": "./03-derived-flags.md#opr_skip_req",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/01-flags.md",
             "line": 56
@@ -127,8 +127,8 @@
           }
         },
         {
-          "text": "PC_INC μop",
-          "target": "../../03-microarchitecture/02-micro-operations.md#pc_inc",
+          "text": "OPR_SKIP_REQ",
+          "target": "./03-derived-flags.md#opr_skip_req",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/01-flags.md",
             "line": 72
@@ -204,7 +204,7 @@
           }
         },
         {
-          "text": "FETCH II_CLEAR selection (II_CLEAR is selected only when CIFP = 0)",
+          "text": "FETCH TS1 II_CLEAR selection (selected there only when CIFP = 0); a JMP or JMS that applies the field clears II with CIFP = 1",
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/01-flags.md",
@@ -801,8 +801,8 @@
           }
         },
         {
-          "text": "PC_INC μop",
-          "target": "../../03-microarchitecture/02-micro-operations.md#pc_inc",
+          "text": "OPR_SKIP_REQ",
+          "target": "./03-derived-flags.md#opr_skip_req",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/01-flags.md",
             "line": 233
@@ -1082,7 +1082,7 @@
           "meaning": "not IOT",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 537
+            "line": 538
           }
         },
         {
@@ -1090,7 +1090,7 @@
           "meaning": "IOT",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 538
+            "line": 539
           }
         }
       ],
@@ -1100,7 +1100,7 @@
         "text": "IR_IS_IOT = (IR[11:9] == 110)",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 530
+          "line": 531
         }
       },
       "constraints": [],
@@ -1112,7 +1112,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 521,
+          "line": 522,
           "heading": "IR_IS_IOT"
         }
       }
@@ -1141,7 +1141,7 @@
           "meaning": "not MRI",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 592
+            "line": 593
           }
         },
         {
@@ -1149,7 +1149,7 @@
           "meaning": "MRI",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 593
+            "line": 594
           }
         }
       ],
@@ -1159,7 +1159,7 @@
         "text": "IR_IS_MRI =\n(IR[11:9] == 000) OR  // AND\n(IR[11:9] == 001) OR  // TAD\n(IR[11:9] == 010) OR  // ISZ\n(IR[11:9] == 011) OR  // DCA\n(IR[11:9] == 100) OR  // JMS\n(IR[11:9] == 101)     // JMP",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 579
+          "line": 580
         }
       },
       "constraints": [],
@@ -1169,7 +1169,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ac_and_mb",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 597
+            "line": 598
           }
         },
         {
@@ -1177,7 +1177,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#add_ac_mb",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 598
+            "line": 599
           }
         },
         {
@@ -1185,7 +1185,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ac_to_mb",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 599
+            "line": 600
           }
         },
         {
@@ -1193,7 +1193,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 600
+            "line": 601
           }
         },
         {
@@ -1201,7 +1201,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 601
+            "line": 602
           }
         },
         {
@@ -1209,7 +1209,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#mb_inc",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 602
+            "line": 603
           }
         },
         {
@@ -1217,7 +1217,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ir_addr_to_ea_addr",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 603
+            "line": 604
           }
         },
         {
@@ -1225,7 +1225,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 604
+            "line": 605
           }
         },
         {
@@ -1233,7 +1233,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ea_addr_to_ma",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 605
+            "line": 606
           }
         },
         {
@@ -1241,7 +1241,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 606
+            "line": 607
           }
         }
       ],
@@ -1252,7 +1252,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 570,
+          "line": 571,
           "heading": "IR_IS_MRI"
         }
       }
@@ -1281,7 +1281,7 @@
           "meaning": "not OPR",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 627
+            "line": 628
           }
         },
         {
@@ -1289,7 +1289,7 @@
           "meaning": "OPR",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 628
+            "line": 629
           }
         }
       ],
@@ -1299,7 +1299,7 @@
         "text": "IR_IS_OPR = (IR[11:9] == 111)",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 620
+          "line": 621
         }
       },
       "constraints": [],
@@ -1309,7 +1309,7 @@
           "target": "../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 632
+            "line": 633
           }
         },
         {
@@ -1317,7 +1317,7 @@
           "target": "#ir_no_execute",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 633
+            "line": 634
           }
         }
       ],
@@ -1328,7 +1328,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 611,
+          "line": 612,
           "heading": "IR_IS_OPR"
         }
       }
@@ -1357,7 +1357,7 @@
           "meaning": "AND",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 685
+            "line": 686
           }
         },
         {
@@ -1365,7 +1365,7 @@
           "meaning": "TAD",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 686
+            "line": 687
           }
         },
         {
@@ -1373,7 +1373,7 @@
           "meaning": "ISZ",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 687
+            "line": 688
           }
         },
         {
@@ -1381,7 +1381,7 @@
           "meaning": "DCA",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 688
+            "line": 689
           }
         },
         {
@@ -1389,7 +1389,7 @@
           "meaning": "JMS",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 689
+            "line": 690
           }
         },
         {
@@ -1397,7 +1397,7 @@
           "meaning": "JMP",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 690
+            "line": 691
           }
         },
         {
@@ -1405,7 +1405,7 @@
           "meaning": "not MRI",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 691
+            "line": 692
           }
         },
         {
@@ -1413,7 +1413,7 @@
           "meaning": "not MRI",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 692
+            "line": 693
           }
         }
       ],
@@ -1423,7 +1423,7 @@
         "text": "IR_MRI_OPCODE = IR[11:9]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 677
+          "line": 678
         }
       },
       "constraints": [
@@ -1431,7 +1431,7 @@
           "text": "IR_MRI_OPCODE selects MRI behavior only when IR_IS_MRI = 1.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 696
+            "line": 697
           }
         }
       ],
@@ -1441,7 +1441,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 700
+            "line": 701
           }
         },
         {
@@ -1449,7 +1449,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 701
+            "line": 702
           }
         }
       ],
@@ -1460,7 +1460,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 668,
+          "line": 669,
           "heading": "IR_MRI_OPCODE"
         }
       }
@@ -1489,7 +1489,7 @@
           "meaning": "not CAF",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 457
+            "line": 458
           }
         },
         {
@@ -1497,7 +1497,7 @@
           "meaning": "CAF",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 458
+            "line": 459
           }
         }
       ],
@@ -1507,7 +1507,7 @@
         "text": "IR_IS_CAF =\nIR_IS_IOT\nAND (IR_IOA == 000000)\nAND (IR[2:0] == 111)",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 447
+          "line": 448
         }
       },
       "constraints": [],
@@ -1517,7 +1517,7 @@
           "target": "../20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 461
+            "line": 462
           }
         }
       ],
@@ -1528,7 +1528,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 438,
+          "line": 439,
           "heading": "IR_IS_CAF"
         }
       }
@@ -1557,7 +1557,7 @@
           "meaning": "not GTF",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 512
+            "line": 513
           }
         },
         {
@@ -1565,7 +1565,7 @@
           "meaning": "GTF",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 513
+            "line": 514
           }
         }
       ],
@@ -1575,7 +1575,7 @@
         "text": "IR_IS_GTF =\nIR_IS_IOT\nAND (IR_IOA == 000000)\nAND (IR[2:0] == 100)",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 503
+          "line": 504
         }
       },
       "constraints": [],
@@ -1585,7 +1585,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ac_clear",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 516
+            "line": 517
           }
         },
         {
@@ -1593,7 +1593,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#gtf_flags_to_ac",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 517
+            "line": 518
           }
         }
       ],
@@ -1604,7 +1604,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 494,
+          "line": 495,
           "heading": "IR_IS_GTF"
         }
       }
@@ -1633,7 +1633,7 @@
           "meaning": "not RTF",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 655
+            "line": 656
           }
         },
         {
@@ -1641,7 +1641,7 @@
           "meaning": "RTF",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 656
+            "line": 657
           }
         }
       ],
@@ -1651,7 +1651,7 @@
         "text": "IR_IS_RTF =\nIR_IS_IOT\nAND (IR_IOA == 000000)\nAND (IR[2:0] == 101)",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 645
+          "line": 646
         }
       },
       "constraints": [],
@@ -1661,7 +1661,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ac_to_df",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 659
+            "line": 660
           }
         },
         {
@@ -1669,7 +1669,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ac_to_dif",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 660
+            "line": 661
           }
         },
         {
@@ -1677,7 +1677,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ac_to_l",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 661
+            "line": 662
           }
         },
         {
@@ -1685,7 +1685,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#cifp_set",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 662
+            "line": 663
           }
         },
         {
@@ -1693,7 +1693,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ie_set",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 663
+            "line": 664
           }
         },
         {
@@ -1701,7 +1701,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ii_set",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 664
+            "line": 665
           }
         }
       ],
@@ -1712,7 +1712,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 637,
+          "line": 638,
           "heading": "IR_IS_RTF"
         }
       }
@@ -1741,7 +1741,7 @@
           "meaning": "direct addressing",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 376
+            "line": 377
           }
         },
         {
@@ -1749,7 +1749,7 @@
           "meaning": "indirect addressing",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 377
+            "line": 378
           }
         }
       ],
@@ -1759,7 +1759,7 @@
         "text": "IR_INDIRECT = IR_IS_MRI AND IR[8]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 370
+          "line": 371
         }
       },
       "constraints": [],
@@ -1769,7 +1769,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 380
+            "line": 381
           }
         }
       ],
@@ -1780,7 +1780,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 361,
+          "line": 362,
           "heading": "IR_INDIRECT"
         }
       }
@@ -1839,6 +1839,14 @@
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
             "line": 1389
           }
+        },
+        {
+          "text": "IR_ADDR_TO_PC",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ir_addr_to_pc",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 1390
+          }
         }
       ],
       "sources": {
@@ -1877,7 +1885,7 @@
           "meaning": "not Group 1",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 877
+            "line": 878
           }
         },
         {
@@ -1885,7 +1893,7 @@
           "meaning": "Group 1",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 878
+            "line": 879
           }
         }
       ],
@@ -1895,7 +1903,7 @@
         "text": "IR_OPR_GROUP1 = IR_IS_OPR AND (IR[8] == 0)",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 870
+          "line": 871
         }
       },
       "constraints": [],
@@ -1905,7 +1913,7 @@
           "target": "../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 882
+            "line": 883
           }
         },
         {
@@ -1913,7 +1921,7 @@
           "target": "#ir_class",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 883
+            "line": 884
           }
         }
       ],
@@ -1924,7 +1932,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 861,
+          "line": 862,
           "heading": "IR_OPR_GROUP1"
         }
       }
@@ -1953,7 +1961,7 @@
           "meaning": "not Group 2",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 904
+            "line": 905
           }
         },
         {
@@ -1961,7 +1969,7 @@
           "meaning": "Group 2",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 905
+            "line": 906
           }
         }
       ],
@@ -1971,7 +1979,7 @@
         "text": "IR_OPR_GROUP2 = IR_IS_OPR AND IR[8] AND (IR[0] == 0)",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 897
+          "line": 898
         }
       },
       "constraints": [],
@@ -1979,14 +1987,6 @@
         {
           "text": "IR_CLASS",
           "target": "#ir_class",
-          "source": {
-            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 909
-          }
-        },
-        {
-          "text": "IR_NO_EXECUTE",
-          "target": "#ir_no_execute",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
             "line": 910
@@ -2008,7 +2008,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 888,
+          "line": 889,
           "heading": "IR_OPR_GROUP2"
         }
       }
@@ -2113,7 +2113,7 @@
           "meaning": "modifier inactive",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 756
+            "line": 757
           }
         },
         {
@@ -2121,7 +2121,7 @@
           "meaning": "modifier active",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 757
+            "line": 758
           }
         }
       ],
@@ -2131,7 +2131,7 @@
         "text": "IR_OPR_BSW = IR_OPR_GROUP1 AND IR[1]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 749
+          "line": 750
         }
       },
       "constraints": [],
@@ -2141,7 +2141,7 @@
           "target": "../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 760
+            "line": 761
           }
         }
       ],
@@ -2152,7 +2152,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 733,
+          "line": 734,
           "heading": "IR_OPR_BSW"
         }
       }
@@ -2181,7 +2181,7 @@
           "meaning": "inactive",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 781
+            "line": 782
           }
         },
         {
@@ -2189,7 +2189,7 @@
           "meaning": "clear AC",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 782
+            "line": 783
           }
         }
       ],
@@ -2199,7 +2199,7 @@
         "text": "IR_OPR_CLA = IR_IS_OPR AND IR[7]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 774
+          "line": 775
         }
       },
       "constraints": [],
@@ -2209,7 +2209,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 785
+            "line": 786
           }
         }
       ],
@@ -2220,7 +2220,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 765,
+          "line": 766,
           "heading": "IR_OPR_CLA"
         }
       }
@@ -2249,7 +2249,7 @@
           "meaning": "inactive",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 805
+            "line": 806
           }
         },
         {
@@ -2257,7 +2257,7 @@
           "meaning": "clear Link",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 806
+            "line": 807
           }
         }
       ],
@@ -2267,7 +2267,7 @@
         "text": "IR_OPR_CLL = IR_OPR_GROUP1 AND IR[6]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 798
+          "line": 799
         }
       },
       "constraints": [],
@@ -2277,7 +2277,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 809
+            "line": 810
           }
         }
       ],
@@ -2288,7 +2288,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 789,
+          "line": 790,
           "heading": "IR_OPR_CLL"
         }
       }
@@ -2317,7 +2317,7 @@
           "meaning": "inactive",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 829
+            "line": 830
           }
         },
         {
@@ -2325,7 +2325,7 @@
           "meaning": "complement AC",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 830
+            "line": 831
           }
         }
       ],
@@ -2335,7 +2335,7 @@
         "text": "IR_OPR_CMA = IR_OPR_GROUP1 AND IR[5]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 822
+          "line": 823
         }
       },
       "constraints": [],
@@ -2345,7 +2345,7 @@
           "target": "../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 833
+            "line": 834
           }
         }
       ],
@@ -2356,7 +2356,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 813,
+          "line": 814,
           "heading": "IR_OPR_CMA"
         }
       }
@@ -2385,7 +2385,7 @@
           "meaning": "inactive",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 853
+            "line": 854
           }
         },
         {
@@ -2393,7 +2393,7 @@
           "meaning": "complement Link",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 854
+            "line": 855
           }
         }
       ],
@@ -2403,7 +2403,7 @@
         "text": "IR_OPR_CML = IR_OPR_GROUP1 AND IR[4]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 846
+          "line": 847
         }
       },
       "constraints": [],
@@ -2413,7 +2413,7 @@
           "target": "../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 857
+            "line": 858
           }
         }
       ],
@@ -2424,7 +2424,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 837,
+          "line": 838,
           "heading": "IR_OPR_CML"
         }
       }
@@ -3649,7 +3649,7 @@
           "meaning": "not an external-device IOT",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 484
+            "line": 485
           }
         },
         {
@@ -3657,7 +3657,7 @@
           "meaning": "external-device IOT",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 485
+            "line": 486
           }
         }
       ],
@@ -3667,7 +3667,7 @@
         "text": "IR_IS_EXTERNAL_IOT =\nIR_IS_IOT\nAND NOT (IR_IOA == 000000)    // device 00: processor control\nAND NOT IR_IS_MEMEXT_IOT      // devices 20-27: memory extension control",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 474
+          "line": 475
         }
       },
       "constraints": [],
@@ -3677,7 +3677,7 @@
           "target": "../30-direct-control-definitions/02-interface-and-ownership-control.md#72-external-device-iot",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 489
+            "line": 490
           }
         },
         {
@@ -3685,7 +3685,7 @@
           "target": "../../09-timing/03-major-state-timing.md#52-execute-external-iot",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 490
+            "line": 491
           }
         }
       ],
@@ -3696,7 +3696,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 465,
+          "line": 466,
           "heading": "IR_IS_EXTERNAL_IOT"
         }
       }
@@ -3725,7 +3725,7 @@
           "meaning": "not a memory extension IOT",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 560
+            "line": 561
           }
         },
         {
@@ -3733,7 +3733,7 @@
           "meaning": "memory extension IOT",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 561
+            "line": 562
           }
         }
       ],
@@ -3743,7 +3743,7 @@
         "text": "IR_IS_MEMEXT_IOT = IR_IS_IOT AND (IR[8:6] == 010)   // devices 20-27",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 553
+          "line": 554
         }
       },
       "constraints": [],
@@ -3753,7 +3753,7 @@
           "target": "#ir_is_external_iot",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 565
+            "line": 566
           }
         },
         {
@@ -3761,7 +3761,7 @@
           "target": "../../03-microarchitecture/06-iot-execution.md#10-instruction-definitions-memory-extension-control---devices-20-27",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 566
+            "line": 567
           }
         }
       ],
@@ -3772,7 +3772,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 544,
+          "line": 545,
           "heading": "IR_IS_MEMEXT_IOT"
         }
       }
@@ -3824,6 +3824,14 @@
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
             "line": 269
           }
+        },
+        {
+          "text": "IR_ADDR_TO_PC",
+          "target": "../../03-microarchitecture/02-micro-operations.md#ir_addr_to_pc",
+          "source": {
+            "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
+            "line": 270
+          }
         }
       ],
       "sources": {
@@ -3864,7 +3872,7 @@
           "meaning": "data field",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 324
+            "line": 325
           }
         }
       ],
@@ -3873,7 +3881,7 @@
         "text": "IR_DF = IR[5:3]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 318
+          "line": 319
         }
       },
       "constraints": [
@@ -3881,7 +3889,7 @@
           "text": "IR_DF and IR_IF share the same bit positions but are interpreted in different instruction contexts (CDF vs CIF)",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 327
+            "line": 328
           }
         }
       ],
@@ -3891,7 +3899,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ir_df_to_df",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 331
+            "line": 332
           }
         }
       ],
@@ -3902,7 +3910,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 309,
+          "line": 310,
           "heading": "IR_DF"
         }
       }
@@ -3934,7 +3942,7 @@
           "meaning": "device address",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 402
+            "line": 403
           }
         }
       ],
@@ -3943,7 +3951,7 @@
         "text": "IR_IOA = IR[8:3]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 395
+          "line": 396
         }
       },
       "constraints": [],
@@ -3953,7 +3961,7 @@
           "target": "../20-control-output-definitions/02-architectural-control-signals.md",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 405
+            "line": 406
           }
         }
       ],
@@ -3964,7 +3972,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 386,
+          "line": 387,
           "heading": "IR_IOA"
         }
       }
@@ -3995,7 +4003,7 @@
           "meaning": "IOT operation",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 426
+            "line": 427
           }
         }
       ],
@@ -4004,7 +4012,7 @@
         "text": "IR_IOT_OP = IR[2:0]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 418
+          "line": 419
         }
       },
       "constraints": [
@@ -4012,7 +4020,7 @@
           "text": "IR_IOT_OP is used for instruction selection only when IR_IS_IOT = 1.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 430
+            "line": 431
           }
         }
       ],
@@ -4022,7 +4030,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 434
+            "line": 435
           }
         }
       ],
@@ -4033,7 +4041,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 409,
+          "line": 410,
           "heading": "IR_IOT_OP"
         }
       }
@@ -4064,7 +4072,7 @@
           "meaning": "instruction field",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 350
+            "line": 351
           }
         }
       ],
@@ -4073,7 +4081,7 @@
         "text": "IR_IF = IR[5:3]",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 344
+          "line": 345
         }
       },
       "constraints": [
@@ -4081,7 +4089,7 @@
           "text": "IR_DF and IR_IF share the same bit positions but are interpreted in different instruction contexts (CDF vs CIF)",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 353
+            "line": 354
           }
         }
       ],
@@ -4091,7 +4099,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#ir_if_to_dif",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 357
+            "line": 358
           }
         }
       ],
@@ -4102,7 +4110,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 335,
+          "line": 336,
           "heading": "IR_IF"
         }
       }
@@ -4131,7 +4139,7 @@
           "meaning": "neither JMP nor OPR: completes in EXECUTE",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 292
+            "line": 293
           }
         },
         {
@@ -4139,7 +4147,7 @@
           "meaning": "direct JMP: completes in FETCH",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 293
+            "line": 294
           }
         },
         {
@@ -4147,7 +4155,7 @@
           "meaning": "JMP I: completes in DEFER",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 294
+            "line": 295
           }
         },
         {
@@ -4155,7 +4163,7 @@
           "meaning": "Group 1 OPR: completes in FETCH",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 295
+            "line": 296
           }
         },
         {
@@ -4163,7 +4171,7 @@
           "meaning": "Group 2 OPR: completes in FETCH",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 296
+            "line": 297
           }
         },
         {
@@ -4171,7 +4179,7 @@
           "meaning": "Group 3 OPR: completes in FETCH",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 297
+            "line": 298
           }
         },
         {
@@ -4179,7 +4187,7 @@
           "meaning": "reserved",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 298
+            "line": 299
           }
         },
         {
@@ -4187,7 +4195,7 @@
           "meaning": "reserved",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 299
+            "line": 300
           }
         }
       ],
@@ -4197,17 +4205,17 @@
         "text": "IR_CLASS = {IR_OPR_GROUP2 OR IR_OPR_GROUP3,\n(IR[11:9] = 101 AND IR[8]) OR IR_OPR_GROUP1,\n(IR[11:9] = 101 AND NOT IR[8]) OR IR_OPR_GROUP1 OR IR_OPR_GROUP3}",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 282
+          "line": 283
         }
       },
       "constraints": [],
       "consumers": [
         {
-          "text": "[Fetch & Defer](../../03-microarchitecture/04-fetch-defer.md): FETCH TS3 (including OPR_PASS), DEFER TS3 and TS4",
+          "text": "[Fetch & Defer](../../03-microarchitecture/04-fetch-defer.md): FETCH TS3 (including OPR_PASS) and TS4, DEFER TS3 and TS4",
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 303
+            "line": 304
           }
         }
       ],
@@ -4218,7 +4226,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 273,
+          "line": 274,
           "heading": "IR_CLASS"
         }
       }
@@ -4247,7 +4255,7 @@
           "meaning": "the instruction completes in EXECUTE",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 722
+            "line": 723
           }
         },
         {
@@ -4255,7 +4263,7 @@
           "meaning": "the instruction completes in FETCH (IR_INDIRECT = 0) or DEFER (IR_INDIRECT = 1)",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 723
+            "line": 724
           }
         }
       ],
@@ -4265,7 +4273,7 @@
         "text": "IR_NO_EXECUTE = IR[11:9] = 101 OR IR_IS_OPR   // JMP; OPR",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 714
+          "line": 715
         }
       },
       "constraints": [],
@@ -4275,7 +4283,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-            "line": 727
+            "line": 728
           }
         }
       ],
@@ -4286,7 +4294,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-          "line": 705,
+          "line": 706,
           "heading": "IR_NO_EXECUTE"
         }
       }
@@ -4314,7 +4322,7 @@
           "meaning": "no auto-index",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 157
+            "line": 158
           }
         },
         {
@@ -4322,7 +4330,7 @@
           "meaning": "perform auto-index increment",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 158
+            "line": 159
           }
         }
       ],
@@ -4332,14 +4340,14 @@
           "name": "IR_INDIRECT",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 137
+            "line": 138
           }
         },
         {
           "name": "EAI",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 138
+            "line": 139
           }
         }
       ],
@@ -4347,7 +4355,7 @@
         "text": "AUTO_INDEX_REQUIRED =\nIR_INDIRECT\nAND EAI",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-          "line": 146
+          "line": 147
         }
       },
       "constraints": [],
@@ -4357,7 +4365,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#mb_inc",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 163
+            "line": 164
           }
         },
         {
@@ -4365,7 +4373,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#mem_write_from_mb",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 164
+            "line": 165
           }
         }
       ],
@@ -4376,7 +4384,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-          "line": 131,
+          "line": 132,
           "heading": "AUTO_INDEX_REQUIRED"
         }
       }
@@ -4404,7 +4412,7 @@
           "meaning": "CIFP=0 (no pending field to apply)",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 222
+            "line": 225
           }
         },
         {
@@ -4412,7 +4420,7 @@
           "meaning": "CIFP=1 (pending field to apply)",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 223
+            "line": 226
           }
         }
       ],
@@ -4422,7 +4430,7 @@
           "name": "CIFP",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 212
+            "line": 215
           }
         }
       ],
@@ -4430,7 +4438,7 @@
         "text": "IF_CHANGE_PENDING = CIFP",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-          "line": 216
+          "line": 219
         }
       },
       "constraints": [],
@@ -4440,7 +4448,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#dif_to_if",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 226
+            "line": 229
           }
         }
       ],
@@ -4451,7 +4459,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-          "line": 206,
+          "line": 209,
           "heading": "IF_CHANGE_PENDING"
         }
       }
@@ -4479,7 +4487,7 @@
           "meaning": "no interrupt",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 196
+            "line": 199
           }
         },
         {
@@ -4487,7 +4495,7 @@
           "meaning": "enter interrupt sequence",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 197
+            "line": 200
           }
         }
       ],
@@ -4497,21 +4505,21 @@
           "name": "IE",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 174
+            "line": 177
           }
         },
         {
           "name": "II",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 175
+            "line": 178
           }
         },
         {
           "name": "/INT_REQ",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 176
+            "line": 179
           }
         }
       ],
@@ -4519,7 +4527,7 @@
         "text": "INTERRUPT_REQUEST_VALID =\nIE\nAND (II = 0)\nAND (/INT_REQ = 0)",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-          "line": 184
+          "line": 187
         }
       },
       "constraints": [],
@@ -4529,7 +4537,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 202
+            "line": 205
           }
         }
       ],
@@ -4540,7 +4548,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-          "line": 168,
+          "line": 171,
           "heading": "INTERRUPT_REQUEST_VALID"
         }
       }
@@ -4566,7 +4574,7 @@
           "meaning": "no skip",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 122
+            "line": 123
           }
         },
         {
@@ -4574,7 +4582,7 @@
           "meaning": "increment PC",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 123
+            "line": 124
           }
         }
       ],
@@ -4584,14 +4592,14 @@
           "name": "IR_MRI_OPCODE",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 107
+            "line": 108
           }
         },
         {
           "name": "MBZ",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 108
+            "line": 109
           }
         }
       ],
@@ -4599,7 +4607,7 @@
         "text": "ISZ_SKIP_REQ =\n(IR_MRI_OPCODE = 010)\nAND MBZ",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-          "line": 112
+          "line": 113
         }
       },
       "constraints": [],
@@ -4609,7 +4617,7 @@
           "target": "../../03-microarchitecture/02-micro-operations.md#pc_inc",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 127
+            "line": 128
           }
         }
       ],
@@ -4620,7 +4628,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-          "line": 100,
+          "line": 101,
           "heading": "ISZ_SKIP_REQ"
         }
       }
@@ -4646,7 +4654,7 @@
           "meaning": "no skip",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 90
+            "line": 91
           }
         },
         {
@@ -4654,7 +4662,7 @@
           "meaning": "skip",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 91
+            "line": 92
           }
         }
       ],
@@ -4664,56 +4672,56 @@
           "name": "IR_OPR_GROUP2",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 25
+            "line": 26
           }
         },
         {
           "name": "IR_OPR_SKIP_MODE",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 26
+            "line": 27
           }
         },
         {
           "name": "IR_OPR_SMA",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 27
+            "line": 28
           }
         },
         {
           "name": "IR_OPR_SZA",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 28
+            "line": 29
           }
         },
         {
           "name": "IR_OPR_SNL",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 29
+            "line": 30
           }
         },
         {
           "name": "ACN",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 30
+            "line": 31
           }
         },
         {
           "name": "ACZ",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 31
+            "line": 32
           }
         },
         {
           "name": "LZ",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 32
+            "line": 33
           }
         }
       ],
@@ -4721,7 +4729,7 @@
         "text": "OR-subgroup predicates (active when IR_OPR_SKIP_MODE = 0):\n\nSMA_OR = ( !IR_OPR_SKIP_MODE ) AND IR_OPR_SMA AND (ACN = 1)\nSZA_OR = ( !IR_OPR_SKIP_MODE ) AND IR_OPR_SZA AND (ACZ = 1)\nSNL_OR = ( !IR_OPR_SKIP_MODE ) AND IR_OPR_SNL AND (LZ = 0)\n\nOR-subgroup result:\n\nOR_ANY_TRUE =\nSMA_OR\nOR SZA_OR\nOR SNL_OR\n\nAND-subgroup predicates (reinterpretation when IR_OPR_SKIP_MODE = 1):\n\nSPA = IR_OPR_SKIP_MODE AND IR_OPR_SMA\nSNA = IR_OPR_SKIP_MODE AND IR_OPR_SZA\nSZL = IR_OPR_SKIP_MODE AND IR_OPR_SNL\n\nMasking for AND composition:\n\nAND_ALL_TRUE =\n( !SPA OR (ACN = 0) )\nAND ( !SNA OR (ACZ = 0) )\nAND ( !SZL OR (LZ = 1) )\n\nFinal expression:\n\nOPR_SKIP_REQ =\nIR_OPR_GROUP2\nAND (\n( !IR_OPR_SKIP_MODE AND OR_ANY_TRUE )\nOR ( IR_OPR_SKIP_MODE AND  AND_ALL_TRUE )\n)",
         "source": {
           "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-          "line": 40
+          "line": 41
         }
       },
       "constraints": [],
@@ -4731,7 +4739,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-            "line": 96
+            "line": 97
           }
         }
       ],
@@ -4742,7 +4750,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-          "line": 18,
+          "line": 19,
           "heading": "OPR_SKIP_REQ"
         }
       }
@@ -5831,7 +5839,7 @@
           "meaning": "interrupt request pending",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 417
+            "line": 416
           }
         },
         {
@@ -5839,7 +5847,7 @@
           "meaning": "no interrupt request pending",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 418
+            "line": 417
           }
         }
       ],
@@ -5851,28 +5859,28 @@
           "text": "is the wired OR of registered controller interrupt outputs, which change only as a TP ends",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 425
+            "line": 424
           }
         },
         {
           "text": "must not pass through an additional stateful synchronization stage",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 426
+            "line": 425
           }
         },
         {
           "text": "must settle, through its pull-up ([Signal Conventions §7](../../00-overview/98-signal-conventions.md#7-pull-resistors)), before the TP at which control samples it",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 427
+            "line": 426
           }
         },
         {
           "text": "must not directly modify processor state",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 428
+            "line": 427
           }
         }
       ],
@@ -5882,7 +5890,7 @@
           "target": "./03-derived-flags.md#interrupt_request_valid",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 421
+            "line": 420
           }
         },
         {
@@ -5890,7 +5898,7 @@
           "target": "../20-control-output-definitions/01-microarchitectural-control-signals.md#gtf_flags",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 422
+            "line": 421
           }
         }
       ],
@@ -5901,7 +5909,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-          "line": 407,
+          "line": 406,
           "heading": "/INT_REQ"
         }
       }
@@ -5949,56 +5957,56 @@
           "text": "participates in EXT",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 398
+            "line": 397
           }
         },
         {
           "text": "contributes to CTRL_ADDR formation",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 399
+            "line": 398
           }
         },
         {
           "text": "is derived combinationally from DMA_ENABLE and registered controller /DMA_REQ[n] outputs",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 400
+            "line": 399
           }
         },
         {
           "text": "must not pass through an additional stateful synchronization stage",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 401
+            "line": 400
           }
         },
         {
           "text": "must satisfy the applicable setup and hold requirements before CPU control samples it at TP4",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 402
+            "line": 401
           }
         },
         {
           "text": "must not directly modify processor state",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 403
+            "line": 402
           }
         },
         {
           "text": "must not directly assert memory, address, or data-bus control",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 404
+            "line": 403
           }
         },
         {
           "text": "may be deasserted while controller /DMA_REQ[n] lines remain asserted when DMA_ENABLE = 0",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 405
+            "line": 404
           }
         }
       ],
@@ -6012,19 +6020,11 @@
           }
         },
         {
-          "text": "/DMA_GRANT",
-          "target": "../20-control-output-definitions/02-architectural-control-signals.md#45-dma_grant",
-          "source": {
-            "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 393
-          }
-        },
-        {
           "text": "MS_NEXT",
           "target": "../20-control-output-definitions/03-sequencing-control-signals.md#41-next-major-state-ms_next",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 394
+            "line": 393
           }
         }
       ],
@@ -6063,7 +6063,7 @@
           "meaning": "no read requested",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 457
+            "line": 456
           }
         },
         {
@@ -6071,7 +6071,7 @@
           "meaning": "device-to-CPU read requested",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 458
+            "line": 457
           }
         }
       ],
@@ -6083,63 +6083,63 @@
           "text": "Valid only when IOT_ACTIVE is asserted.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 468
+            "line": 467
           }
         },
         {
           "text": "Valid only from the address-matched controller.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 469
+            "line": 468
           }
         },
         {
           "text": "Phase-specific.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 470
+            "line": 469
           }
         },
         {
           "text": "Mutually exclusive with IO_WRITE_REQ.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 471
+            "line": 470
           }
         },
         {
           "text": "Must be asserted early enough for the complete DB transfer to occur within the current external-IOT EXECUTE major state.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 472
+            "line": 471
           }
         },
         {
           "text": "Must be stable before and through the TP at which CPU control accepts the request.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 473
+            "line": 472
           }
         },
         {
           "text": "Must not cause the controller to drive DB during the request phase.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 474
+            "line": 473
           }
         },
         {
           "text": "Must not directly modify AC.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 475
+            "line": 474
           }
         },
         {
           "text": "The selected controller drives DB only while CPU control asserts /DB_READ during the following transfer phase.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 476
+            "line": 475
           }
         }
       ],
@@ -6149,7 +6149,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 462
+            "line": 461
           }
         },
         {
@@ -6157,7 +6157,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 463
+            "line": 462
           }
         },
         {
@@ -6165,7 +6165,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 464
+            "line": 463
           }
         }
       ],
@@ -6176,7 +6176,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-          "line": 446,
+          "line": 445,
           "heading": "IO_READ_REQ"
         }
       }
@@ -6204,7 +6204,7 @@
           "meaning": "no write requested",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 489
+            "line": 488
           }
         },
         {
@@ -6212,7 +6212,7 @@
           "meaning": "CPU-to-device write requested",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 490
+            "line": 489
           }
         }
       ],
@@ -6224,56 +6224,56 @@
           "text": "Valid only when IOT_ACTIVE is asserted.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 500
+            "line": 499
           }
         },
         {
           "text": "Valid only from the address-matched controller.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 501
+            "line": 500
           }
         },
         {
           "text": "Phase-specific.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 502
+            "line": 501
           }
         },
         {
           "text": "Mutually exclusive with IO_READ_REQ.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 503
+            "line": 502
           }
         },
         {
           "text": "Must be asserted early enough for the complete DB transfer to occur within the current external-IOT EXECUTE major state.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 504
+            "line": 503
           }
         },
         {
           "text": "Must be stable before and through the TP at which CPU control accepts the request.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 505
+            "line": 504
           }
         },
         {
           "text": "Must not cause the controller to capture DB during the request phase.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 506
+            "line": 505
           }
         },
         {
           "text": "The selected controller captures DB only at the TP following the transfer phase in which CPU control asserts /DB_WRITE.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 507
+            "line": 506
           }
         }
       ],
@@ -6283,7 +6283,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 494
+            "line": 493
           }
         },
         {
@@ -6291,7 +6291,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 495
+            "line": 494
           }
         },
         {
@@ -6299,7 +6299,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 496
+            "line": 495
           }
         }
       ],
@@ -6310,7 +6310,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-          "line": 478,
+          "line": 477,
           "heading": "IO_WRITE_REQ"
         }
       }
@@ -6338,7 +6338,7 @@
           "meaning": "no skip requested",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 518
+            "line": 517
           }
         },
         {
@@ -6346,7 +6346,7 @@
           "meaning": "skip requested",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 519
+            "line": 518
           }
         }
       ],
@@ -6358,42 +6358,42 @@
           "text": "Valid only during TS4 of an external IOT.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 527
+            "line": 526
           }
         },
         {
           "text": "Valid only from the address-matched controller.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 528
+            "line": 527
           }
         },
         {
           "text": "Must be based on controller state captured at TP3.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 529
+            "line": 528
           }
         },
         {
           "text": "Causes only CPU PC_INC.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 530
+            "line": 529
           }
         },
         {
           "text": "Must not depend on a result committed at TP4.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 531
+            "line": 530
           }
         },
         {
           "text": "Must not directly modify PC.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 532
+            "line": 531
           }
         }
       ],
@@ -6403,7 +6403,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 523
+            "line": 522
           }
         }
       ],
@@ -6414,7 +6414,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-          "line": 509,
+          "line": 508,
           "heading": "IO_SKIP_REQ"
         }
       }
@@ -6442,7 +6442,7 @@
           "meaning": "no AC clear requested",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 543
+            "line": 542
           }
         },
         {
@@ -6450,7 +6450,7 @@
           "meaning": "AC clear requested",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 544
+            "line": 543
           }
         }
       ],
@@ -6462,56 +6462,56 @@
           "text": "Valid only when IOT_ACTIVE = 1.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 552
+            "line": 551
           }
         },
         {
           "text": "Valid only from the address-matched controller.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 553
+            "line": 552
           }
         },
         {
           "text": "Phase-specific.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 554
+            "line": 553
           }
         },
         {
           "text": "May coincide with IO_READ_REQ during the read-request TS; AC clear commits when the read request is accepted, and the DB read commits during the following TS and TP.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 555
+            "line": 554
           }
         },
         {
           "text": "Must not be asserted during the transfer TS following an accepted IO_READ_REQ.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 556
+            "line": 555
           }
         },
         {
           "text": "Must not cause AC clear and DB_READ_TO_AC to commit at the same TP.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 557
+            "line": 556
           }
         },
         {
           "text": "May coincide with IO_WRITE_REQ.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 558
+            "line": 557
           }
         },
         {
           "text": "Must not directly modify AC.",
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 559
+            "line": 558
           }
         }
       ],
@@ -6521,7 +6521,7 @@
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-            "line": 548
+            "line": 547
           }
         }
       ],
@@ -6532,7 +6532,7 @@
         },
         "definition": {
           "path": "docs/04-control/10-control-input-definitions/04-external-inputs.md",
-          "line": 534,
+          "line": 533,
           "heading": "IO_CLEAR_AC_REQ"
         }
       }
@@ -6605,7 +6605,7 @@
       "message": "Input has no reviewed control-use classification.",
       "input_name": "ISZ_SKIP_REQ",
       "source_path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-      "source_line": 100
+      "source_line": 101
     },
     {
       "severity": "WARNING",
@@ -6613,7 +6613,7 @@
       "message": "Input has no reviewed control-use classification.",
       "input_name": "OPR_SKIP_REQ",
       "source_path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-      "source_line": 18
+      "source_line": 19
     }
   ]
 }

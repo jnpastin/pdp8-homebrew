@@ -480,7 +480,7 @@ INITIALIZE_ASSERTED =
     )
 ```
 
-`/INITIALIZE` is asserted when `INITIALIZE_ASSERTED = 1` and deasserted otherwise.
+`/INITIALIZE` is asserted when `INITIALIZE_ASSERTED = 1` and deasserted otherwise. The power-on reset also asserts it, while the reset is active ([Timing Terminology §3.4](../../09-timing/01-terminology.md#34-power-on-reset)); the reset is not a control input, so it is not part of this equation.
 
 While halted, `FP_CLEAR` is the latched accepted console command ([External Inputs §4.1](../10-control-input-definitions/04-external-inputs.md#41-console-command-acceptance)). It is held for one console transaction and is not stored as a pending request.
 

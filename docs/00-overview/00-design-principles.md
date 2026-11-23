@@ -96,8 +96,7 @@ Examples:
 
 The following architectural decisions remain unresolved:
 
-- I/O bus structure
-- Backplane electrical characteristics
+- Backplane electrical characteristics, beyond the limits in [Timing Architecture §11.4](../09-timing/02-timing-architecture.md#114-timing-budget)
 
 ---
 

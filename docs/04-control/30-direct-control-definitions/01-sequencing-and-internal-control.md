@@ -843,6 +843,7 @@ The documented individually stepped major states are:
 - DEFER
 - EXECUTE
 - INTERRUPT
+- DMA
 
 Constraints:
 

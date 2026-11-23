@@ -330,7 +330,7 @@ Behavior:
 
 Constraint:
 - No "noop" encoding is permitted.
-- State must always update to the value specified by CONTROL_WORD, even if unchanged.
+- RUN and HLT_REQ update at every TP to the value CONTROL_WORD specifies, even if unchanged. MS updates only when `MS_LOAD = 1`, and holds otherwise.
 
 ---
 

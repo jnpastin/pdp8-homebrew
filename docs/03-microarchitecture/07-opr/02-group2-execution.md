@@ -73,7 +73,7 @@ The skip decision is `OPR_SKIP_REQ`, which combines the enabled skip conditions 
 
 - HLT is a control-level operation; no datapath μop is performed and no register other than `HLT_REQ` is modified
 - `HLT_REQ` is set at FETCH TP3 ([Sequencing and Internal Control §3.4.4](../../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#344-hlt-instruction-request-capture))
-- The pending halt is consumed at this instruction's completion, FETCH TP4 ([Sequencing and Internal Control §3.4.6](../../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#346-pending-halt-consumption)), after any skip increment committed at the same TP4
+- The pending halt is consumed at this instruction's completion, FETCH TP4 ([Sequencing and Internal Control §3.4.6](../../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#346-pending-halt-consumption)), concurrently with any skip increment committed at the same TP4
 
 ---
 

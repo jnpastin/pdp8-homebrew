@@ -54,7 +54,7 @@ Conditions are not μops.
 
 Rules:
 - conditions are evaluated during TSn using register state
-- conditions do not produce stored values
+- conditions do not produce stored values, except a Group 2 OPR's skip decision in `SKIP` (see below)
 - conditions are used only to select μops
 
 Example form:
@@ -64,6 +64,9 @@ Example form:
 
 Else:
     μop is not executed
+
+
+The one exception is `SKIP`: a Group 2 OPR's skip decision is loaded into `SKIP` at FETCH TP3 (`OPR_SKIP_REQ_TO_SKIP`) and used at FETCH TP4, because CLA may clear AC at the same TP3 ([Skip Model §12](../08-interrupts-and-skip/05-skip-model.md#12-skip-state)).
 
 ---
 
@@ -147,7 +150,7 @@ Constraint:
 
 ### 8.1 EXECUTE Phase Invariants
 
-All instruction execution definitions assume:
+The EXECUTE definitions, for the memory reference instructions other than JMP and for the IOTs, assume:
 
 - MS = EXECUTE
 - EA_ADDR is the fully resolved effective address and is stored in the EA register
@@ -164,7 +167,7 @@ External inputs influence execution only through control decisions.
 Rules:
 
 - EXT may be used during TS to evaluate conditions and determine μop selection
-- EXT must not directly update or modify registers
+- EXT reaches a register only as data selected by a control-word micro-operation, never by itself ([External Inputs §2](../04-control/10-control-input-definitions/04-external-inputs.md#2-timing-model))
 - EXT does not trigger or initiate state changes at TP
 - any effect of EXT must be realized only through control-selected μops
 
@@ -200,7 +203,7 @@ The following are explicitly disallowed:
 - μop-to-μop dependency within a TSn
 - multiple μops writing the same register in a TSn
 - use of transient datapath signals as inputs
-- storing intermediate condition results in registers
+- storing intermediate condition results in registers, other than `SKIP` (section 4)
 - modifying MS via μops
 
 ---

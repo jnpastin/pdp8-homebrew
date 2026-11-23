@@ -82,7 +82,7 @@ A memory read transfers data from memory to the CPU.
 ### 3.1 Address Domain Participation
 
 During a memory read:
-- The CPU drives AB from MA.
+- The CPU drives AB from MA, or from PC for the EXAMINE and DEPOSIT console operations.
 - The CPU drives MFB from EA_FIELD (IF or DF per MFB_SRC).
 - AB and MFB together carry the physical address to memory.
 
@@ -110,7 +110,7 @@ A memory write transfers data from the CPU to memory.
 ### 4.1 Address Domain Participation
 
 During a memory write:
-- The CPU drives AB from MA.
+- The CPU drives AB from MA, or from PC for the EXAMINE and DEPOSIT console operations.
 - The CPU drives MFB from EA_FIELD (IF or DF per MFB_SRC).
 - AB and MFB together carry the physical address to memory.
 
@@ -162,7 +162,7 @@ Domain definitions and isolation requirements are defined in:
 - MDB participates in all memory operations.
 - Memory is the MDB producer during memory reads.
 - The CPU is the MDB producer during memory writes.
-- During normal memory operations, the CPU drives AB from MA and MFB from EA_FIELD.
+- During normal memory operations, the CPU drives AB from MA and MFB from EA_FIELD. EXAMINE and DEPOSIT drive AB from PC and MFB from IF.
 - During DMA, an external device drives AB and MFB; the CPU drives neither.
 - AB and MFB together form the physical memory address: {MFB, AB} = {F[2:0], A[11:0]}.
 - /RD identifies memory read operations.

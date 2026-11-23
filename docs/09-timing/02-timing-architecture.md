@@ -255,7 +255,7 @@ The selection is dynamic, by major state and `AUTO_INDEX_REQUIRED`, within the s
 ### 9.2 Effect
 
 - TS duration changes as a result of TSTEP changes
-- TP count per cycle changes
+- TP count per cycle does not change: always one TP per TS, four per major state
 - MS behavior remains unchanged
 
 ---
@@ -272,7 +272,7 @@ Properties:
 
 Constraint:
 - Timing must not freeze, gate, or skip TSTEP progression for DMA.
-- No DMA_HOLD or shift-enable inhibit mechanism exists.
+- No DMA_HOLD mechanism exists.
 
 DMA sequencing and datapath behavior are defined in:
 - [Sequencing Control Signals](../04-control/20-control-output-definitions/03-sequencing-control-signals.md)

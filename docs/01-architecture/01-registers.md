@@ -83,7 +83,7 @@ Visibility: Control-visible
 
 Invariants:
 - Set from execution of CIF, RMF, or RTF until the deferred field is applied at the next JMP/JMS
-- While set, interrupt recognition is inhibited by holding `II` set across the deferred-field-change interval, except after START (see the II constraints)  
+- While set, interrupt recognition is inhibited by holding `II` set across the deferred-field-change interval, with two exceptions: after START (see the II constraints), and between the TP3 and TP4 of the JMP that applies the field, which clears II at TP3 and loads IF at TP4  
 
 Constraints:
 - Set only by CIF, RMF, or RTF execution
@@ -142,7 +142,7 @@ Constraints:
 - Must not change during FETCH, DEFER, or EXECUTE except at the defined load, clear, and apply points  
 
 Writers:
-- IOT execution (CDF; IR_IF_TO_DIF)
+- IOT execution (CIF; IR_IF_TO_DIF)
 - IOT execution (RMF; IB_TO_DIF)
 - IOT execution (RTF; AC_TO_DIF)
 - Console Load Address (FP_IF_TO_DIF)
@@ -214,7 +214,7 @@ Visibility: Control-visible
 Invariants:
 - Set when a halt is requested (STOP switch or HLT instruction)
 - Remains set until the pending halt is consumed at an instruction-completion boundary
-- Stable within a major state; updated only at TP
+- Changes only at a TP: a HLT is captured at FETCH TP3, STOP at any TP before instruction completion, and the request is consumed at instruction completion
 
 Constraints:
 - Updated only from HLT_REQ_NEXT (sequencing control), committed at TP
@@ -262,7 +262,7 @@ Visibility: Global
 
 Invariants:
 - Determines whether interrupts are recognized
-- Stable during instruction execution
+- Changes only at a TP, by the writers listed below; it is not constant across every instruction
 
 Constraints:
 - Set only by ION or RTF
@@ -290,13 +290,16 @@ Invariants:
 - Supplies high-order bits of instruction fetch address
 - Supplies high-order bits for direct MRI access and indirect pointer access
 - Constant for the duration of an instruction cycle, except that a JMP or JMS applies a pending deferred field change: at FETCH TP4 of a direct JMP, DEFER TP4 of a JMP I, or EXECUTE TP1 of a JMS
+- Also changed outside an instruction: cleared at interrupt entry, and loaded by the LOAD ADDRESS console operation
 
 Constraints:
 - Modified only by field control instructions
-- Must not change except where a JMP or JMS applies a pending deferred field change: at FETCH TP4 of a direct JMP, DEFER TP4 of a JMP I, or EXECUTE TP1 of a JMS
+- Must not change except where a JMP or JMS applies a pending deferred field change (at FETCH TP4 of a direct JMP, DEFER TP4 of a JMP I, or EXECUTE TP1 of a JMS), at interrupt entry, or at LOAD ADDRESS
 
 Writers:
-- Field instruction control logic
+- Field instruction control logic (DIF_TO_IF)
+- Interrupt entry (IF_CLEAR)
+- Console LOAD ADDRESS (FP_IF_TO_IF)
 
 ---
 
@@ -444,7 +447,7 @@ Invariants:
 Constraints:
 - Loaded only during address generation phases
 - Must remain stable during memory cycle
-- MA is the sole source of addresses presented to memory
+- MA is the CPU's source of memory addresses, except for EXAMINE and DEPOSIT, which address memory from PC (`AB_SRC` = PC); during DMA the selected controller drives AB
 
 Writers:
 - PC path (instruction fetch)
@@ -501,7 +504,7 @@ Visibility: Internal
 Invariants:
 - Holds the value to be written to memory during write cycles
 - Holds the value returned from memory during read cycles
-- Represents the only architecturally visible staging point for memory data
+- Represents the only architecturally visible staging point for memory data, except IR, which also loads the instruction word from MDB at FETCH TP2
 - Stable whenever either CPU or memory is actively consuming its value
 
 Constraints:
@@ -515,7 +518,7 @@ Constraints:
 - Must not change while:
   - Memory strobe is active
   - DMA transfer is in progress using MB
-- Cannot be bypassed for architecturally visible memory transfers
+- Cannot be bypassed for architecturally visible memory transfers, except by IR's instruction load (MDB_TO_IR)
 
 Writers:
 - Memory data return path
@@ -542,7 +545,7 @@ Invariants:
 - Transitions follow defined state machine
 
 Constraints:
-- Changes only at cycle boundaries
+- Changes only at TP4 while running; while halted, at the TPC of START, EXAMINE, or DEPOSIT; and set to FETCH by the power-on reset
 - Loaded from MS_NEXT at a TP only when MS_LOAD = 1; held otherwise. While halted, only START, EXAMINE, and DEPOSIT load it, with FETCH
 - Set to FETCH by the power-on reset
 - Not directly influenced by datapath combinational logic
@@ -556,12 +559,12 @@ Writers:
 ### MQ – Multiplier Quotient
 Width: 12 bits
 
-Role: Secondary arithmetic register for multiply/divide and extensions
+Role: Multiplier Quotient register. With no EAE implemented, it is used only by the Group 3 OPR instructions (MQA, MQL, SWP)
 
 Visibility: Global
 
 Invariants:
-- Holds operand or intermediate state during extended arithmetic
+- Holds the value last loaded by MQL or SWP
 - Remains unchanged when not explicitly used; a Group 3 OPR without MQL reloads it unchanged at its FETCH TP3
 
 Constraints:
@@ -569,7 +572,6 @@ Constraints:
 - Must not be altered by general ALU operations
 
 Writers:
-- Multiply/divide microcode path
 - OPR pass unit MQ output (Group 3 OPR at FETCH TP3: MQL, SWP; OPR_PASS_TO_MQ micro-operation)
 - Console START (MQ_CLEAR micro-operation)
 
@@ -595,6 +597,8 @@ Constraints:
   - Direct JMP (load, FETCH TP3)
   - JMP I (load, DEFER TP4)
   - JMS (EXECUTE: store return address, then load)
+  - Interrupt entry (load 0001, PC_SET_1)
+  - Console operations while halted: LOAD ADDRESS (FP_SR_TO_PC), and EXAMINE and DEPOSIT (PC_INC)
 - Must not change during DEFER except at the TP4 of a JMP I
 - Update must complete before next FETCH TS1
 
@@ -616,7 +620,7 @@ Invariants:
 - When RUN = 1, the processor executes the normal major-state sequence
 - When RUN = 0, normal instruction sequencing is inactive and console operations may be performed
 - Preserves all other architectural state while halted
-- Stable within a major state; updated only at TP
+- Changes only at a TP4, where a halt commits, or at a console TPC (START, CONTINUE)
 
 Constraints:
 - Updated only from RUN_NEXT (sequencing control), committed at TP

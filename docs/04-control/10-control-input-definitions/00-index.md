@@ -204,6 +204,8 @@ The following control inputs are defined here but are not read by any execution 
 | `IR_ADDR`, `IR_ZERO_PAGE` | datapath | EA formation by `IR_ADDR_TO_EA_ADDR` |
 | `FP_IF`, `FP_DF` | datapath | values loaded by `FP_IF_TO_IF`, `FP_IF_TO_DIF`, `FP_DF_TO_DF` |
 | `FP_SR` | datapath | values used by `FP_SR_TO_PC`, `FP_SR_TO_MB`, `MEM_WRITE_FROM_FP_SR`, and `OPR_PASS` (OSR) |
+| `IR_IS_OPR`, `IR_OPR_GROUP1`, `IR_OPR_GROUP2`, `IR_OPR_GROUP3` | predecode gates | `IR_CLASS`, `IR_NO_EXECUTE`, and the OPR pass unit's group qualification |
+| `IR_OPR_BSW`, `IR_OPR_CLA`, `IR_OPR_CLL`, `IR_OPR_CMA`, `IR_OPR_CML`, `IR_OPR_IAC`, `IR_OPR_OSR`, `IR_OPR_MQA`, `IR_OPR_MQL`, `IR_OPR_RAL`, `IR_OPR_RAR` | OPR pass unit | its stage selects, through `OPR_PASS` and `OPR_PASS_TO_MQ` ([OPR Execution](../../03-microarchitecture/07-opr/README.md)) |
 | `IR_DF`, `IR_IF` | datapath | values loaded by `IR_DF_TO_DF` (`DF_SRC = IR_DF`) and `IR_IF_TO_DIF` (`DIF_SRC = IR_IF`) |
 
 The control-word equivalence analyzer reports these as `unreferenced`. An input that appears there and is not listed in this table is a specification gap.

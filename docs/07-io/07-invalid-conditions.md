@@ -82,7 +82,7 @@ The following are invalid:
 - a controller interrupt contribution remaining asserted after /INITIALIZE commits
 - a controller /DMA_REQ output remaining asserted after /INITIALIZE commits
 - a controller entering a state other than its documented initialized state
-- /INITIALIZE remaining asserted beyond its single assigned TSTEP
+- /INITIALIZE remaining asserted beyond its assigned interval: CAF's EXECUTE TS4, or one console transaction for CLEAR
 
 ---
 

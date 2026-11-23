@@ -73,7 +73,7 @@ Constraint:
 - The mapping stage is a ROM lookup; it contains no gates that evaluate conditions.
 - Two IR values may share a variant code only if they produce the same control words for every condition value in that TS.
 
-The mapping stage may be evaluated one TS ahead and its output held in a register for the TS it describes, because its inputs, IR and TS, are known before that TS begins. Its output may be replaced by fixed values in major states that use no variant. Selecting between the register and those fixed values is address formation, not condition evaluation ([Control Store Organization §5.4](./08-control-store-organization.md#54-mapping-register-and-execute-selection)).
+The mapping stage may be evaluated one TS ahead and its output held in a register for the TS it describes, because its inputs, IR and TS, are known before that TS begins. Outside EXECUTE its output is replaced: `IR_CLASS` supplies the variant there, from predecode gates on IR. Selecting between the register and those fixed values is address formation, not condition evaluation ([Control Store Organization §5.4](./08-control-store-organization.md#54-mapping-register-and-execute-selection)).
 
 ---
 
@@ -374,7 +374,7 @@ Properties:
 
 Constraint:
 - Only IR_FIELDS or a mapping-stage variant code (section 2.1) may carry instruction-dependent information into CTRL_ADDR.
-- Raw IR bits must not be included in CTRL_ADDR, except as an IR_FIELDS signal that is itself an IR bit, such as an OPR micro-operation bit, presented through an address overlay (section 6.3).
+- Raw IR bits must not be included in CTRL_ADDR, except as an IR_FIELDS signal decoded from IR. In v2 the OPR micro-operation bits reach only the OPR pass unit, not the address; the only OPR bit decode on the address is `IR_OPR_HLT`, on bit A1 of the sequencer slice ([Control Store Organization](./08-control-store-organization.md)).
 - IR_FIELDS must represent decisions, not encoded instruction state.
 
 For definitions, see:

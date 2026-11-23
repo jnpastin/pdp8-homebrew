@@ -273,7 +273,7 @@ DMA
 
 MS defines what operation is being performed.
 
-MS is independent of timing structure.
+MS does not depend on the timing structure, but it selects it: the timing ROM reads `MS_EFF` to set each TS's length (section 3.5).
 
 ---
 

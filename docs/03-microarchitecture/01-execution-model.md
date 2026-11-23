@@ -214,7 +214,7 @@ This model operates over [00-state-model](./00-state-model.md):
 
 Constraints:
 - The order of timing states is independent of execution
-- MS transitions occur only at TP4
+- MS transitions occur only at TP4, except at a console TPC (START, EXAMINE, DEPOSIT) and at power-on
 
 ---
 

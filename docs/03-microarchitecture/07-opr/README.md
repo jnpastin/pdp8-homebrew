@@ -29,7 +29,7 @@ Within this class, individual bits of IR directly select operations.
 
 Properties:
 
-- Each bit represents an independent operation
+- Each operation bit selects an independent operation; the group bits (IR[8] and IR[0]) and Group 2's reverse-sense bit (IR[3]) select how the other bits are read
 - Multiple operations may be combined in a single instruction
 - Every OPR completes in FETCH and never enters EXECUTE
 - The control store selects the pass by instruction group; IR bits select the operations inside the [OPR pass unit](./01-group1-execution.md#4-opr-pass)

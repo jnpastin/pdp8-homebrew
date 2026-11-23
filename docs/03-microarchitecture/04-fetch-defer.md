@@ -223,7 +223,6 @@ Description:
 ## 5. Invariants
 
 - IR is valid after TP2 of FETCH
-- PC is incremented at FETCH TP1
 - FETCH TP1 increments PC exactly once per instruction; a taken skip adds a separate increment
 - EA is fully resolved before EXECUTE
 - A direct JMP or an OPR completes at FETCH TP4, and a JMP I at DEFER TP4

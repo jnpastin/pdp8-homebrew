@@ -61,7 +61,7 @@ The system uses a ROM-based control store.
   - Datapath control signals
   - Next Major State
 
-All instruction execution behavior is defined by ROM entries.
+All instruction execution behavior is defined by ROM entries, except the few realizations listed in [Control Model §8.4](../04-control/01-control-model.md#84-realizations-outside-the-control-word), chiefly the OPR pass unit, whose stages are selected by IR bits directly.
 
 ---
 
@@ -75,13 +75,15 @@ Completed:
 - Timing architecture defined (TCLK / TSTEP / TP / TS model)
 - Major state model defined (FETCH, DEFER, EXECUTE, INTERRUPT, DMA)
 
-In progress:
-- Bus and register refinement
-- I/O subsystem definition (device interface, DMA data path)
+Also defined:
+- Memory subsystem ([06-memory](../06-memory/README.md))
+- I/O subsystem: the external-IOT interface, DMA and its arbitration, and the KL8E, PC8E, and RK8E controllers ([07-io](../07-io/README.md))
+- Interrupt and skip coordination ([08-interrupts-and-skip](../08-interrupts-and-skip/README.md))
 
 Not yet defined:
-- Memory subsystem detail
-- I/O device behavior
+- Front panel ([10-front-panel](../10-front-panel/README.md))
+- Backplane and physical design, beyond the limits the timing budget sets ([11-backplane-and-physical](../11-backplane-and-physical/README.md))
+- Verification and implementation plans (12, 13)
 
 ---
 
@@ -89,8 +91,8 @@ Not yet defined:
 
 The following areas must be defined before hardware design begins:
 
-- I/O instruction behavior and device interaction
-- Memory subsystem detail
+- Front panel design
+- Backplane, connectors, and physical layout
 
 ---
 

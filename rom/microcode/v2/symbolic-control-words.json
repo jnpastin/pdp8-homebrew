@@ -6056,7 +6056,7 @@
       "execution_case_id": "iot:external:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 133
+        "line": 135
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -6211,7 +6211,7 @@
       "execution_case_id": "iot:external:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 133
+        "line": 135
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -6410,7 +6410,7 @@
       "execution_case_id": "iot:external:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 133
+        "line": 135
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -6678,7 +6678,7 @@
       "execution_case_id": "iot:external:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 133
+        "line": 135
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_EXTERNAL_IOT = 1) AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -6979,7 +6979,7 @@
       "execution_case_id": "iot:9.1:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 174
+        "line": 176
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -7134,7 +7134,7 @@
       "execution_case_id": "iot:9.1:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 174
+        "line": 176
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -7305,7 +7305,7 @@
       "execution_case_id": "iot:9.1:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 174
+        "line": 176
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -7460,7 +7460,7 @@
       "execution_case_id": "iot:9.1:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 174
+        "line": 176
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 010) AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -7671,7 +7671,7 @@
       "execution_case_id": "iot:9.2:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 192
+        "line": 194
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -7826,7 +7826,7 @@
       "execution_case_id": "iot:9.2:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 192
+        "line": 194
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -8012,7 +8012,7 @@
       "execution_case_id": "iot:9.2:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 192
+        "line": 194
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -8167,7 +8167,7 @@
       "execution_case_id": "iot:9.2:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 192
+        "line": 194
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 001) AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -8378,7 +8378,7 @@
       "execution_case_id": "iot:9.3:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 215
+        "line": 217
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -8533,7 +8533,7 @@
       "execution_case_id": "iot:9.3:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 215
+        "line": 217
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -8733,7 +8733,7 @@
       "execution_case_id": "iot:9.3:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 215
+        "line": 217
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -8888,7 +8888,7 @@
       "execution_case_id": "iot:9.3:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 215
+        "line": 217
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 000) AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -9099,7 +9099,7 @@
       "execution_case_id": "iot:9.4:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 244
+        "line": 246
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -9254,7 +9254,7 @@
       "execution_case_id": "iot:9.4:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 244
+        "line": 246
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -9439,7 +9439,7 @@
       "execution_case_id": "iot:9.4:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 244
+        "line": 246
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -9594,7 +9594,7 @@
       "execution_case_id": "iot:9.4:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 244
+        "line": 246
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 011) AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -9805,7 +9805,7 @@
       "execution_case_id": "iot:9.5:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 273
+        "line": 275
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -9976,7 +9976,7 @@
       "execution_case_id": "iot:9.5:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 273
+        "line": 275
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -10147,7 +10147,7 @@
       "execution_case_id": "iot:9.5:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 273
+        "line": 275
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -10302,7 +10302,7 @@
       "execution_case_id": "iot:9.5:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 273
+        "line": 275
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_GTF = 1) AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -10513,7 +10513,7 @@
       "execution_case_id": "iot:9.6:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 296
+        "line": 298
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -10668,7 +10668,7 @@
       "execution_case_id": "iot:9.6:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 296
+        "line": 298
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -10914,7 +10914,7 @@
       "execution_case_id": "iot:9.6:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 296
+        "line": 298
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -11069,7 +11069,7 @@
       "execution_case_id": "iot:9.6:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 296
+        "line": 298
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_RTF = 1) AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -11280,7 +11280,7 @@
       "execution_case_id": "iot:9.7:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 327
+        "line": 329
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -11435,7 +11435,7 @@
       "execution_case_id": "iot:9.7:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 327
+        "line": 329
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -11590,7 +11590,7 @@
       "execution_case_id": "iot:9.7:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 327
+        "line": 329
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -11745,7 +11745,7 @@
       "execution_case_id": "iot:9.7:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 327
+        "line": 329
       },
       "base_context": "(((((MS = EXECUTE AND IR_IS_IOT = 1) AND IR_IOA = 000000) AND IR_IOT_OP = 110) AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -11956,7 +11956,7 @@
       "execution_case_id": "iot:9.8:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 351
+        "line": 353
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -12111,7 +12111,7 @@
       "execution_case_id": "iot:9.8:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 351
+        "line": 353
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -12266,7 +12266,7 @@
       "execution_case_id": "iot:9.8:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 351
+        "line": 353
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -12421,7 +12421,7 @@
       "execution_case_id": "iot:9.8:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 351
+        "line": 353
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_CAF = 1) AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -12671,7 +12671,7 @@
       "execution_case_id": "iot:10.1:ts1",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 391
+        "line": 393
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -12826,7 +12826,7 @@
       "execution_case_id": "iot:10.1:ts2",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 391
+        "line": 393
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -13109,7 +13109,7 @@
       "execution_case_id": "iot:10.1:ts3",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 391
+        "line": 393
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -13264,7 +13264,7 @@
       "execution_case_id": "iot:10.1:ts4",
       "source": {
         "path": "docs/03-microarchitecture/06-iot-execution.md",
-        "line": 391
+        "line": 393
       },
       "base_context": "(((MS = EXECUTE AND IR_IS_MEMEXT_IOT = 1) AND TS = 4) AND RUN = 1)",
       "defaults": {
@@ -13475,7 +13475,7 @@
       "execution_case_id": "interrupt:4.1",
       "source": {
         "path": "docs/03-microarchitecture/08-interrupt-execution.md",
-        "line": 59
+        "line": 61
       },
       "base_context": "((MS = INTERRUPT AND TS = 1) AND RUN = 1)",
       "defaults": {
@@ -13675,7 +13675,7 @@
       "execution_case_id": "interrupt:4.2",
       "source": {
         "path": "docs/03-microarchitecture/08-interrupt-execution.md",
-        "line": 70
+        "line": 72
       },
       "base_context": "((MS = INTERRUPT AND TS = 2) AND RUN = 1)",
       "defaults": {
@@ -13899,7 +13899,7 @@
       "execution_case_id": "interrupt:4.3",
       "source": {
         "path": "docs/03-microarchitecture/08-interrupt-execution.md",
-        "line": 87
+        "line": 89
       },
       "base_context": "((MS = INTERRUPT AND TS = 3) AND RUN = 1)",
       "defaults": {
@@ -14086,7 +14086,7 @@
       "execution_case_id": "interrupt:4.4",
       "source": {
         "path": "docs/03-microarchitecture/08-interrupt-execution.md",
-        "line": 96
+        "line": 98
       },
       "base_context": "((MS = INTERRUPT AND TS = 4) AND RUN = 1)",
       "defaults": {

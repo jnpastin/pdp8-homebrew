@@ -13,7 +13,7 @@ Bus → Register → Consumer
 
 MA → AB → Memory
 - MA is the authoritative CPU address register
-- AB is an architectural bus driven by MA during normal CPU operation
+- AB is an architectural bus driven by MA during normal CPU operation, and by PC for the EXAMINE and DEPOSIT console operations
 - During DMA, an external device drives AB instead of MA
 - Memory is addressed via AB
 

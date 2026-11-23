@@ -114,6 +114,8 @@ D6 was first argued here from the `WR_VALID` wording, toward a commit at the end
 
 ## A1. Wrong because of this branch
 
+**Applied 2026-11-23**, all 36 (A1.35 in part: its §9.3 went with `/IO_WAIT`). A1.36's reason is the one in `spec.md`. ROM images identical.
+
 ### Architecture, ISA, overview
 | ID | Where | Now | Fix |
 |---|---|---|---|
@@ -169,6 +171,8 @@ D6 was first argued here from the `WR_VALID` wording, toward a commit at the end
 ---
 
 ## A2. Wrong before this branch
+
+**Applied 2026-11-23**, except A2.28 (fixed by C12) and the first half of A2.22 (fixed by C5). ROM images identical. A2.24's write ownership is prose beside the parsed read block (the extractor reads one block per label).
 
 | ID | Where | Now | Fix |
 |---|---|---|---|

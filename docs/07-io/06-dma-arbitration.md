@@ -241,8 +241,8 @@ The burst terminates when:
 At DMA TP3:
 
 - the active burst count increments for the transfer completed at TP2
-- `DMA_ENABLE` clears when the burst terminates
-- `DMA_ENABLE` remains set when the burst continues
+- the retained burst-enabled state clears when the burst terminates, so `DMA_ENABLE` is deasserted in the following TS4
+- the retained burst-enabled state remains set when the burst continues
 
 A controller may deassert its request only at the TP2 that completes the transfer for which it was selected, and must deassert it then if it has no further transfer ready, so the decision in TS3 sees it ([Controller Contract §9.2](./04-controller-contract.md#92-dma-request)). A controller with remaining work keeps its request asserted only while another transfer is immediately ready. Otherwise, it deasserts its request and requests service again when the next transfer is prepared.
 

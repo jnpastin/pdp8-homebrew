@@ -336,11 +336,11 @@ No controller response signal is required.
 During TS3:
 
 - the controller asserts `IO_READ_REQ`
-- the controller accepts the request to acquire the next character
 
 At TP3:
 
 - CPU control accepts the read request
+- the controller accepts the request to acquire the next character
 - `READER_FLAG <- 0`
 
 During TS4:

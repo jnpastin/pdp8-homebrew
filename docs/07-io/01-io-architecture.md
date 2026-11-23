@@ -134,7 +134,7 @@ The DMA arbiter:
 
 - selects the active DMA controller
 - produces `DMA_GRANT_ID[3:0]`
-- establishes the combinational `DMA_ENABLE` qualification output
+- establishes the combinational `DMA_ENABLE` qualification output, using the CPU's [`INSTR_END`](../04-control/20-control-output-definitions/02-architectural-control-signals.md#410-instruction-end-instr_end) and its own burst state
 - maintains burst-selection, burst-count, and fairness state
 
 Separate combinational aggregation logic continuously derives aggregate `/DMA_REQ` from `DMA_ENABLE` and the individual controller request lines, as defined in [DMA Arbitration](./06-dma-arbitration.md).

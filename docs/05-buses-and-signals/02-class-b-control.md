@@ -192,6 +192,7 @@ Aggregate `/DMA_REQ` is continuously derived from `DMA_ENABLE` and `/DMA_REQ[14:
 
 - `MS[2:0]`
 - `/DMA_GRANT`
+- `INSTR_END`
 - shared TS signals
 - shared TP signals
 

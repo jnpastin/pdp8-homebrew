@@ -14,11 +14,11 @@ FLAGS provide stable, register-derived interpretations of system state.
 
 ## 2. Timing Model
 
-- Registers are latched at TP(n)
+- Registers are latched at TP(n−1)
 - Registers are stable during TS(n)
 - FLAGS are combinationally derived from register outputs
 - FLAGS remain stable throughout TS(n)
-- FLAGS may change only after TP(n+1)
+- FLAGS may change only after TP(n)
 
 ---
 
@@ -53,7 +53,7 @@ FLAGS must:
 
 **Consumed By:**
 - Skip logic driving:
-  - [PC_INC μop](../../03-microarchitecture/02-micro-operations.md#pc_inc)
+  - [OPR_SKIP_REQ](./03-derived-flags.md#opr_skip_req)
 
 ---
 
@@ -69,7 +69,7 @@ FLAGS must:
 
 **Consumed By:**
 - Skip logic driving:
-  - [PC_INC μop](../../03-microarchitecture/02-micro-operations.md#pc_inc)
+  - [OPR_SKIP_REQ](./03-derived-flags.md#opr_skip_req)
 
 ---
 
@@ -86,7 +86,7 @@ FLAGS must:
 **Consumed By:**
 - Control decision:
   - Interrupt inhibit gating while the staged instruction field is pending
-  - FETCH II_CLEAR selection (II_CLEAR is selected only when CIFP = 0)
+  - FETCH TS1 II_CLEAR selection (selected there only when CIFP = 0); a JMP or JMS that applies the field clears II with CIFP = 1
 - Modified by:
   - [CIFP_SET](../../03-microarchitecture/02-micro-operations.md#cifp_set)
   - [CIFP_CLEAR](../../03-microarchitecture/02-micro-operations.md#cifp_clear)
@@ -230,7 +230,7 @@ IOT_WRITE_PENDING = (IOT_TRANSFER = 10)
 
 **Consumed By:**
 - Skip logic driving:
-  - [PC_INC μop](../../03-microarchitecture/02-micro-operations.md#pc_inc)
+  - [OPR_SKIP_REQ](./03-derived-flags.md#opr_skip_req)
 
 ---
 

@@ -80,7 +80,7 @@ The unit is shared by the three groups. Each stage's control is its IR bit quali
 | D | IAC | none | none |
 | E | rotates, BSW | none | none |
 
-The unit also has an MQ output, used only by Group 3 ([Group 3 Execution §4](./03-group3-execution.md#4-opr-pass)). Stage B (the OR inputs) belongs to Groups 2 and 3 and is not selected by a Group 1 instruction.
+The unit also has an MQ output, used only by Group 3 ([Group 3 Execution §4](./03-group3-execution.md#4-opr-pass)).
 
 When `OPR_PASS` is not selected, AC and L do not load from the pass unit, so its output has no effect.
 

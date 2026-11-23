@@ -118,8 +118,8 @@ Instead, the Instruction Register (IR) is reduced to control-relevant fields.
 IR holds the current instruction.
 
 Properties:
-- loaded during instruction fetch
-- stable for the duration of the instruction
+- loaded during instruction fetch, at FETCH TP2
+- stable from then until the next instruction's FETCH TP2
 - source for instruction-derived fields
 
 ---
@@ -142,21 +142,21 @@ Examples:
   - IR_IS_IOT
 
 - operation identification:
-  - IR_IS_ISZ
-  - IR_IS_AND
+  - IR_MRI_OPCODE (which memory reference instruction)
+  - IR_IS_EXTERNAL_IOT
 
 - control-relevant bits:
   - indirect bit
 
 - OPR Group 1 examples:
-  - CLA (clear accumulator)
-  - CLL (clear link)
-  - CMA (complement accumulator)
+  - IR_OPR_CLA (clear accumulator)
+  - IR_OPR_CLL (clear link)
+  - IR_OPR_CMA (complement accumulator)
 
 - OPR Group 2 examples:
-  - SMA_enable (skip on minus accumulator)
-  - SZA_enable (skip on zero accumulator)
-  - SNL_enable (skip on non-zero link)
+  - IR_OPR_SMA (skip on minus accumulator)
+  - IR_OPR_SZA (skip on zero accumulator)
+  - IR_OPR_SNL (skip on non-zero link)
 
 ---
 
@@ -345,6 +345,7 @@ Required information persists via:
 - IR
 - MS
 - architectural registers
+- the registered control state `SKIP` and `MAPR` ([Control Model §8.4](#84-realizations-outside-the-control-word))
 
 IR_FIELDS and FLAGS remain stable because their sources are stable.
 

@@ -678,7 +678,7 @@
       "group": "3.3 Run-State Sequencing",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 894
+        "line": 895
       },
       "applicable_context": [
         "RUN = 0\nFP_START = 0\nFP_CONTINUE = 0"
@@ -719,7 +719,7 @@
       "group": "3.4 Halt-Request Sequencing",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 959
+        "line": 960
       },
       "applicable_context": [
         "HLT_REQ = 0\nNOT (RUN = 1 AND MS = FETCH AND TS = 3 AND IR_OPR_HLT = 1)\nNOT (\n    RUN = 1\n    AND FP_STOP = 1\n    AND NOT (\n        TS = 4\n        AND (\n            MS = EXECUTE\n            OR (MS = FETCH AND IR_NO_EXECUTE = 1 AND IR_INDIRECT = 0)\n            OR (MS = DEFER AND IR_NO_EXECUTE = 1)\n        )\n    )\n)"
@@ -751,7 +751,7 @@
       "group": "3.4 Halt-Request Sequencing",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1000
+        "line": 1001
       },
       "applicable_context": [
         "RUN = 1\nFP_STOP = 1\nNOT (\n    TS = 4\n    AND (\n        MS = EXECUTE\n        OR (MS = FETCH AND IR_NO_EXECUTE = 1 AND IR_INDIRECT = 0)\n        OR (MS = DEFER AND IR_NO_EXECUTE = 1)\n    )\n)"
@@ -794,7 +794,7 @@
       "group": "3.4 Halt-Request Sequencing",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1046
+        "line": 1047
       },
       "applicable_context": [
         "MS = FETCH\nTS = 3\nIR_OPR_HLT = 1"
@@ -840,7 +840,7 @@
       "group": "3.4 Halt-Request Sequencing",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1083
+        "line": 1084
       },
       "applicable_context": [
         "HLT_REQ = 1\nNOT (\n    RUN = 1\n    AND (\n        TS = 4\n        AND (\n            MS = EXECUTE\n            OR (MS = FETCH AND IR_NO_EXECUTE = 1 AND IR_INDIRECT = 0)\n            OR (MS = DEFER AND IR_NO_EXECUTE = 1)\n        )\n    )\n)"
@@ -883,7 +883,7 @@
       "group": "3.4 Halt-Request Sequencing",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1129
+        "line": 1130
       },
       "applicable_context": [
         "RUN = 1\nHLT_REQ = 1\nTS = 4\nAND (\n    MS = EXECUTE\n    OR (MS = FETCH AND IR_NO_EXECUTE = 1 AND IR_INDIRECT = 0)\n    OR (MS = DEFER AND IR_NO_EXECUTE = 1)\n)"
@@ -926,7 +926,7 @@
       "group": "4.2 Program-Counter Address Context",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1268
+        "line": 1269
       },
       "applicable_context": [
         "RUN = 0\nFP_EXAMINE = 1"
@@ -957,7 +957,7 @@
       "group": "4.2 Program-Counter Address Context",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1287
+        "line": 1288
       },
       "applicable_context": [
         "RUN = 0\nFP_DEPOSIT = 1"
@@ -991,7 +991,7 @@
       "group": "4.3 Memory-Address Register Context",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1315
+        "line": 1316
       },
       "applicable_context": [
         "MS = FETCH\nTS = 2"
@@ -1022,7 +1022,7 @@
       "group": "4.3 Memory-Address Register Context",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1336
+        "line": 1337
       },
       "applicable_context": [
         "RUN = 1\nMS = DEFER\nTS = 2"
@@ -1048,7 +1048,7 @@
       "group": "4.3 Memory-Address Register Context",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1352
+        "line": 1353
       },
       "applicable_context": [
         "RUN = 1\nMS = DEFER\nTS = 4\nAUTO_INDEX_REQUIRED = 1"
@@ -1074,7 +1074,7 @@
       "group": "4.3 Memory-Address Register Context",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1369
+        "line": 1370
       },
       "applicable_context": [
         "RUN = 1\nMS = EXECUTE\nTS = 2\nIR_IS_MRI = 1\nIR_MRI_OPCODE = 000",
@@ -1102,7 +1102,7 @@
       "group": "4.3 Memory-Address Register Context",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1407
+        "line": 1408
       },
       "applicable_context": [
         "RUN = 1\nMS = EXECUTE\nTS = 4\nIR_IS_MRI = 1\nIR_MRI_OPCODE = 010"
@@ -1128,7 +1128,7 @@
       "group": "4.3 Memory-Address Register Context",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1425
+        "line": 1426
       },
       "applicable_context": [
         "RUN = 1\nMS = EXECUTE\nTS = 3\nIR_IS_MRI = 1\nIR_MRI_OPCODE = 011"
@@ -1154,7 +1154,7 @@
       "group": "4.3 Memory-Address Register Context",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1443
+        "line": 1444
       },
       "applicable_context": [
         "RUN = 1\nMS = EXECUTE\nTS = 3\nIR_IS_MRI = 1\nIR_MRI_OPCODE = 100"
@@ -1180,7 +1180,7 @@
       "group": "4.3 Memory-Address Register Context",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1461
+        "line": 1462
       },
       "applicable_context": [
         "RUN = 1\nMS = INTERRUPT\nTS = 3"
@@ -1222,7 +1222,7 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1521
+        "line": 1522
       },
       "applicable_context": [
         "MS = FETCH\nTS = 2"
@@ -1253,7 +1253,7 @@
       "group": "4.5.2 Direct MRI Access",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1565
+        "line": 1566
       },
       "applicable_context": [
         "MS = EXECUTE\nTS = 2\nIR_IS_MRI = 1\nIR_INDIRECT = 0\nAND (\n    IR_MRI_OPCODE = 000\n    OR IR_MRI_OPCODE = 001\n    OR IR_MRI_OPCODE = 010\n)"
@@ -1279,7 +1279,7 @@
       "group": "4.5.2 Direct MRI Access",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1587
+        "line": 1588
       },
       "applicable_context": [
         "MS = EXECUTE\nTS = 4\nIR_IS_MRI = 1\nIR_INDIRECT = 0\nIR_MRI_OPCODE = 010"
@@ -1305,7 +1305,7 @@
       "group": "4.5.2 Direct MRI Access",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1605
+        "line": 1606
       },
       "applicable_context": [
         "MS = EXECUTE\nTS = 3\nIR_IS_MRI = 1\nIR_INDIRECT = 0\nAND (\n    IR_MRI_OPCODE = 011\n    OR IR_MRI_OPCODE = 100\n)"
@@ -1331,7 +1331,7 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1630
+        "line": 1631
       },
       "applicable_context": [
         "MS = DEFER\nTS = 2\nIR_IS_MRI = 1"
@@ -1369,7 +1369,7 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1660
+        "line": 1661
       },
       "applicable_context": [
         "MS = DEFER\nTS = 4\nAUTO_INDEX_REQUIRED = 1"
@@ -1407,7 +1407,7 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1713
+        "line": 1714
       },
       "applicable_context": [
         "RUN = 1\nMS = EXECUTE\nTS = 2\nIR_IS_MRI = 1\nIR_INDIRECT = 1\nAND (\n    IR_MRI_OPCODE = 000\n    OR IR_MRI_OPCODE = 001\n    OR IR_MRI_OPCODE = 010\n)"
@@ -1433,7 +1433,7 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1736
+        "line": 1737
       },
       "applicable_context": [
         "RUN = 1\nMS = EXECUTE\nTS = 4\nIR_IS_MRI = 1\nIR_INDIRECT = 1\nIR_MRI_OPCODE = 010"
@@ -1459,7 +1459,7 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1755
+        "line": 1756
       },
       "applicable_context": [
         "RUN = 1\nMS = EXECUTE\nTS = 3\nIR_IS_MRI = 1\nIR_INDIRECT = 1\nIR_MRI_OPCODE = 011"
@@ -1485,7 +1485,7 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1774
+        "line": 1775
       },
       "applicable_context": [
         "RUN = 1\nMS = EXECUTE\nTS = 3\nIR_IS_MRI = 1\nIR_INDIRECT = 1\nIR_MRI_OPCODE = 100"
@@ -1511,7 +1511,7 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1797
+        "line": 1798
       },
       "applicable_context": [
         "RUN = 1\nMS = INTERRUPT\nTS = 3"
@@ -1542,7 +1542,7 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1821
+        "line": 1822
       },
       "applicable_context": [
         "RUN = 0\nFP_EXAMINE = 1"
@@ -1573,7 +1573,7 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1844
+        "line": 1845
       },
       "applicable_context": [
         "RUN = 0\nFP_DEPOSIT = 1"
@@ -1604,7 +1604,7 @@
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 1867
+        "line": 1868
       },
       "applicable_context": [
         "MS = DMA"
@@ -1639,7 +1639,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 2001
+        "line": 2002
       },
       "applicable_context": [
         "IR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_READ_REQ = 1"
@@ -1685,7 +1685,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 2030
+        "line": 2031
       },
       "applicable_context": [
         "IR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_WRITE_REQ = 1"
@@ -1731,7 +1731,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 2059
+        "line": 2060
       },
       "applicable_context": [
         "(\n    IOT_READ_PENDING = 1\n    OR IOT_WRITE_PENDING = 1\n)\nIR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_READ_REQ = 0\nIO_WRITE_REQ = 0"
@@ -1777,7 +1777,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 2096
+        "line": 2097
       },
       "applicable_context": [
         "(\n    IOT_READ_PENDING = 1\n    OR IOT_WRITE_PENDING = 1\n)\nIR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_READ_REQ = 1"
@@ -1824,7 +1824,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 2133
+        "line": 2134
       },
       "applicable_context": [
         "(\n    IOT_READ_PENDING = 1\n    OR IOT_WRITE_PENDING = 1\n)\nIR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_WRITE_REQ = 1"
@@ -2166,9 +2166,8 @@
       "value_relationships": [],
       "widths": [],
       "constraints": [
-        "Memory is the sole `MDB` producer.",
-        "The selected controller must not drive `MDB`.",
-        "The controller captures `MDB` at TP2.",
+        "For a read, memory is the sole `MDB` producer, the selected controller must not drive `MDB`, and the controller captures `MDB` at TP2.",
+        "For a write, the selected controller is the sole `MDB` producer, and memory stores `MDB` during `/WR_PULSE` at TP2.",
         "No CPU control assignment may replace the controller-supplied address, field, or direction."
       ],
       "sources": [
@@ -2192,7 +2191,7 @@
       "group": "6 System Data Bus Ownership",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 543
+        "line": 552
       },
       "applicable_context": [
         "DB_WRITE_FROM_AC is not selected"
@@ -2236,7 +2235,7 @@
       "group": "6 System Data Bus Ownership",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 572
+        "line": 581
       },
       "applicable_context": [
         "DB_WRITE_FROM_AC is selected"
@@ -2279,7 +2278,7 @@
       "group": "6 System Data Bus Ownership",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 608
+        "line": 617
       },
       "applicable_context": [
         "DB_READ_TO_AC is selected"
@@ -2324,7 +2323,7 @@
       "group": "7 External-IOT Qualification",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 671
+        "line": 680
       },
       "applicable_context": [
         "RUN = 1\nMS = EXECUTE\nIR_IS_EXTERNAL_IOT = 1"
@@ -2369,7 +2368,7 @@
       "group": "7 External-IOT Qualification",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 705
+        "line": 714
       },
       "applicable_context": [
         "NOT (\n    RUN = 1\n    AND MS = EXECUTE\n    AND IR_IS_EXTERNAL_IOT = 1\n)"
@@ -2408,7 +2407,7 @@
       "group": "8 System Initialization",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 762
+        "line": 771
       },
       "applicable_context": [
         "MS = EXECUTE\nTS = 4\nIR_IS_CAF = 1"
@@ -2455,7 +2454,7 @@
       "group": "8 System Initialization",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 800
+        "line": 809
       },
       "applicable_context": [
         "RUN = 0\nFP_CLEAR = 1"
@@ -2501,7 +2500,7 @@
       "group": "8 System Initialization",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 836
+        "line": 845
       },
       "applicable_context": [
         "NOT (\n    MS = EXECUTE\n    AND TS = 4\n    AND IR_IS_CAF = 1\n)\nNOT (\n    RUN = 0\n    AND FP_CLEAR = 1\n)"

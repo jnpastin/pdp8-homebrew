@@ -83,8 +83,8 @@ Properties:
 ### 4.2 Current Page
 
 - Selected when P = 1
-- Base address = PC[11:7]
-- Final logical address = PC[11:7] || offset
+- Base address = IA[11:7], the page of the instruction's own address (the PC before its increment)
+- Final logical address = IA[11:7] || offset
 
 Properties:
 
@@ -171,7 +171,8 @@ This address identifies a pointer location in the field defined by IF.
 ### 9.2 Stage 2: Pointer Resolution
 
 - The value stored at the pointer location is read as a 12-bit address
-- This read occurs in DF context
+- This read occurs in IF context: the pointer is in the instruction's own field
+- The value read is used as an address in DF for AND, TAD, ISZ, and DCA, and in IF for JMP I and JMS I
 
 The resulting value becomes the final EA.
 
@@ -216,7 +217,7 @@ The pointer value obtained during indirection:
 - Is a full 12-bit address
 - Is not constrained to the originating page
 
-This allows arbitrary addressing within DF.
+This allows arbitrary addressing within DF, or within IF for JMP I and JMS I.
 
 ---
 

@@ -66,14 +66,14 @@ MS_NEXT is determined by control logic during TS4 and is not represented as a μ
 
 MS updates are not produced by datapath operations.
 
-MS is stored in a register and updated only at TP4:
+MS is stored in a register and updated only at TP4 while running; while halted, at the TPC of START, EXAMINE, or DEPOSIT; and set to FETCH by the power-on reset:
 
-    MS <- MS_NEXT   (only at TP4)
+    MS <- MS_NEXT   (at TP4, or at a console TPC)
 
 Constraints:
 - MS is stable during TP1–TP3
 - Exactly one MS is active at any time
-- MS must not change outside TP4
+- MS must not change outside TP4, except at a console TPC and at power-on
 
 ---
 
@@ -158,7 +158,7 @@ The following invariants must always hold:
 - All architectural state resides in registers
 - All state changes occur only at TP
 - The order of timing states does not depend on instruction behavior
-- MS transitions occur only at TP4
+- MS transitions occur only at TP4, except at a console TPC and at power-on
 
 ---
 

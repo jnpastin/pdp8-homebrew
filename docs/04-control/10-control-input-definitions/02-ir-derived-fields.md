@@ -267,6 +267,7 @@ IR_ADDR = IR[6:0]
 
 **Consumed By:**
 - [IR_ADDR_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#ir_addr_to_ea_addr)
+- [IR_ADDR_TO_PC](../../03-microarchitecture/02-micro-operations.md#ir_addr_to_pc)
 
 ---
 
@@ -300,7 +301,7 @@ IR_CLASS = {IR_OPR_GROUP2 OR IR_OPR_GROUP3,
 
 **Consumed By:**
 
-- [Fetch & Defer](../../03-microarchitecture/04-fetch-defer.md): FETCH TS3 (including `OPR_PASS`), DEFER TS3 and TS4
+- [Fetch & Defer](../../03-microarchitecture/04-fetch-defer.md): FETCH TS3 (including `OPR_PASS`) and TS4, DEFER TS3 and TS4
 
 **Realization:** Decoded by predecode gates from the live IR, valid from FETCH TP2. The three lines of the derivation are bits 2, 1, and 0 of the code: bit 2 is set for Groups 2 and 3; bit 1 for JMP I and Group 1; bit 0 for direct JMP, Group 1, and Group 3. Whenever `MS_EFF_IS_EXECUTE = 0` it drives the datapath slice's `VARIANT[2:0]`, with `VARIANT[4:3] = 0` ([Control Store Organization §5.4.2](../08-control-store-organization.md#542-execute-selection)).
 
@@ -907,7 +908,6 @@ IR_OPR_GROUP2 = IR_IS_OPR AND IR[8] AND (IR[0] == 0)
 **Consumed By:**
 
 - [IR_CLASS](#ir_class)
-- [IR_NO_EXECUTE](#ir_no_execute)
 - the Group 2 bit decodes (`IR_OPR_HLT`, `IR_OPR_OSR`, `IR_OPR_SKIP_MODE`, `IR_OPR_SMA`, `IR_OPR_SNL`, `IR_OPR_SZA`)
 
 
@@ -1387,3 +1387,4 @@ IR_ZERO_PAGE = IR_IS_MRI AND NOT(IR[7])
 
 **Consumed By:**
 - [IR_ADDR_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#ir_addr_to_ea_addr)
+- [IR_ADDR_TO_PC](../../03-microarchitecture/02-micro-operations.md#ir_addr_to_pc)

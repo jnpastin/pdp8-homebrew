@@ -49,6 +49,7 @@ Unlike the field instructions and Group 1 OPR, these are distinct operations sel
 | SRQ | 6003 | 011 | Skip on Interrupt Request | Skip the next instruction if an interrupt request is currently asserted |
 | GTF | 6004 | 100 | Get Flags | Replace AC with the PDP-8/E processor flags word |
 | RTF | 6005 | 101 | Restore Flags | Restore the implemented processor state from the PDP-8/E flags word and enable interrupts |
+| SGT | 6006 | 110 | Skip on Greater Than | No EAE is implemented, so SGT executes as a no-op (section 6.1) |
 | CAF | 6007 | 111 | Clear All Flags | Generate the same system-wide initialization action as the front-panel CLEAR switch |
 
 Semantics:

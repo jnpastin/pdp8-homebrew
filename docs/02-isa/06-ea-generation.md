@@ -44,7 +44,7 @@ EA_logical = (EA_fld, EA_ADDR)
 EA_ADDR is a phase-dependent working value:
 
 - During FETCH:
-  EA_ADDR holds the current page or zero page address derived from IR and PC
+  EA_ADDR holds the current page or zero page address derived from IR and the instruction's address
 
 - During DEFER (if indirect):
   EA_ADDR is updated with the resolved pointer value
@@ -59,7 +59,7 @@ EA_ADDR must not be assumed to be final prior to EXECUTE
 ## 5. Inputs
 
 - IR bits: I, P, offset[6:0]  
-- PC (12-bit)  
+- the instruction's address (12-bit)  
 - IF (Instruction Field)  
 - DF (Data Field)  
 - Memory M[]  
@@ -79,10 +79,10 @@ EA_ADDR = 0000 || offset
 If P = 1:
 
 ```
-EA_ADDR = PC[11:7] || offset
+EA_ADDR = IA[11:7] || offset
 ```
 
-PC here is the address from which the instruction was fetched, before it is incremented, so an instruction at the last word of a page addresses its own page ([Addressing Model §8](./05-addressing-model.md#8-direct-addressing-i--0)).
+IA is the address from which the instruction was fetched, the PC before it is incremented, so an instruction at the last word of a page addresses its own page ([Addressing Model §8](./05-addressing-model.md#8-direct-addressing-i--0)). The CPU holds it in MA from FETCH TP1.
 
 ---
 

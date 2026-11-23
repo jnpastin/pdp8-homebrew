@@ -404,7 +404,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 ```
 
 **Constraints:**
-- ALU is the source for all arithmetic/logical AC loads via the IDB
+- The ALU, through the IDB, is the source of arithmetic and logical AC loads, except an OPR's, which come from the OPR pass unit (`AC_SRC` = 7)
 - DB is the source for I/O data ingestion (DB_READ_TO_AC); the DB value is OR'd into AC
 - Field-merge encodings OR the selected field into its DEC-defined AC bit positions and preserve all other AC bits:
   - IF, DF → AC[5:3]
@@ -1756,10 +1756,6 @@ If IDB_DRIVE = 1:
     exactly one IDB_SRC must be selected
 ```
 
-```
-If IDB_SRC is used:
-    IDB_DRIVE must be 1
-```
 
 Additional constraints:
 
@@ -1785,7 +1781,7 @@ Examples of input sources:
 - IDB path  
 - ALU output  
 - Data Value signals
-- MDB input (for MB only)  
+- MDB input (for MB, and for IR at an instruction fetch)  
 
 No two sources may drive the same register simultaneously.
 
@@ -1948,7 +1944,7 @@ Sources include:
 
 - Register outputs (AC, MB, PC, etc.)
 - ALU output (computed within the cycle)
-- Data Value signals (CONST_1, MDB_INPUT, DB_INPUT)
+- Hardwired constants (such as `PC_SRC` = 0001), MDB_INPUT, and DB_INPUT
 
 Constraint:
 
@@ -2019,7 +2015,7 @@ Certain operations are performed by dedicated combinational units.
 Example:
 
 ```
-EA_FORMED = f(IR, PC, IR.P)
+EA_FORMED = f(IR[7:0], MA[11:7])
 ```
 
 Properties:
@@ -2040,7 +2036,7 @@ Example:
 MA_INPUT =
     case:
         IDB path
-        Control path
+        hardwired zero (MA_SRC = 2)
 ```
 
 General form:
@@ -2159,6 +2155,7 @@ Data moves between domains only through defined paths:
 
 ```
 MDB → MB          (memory read)
+MDB → IR          (instruction fetch, with MB)
 MB → MDB          (memory write)
 IDB → registers   (internal transfers)
 ```
@@ -2218,10 +2215,6 @@ If IDB_DRIVE = 1:
     exactly one IDB_SRC must be selected
 ```
 
-```
-If IDB_SRC selects a source:
-    IDB_DRIVE must be 1
-```
 
 Additional constraints:
 
@@ -2232,13 +2225,14 @@ Additional constraints:
 
 ### 8.3 MDB Interaction Constraints
 
-MDB is used exclusively for memory transfers through MB.
+MDB is used only for memory transfers through MB, and for IR's instruction load at an instruction fetch.
 
 Constraints:
 
 ```
 Memory read:
     MDB_INPUT → MB
+    MDB_INPUT → IR   (instruction fetch only)
 
 Memory write:
     MB → MDB
@@ -2246,7 +2240,7 @@ Memory write:
 
 Additional constraints:
 
-- No register other than MB may directly access MDB  
+- No register other than MB, and IR at an instruction fetch, may directly access MDB  
 - MDB must not be driven by IDB  
 - MDB must not source IDB directly  
 
@@ -2306,6 +2300,8 @@ If R_LOAD = 1:
         - ALU output
         - Control Data Values
         - MDB input (if applicable)
+        - OPR pass unit (AC, L, MQ)
+        - the skip decision OPR_SKIP_REQ (SKIP only)
 ```
 
 No mixing of domains is permitted within a single load.
@@ -2399,10 +2395,12 @@ PC_LOAD and PC_INC must not both be asserted
 ```
 
 **Used by μops:**
+- [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc)
+- [IR_ADDR_TO_PC](../../03-microarchitecture/02-micro-operations.md#ir_addr_to_pc)
+- [MB_TO_PC](../../03-microarchitecture/02-micro-operations.md#mb_to_pc)
+- [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
 - [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr)
 - [PC_SET_1](../../03-microarchitecture/02-micro-operations.md#pc_set_1)
-- [PC_INC](../../03-microarchitecture/02-micro-operations.md#pc_inc)
-
 ---
 
 ### 9.3 Register Source Exclusivity
@@ -2441,25 +2439,26 @@ If IDB_DRIVE = 1:
     IDB_SRC must be valid
 ```
 
-```
-If IDB_SRC selects a source:
-    IDB_DRIVE must be 1
-```
 
 Invalid configurations:
 
 ```
 IDB_DRIVE = 1 with no valid source
-IDB_SRC selected with IDB_DRIVE = 0
 multiple conceptual sources active
 ```
 
 **Used by μops:**
+- [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb)
 - [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb)
-- [PC_TO_MB](../../03-microarchitecture/02-micro-operations.md#pc_to_mb)
+- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb)
+- [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc)
+- [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc)
 - [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr)
 - [MB_TO_PC](../../03-microarchitecture/02-micro-operations.md#mb_to_pc)
-
+- [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear)
+- [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr)
+- [PC_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_to_ea_addr)
+- [PC_TO_MB](../../03-microarchitecture/02-micro-operations.md#pc_to_mb)
 ---
 
 ### 9.5 ALU Operand Requirements
@@ -2553,6 +2552,8 @@ If R_LOAD = 1:
         ALU
         MDB
         Control
+        OPR pass unit
+        skip decision (SKIP)
 ```
 
 Invalid:
@@ -3016,7 +3017,7 @@ MDB_INPUT must be valid before TP when MB_LOAD = 1
 
 #### Memory write:
 ```
-MB must be stable before TP when MEM_WR is asserted
+MB must be stable before TP when /WR is asserted
 ```
 
 #### I/O input:
@@ -3049,7 +3050,7 @@ Requirements:
 
 The following conditions are invalid:
 
-- control signal transitions within a TS  
+- a control signal changing after `T_CS` within a TS (section 11.2)  
 - unstable datapath inputs at TP  
 - combinational outputs not settled before TP  
 
@@ -3199,7 +3200,7 @@ Constraint:
 
 ```
 Within each TS:
-    - all signals are stable
+    - all signals are stable from T_CS (section 11.2) through TP
     - all combinational outputs settle before TP
 
 At TP:

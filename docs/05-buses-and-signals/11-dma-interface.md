@@ -23,6 +23,7 @@ DMA operations involve:
 The DMA arbiter observes:
 
 - `MS[2:0]`
+- [`INSTR_END`](../04-control/20-control-output-definitions/02-architectural-control-signals.md#410-instruction-end-instr_end), which tells it that the current TS4 ends an instruction
 - shared TS signals
 - shared TP signals
 

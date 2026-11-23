@@ -128,7 +128,7 @@ A halt request remains pending until consumed.
 
 ## 5. Console Address Context
 
-Console operations update both:
+EXAMINE and DEPOSIT update both:
 
 ```text
 MA

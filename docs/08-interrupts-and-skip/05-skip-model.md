@@ -290,7 +290,7 @@ Examples already defined by the owning documents include:
 - SKON clearing `IE`
 - ISZ writing the incremented memory value
 - controller IOTs changing controller-local state
-- Group 2 instructions performing later `AC` or halt-related operations
+- Group 2 instructions performing `AC` or halt-related operations at the same FETCH TP3 as the skip decision
 
 These additional effects do not change the common skip result.
 

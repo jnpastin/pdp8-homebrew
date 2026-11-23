@@ -25,5 +25,5 @@ It is intended as the entry point for understanding:
 This section is incomplete and will evolve as the architecture and design mature.
 
 Key areas still under development:
-- I/O behavioral specifications
-- Memory subsystem detail
+- Front panel
+- Backplane and physical design

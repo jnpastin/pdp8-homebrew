@@ -502,11 +502,20 @@ selected controller deasserts /WR
 memory drives MDB
 ```
 
+That block is a DMA read. For a DMA write, the external ownership is:
+
+```text
+selected controller drives MFB
+selected controller drives AB
+selected controller deasserts /RD
+selected controller asserts /WR
+selected controller drives MDB
+```
+
 Constraints:
 
-- Memory is the sole `MDB` producer.
-- The selected controller must not drive `MDB`.
-- The controller captures `MDB` at TP2.
+- For a read, memory is the sole `MDB` producer, the selected controller must not drive `MDB`, and the controller captures `MDB` at TP2.
+- For a write, the selected controller is the sole `MDB` producer, and memory stores `MDB` during `/WR_PULSE` at TP2.
 - No CPU control assignment may replace the controller-supplied address, field, or direction.
 
 Source:

@@ -27,7 +27,7 @@ Excludes:
 ## 4. Model Summary
 - All state visible to software is represented as registers.
 - Memory is addressed via fielded 12-bit addressing.
-- Interrupts occur when IE is enabled and /INT_REQ is asserted.
+- An interrupt is taken at an instruction's completion when IE is set, II is clear, and /INT_REQ is asserted ([Interrupt Recognition](../08-interrupts-and-skip/02-interrupt-recognition-and-sequencing.md)).
 
 ---
 

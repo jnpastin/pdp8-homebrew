@@ -27,6 +27,8 @@ IR[11:9] = 110
 
 ## 3. External IOT Execution Model
 
+Every IOT executes in an EXECUTE major state after its FETCH. This is a deliberate difference from the PDP-8/E, which performs an IOT within its FETCH cycle, with the transfer at TP3 (maintenance manual, volume 1, §3.41.2). Keeping EXECUTE leaves the I/O interface, the controller contracts, and the controller models unchanged, and the MAINDEC-8E-D2AB timing checks do not depend on the IOT's cost. Moving IOT into FETCH remains a possible later change.
+
 External IOT execution applies when `IR_IS_EXTERNAL_IOT = 1`: an IOT addressed to any device other than 00 (processor control, section 9) and 20–27 (memory extension control, section 10). Those devices execute internally and never assert `IOT_ACTIVE`.
 
 External IOT execution uses:
@@ -438,5 +440,5 @@ Description:
 ## 11. Notes
   
 - DB direction (CPU → device or device → CPU) is device-defined
-- No CPU-visible μops are required unless a device operation transfers data into CPU registers
+- CPU micro-operations are selected only by the controller's responses: a read (`DB_READ_TO_AC`), a write (`/DB_WRITE`, with AC on DB), an AC clear (`AC_CLEAR`), or a skip (`PC_INC`)
 - Timing constraints for device interaction follow the [Execution Model](../03-microarchitecture/01-execution-model.md)
