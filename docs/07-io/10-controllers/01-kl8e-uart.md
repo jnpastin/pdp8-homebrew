@@ -200,6 +200,8 @@ The keyboard flag is cleared by:
 
 `KRS` does not clear the keyboard flag.
 
+If a character becomes visible at the same TP as one of these clears, the flag is set ([Controller Contract §5.1](../04-controller-contract.md#51-event-and-clear-at-the-same-tp)). A character can become visible only while the flag is clear (section 9.3), so this arises only with KCF or KCC on a clear flag.
+
 ### 9.3 Input Capacity Contract
 
 The controller must preserve a character after setting the keyboard flag until software clears or consumes that character.
@@ -391,6 +393,8 @@ The teleprinter flag is cleared by:
 - `TCF`
 - `TLS`
 - /INITIALIZE
+
+If output completes at the same TP as one of these clears, the flag is set ([Controller Contract §5.1](../04-controller-contract.md#51-event-and-clear-at-the-same-tp)). TLS cannot coincide with its own character's completion, because it is accepted only while no output is active.
 
 The teleprinter flag may be set directly by `TFL`.
 

@@ -198,6 +198,8 @@ The reader flag is cleared by:
 - `RRB RFC`
 - /INITIALIZE
 
+If a character becomes available at the same TP as one of these clears, the flag is set ([Controller Contract §5.1](../04-controller-contract.md#51-event-and-clear-at-the-same-tp)).
+
 ### 9.3 Reader Capacity Contract
 
 After setting the reader flag, the controller must preserve the visible reader character until software reads or clears it.
@@ -375,6 +377,8 @@ The punch flag is cleared by:
 - `PCF`
 - `PLS`
 - /INITIALIZE
+
+If a punch operation completes at the same TP as one of these clears, the flag is set ([Controller Contract §5.1](../04-controller-contract.md#51-event-and-clear-at-the-same-tp)).
 
 ### 16.3 Punch Acceptance Contract
 

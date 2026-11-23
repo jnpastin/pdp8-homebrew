@@ -72,6 +72,21 @@ Controller-local state changes:
 - are captured at the leading edge of the TP
 - become visible only as the TP ends, in every response, request, and driven value ([Timing Architecture §7.6](../09-timing/02-timing-architecture.md#76-rule-6--two-ranks))
 
+### 5.1 Event and Clear at the Same TP
+
+A flag or status bit that a device event sets and an IOT clears can receive both at one TP. The event wins:
+
+```text
+FLAG_next = EVENT OR (FLAG AND NOT CLEAR)
+```
+
+A set flag means something happened, so keeping it costs software at most one more poll or interrupt, while losing it can leave a program waiting forever. The PDP-8/E manuals consulted define no order. Its flags are flip-flops with the IOT on one side and the device on the other, so there a coincidence is a race.
+
+Two clears win over the event:
+
+- `/INITIALIZE`, which overrides every controller action at its TP (section 6)
+- an IOT that aborts the operation producing the event, such as the RK8E's DCLC, which cancels the completion with the operation
+
 ---
 
 ## 6. System Initialization

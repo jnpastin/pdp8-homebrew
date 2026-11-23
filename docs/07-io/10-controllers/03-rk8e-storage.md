@@ -273,11 +273,12 @@ The Current Address Register is loaded by `DLCA`.
 
 For each successful DMA word transfer:
 
-1. The Current Address Register is incremented.
-2. The incremented value is used as the memory address for that transfer.
-3. The incremented value remains in the Current Address Register after the transfer.
+1. The transfer uses the Current Address Register's value as the memory address.
+2. The Current Address Register then increments, at TP3 (section 26.6).
 
-If the Current Address Register contains `7777`, the next DMA transfer uses:
+The first word of an operation is therefore transferred at the address loaded by `DLCA`. This matches the RK8-E, whose current address register "is also incremented after each memory transfer" (PDP-8/E Small Computer Handbook (1973), RK8-E, "Current Address Register").
+
+After a transfer at `7777`, the Current Address Register wraps to:
 
 ```text
 0000
@@ -406,6 +407,8 @@ Control Done is set when required by RK8E-compatible behavior, including:
 - an error that terminates an active operation
 
 Control Done remains set until cleared by a defined controller operation.
+
+If an operation completes or fails at the same TP as DLDC or DCLS clears Control Done or Error, the completion wins and the bit is set ([Controller Contract §5.1](../04-controller-contract.md#51-event-and-clear-at-the-same-tp)). DCLC is the exception: it aborts the operation, which cancels the completion (section 18.2.2).
 
 Control Done must not be set before all programmer-visible effects of a successful operation have completed.
 
@@ -566,7 +569,7 @@ At TP3:
 - Status Register is cleared
 - controller DMA request is deasserted
 - controller DMA ownership is released at the next permitted ownership boundary
-- pending controller completion is canceled
+- pending controller completion is canceled, including one that would commit at this TP
 
 DCLC does not clear or reset the selected emulated drive state.
 
@@ -578,7 +581,14 @@ No additional error is raised solely because DCLC discarded uncommitted write da
 
 #### 18.2.3 DCLD
 
-At TP3:
+DCLD is refused while the controller is busy (section 15). At TP3:
+
+- no recalibration starts
+- Control Busy Error is set
+- the active operation continues
+- AC clears
+
+Otherwise, at TP3:
 
 - recalibration of the selected drive to cylinder `000` is initiated
 - the controller becomes busy
@@ -926,7 +936,7 @@ controller -> memory
 The controller:
 
 - supplies MFB from the Command Register memory-field bits
-- supplies AB from the incremented Current Address Register
+- supplies AB from the Current Address Register
 - drives the next disk word onto MDB
 - asserts /WR
 - deasserts /RD
@@ -937,7 +947,7 @@ At TP2:
 
 At TP3:
 
-- the Current Address Register retains the incremented address
+- the Current Address Register increments (section 26.6)
 - the RK8E operation count advances by one word
 - the transferred word is complete from the RK8E DMA interface perspective
 
@@ -952,7 +962,7 @@ memory -> controller
 The controller:
 
 - supplies MFB from the Command Register memory-field bits
-- supplies AB from the incremented Current Address Register
+- supplies AB from the Current Address Register
 - asserts /RD
 - deasserts /WR
 
@@ -964,20 +974,20 @@ At TP2:
 
 At TP3:
 
-- the Current Address Register retains the incremented address
+- the Current Address Register increments (section 26.6)
 - the RK8E operation count advances by one word
 - the accepted word becomes part of the active disk-write operation
 
 ### 26.6 Address Increment
 
-For every successful DMA word transfer:
+For every successful DMA word transfer, the transfer in TS2 uses the Current Address Register's value, and at TP3:
 
 ```text
-NEXT_CURRENT_ADDRESS =
+CURRENT_ADDRESS_REGISTER <-
     (CURRENT_ADDRESS_REGISTER + 1) modulo 4096
 ```
 
-The transfer uses `NEXT_CURRENT_ADDRESS`.
+The increment follows the transfer, as on the RK8-E (section 9).
 
 The memory field remains unchanged when the Current Address Register wraps from `7777` to `0000`.
 
@@ -1142,12 +1152,14 @@ The bootstrap-visible source location is:
 - surface 0
 - sector 0
 
-Because Current Address increments before each DMA transfer, the first transferred word is written to:
+Because the Current Address Register increments after each DMA transfer (section 9), the first transferred word is written to:
 
 ```text
 memory field 0
-address 0001
+address 0000
 ```
+
+The standard bootstrap relies on this: it waits in a `JMP .` at `0031`, which the incoming sector overwrites.
 
 The remainder of the sector is transferred into sequential memory locations using the RK8E Current Address rules.
 

@@ -115,7 +115,7 @@ The changes are committed (`a28b8da`); this record of the final results is not. 
 
 ### 1.9 Documentation review, 2026-11-22 (uncommitted)
 
-- **Applied, approved:** groups A to E, R1 to R3. The held R1 line (08/06, review item Q) was applied 2026-11-22. D11 (option A) applied the same day: direct JMP's IF load moved to FETCH TP4. D4 (option A) too: power-on ends with a CLEAR transaction. C10 applied 2026-11-23: IOTs that clear interrupt or DMA state commit at TP3.
+- **Applied, approved:** groups A to E, R1 to R3. The held R1 line (08/06, review item Q) was applied 2026-11-22. D11 (option A) applied the same day: direct JMP's IF load moved to FETCH TP4. D4 (option A) too: power-on ends with a CLEAR transaction. C10 applied 2026-11-23: IOTs that clear interrupt or DMA state commit at TP3. C6 too: a device event wins over a same-TP IOT clear. D3 too: RK8E transfers then increments (Small Computer Handbook 1973, p. 6-70; user's copy on their Desktop, a scan with no text layer). C7 too (DCLD refused while busy); C12 logged (RK8E status clear and seek busy), not discussed.
 - **Applied, delegated:** TS_CODE comes from the 2-bit TS code register (CSO, timing terminology). No diagram change; recorded in `option2/diagrams.md`.
 - **Added, requested:** `docs/00-overview/97-documentation-conventions.md`. **Read it before editing docs.** Parsed prose breaks silently, and a dry run does not catch it.
 - **Promotion done by the user (verified identical to scratch, dry run clean):** one v2 pipeline run changed control-input-schema, execution-definitions, timing-constraints and symbolic-control-words (line references, consumer lists). In scratch the second run was unchanged and the images byte-identical.
