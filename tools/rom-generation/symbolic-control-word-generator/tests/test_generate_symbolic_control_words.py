@@ -1404,12 +1404,24 @@ class ReviewTests(unittest.TestCase):
         self.assertEqual(diagnostics, [])
         self.assertEqual(again, candidate)
 
+    def test_moved_and_renamed_cases_are_info(self) -> None:
+        documents = make_documents(cases=[make_case("moved"), make_case("renamed")])
+        maintained = copy.deepcopy(build_candidate(documents, None)[0])
+        maintained["cases"][0]["source"]["line"] = 99
+        maintained["cases"][1]["execution_case_id"] = "old"
+
+        _, diagnostics = build_candidate(documents, maintained)
+
+        self.assertEqual([(d.severity, d.code) for d in diagnostics],
+                         [("INFO", "MOVED_CASE"), ("INFO", "RENAMED_CASE")])
+
     def test_new_changed_and_stale(self) -> None:
         documents = make_documents(
             cases=[make_case("new"), make_case("changed"), make_case("same")]
         )
         maintained, _ = build_candidate(documents, None)
         maintained["cases"][0]["execution_case_id"] = "stale"
+        maintained["cases"][0]["base_context"] = "stale context"
         maintained["cases"][1]["base_context"] = "always"
         maintained["cases"][1]["extra"] = 1
 
@@ -1583,7 +1595,7 @@ class MainTests(unittest.TestCase):
         maintained, _ = build_candidate(
             make_documents(
                 cases=[
-                    make_case("stale"),
+                    make_case("stale", context=["A = 1"]),
                     make_case("changed"),
                     make_case("same"),
                 ]

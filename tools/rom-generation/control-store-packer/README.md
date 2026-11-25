@@ -93,6 +93,7 @@ Earlier outputs are removed first. The packing and images are written only when 
 | `NO_REACHABLE_STATE` | a context has no reachable input state |
 | `CASE_OVERLAP`, `CONFLICTING_ASSIGNMENTS` | the symbolic words are ambiguous for some state |
 | `INVISIBLE_DEPENDENCY` | a word depends on an input its address does not carry |
+| `UNQUALIFIED_INT_REQ` | a datapath word depends on `/INT_REQ` for an instruction other than SRQ, which sees it deasserted through the `IR_IS_SRQ` qualifier ([Control Store Organization §6.2](../../../docs/04-control/08-control-store-organization.md#62-multiplexer-inputs)); checked when the input schema defines `IR_IS_SRQ` |
 | `NON_EXECUTE_IR_DEPENDENCE` | the datapath word depends on IR outside EXECUTE |
 | `SEQUENCER_IR_DEPENDENCE`, `IR_SEQ_TOO_WIDE` | the sequencer word needs IR information beyond one decode per timing state |
 | `NON_EXECUTE_IR_SEQ` | outside EXECUTE, the sequencer word needs a decode other than `IR_INDIRECT` |

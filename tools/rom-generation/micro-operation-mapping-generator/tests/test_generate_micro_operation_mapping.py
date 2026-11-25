@@ -620,10 +620,7 @@ class CandidateTests(unittest.TestCase):
             ("PC_INC", "OLD_FIELD"),
         )
         self.assertEqual(diagnostics[0].source_line, 10)
-        self.assertEqual(
-            [item["code"] for item in candidate["diagnostics"]],
-            ["MAINTAINED_ASSIGNMENT_REMOVED"],
-        )
+        self.assertEqual(candidate["diagnostics"], [])
 
     def test_missing_used_by_value_uses_maintained_value(self) -> None:
         candidate, diagnostics = build(
@@ -687,7 +684,7 @@ class CandidateTests(unittest.TestCase):
         )
         self.assertEqual(
             [item["code"] for item in candidate["diagnostics"]],
-            ["MAPPING_UNRESOLVED", "STALE_MAINTAINED_MAPPING"],
+            ["MAPPING_UNRESOLVED"],
         )
 
     def test_invalid_inputs_yield_no_candidate_and_are_all_reported(self) -> None:

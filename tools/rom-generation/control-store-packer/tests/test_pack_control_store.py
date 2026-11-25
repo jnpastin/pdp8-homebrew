@@ -424,6 +424,36 @@ class PackTests(unittest.TestCase):
         self.assertEqual([d.code for d in diagnostics], [])
 
 
+class IntReqQualifierTests(unittest.TestCase):
+    """Control Store Organization §6.2: /INT_REQ reaches the datapath overlay qualified by
+    IR_IS_SRQ, so only SRQ's datapath word may depend on it."""
+
+    def codes(self, instruction, qualifier=True):
+        docs = documents(execute_guards={"F": [{"value": "1", "when":
+            f"((MS = EXECUTE AND RUN = 1) AND ({instruction} AND /INT_REQ = 0))"}]})
+        docs["inputs"]["fields"].append(make_input("/INT_REQ"))
+        if qualifier:
+            docs["inputs"]["fields"].append(
+                make_input("IR_IS_SRQ", "IR_IS_SRQ = IR[11]", "IR-Derived Signals"))
+        model, diagnostics = P.build_model(docs)
+        self.assertEqual([d.code for d in diagnostics], [])
+        packing, diagnostics = P.pack(model)
+        return packing, [d.code for d in diagnostics]
+
+    def test_srq_may_depend_on_int_req(self):
+        packing, codes = self.codes("IR_IS_SRQ = 1")
+        self.assertEqual(codes, [])
+        self.assertGreater(packing.checked, 0)
+
+    def test_another_instruction_depending_on_int_req_is_an_error(self):
+        _, codes = self.codes("X = 1")
+        self.assertIn("UNQUALIFIED_INT_REQ", codes)
+
+    def test_not_checked_without_the_qualifier(self):
+        _, codes = self.codes("X = 1", qualifier=False)
+        self.assertNotIn("UNQUALIFIED_INT_REQ", codes)
+
+
 class EndToEndTests(unittest.TestCase):
     def test_main_writes_outputs(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -32,6 +32,8 @@ from typing import Any
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "common"))
 from design import DESIGN  # noqa: E402  (control-design selection: common/design.py)
+from artifact_changes import (  # noqa: E402  (common/artifact_changes.py)
+    ADDED, MATERIAL, MOVED, REMOVED, RENAMED, compare_entries, strip_locations)
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -406,42 +408,30 @@ def review_changes(
     extracted: dict[str, dict[str, Any]],
     maintained: dict[str, dict[str, Any]],
 ) -> list[Diagnostic]:
-    """Warn about new, changed, and stale definitions."""
+    """Report new, changed, moved, renamed, and stale definitions (common/artifact_changes.py).
 
+    A definition whose only difference is its source line number is moved, and a new definition
+    whose content equals that of exactly one stale definition is renamed; both are INFO.
+    """
+
+    messages = {
+        ADDED: (WARNING, "NEW_DEFINITION", "Definition is not present in the maintained artifact."),
+        MATERIAL: (WARNING, "CHANGED_DEFINITION",
+                   "Extracted definition differs from the maintained artifact."),
+        MOVED: (INFO, "MOVED_DEFINITION",
+                "Only the source line number differs from the maintained artifact."),
+        REMOVED: (WARNING, "STALE_DEFINITION",
+                  "Maintained definition is absent from the extracted artifact."),
+    }
     diagnostics = []
-
-    for identifier, definition in extracted.items():
-        previous = maintained.get(identifier)
-        if previous is None:
-            diagnostics.append(
-                Diagnostic(
-                    WARNING,
-                    "NEW_DEFINITION",
-                    "Definition is not present in the maintained artifact.",
-                    identifier,
-                )
-            )
-        elif previous != definition:
-            diagnostics.append(
-                Diagnostic(
-                    WARNING,
-                    "CHANGED_DEFINITION",
-                    "Extracted definition differs from the maintained artifact.",
-                    identifier,
-                )
-            )
-
-    diagnostics.extend(
-        Diagnostic(
-            WARNING,
-            "STALE_DEFINITION",
-            "Maintained definition is absent from the extracted artifact.",
-            identifier,
-        )
-        for identifier in maintained
-        if identifier not in extracted
-    )
-
+    for change in compare_entries(maintained, extracted):
+        if change.kind == RENAMED:
+            diagnostics.append(Diagnostic(
+                INFO, "RENAMED_DEFINITION",
+                f"Renamed from {change.previous}; content unchanged.", change.identifier))
+        else:
+            severity, code, message = messages[change.kind]
+            diagnostics.append(Diagnostic(severity, code, message, change.identifier))
     return diagnostics
 
 

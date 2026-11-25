@@ -27,6 +27,8 @@ from typing import Any
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "common"))
 from design import DESIGN  # noqa: E402  (control-design selection: common/design.py)
+from artifact_changes import (  # noqa: E402  (common/artifact_changes.py)
+    ADDED, MATERIAL, MOVED, REMOVED, RENAMED, compare_entries, strip_locations)
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -377,43 +379,30 @@ def review_changes(
     extracted: dict[str, dict[str, Any]],
     maintained: dict[str, dict[str, Any]],
 ) -> list[Diagnostic]:
-    """Warn about new, changed, and stale constraints."""
+    """Report new, changed, moved, renamed, and stale constraints (common/artifact_changes.py).
 
+    A constraint whose only difference is its source line number is moved, and a new constraint
+    whose content equals that of exactly one stale constraint is renamed; both are INFO.
+    """
+
+    messages = {
+        ADDED: (WARNING, "NEW_CONSTRAINT", "Constraint is not present in the maintained artifact."),
+        MATERIAL: (WARNING, "CHANGED_CONSTRAINT",
+                   "Extracted constraint differs from the maintained artifact."),
+        MOVED: (INFO, "MOVED_CONSTRAINT",
+                "Only the source line number differs from the maintained artifact."),
+        REMOVED: (WARNING, "STALE_CONSTRAINT",
+                  "Maintained constraint is absent from the extracted artifact."),
+    }
     diagnostics = []
-
-    for identifier, constraint in extracted.items():
-        previous = maintained.get(identifier)
-        if previous is None:
-            diagnostics.append(
-                Diagnostic(
-                    WARNING,
-                    "NEW_CONSTRAINT",
-                    "Constraint is not present in the maintained artifact.",
-                    identifier,
-                )
-            )
-        elif previous != constraint:
-            diagnostics.append(
-                Diagnostic(
-                    WARNING,
-                    "CHANGED_CONSTRAINT",
-                    "Extracted constraint differs from the maintained "
-                    "artifact.",
-                    identifier,
-                )
-            )
-
-    diagnostics.extend(
-        Diagnostic(
-            WARNING,
-            "STALE_CONSTRAINT",
-            "Maintained constraint is absent from the extracted artifact.",
-            identifier,
-        )
-        for identifier in maintained
-        if identifier not in extracted
-    )
-
+    for change in compare_entries(maintained, extracted):
+        if change.kind == RENAMED:
+            diagnostics.append(Diagnostic(
+                INFO, "RENAMED_CONSTRAINT",
+                f"Renamed from {change.previous}; content unchanged.", change.identifier))
+        else:
+            severity, code, message = messages[change.kind]
+            diagnostics.append(Diagnostic(severity, code, message, change.identifier))
     return diagnostics
 
 

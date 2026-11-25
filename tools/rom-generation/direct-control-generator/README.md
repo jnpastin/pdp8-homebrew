@@ -93,13 +93,15 @@ The reference specifications' contents are validated by the tools that generate 
 
 ## 6. Review Against the Maintained Artifact
 
-Each difference is reported as a warning for review before promotion:
+Each difference is reported for review before promotion, classified by [`common/artifact_changes.py`](../common/artifact_changes.py). Source line numbers are ignored when deciding whether an entry changed:
 
-| Code | Condition |
-|---|---|
-| `NEW_DEFINITION` | an extracted definition is not in the maintained artifact |
-| `CHANGED_DEFINITION` | an extracted definition differs in any property from the maintained one |
-| `STALE_DEFINITION` | a maintained definition is no longer extracted; it is left out of the candidate |
+| Code | Severity | Condition |
+|---|---|---|
+| `NEW_DEFINITION` | `WARNING` | an extracted definition is not in the maintained artifact |
+| `CHANGED_DEFINITION` | `WARNING` | an extracted definition differs, other than in its source line number, from the maintained one |
+| `MOVED_DEFINITION` | `INFO` | only the definition's source line number differs from the maintained one |
+| `RENAMED_DEFINITION` | `INFO` | a definition new under its identifier has the content of exactly one stale definition, as when a section is renumbered; the message names the old identifier, which is not then reported as stale |
+| `STALE_DEFINITION` | `WARNING` | a maintained definition is no longer extracted; it is left out of the candidate |
 
 ## 7. Definition Checks
 

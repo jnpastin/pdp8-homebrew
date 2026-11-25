@@ -222,13 +222,15 @@ A comparison of `RUN` anywhere, including inside `NOT (...)`, counts. The defaul
 
 ## 9. Review Against the Maintained Artifact
 
-Each difference is reported as a warning for review before promotion:
+Each difference is reported for review before promotion, classified by [`common/artifact_changes.py`](../common/artifact_changes.py). Source line numbers are ignored when deciding whether an entry changed:
 
-| Code | Condition |
-|---|---|
-| `NEW_CASE` | a generated case is not in the maintained artifact |
-| `CHANGED_CASE` | a generated case differs from the maintained one; the message lists the differing properties |
-| `STALE_CASE` | a maintained case is no longer generated |
+| Code | Severity | Condition |
+|---|---|---|
+| `NEW_CASE` | `WARNING` | a generated case is not in the maintained artifact |
+| `CHANGED_CASE` | `WARNING` | a generated case differs from the maintained one other than in its source line number; the message lists the differing properties |
+| `MOVED_CASE` | `INFO` | only the case's source line number differs from the maintained one |
+| `RENAMED_CASE` | `INFO` | a case new under its identifier has the content of exactly one stale case, as when a section is renumbered; the message names the old identifier, which is not then reported as stale |
+| `STALE_CASE` | `WARNING` | a maintained case is no longer generated |
 
 A run against a maintained artifact promoted from its own candidate reports no diagnostics.
 

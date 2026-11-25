@@ -95,6 +95,9 @@ MAPPING_DESCRIPTION = (
 INFO = "INFO"
 WARNING = "WARNING"
 ERROR = "ERROR"
+# Warnings comparing the candidate with the maintained mapping (reported, not recorded).
+REVIEW_CODES = frozenset({"MAINTAINED_ASSIGNMENT_ADDED", "MAINTAINED_ASSIGNMENT_CHANGED",
+                          "MAINTAINED_ASSIGNMENT_REMOVED", "STALE_MAINTAINED_MAPPING"})
 FATAL = "FATAL"
 
 SEVERITIES = (INFO, WARNING, ERROR, FATAL)
@@ -842,6 +845,10 @@ def build_candidate(
     if has_failures(diagnostics):
         return None, diagnostics
 
+    # The candidate records the warnings about its own content. Those that compare it with the
+    # maintained mapping describe a change, which promotion ends, so they go only to the report;
+    # kept here, they would make the next candidate differ from the one just promoted.
+    own = [item for item in diagnostics if item.code not in REVIEW_CODES]
     candidate = {
         "specification_type": MAPPING_TYPE,
         "schema_version": MAPPING_VERSION,
@@ -852,7 +859,7 @@ def build_candidate(
             "control_word_schema": DEFAULT_CONTROL_WORD_SCHEMA.as_posix(),
         },
         "mappings": mappings,
-        "diagnostics": [diagnostic_to_dict(item) for item in diagnostics],
+        "diagnostics": [diagnostic_to_dict(item) for item in own],
     }
     return candidate, diagnostics
 

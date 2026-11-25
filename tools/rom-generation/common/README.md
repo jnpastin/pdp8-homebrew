@@ -2,6 +2,18 @@
 
 Modules here are used by more than one ROM-generation tool (see the shared README, section 4). Each tool adds this directory to `sys.path` and imports from it.
 
+## `artifact_changes.py`
+
+Classifies how a candidate artifact differs from the maintained one, entry by entry: `material` (its content differs), `moved` (only its source line numbers differ), `renamed` (new under its identifier, with the content of exactly one maintained entry that is no longer present), `added`, or `removed`. Source line numbers are the values of the `line` and `source_line` keys at any depth; a changed source path is material. A renamed entry may also differ in the leading section number of its `title` and `group`.
+
+| Function | Use |
+|---|---|
+| `compare_entries` | two `{identifier: entry}` maps, as a generator holds them |
+| `compare_artifacts` | two whole artifacts: each top-level list whose entries all carry a unique `id`, `execution_case_id`, `micro_operation`, or `name` is compared entry by entry, and any other top-level value as one entry |
+| `strip_locations`, `describe`, `only_moved` | the content without line numbers, a one-line count, and whether only line numbers changed |
+
+Current users: the execution-definition, timing-constraint, symbolic control-word, and direct-control generators, and the pipeline.
+
 ## `predicates.py`
 
 The control-predicate rules used by every tool that interprets a condition from the maintained specifications:

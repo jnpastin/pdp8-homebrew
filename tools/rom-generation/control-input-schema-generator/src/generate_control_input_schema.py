@@ -75,6 +75,8 @@ CONTROL_USES = frozenset({"predicate", "value"})
 INFO = "INFO"
 WARNING = "WARNING"
 ERROR = "ERROR"
+# Warnings comparing the candidate with the maintained schema (reported, not recorded).
+REVIEW_CODES = frozenset({"STALE_MAINTAINED_FIELD"})
 FATAL = "FATAL"
 
 SEVERITIES = (INFO, WARNING, ERROR, FATAL)
@@ -633,6 +635,9 @@ def build_candidate(
     )
     diagnostics += find_undefined_dependencies(signals, signal_names)
 
+    # The candidate records the warnings about its own content (unresolved inputs). Stale
+    # maintained fields describe a change, which promotion ends, so they go only to the report.
+    own = [item for item in diagnostics if item.code not in REVIEW_CODES]
     candidate = {
         "specification_type": SCHEMA_TYPE,
         "schema_version": SCHEMA_VERSION,
@@ -645,7 +650,7 @@ def build_candidate(
         },
         "fields": fields,
         "constraints": extracted.get("constraints", []),
-        "diagnostics": [diagnostic_to_dict(item) for item in diagnostics],
+        "diagnostics": [diagnostic_to_dict(item) for item in own],
     }
     return candidate, diagnostics
 

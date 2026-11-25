@@ -123,6 +123,12 @@ CLASS_VALID_CONTEXTS = frozenset({"FETCH:TS3", "FETCH:TS4", "DEFER:TS1", "DEFER:
 COMPLETING_STATES = ("FETCH", "DEFER", "EXECUTE")
 CONTINUING_STATES = ("DEFER", "EXECUTE")
 STATE_NAMES = ("MS", "TS", "RUN")
+# /INT_REQ reaches the datapath overlay only qualified by the SRQ decode, and every other
+# instruction sees it deasserted (Control Store Organization §6.2). The packer presents it
+# unqualified, which is equivalent only while no other instruction's datapath word depends
+# on it, so that is checked wherever the input schema defines the decode.
+INT_REQ = "/INT_REQ"
+INT_REQ_QUALIFIER = "IR_IS_SRQ"
 OTHER = "~other"
 
 # ---------------------------------------------------------------------------
@@ -790,6 +796,15 @@ def pack(model: Model) -> tuple[Packing | None, list[Diagnostic]]:
                   f"The datapath word depends on {', '.join(bad)}, which the address "
                   "does not carry in this context.", b.context.name)
             continue
+        if INT_REQ in signals and INT_REQ_QUALIFIER in model.ir_table:
+            unqualified = [ir for ir in b.irs
+                           if ir_values(model, ir)[INT_REQ_QUALIFIER] != "1"]
+            if unqualified:
+                error("UNQUALIFIED_INT_REQ",
+                      f"The datapath word depends on {INT_REQ} for IR {unqualified[0]:04o}, "
+                      f"which sees it deasserted: {INT_REQ} reaches the overlay only "
+                      f"qualified by {INT_REQ_QUALIFIER}.", b.context.name)
+                continue
         sig = signature(b.records, signals)
         if b.context.execute:
             codes = variants[b.context.ts]

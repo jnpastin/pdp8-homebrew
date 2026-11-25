@@ -168,9 +168,9 @@ CONSOLE_EXECUTION_MODEL = "single TS-equivalent console transaction"
 
 # OPR: the section holding the per-TS operation bullets.
 OPR_DEFINITION_SECTION = "Instruction Definition"
-# A group performed in one pass of the OPR pass unit (option 2: Group 1 in FETCH TS3) defines
-# its stages in this section instead and has no EXECUTE cases; the pass is selected by a
-# conditional μop in Fetch & Defer.
+# A group performed in one pass of the OPR pass unit (in FETCH TS3) defines its stages in
+# this section instead and has no EXECUTE cases; the pass is selected by a conditional μop
+# in FETCH and DEFER Execution.
 OPR_PASS_SECTION = "OPR Pass"
 
 # ---------------------------------------------------------------------------
@@ -870,7 +870,7 @@ def parse_opr(
         findings.info(
             "OPR_PASS_GROUP",
             "The group is performed in one pass of the OPR pass unit, "
-            "selected in Fetch & Defer; it has no EXECUTE cases.",
+            "selected in FETCH and DEFER Execution; it has no EXECUTE cases.",
             pass_section.line,
         )
         return []

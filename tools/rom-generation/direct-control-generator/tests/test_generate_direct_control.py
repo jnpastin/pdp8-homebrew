@@ -380,6 +380,19 @@ class MaintainedAndReferenceValidationTests(unittest.TestCase):
 
 
 class ReviewTests(unittest.TestCase):
+    def test_moved_and_renumbered_definitions_are_info(self) -> None:
+        moved = make_definition("01:1.1")
+        moved["source"] = {"path": DOC, "line": 30}
+        extracted = {"01:1.1": moved, "01:2.4": make_definition("01:2.4")}
+        maintained = {"01:1.1": make_definition("01:1.1"), "01:2.3": make_definition("01:2.3")}
+
+        diagnostics = review_changes(extracted, maintained)
+
+        self.assertEqual(
+            [(d.severity, d.code, d.definition_id) for d in diagnostics],
+            [("INFO", "MOVED_DEFINITION", "01:1.1"), ("INFO", "RENAMED_DEFINITION", "01:2.4")],
+        )
+
     def test_new_changed_and_stale_definitions(self) -> None:
         extracted = {
             "01:1.1": make_definition("01:1.1"),
@@ -389,7 +402,7 @@ class ReviewTests(unittest.TestCase):
         maintained = {
             "01:1.1": make_definition("01:1.1"),
             "01:1.2": make_definition("01:1.2", title="Old"),
-            "01:9.9": make_definition("01:9.9"),
+            "01:9.9": make_definition("01:9.9", direct_assignments=["RUN_NEXT = 0"]),
         }
 
         diagnostics = review_changes(extracted, maintained)

@@ -35,10 +35,19 @@ A generator reads the artifacts promoted before it, so the order matters.
 3. If the tool exited with a non-zero status, stop. The pipeline fails.
 4. For a generator stage, compare the candidate with the maintained artifact, ignoring line endings:
    - **Equal:** nothing to promote; continue.
-   - **Different:** print how many lines changed and ask `Promote …? [y]es / [n]o / [d]iff`.
-     - `d` prints a unified diff and asks again.
-     - `y` copies the candidate to `rom/microcode/v1/` and continues.
+   - **Different:** classify the changes ([`common/artifact_changes.py`](../common/artifact_changes.py)), print their counts and the entries that changed other than in source line numbers, and ask `Promote …? [y]es / [n]o / [d]iff / [a]ll lines / [l]ist moved`.
+     - `d` prints the material diff: both artifacts with their source line numbers removed. A candidate that differs only in line numbers says so.
+     - `a` prints the unified diff of the files as they are.
+     - `l` lists the entries whose only change is their source line number.
+     - `y` copies the candidate to `rom/microcode/<design>/` and continues.
      - `n`, or the end of input, stops the pipeline. Later stages read the maintained artifacts, so they cannot run on a candidate that was not promoted.
+
+The classes are `material` (the content differs), `renamed` (a new identifier with the content of exactly one removed entry, as when a documentation section is renumbered), `added`, `removed`, and `moved` (only the source line numbers differ). An artifact's top-level lists of identified entries (`id`, `execution_case_id`, `micro_operation`, or `name`) are compared entry by entry; every other top-level value is one entry. For example:
+
+```text
+  Candidate differs from rom/microcode/v2/execution-definitions.json: 1 material, 40 moved (source lines only); 41 line(s) added, 41 removed.
+    material  cases:mri:3.5:ts1
+```
 
 The diagnostics are always shown before the promotion question. A generator's warnings, such as `CHANGED_CASE`, describe how its candidate differs from the maintained artifact.
 
@@ -58,6 +67,7 @@ Run it from the repository root, or pass `--repo-root`.
 | `--from STAGE` | start at this stage |
 | `--to STAGE` | stop after this stage |
 | `--dry-run` | run every stage and report pending promotions without asking or promoting; later stages then read the current maintained artifacts |
+| `--accept-moved` | promote, without asking, a candidate whose only change is in source line numbers; a candidate with any other change is still asked about |
 | `--list` | list the stages and what each promotes |
 
 Exit status: `0` when every stage succeeded and every needed promotion was accepted, `1` when a tool failed, `2` when a promotion was declined.

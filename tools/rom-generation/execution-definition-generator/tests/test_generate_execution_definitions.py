@@ -300,6 +300,23 @@ class MaintainedValidationTests(unittest.TestCase):
 
 
 class ReviewTests(unittest.TestCase):
+    def test_moved_and_renamed_cases_are_info(self) -> None:
+        extracted = make_extracted(
+            make_case("moved", source={"path": "docs/example.md", "line": 9}),
+            make_case("mri:3.2", micro_operations=["MB_INC"]),
+        )
+        maintained = make_extracted(
+            make_case("moved"), make_case("mri:3.1", micro_operations=["MB_INC"])
+        )
+
+        _, diagnostics = build(extracted, maintained)
+
+        self.assertEqual(
+            [(d.severity, d.code, d.case_id) for d in diagnostics],
+            [("INFO", "MOVED_CASE", "moved"), ("INFO", "RENAMED_CASE", "mri:3.2")],
+        )
+        self.assertIn("mri:3.1", diagnostics[1].message)
+
     def test_unchanged_has_no_diagnostics(self) -> None:
         extracted = make_extracted()
 
@@ -313,7 +330,7 @@ class ReviewTests(unittest.TestCase):
             make_case("changed"), make_case("new"), make_case("same")
         )
         maintained = make_extracted(
-            make_case("stale"),
+            make_case("stale", micro_operations=["MA_CLEAR"]),
             make_case("changed", micro_operations=["MB_INC"]),
             make_case("same"),
         )
@@ -513,7 +530,7 @@ class MainTests(unittest.TestCase):
             ),
         )
         maintained = make_extracted(
-            make_case("changed", timing_state=2), make_case("stale")
+            make_case("changed", timing_state=2), make_case("stale", micro_operations=["MA_CLEAR"])
         )
         maintained["cases"].append(extracted["cases"][2])
         self.write(DEFAULT_EXTRACTED, extracted)

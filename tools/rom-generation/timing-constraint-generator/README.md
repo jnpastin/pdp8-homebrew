@@ -76,13 +76,15 @@ Maintained artifact, when present:
 
 ## 6. Review Against the Maintained Artifact
 
-Each difference is reported as a warning for review before promotion:
+Each difference is reported for review before promotion, classified by [`common/artifact_changes.py`](../common/artifact_changes.py). Source line numbers are ignored when deciding whether an entry changed:
 
-| Code | Condition |
-|---|---|
-| `NEW_CONSTRAINT` | an extracted constraint is not in the maintained artifact |
-| `CHANGED_CONSTRAINT` | an extracted constraint differs in any property from the maintained one |
-| `STALE_CONSTRAINT` | a maintained constraint is no longer extracted; it is left out of the candidate |
+| Code | Severity | Condition |
+|---|---|---|
+| `NEW_CONSTRAINT` | `WARNING` | an extracted constraint is not in the maintained artifact |
+| `CHANGED_CONSTRAINT` | `WARNING` | an extracted constraint differs, other than in its source line number, from the maintained one |
+| `MOVED_CONSTRAINT` | `INFO` | only the constraint's source line number differs from the maintained one |
+| `RENAMED_CONSTRAINT` | `INFO` | a constraint new under its identifier has the content of exactly one stale constraint, as when a section is renumbered; the message names the old identifier, which is not then reported as stale |
+| `STALE_CONSTRAINT` | `WARNING` | a maintained constraint is no longer extracted; it is left out of the candidate |
 
 A run against a maintained artifact promoted from its own candidate reports no diagnostics.
 

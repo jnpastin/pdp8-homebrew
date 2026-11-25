@@ -7,6 +7,7 @@ the real ROM-generation tools.
 from __future__ import annotations
 
 import io
+import json
 import os
 import subprocess
 import sys
@@ -96,7 +97,12 @@ class Repo:
                        target)
 
 
-def run(repo: Repo, stages, answers=(), dry_run=False):
+def case(identifier: str, uop: str, line: int) -> dict:
+    return {"id": identifier, "source": {"path": "docs/a.md", "line": line},
+            "micro_operations": [uop]}
+
+
+def run(repo: Repo, stages, answers=(), dry_run=False, accept_moved=False):
     lines: list[str] = []
     replies = list(answers)
 
@@ -106,7 +112,8 @@ def run(repo: Repo, stages, answers=(), dry_run=False):
             raise EOFError
         return replies.pop(0)
 
-    code, outcomes = P.run_pipeline(repo.root, stages, dry_run=dry_run, ask=ask,
+    code, outcomes = P.run_pipeline(repo.root, stages, dry_run=dry_run,
+                                    accept_moved=accept_moved, ask=ask,
                                     out=lines.append)
     return code, outcomes, "\n".join(lines)
 
@@ -167,11 +174,58 @@ class PipelineTests(unittest.TestCase):
 
     def test_diff_is_shown_before_answering(self) -> None:
         stage = self.repo.stage("gen", GENERATION_REPORT, '{"v": 2}\n', '{"v": 1}\n')
-        code, _, text = run(self.repo, [stage], ["d", "maybe", "y"])
+        code, _, text = run(self.repo, [stage], ["d", "a", "maybe", "y"])
         self.assertEqual(code, P.EXIT_OK)
-        self.assertIn('-{"v": 1}', text)
+        self.assertIn('-  "v": 1', text)   # d: the material diff, re-indented
+        self.assertIn('-{"v": 1}', text)    # a: the artifact's own lines
         self.assertIn('+{"v": 2}', text)
-        self.assertIn("Answer y, n, or d.", text)
+        self.assertIn("Answer y, n, d, a, or l.", text)
+
+    def test_changes_are_classified(self) -> None:
+        old = json.dumps({"cases": [case("a", "X", 1), case("b", "Y", 2)]})
+        new = json.dumps({"cases": [case("a", "X", 5), case("b", "Z", 6)]})
+        stage = self.repo.stage("gen", GENERATION_REPORT, new, old)
+        code, _, text = run(self.repo, [stage], ["l", "d", "y"])
+        self.assertEqual(code, P.EXIT_OK)
+        self.assertIn("1 material, 1 moved (source lines only)", text)
+        self.assertIn("material  cases:b", text)
+        self.assertIn("moved     cases:a", text)
+        material = text[text.index("moved     cases:a"):]
+        self.assertIn('-        "Y"', material)
+        self.assertNotIn('"line"', material[:material.index("Promoted")])
+
+    def test_line_only_change_is_identified(self) -> None:
+        old = json.dumps({"cases": [case("a", "X", 1)]})
+        new = json.dumps({"cases": [case("a", "X", 9)]})
+        stage = self.repo.stage("gen", GENERATION_REPORT, new, old)
+        code, _, text = run(self.repo, [stage], ["d", "y"])
+        self.assertEqual(code, P.EXIT_OK)
+        self.assertIn("Only source line numbers or formatting changed", text)
+        self.assertIn("no difference other than source line numbers", text)
+
+    def test_accept_moved_promotes_line_only_changes_without_asking(self) -> None:
+        old = json.dumps({"cases": [case("a", "X", 1)]})
+        new = json.dumps({"cases": [case("a", "X", 9)]})
+        stage = self.repo.stage("gen", GENERATION_REPORT, new, old)
+        code, outcomes, text = run(self.repo, [stage], accept_moved=True)
+        self.assertEqual((code, outcomes[0].status), (P.EXIT_OK, "promoted"))
+        self.assertNotIn("Promote ", text)
+        self.assertEqual((self.repo.root / stage.maintained).read_text(encoding="utf-8"), new)
+
+    def test_accept_moved_still_asks_about_material_changes(self) -> None:
+        old = json.dumps({"cases": [case("a", "X", 1)]})
+        new = json.dumps({"cases": [case("a", "Y", 1)]})
+        stage = self.repo.stage("gen", GENERATION_REPORT, new, old)
+        code, _, text = run(self.repo, [stage], [], accept_moved=True)
+        self.assertEqual(code, P.EXIT_DECLINED)
+        self.assertIn("Promote ", text)
+
+    def test_renamed_entry_names_its_old_identifier(self) -> None:
+        old = json.dumps({"cases": [case("mri:3.1", "X", 1)]})
+        new = json.dumps({"cases": [case("mri:3.2", "X", 4)]})
+        stage = self.repo.stage("gen", GENERATION_REPORT, new, old)
+        _, _, text = run(self.repo, [stage], ["y"])
+        self.assertIn("renamed   cases:mri:3.2 (was cases:mri:3.1)", text)
 
     def test_unchanged_candidate_needs_no_promotion(self) -> None:
         stage = self.repo.stage("gen", GENERATION_REPORT, '{"v": 1}\n', '{"v": 1}\r\n')

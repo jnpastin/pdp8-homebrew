@@ -35,6 +35,8 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "common"))
 from design import DESIGN  # noqa: E402  (control-design selection: common/design.py)
+from artifact_changes import (  # noqa: E402  (common/artifact_changes.py)
+    ADDED, MATERIAL, MOVED, REMOVED, RENAMED, compare_entries, strip_locations)
 
 from predicates import (  # noqa: E402  (shared ROM-generation module)
     EXCLUSIVE_KINDS,
@@ -1156,52 +1158,41 @@ def review_changes(
     generated: Sequence[dict[str, Any]],
     maintained: dict[str, dict[str, Any]],
 ) -> list[Diagnostic]:
-    """Warn about new, changed, and stale cases."""
+    """Report new, changed, moved, renamed, and stale cases (common/artifact_changes.py).
 
+    A case whose only difference is its source line number is moved, and a new case whose
+    content equals that of exactly one stale case is renamed; both are INFO.
+    """
+
+    cases = {case["execution_case_id"]: case for case in generated}
     diagnostics = []
-    generated_ids = set()
-
-    for case in generated:
-        identifier = case["execution_case_id"]
-        generated_ids.add(identifier)
-        previous = maintained.get(identifier)
-        if previous is None:
-            diagnostics.append(
-                Diagnostic(
-                    WARNING,
-                    "NEW_CASE",
-                    "Case is not present in the maintained artifact.",
-                    identifier,
-                )
-            )
-            continue
-        changed = [
-            key
-            for key in dict.fromkeys([*case, *previous])
-            if case.get(key) != previous.get(key)
-        ]
-        if changed:
-            diagnostics.append(
-                Diagnostic(
-                    WARNING,
-                    "CHANGED_CASE",
-                    "Generated case differs from the maintained artifact in: "
-                    + ", ".join(changed)
-                    + ".",
-                    identifier,
-                )
-            )
-
-    diagnostics.extend(
-        Diagnostic(
-            WARNING,
-            "STALE_CASE",
-            "Maintained case is no longer generated.",
-            identifier,
-        )
-        for identifier in maintained
-        if identifier not in generated_ids
-    )
+    for change in compare_entries(maintained, cases):
+        identifier = change.identifier
+        if change.kind == ADDED:
+            diagnostics.append(Diagnostic(
+                WARNING, "NEW_CASE", "Case is not present in the maintained artifact.",
+                identifier))
+        elif change.kind == MATERIAL:
+            case, previous = (strip_locations(cases[identifier]),
+                              strip_locations(maintained[identifier]))
+            changed = [key for key in dict.fromkeys([*case, *previous])
+                       if case.get(key) != previous.get(key)]
+            diagnostics.append(Diagnostic(
+                WARNING, "CHANGED_CASE",
+                "Generated case differs from the maintained artifact in: "
+                + ", ".join(changed) + ".", identifier))
+        elif change.kind == MOVED:
+            diagnostics.append(Diagnostic(
+                INFO, "MOVED_CASE",
+                "Only the source line number differs from the maintained artifact.",
+                identifier))
+        elif change.kind == RENAMED:
+            diagnostics.append(Diagnostic(
+                INFO, "RENAMED_CASE", f"Renamed from {change.previous}; content unchanged.",
+                identifier))
+        else:
+            diagnostics.append(Diagnostic(
+                WARNING, "STALE_CASE", "Maintained case is no longer generated.", identifier))
     return diagnostics
 
 

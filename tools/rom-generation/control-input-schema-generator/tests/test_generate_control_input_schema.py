@@ -408,6 +408,7 @@ class CandidateTests(unittest.TestCase):
 
         self.assertEqual([field["name"] for field in candidate["fields"]], ["A"])
         self.assertEqual(codes(diagnostics), ["STALE_MAINTAINED_FIELD"])
+        self.assertEqual(candidate["diagnostics"], [])
 
     def test_fields_follow_extracted_order(self) -> None:
         candidate, _ = build_candidate(

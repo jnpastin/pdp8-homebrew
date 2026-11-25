@@ -473,7 +473,7 @@ Severities:
 
 Warning codes are `CONTROL_USES_UNRESOLVED` and `STALE_MAINTAINED_FIELD`. The only fatal code is `GENERATION_FAILURE`. Every other code is an error.
 
-Because a candidate is written only when there are no errors, the candidate's `diagnostics` array contains only warnings. It lists them in the order they were found: unresolved inputs in field order, then stale fields in maintained order.
+Because a candidate is written only when there are no errors, the candidate's `diagnostics` array contains only warnings, and only those about the candidate's own content: the unresolved inputs, in field order. `STALE_MAINTAINED_FIELD` compares the candidate with the maintained schema, a difference that promotion ends, so it is reported but not recorded in the candidate; recorded, it would make the next candidate differ from the one just promoted.
 
 The report lists every diagnostic, sorted by severity, code, source path, source line, input name, referenced input, and message.
 

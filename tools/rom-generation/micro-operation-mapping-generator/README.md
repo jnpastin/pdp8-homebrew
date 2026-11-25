@@ -170,7 +170,7 @@ Control behavior that is not a micro-operation, such as major-state sequencing, 
 
 `sources` always names the default input paths, even when other paths are given on the command line.
 
-`diagnostics` holds the warnings found while building the candidate, in the order they were found: for each micro-operation in catalog order, its changes from the maintained mapping and then whether it is unresolved; then stale mappings in maintained order. A candidate is written only without errors, so it never contains errors. Each diagnostic has `severity`, `code` and `message`, plus `micro_operation`, `field_name`, `source_path` and `source_line` when known.
+`diagnostics` holds the warnings about the candidate's own content, in the order they were found: the unresolved micro-operations and values, in catalog order. The warnings that compare it with the maintained mapping (`MAINTAINED_ASSIGNMENT_ADDED`, `MAINTAINED_ASSIGNMENT_CHANGED`, `MAINTAINED_ASSIGNMENT_REMOVED`, and `STALE_MAINTAINED_MAPPING`) describe a difference that promotion ends, so they are reported but not recorded in the candidate; recorded, they would make the next candidate differ from the one just promoted. A candidate is written only without errors, so it never contains errors. Each diagnostic has `severity`, `code` and `message`, plus `micro_operation`, `field_name`, `source_path` and `source_line` when known.
 
 Each mapping uses this structure. The example is the actual mapping for `AC_CLEAR`, shortened:
 

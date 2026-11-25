@@ -265,6 +265,23 @@ class MaintainedValidationTests(unittest.TestCase):
 
 
 class ReviewTests(unittest.TestCase):
+    def test_moved_and_renamed_constraints_are_info(self) -> None:
+        extracted = make_extracted(
+            make_constraint("moved", source={"path": "docs/timing.md", "line": 20}),
+            make_constraint("timing:5.2.6", requirement="IO_SKIP_REQ != 1"),
+        )
+        maintained = make_extracted(
+            make_constraint("moved"),
+            make_constraint("timing:5.2.5", requirement="IO_SKIP_REQ != 1"),
+        )
+
+        _, diagnostics = build_candidate(extracted, maintained)
+
+        self.assertEqual(
+            [(d.severity, d.code) for d in diagnostics],
+            [("INFO", "MOVED_CONSTRAINT"), ("INFO", "RENAMED_CONSTRAINT")],
+        )
+
     def test_unchanged_has_no_diagnostics(self) -> None:
         extracted = make_extracted()
 
@@ -282,7 +299,7 @@ class ReviewTests(unittest.TestCase):
             make_constraint("same"),
         )
         maintained = make_extracted(
-            make_constraint("stale"),
+            make_constraint("stale", requirement="IO_SKIP_REQ != 1"),
             make_constraint("changed", requirement="X != 1"),
             make_constraint("same"),
         )
@@ -468,7 +485,7 @@ class MainTests(unittest.TestCase):
         )
         maintained = make_extracted(
             make_constraint("changed", context="TS = 3"),
-            make_constraint("stale"),
+            make_constraint("stale", requirement="IO_SKIP_REQ != 1"),
             make_constraint("same"),
         )
         self.write(DEFAULT_EXTRACTED, extracted)

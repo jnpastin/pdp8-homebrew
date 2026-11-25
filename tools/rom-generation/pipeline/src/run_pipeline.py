@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import difflib
+import json
 import os
 import re
 import subprocess
@@ -31,6 +32,8 @@ from typing import Callable, Sequence
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "common"))
 from design import DESIGN, ENVIRONMENT_VARIABLE, Design, select  # noqa: E402  (common/design.py)
+from artifact_changes import (  # noqa: E402  (common/artifact_changes.py)
+    MOVED, RENAMED, compare_artifacts, describe, only_moved, strip_locations)
 
 TOOLS = Path("tools/rom-generation")
 
@@ -151,6 +154,30 @@ def _normalized(text: str) -> str:
     return text.replace("\r\n", "\n")
 
 
+def _parsed(text: str | None):
+    """The artifact as JSON, or None when it is absent or not JSON."""
+    if text is None:
+        return None
+    try:
+        value = json.loads(text)
+    except json.JSONDecodeError:
+        return None
+    return value if isinstance(value, dict) else None
+
+
+def _unified(old: str, new: str, stage: "Stage") -> list[str]:
+    return list(difflib.unified_diff(
+        old.splitlines(), new.splitlines(), fromfile=stage.maintained.as_posix(),
+        tofile=stage.candidate.as_posix(), lineterm=""))
+
+
+def _without_locations(value) -> str:
+    return json.dumps(strip_locations(value), indent=2, ensure_ascii=False) + "\n"
+
+
+LISTED_CHANGES = 12
+
+
 # ---------------------------------------------------------------------------
 # Running
 # ---------------------------------------------------------------------------
@@ -176,6 +203,7 @@ def run_pipeline(
     stages: Sequence[Stage] = STAGES,
     *,
     dry_run: bool = False,
+    accept_moved: bool = False,
     ask: Callable[[str], str] = input,
     out: Callable[[str], None] = print,
     runner: Runner = run_tool,
@@ -221,31 +249,68 @@ def run_pipeline(
             outcomes.append(Outcome(stage.name, "unchanged", counts))
             continue
 
-        diff = list(difflib.unified_diff(
-            (maintained or "").splitlines(), candidate.splitlines(),
-            fromfile=stage.maintained.as_posix(), tofile=stage.candidate.as_posix(),
-            lineterm=""))
+        diff = _unified(maintained or "", candidate, stage)
         added = sum(1 for d in diff if d.startswith("+") and not d.startswith("+++"))
         removed = sum(1 for d in diff if d.startswith("-") and not d.startswith("---"))
-        what = ("new artifact" if maintained is None
-                else f"{added} line(s) added, {removed} removed")
+        old_json, new_json = _parsed(maintained), _parsed(candidate)
+        changes = (compare_artifacts(old_json, new_json)
+                   if new_json is not None and (maintained is None or old_json is not None)
+                   else None)
+        lines_text = f"{added} line(s) added, {removed} removed"
+        if maintained is None:
+            what = "new artifact"
+        elif changes is None:
+            what = lines_text
+        else:
+            what = f"{describe(changes)}; {lines_text}"
         out(f"  Candidate differs from {stage.maintained.as_posix()}: {what}.")
+        moved_only = changes is not None and maintained is not None and (
+            only_moved(changes) or not changes)
+        if moved_only:
+            out("  Only source line numbers or formatting changed; the content is the same.")
+        elif changes:
+            listed = [c for c in changes if c.kind != MOVED]
+            for c in listed[:LISTED_CHANGES]:
+                note = f" (was {c.previous})" if c.kind == RENAMED else ""
+                out(f"    {c.kind:<8}  {c.identifier}{note}")
+            if len(listed) > LISTED_CHANGES:
+                out(f"    ... and {len(listed) - LISTED_CHANGES} more")
+        material_diff = (_unified(_without_locations(old_json), _without_locations(new_json), stage)
+                         if changes is not None and old_json is not None else diff)
 
         if dry_run:
-            out("  Dry run: not promoted. Later stages read the current maintained artifact.")
+            note = " (source lines only)" if moved_only else ""
+            out(f"  Dry run: not promoted{note}. Later stages read the current maintained "
+                "artifact.")
             outcomes.append(Outcome(stage.name, "pending", counts))
+            continue
+
+        if moved_only and accept_moved:
+            maintained_path.write_text(candidate, encoding="utf-8", newline="\n")
+            out("  Promoted: source line numbers only (--accept-moved).")
+            outcomes.append(Outcome(stage.name, "promoted", counts))
             continue
 
         while True:
             try:
                 answer = ask(f"  Promote {stage.candidate.name} to "
-                             f"{stage.maintained.as_posix()}? [y]es / [n]o / [d]iff: ")
+                             f"{stage.maintained.as_posix()}? [y]es / [n]o / [d]iff / "
+                             "[a]ll lines / [l]ist moved: ")
             except EOFError:
                 answer = "n"
             answer = answer.strip().lower()
             if answer in ("d", "diff"):
+                for line in material_diff or ["  (no difference other than source line numbers)"]:
+                    out(line)
+                continue
+            if answer in ("a", "all"):
                 for line in diff:
                     out(line)
+                continue
+            if answer in ("l", "list"):
+                moved = [c.identifier for c in changes or () if c.kind == MOVED]
+                for identifier in moved or ["(none)"]:
+                    out(f"    moved     {identifier}")
                 continue
             if answer in ("y", "yes"):
                 maintained_path.parent.mkdir(parents=True, exist_ok=True)
@@ -258,7 +323,7 @@ def run_pipeline(
                     "so the pipeline stops here.")
                 outcomes.append(Outcome(stage.name, "declined", counts))
                 return EXIT_DECLINED, outcomes
-            out("  Answer y, n, or d.")
+            out("  Answer y, n, d, a, or l.")
     return EXIT_OK, outcomes
 
 
@@ -287,6 +352,9 @@ def parse_arguments(arguments: Sequence[str] | None = None) -> argparse.Namespac
                         help="stop after this stage instead of the last")
     parser.add_argument("--dry-run", action="store_true",
                         help="run every stage and report pending promotions without promoting")
+    parser.add_argument("--accept-moved", action="store_true",
+                        help="promote, without asking, a candidate whose only change is in "
+                             "source line numbers")
     parser.add_argument("--list", action="store_true", help="list the stages and exit")
     parser.add_argument("--design", help=f"control design to build (default: ${ENVIRONMENT_VARIABLE} "
                                          f"or {DESIGN.name})")
@@ -331,7 +399,8 @@ def main(arguments: Sequence[str] | None = None) -> int:
         return EXIT_OK
     stages = select_stages(options.start, options.stop, all_stages)
     root = options.repo_root.resolve()
-    code, outcomes = run_pipeline(root, stages, dry_run=options.dry_run)
+    code, outcomes = run_pipeline(root, stages, dry_run=options.dry_run,
+                                  accept_moved=options.accept_moved)
     for line in summary(outcomes, len(stages)):
         print(line)
     status = {EXIT_OK: "SUCCEEDED", EXIT_TOOL_FAILED: "FAILED", EXIT_DECLINED: "STOPPED"}[code]
