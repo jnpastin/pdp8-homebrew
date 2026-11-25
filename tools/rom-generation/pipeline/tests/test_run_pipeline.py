@@ -13,6 +13,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from collections import Counter
 from contextlib import redirect_stdout
 from pathlib import Path
 from unittest import mock
@@ -102,7 +103,7 @@ def case(identifier: str, uop: str, line: int) -> dict:
             "micro_operations": [uop]}
 
 
-def run(repo: Repo, stages, answers=(), dry_run=False, accept_moved=False):
+def run(repo: Repo, stages, answers=(), dry_run=False, accept_moved=False, verbose=False):
     lines: list[str] = []
     replies = list(answers)
 
@@ -113,7 +114,7 @@ def run(repo: Repo, stages, answers=(), dry_run=False, accept_moved=False):
         return replies.pop(0)
 
     code, outcomes = P.run_pipeline(repo.root, stages, dry_run=dry_run,
-                                    accept_moved=accept_moved, ask=ask,
+                                    accept_moved=accept_moved, verbose=verbose, ask=ask,
                                     out=lines.append)
     return code, outcomes, "\n".join(lines)
 
@@ -134,6 +135,14 @@ class ReportTests(unittest.TestCase):
     def test_section_ends_at_the_next_heading(self) -> None:
         report = "Diagnostics\n-----------\nINFO A: one\n\nLater\n-----\nINFO B: not a diagnostic\n"
         self.assertEqual(P.diagnostics_section(report), ["INFO A: one"])
+
+    def test_condensed_keeps_warnings_and_counts_info(self) -> None:
+        section = ["WARNING A [x]: one.", "  Source: a.md:1", "INFO MOVED_CASE [a]: m.",
+                   "INFO MOVED_CASE [b]: m.", "  Source: b.md:2", "ERROR B [y]: two.",
+                   "INFO NOTE [c]: n.", "INFO NOTE: no entry."]
+        self.assertEqual(P.condensed(section),
+                         ["WARNING A [x]: one.", "  Source: a.md:1", "ERROR B [y]: two.",
+                          "INFO MOVED_CASE x2", "INFO NOTE x2"])
 
     def test_no_diagnostics(self) -> None:
         for body in ("No diagnostics.", "None.", "None"):
@@ -227,6 +236,22 @@ class PipelineTests(unittest.TestCase):
         _, _, text = run(self.repo, [stage], ["y"])
         self.assertIn("renamed   cases:mri:3.2 (was cases:mri:3.1)", text)
 
+    def test_quiet_output_counts_info_and_verbose_lists_it(self) -> None:
+        stage = self.repo.stage("ext", MULTILINE_REPORT)
+        _, _, quiet = run(self.repo, [stage])
+        self.assertIn("[1/1] ext: 1 error, 1 info", quiet)
+        self.assertIn("INFO NOTE x1", quiet)
+        self.assertNotIn("Y is fine.", quiet)
+        _, _, verbose = run(self.repo, [stage], verbose=True)
+        self.assertIn("Y is fine.", verbose)
+
+    def test_summary_says_whether_the_run_is_clean(self) -> None:
+        clean = [P.Outcome("a", "ok", Counter({"INFO": 2})), P.Outcome("b", "unchanged", Counter())]
+        self.assertEqual(P.summary(clean, 2)[-1], "Clean: no warnings, nothing pending.")
+        dirty = [P.Outcome("a", "ok", Counter({"WARNING": 1})), P.Outcome("b", "pending", Counter())]
+        self.assertEqual(P.summary(dirty, 2)[-1],
+                         "Not clean: 1 warning(s) or error(s), 1 promotion(s) pending.")
+
     def test_unchanged_candidate_needs_no_promotion(self) -> None:
         stage = self.repo.stage("gen", GENERATION_REPORT, '{"v": 1}\n', '{"v": 1}\r\n')
         code, outcomes, text = run(self.repo, [stage])
@@ -259,6 +284,92 @@ class PipelineTests(unittest.TestCase):
         self.assertNotIn("Promote", text)
         self.assertEqual((self.repo.root / stage.maintained).read_text(encoding="utf-8"),
                          '{"v": 1}\n')
+
+
+class ReviewStepTests(unittest.TestCase):
+    """The review after a run (review.py): asks only when the evidence disagrees."""
+
+    def setUp(self) -> None:
+        self.repo = Repo()
+        root = self.repo.root
+        (root / "m").mkdir()
+        (root / "a").mkdir()
+        schema = {"fields": [{"name": "ACN", "control_uses": ["predicate"], "outside_selection": True},
+                             {"name": "SKIP", "control_uses": [], "outside_selection": False},
+                             {"name": "OK", "control_uses": ["predicate"], "outside_selection": False}],
+                  "diagnostics": [{"code": "CONTROL_USES_UNRESOLVED", "input_name": "SKIP"}]}
+        (root / "m" / "inputs.json").write_text(json.dumps(schema), encoding="utf-8")
+        (root / "m" / "words.json").write_text(json.dumps({"fields": []}), encoding="utf-8")
+        analysis = {"inputs": [{"name": n, "kind": "control_input", "category": c} for n, c in
+                               (("ACN", "unreferenced"), ("SKIP", "behavioral"), ("OK", "behavioral"))]}
+        (root / "a" / "control-word-equivalence.json").write_text(json.dumps(analysis), encoding="utf-8")
+        self.stages = [
+            P.Stage("control-input-schema-generator", Path("x"), Path("x"), Path("none.json"),
+                    Path("m/inputs.json")),
+            P.Stage("control-word-schema-generator", Path("x"), Path("x"), None, Path("m/words.json")),
+            P.Stage("control-word-equivalence-analyzer", Path("x"), Path("a/report.txt")),
+        ]
+
+    def tearDown(self) -> None:
+        self.repo.close()
+
+    def review(self, answers, dry_run=False):
+        lines, replies = [], list(answers)
+
+        def ask(prompt):
+            lines.append(prompt)
+            if not replies:
+                raise EOFError
+            return replies.pop(0)
+
+        outcome = P.run_review(self.repo.root, self.stages, dry_run=dry_run, skip=frozenset(),
+                               ask=ask, out=lines.append)
+        data = json.loads((self.repo.root / "m" / "inputs.json").read_text(encoding="utf-8"))
+        return outcome, {f["name"]: f["control_uses"] for f in data["fields"]}, "\n".join(lines)
+
+    def test_accepting_records_and_removes_the_resolved_warning(self) -> None:
+        outcome, uses, text = self.review(["y", "y"])
+        self.assertEqual((outcome.status, outcome.decisions), ("recorded", 2))
+        self.assertEqual(uses, {"ACN": ["none"], "SKIP": ["predicate"], "OK": ["predicate"]})
+        self.assertIn("Review: 2 reviewed decision(s)", text)
+        data = json.loads((self.repo.root / "m" / "inputs.json").read_text(encoding="utf-8"))
+        self.assertEqual(data["diagnostics"], [])
+
+    def test_typed_answer_and_skip(self) -> None:
+        outcome, uses, text = self.review(["value", "s"])
+        self.assertEqual(uses["ACN"], ["value"])
+        self.assertEqual(uses["SKIP"], [])
+        self.assertEqual(outcome.skipped, frozenset({("control-input-schema", "SKIP")}))
+
+    def test_all_accepts_the_remaining_proposals(self) -> None:
+        _, uses, _ = self.review(["a"])
+        self.assertEqual((uses["ACN"], uses["SKIP"]), (["none"], ["predicate"]))
+
+    def test_invalid_answer_asks_again(self) -> None:
+        _, uses, text = self.review(["maybe", "y", "y"])
+        self.assertIn("control uses are predicate and value, or none alone", text)
+        self.assertEqual(uses["ACN"], ["none"])
+
+    def test_dry_run_lists_without_asking_or_writing(self) -> None:
+        outcome, uses, text = self.review([], dry_run=True)
+        self.assertEqual((outcome.status, outcome.decisions), ("pending", 2))
+        self.assertEqual(uses["ACN"], ["predicate"])
+        self.assertNotIn("Record the proposal", text)
+
+    def test_nothing_to_review_is_silent(self) -> None:
+        self.review(["y", "y"])
+        outcome, _, text = self.review([])
+        self.assertIsNone(outcome)
+        self.assertEqual(text, "")
+
+    def test_a_partial_run_does_not_review(self) -> None:
+        self.assertIsNone(P.review_paths(self.stages[:2]))
+
+    def test_summary_counts_decisions_to_review(self) -> None:
+        outcomes = [P.Outcome("a", "ok", Counter()), P.Outcome(P.REVIEW, "pending", Counter(), 3)]
+        self.assertEqual(P.summary(outcomes, 1)[-1],
+                         "Not clean: 0 warning(s) or error(s), 0 promotion(s) pending, "
+                         "3 decision(s) to review.")
 
 
 class StageTableTests(unittest.TestCase):

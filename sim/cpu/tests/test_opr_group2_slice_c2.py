@@ -84,13 +84,14 @@ class Targeted(unittest.TestCase):
         self.check(CLA_OSR, 0o0707, 0, 0o1010, 0o1010, 0o201)  # CLA before OSR: AC <- SR
 
     def test_tp_by_tp(self):
-        # SKIP loads at TP3 with the decision; AC loads from the pass unit at TP3; PC increments
+        # SKIP loads the decision at TP3 (it loads OPR_SKIP_REQ at every TP); AC loads from the
+        # pass unit at TP3; PC increments
         # at TP4; HLT_REQ is set at TP3 and consumed at TP4.
         cpu, records = one_instruction(SNA_HLT, 0o0003, 0, 0)
         tp3, tp4 = records[2].loads, records[3].loads
         self.assertEqual((tp3["SKIP"], tp3["AC"], tp3["HLT_REQ"]), (1, 0o0003, 1))
         self.assertEqual((tp4["PC"], tp4["HLT_REQ"], tp4["RUN"]), (0o202, 0, 0))
-        self.assertNotIn("SKIP", tp4)
+        self.assertIn("SKIP", tp4)    # every main-sequence TP; only TP3's value is used
 
     def test_no_skip_leaves_pc(self):
         cpu, records = one_instruction(SNA_HLT, 0o0000, 0, 0)

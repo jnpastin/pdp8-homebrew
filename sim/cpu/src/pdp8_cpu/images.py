@@ -27,7 +27,7 @@ DEFAULT_PACKING = DEFAULT_DESIGN.packing
 DEFAULT_SCHEMA = DEFAULT_DESIGN.schema
 
 IMAGE_DEPTH = 1 << 15  # 28C256: 15 address bits (CSO §2)
-DATAPATH_DEVICES = 6  # CSO §4.2
+DATAPATH_DEVICES = 6  # CSO §4.2; the packing's summary gives the design's own count
 NON_EXECUTE_GROUP = 1  # CSO §5.4.2: the MS_EFF_IS_EXECUTE = 0 group is wired as group 1
 
 # CSO §4.1 and §4.2: the fields each slice produces.
@@ -100,8 +100,9 @@ class ControlStore:
         packing = json.loads(packing_path.read_text(encoding="utf-8"))
         mapping = read_hex_image(image_dir / "mapping.hex")
         sequencer = read_hex_image(image_dir / "sequencer.hex")
-        devices = [read_hex_image(image_dir / f"datapath-{n}.hex") for n in range(DATAPATH_DEVICES)]
-        datapath = [sum(devices[n][a] << (8 * n) for n in range(DATAPATH_DEVICES))
+        count = packing.get("summary", {}).get("datapath_devices", DATAPATH_DEVICES)
+        devices = [read_hex_image(image_dir / f"datapath-{n}.hex") for n in range(count)]
+        datapath = [sum(devices[n][a] << (8 * n) for n in range(count))
                     for a in range(IMAGE_DEPTH)]
         return cls(mapping, datapath, sequencer, packing, design)
 
@@ -120,8 +121,9 @@ class ControlStore:
                     problems.append(f"datapath layout names unknown field {name}")
                 elif fd.width > slot.width:
                     problems.append(f"{name} ({fd.width} bits) does not fit its {slot.width}-bit slot")
-            if slot.offset + slot.width > 8 * DATAPATH_DEVICES:
-                problems.append(f"datapath slot at bit {slot.offset} exceeds {8 * DATAPATH_DEVICES} bits")
+            limit = 8 * self.packing.get("summary", {}).get("datapath_devices", DATAPATH_DEVICES)
+            if slot.offset + slot.width > limit:
+                problems.append(f"datapath slot at bit {slot.offset} exceeds {limit} bits")
         names = set(self.fields)
         if set(seen) != names:
             problems.append(f"datapath layout fields differ from CSO §4.2: "

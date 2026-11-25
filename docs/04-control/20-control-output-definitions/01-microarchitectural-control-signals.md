@@ -274,7 +274,6 @@ Constraint:
 - [MQ_LOAD](#mq_load)
 - [PC_INC](#pc_inc)
 - [PC_LOAD](#pc_load)
-- [SKIP_LOAD](#skip_load)
 
 ---
 
@@ -1628,33 +1627,6 @@ memory bus value
 - [MB_TO_PC](../../03-microarchitecture/02-micro-operations.md#mb_to_pc) = 0
 - [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr) = 0
 - [PC_SET_1](../../03-microarchitecture/02-micro-operations.md#pc_set_1) = 1
----
-
-### SKIP_LOAD
-
-**Mnemonic:** SKIP_LOAD
-**Name:** Skip Register Load
-**Class:** Enable
-**Bit Width:** 1
-**Default Value:** 0
-**Explicit Value Required:** Yes
-**Value Required When:** Always
-
-**Purpose:** Loads the SKIP register from `OPR_SKIP_REQ`.
-
-**Encoding:**
-```
-0 → no load
-1 → load
-```
-
-**Constraints:**
-- Uses direct load path (no ALU or IDB involvement)
-- `OPR_SKIP_REQ` is formed from the pre-TP AC and L, so an AC or L load at the same TP does not affect the loaded value
-
-**Used by μops:**
-- [OPR_SKIP_REQ_TO_SKIP](../../03-microarchitecture/02-micro-operations.md#opr_skip_req_to_skip) = 1
-
 ---
 
 ## 6. Global Signal Constraints

@@ -103,13 +103,13 @@ Fields: every other encoded field of the control word, grouped here by function.
 |---|---|---|
 | Memory interface | `/RD` (1), `/WR` (1), `AB_SRC` (1), `MFB_SRC` (1), `MDB_SRC` (2), `MA_LOAD` (1), `MA_SRC` (2), `MB_LOAD` (1), `MB_SRC` (2), `EA_ADDR_LOAD` (1), `EA_ADDR_SRC` (1) | 14 |
 | Internal data bus | `IDB_DRIVE` (1), `IDB_SRC` (3) | 4 |
-| Registers and ALU | `AC_LOAD` (1), `AC_SRC` (3), `L_LOAD` (1), `L_OP` (2), `MQ_LOAD` (1), `MQ_SRC` (1), `ALU_A_SRC` (2), `ALU_B_SRC` (1), `ALU_OP` (2), `IR_LOAD` (1), `PC_LOAD` (1), `PC_INC` (1), `PC_SRC` (2), `SKIP_LOAD` (1) | 20 |
+| Registers and ALU | `AC_LOAD` (1), `AC_SRC` (3), `L_LOAD` (1), `L_OP` (2), `MQ_LOAD` (1), `MQ_SRC` (1), `ALU_A_SRC` (2), `ALU_B_SRC` (1), `ALU_OP` (2), `IR_LOAD` (1), `PC_LOAD` (1), `PC_INC` (1), `PC_SRC` (2) | 19 |
 | Fields and interrupts | `IF_LOAD` (1), `IF_SRC` (2), `DF_LOAD` (1), `DF_SRC` (3), `DIF_LOAD` (1), `DIF_SRC` (3), `IB_LOAD` (1), `CIFP_LOAD` (1), `CIFP_VAL` (1), `IE_LOAD` (1), `IE_VAL` (1), `II_LOAD` (1), `II_VAL` (1) | 18 |
 | External IOT | `IOT_TRANSFER_LOAD` (1), `IOT_TRANSFER_VAL` (2) | 3 |
 
-The 42 fields total 59 bits; bit sharing packs them into 41 (section 7.2). Control-word fields that are derived or supplied from outside the control store (`/DMA_GRANT`, `IOT_ACTIVE`, `/DB_READ`, `/DB_WRITE`, `IOA[5:0]`, `IOP[2:0]`, `GTF_FLAGS`, `IF_DF_COMBINED`, `DB_INPUT`, `MDB_INPUT`) are not produced by either slice.
+The 41 fields total 58 bits; bit sharing packs them into 40 (section 7.2). Control-word fields that are derived or supplied from outside the control store (`/DMA_GRANT`, `IOT_ACTIVE`, `/DB_READ`, `/DB_WRITE`, `IOA[5:0]`, `IOP[2:0]`, `GTF_FLAGS`, `IF_DF_COMBINED`, `DB_INPUT`, `MDB_INPUT`) are not produced by either slice.
 
-Width: 41 bits after packing (section 7), six devices.
+Width: 40 bits after packing (section 7), five devices. The `SKIP` register needs no load-enable field: it loads at every main-sequence TP ([Registers](../01-architecture/01-registers.md#skip--skip)). The widest single control word needs 40 bits, so no packing of these fields is narrower.
 
 ---
 
@@ -374,9 +374,9 @@ Fields that never require a value in the same control word share device outputs 
 | 2 | `L_OP`, `MB_SRC`, `PC_SRC` |
 | 1 | `AB_SRC`, `IE_VAL` |
 | 1 | `ALU_B_SRC`, `CIFP_VAL` |
-| 26 | the remaining 25 fields, unshared: `MDB_SRC` (2 bits) and 24 one-bit fields |
+| 25 | the remaining 24 fields, unshared: `MDB_SRC` (2 bits) and 23 one-bit fields |
 
-Total: 41 bits in six devices, seven bits spare.
+Total: 40 bits in five devices, no bits spare. A further datapath field needs a sixth device.
 
 Fields that share bits are aligned at the low-order end of the shared bits: a field of width *w* occupies the lowest *w* of them. A field narrower than its shared bits, such as `MA_SRC` in the three bits it shares with `AC_SRC` and `DF_SRC`, does not use the highest one.
 
@@ -389,7 +389,7 @@ A field shares bits only through wiring. No decoder or gate follows the control 
 | Function | Devices |
 |---|---|
 | Mapping ROM | 1 × 28C256 + 1 × AS7C256C shadow SRAM |
-| Datapath slice | 6 × 28C256 + 6 × AS7C256C |
+| Datapath slice | 5 × 28C256 + 5 × AS7C256C |
 | Sequencer slice | 1 × 28C256 + 1 × AS7C256C |
 | Timing ROM ([Timing Terminology §3.5](../09-timing/01-terminology.md#35-timing-rom)) | 1 × 28C256 + 1 × AS7C256C |
 | Shadow copy (section 8.1) | 15-bit copy counter; tri-state address buffers for each SRAM; `LOADING` flip-flop, the flip-flop that enables the SRAM outputs one TCLK later, and write-strobe logic |
@@ -405,7 +405,7 @@ A field shares bits only through wiring. No decoder or gate follows the control 
 | `FP_CMD` | 8-to-3 priority encoder |
 | Datapath overlay | five 4:1 multiplexers |
 
-Total: 9 EEPROMs and 9 shadow SRAMs, plus the copy logic, register, multiplexers, gates, comparators, and encoder. The `IR_INDIRECT`, `IR_CLASS`, `IR_NO_EXECUTE`, and `IR_OPR_HLT` predecode gates belong to predecode, and the `INSTR_END` gates to the DMA interface ([Architectural Control Signals §4.10](./20-control-output-definitions/02-architectural-control-signals.md#410-instruction-end-instr_end)), not to the control store.
+Total: 8 EEPROMs and 8 shadow SRAMs, plus the copy logic, register, multiplexers, gates, comparators, and encoder. The `IR_INDIRECT`, `IR_CLASS`, `IR_NO_EXECUTE`, and `IR_OPR_HLT` predecode gates belong to predecode, and the `INSTR_END` gates to the DMA interface ([Architectural Control Signals §4.10](./20-control-output-definitions/02-architectural-control-signals.md#410-instruction-end-instr_end)), not to the control store.
 
 ### 8.1 Shadow Copy
 

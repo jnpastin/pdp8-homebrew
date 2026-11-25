@@ -61,6 +61,7 @@ def make_signal(name: str = "A", dependencies: list | None = None) -> dict:
         "extraction_status": "structure-validated",
         "index_source": {"path": "docs/index.md", "line": 1},
         "logic": {},
+        "outside_selection": False,
         "polarity": {"source": "defaulted", "value": "active-high"},
         "value_ranges": [],
     }
@@ -346,13 +347,29 @@ class MaintainedValidationTests(unittest.TestCase):
         )
 
     def test_invalid_control_uses_are_reported(self) -> None:
-        for uses in (["bad"], ["value", "value"], "predicate", None, [["value"]]):
+        for uses in (["bad"], ["value", "value"], "predicate", None, [["value"]],
+                     ["none", "value"]):
             with self.subTest(uses=uses):
                 field = {"name": "A"} if uses is None else make_field(uses=uses)
                 self.assertEqual(
                     codes(validate_maintained(make_maintained(field))[0]),
                     ["INVALID_CONTROL_USES"],
                 )
+
+    def test_none_alone_is_a_reviewed_classification(self) -> None:
+        candidate, diagnostics = build_candidate(
+            make_extracted(make_signal()), make_maintained(make_field("A", ["none"]))
+        )
+
+        self.assertEqual(codes(diagnostics), [])
+        self.assertEqual(candidate["fields"][0]["control_uses"], ["none"])
+
+    def test_outside_selection_is_carried_from_the_extraction(self) -> None:
+        signal = make_signal()
+        signal["outside_selection"] = True
+        candidate, _ = build_candidate(make_extracted(signal), None)
+
+        self.assertIs(candidate["fields"][0]["outside_selection"], True)
 
     def test_empty_control_uses_are_valid(self) -> None:
         self.assertEqual(
@@ -468,7 +485,7 @@ class CandidateTests(unittest.TestCase):
         self.assertEqual(
             list(field),
             [
-                "name", "category", "width", "control_uses", "attributes",
+                "name", "category", "width", "control_uses", "outside_selection", "attributes",
                 "polarity", "domain", "values", "ranges", "dependencies",
                 "derivation", "constraints", "consumers", "sources",
             ],

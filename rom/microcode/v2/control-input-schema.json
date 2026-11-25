@@ -14,8 +14,9 @@
       "category": null,
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "display_name": "AC_IS_NEGATIVE",
         "source_register": "AC",
@@ -83,8 +84,9 @@
       "category": null,
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "display_name": "AC_IS_ZERO",
         "source_register": "AC",
@@ -154,6 +156,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "display_name": "CIF_PENDING",
         "source_register": "CIFP",
@@ -253,8 +256,9 @@
       "category": null,
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "display_name": "EA_IS_AUTOINDEX",
         "source_register": "EA_ADDR",
@@ -332,6 +336,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "display_name": "HALT_REQUEST_PENDING",
         "source_register": "HLT_REQ",
@@ -401,6 +406,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "display_name": "IE_IS_SET",
         "source_register": "IE",
@@ -492,8 +498,9 @@
       "category": null,
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "display_name": "II_IS_SET",
         "source_register": "II",
@@ -587,6 +594,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "display_name": "IOT Read Transfer Pending",
         "source_register": "IOT_TRANSFER",
@@ -662,6 +670,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "display_name": "IOT Write Transfer Pending",
         "source_register": "IOT_TRANSFER",
@@ -749,8 +758,9 @@
       "category": null,
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "display_name": "L_IS_ZERO",
         "source_register": "L",
@@ -818,8 +828,9 @@
       "category": null,
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "display_name": "MB_IS_ZERO",
         "source_register": "MB",
@@ -889,6 +900,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "display_name": "RUN_STATE",
         "source_register": "RUN",
@@ -971,7 +983,10 @@
       "name": "SKIP",
       "category": null,
       "width": 1,
-      "control_uses": [],
+      "control_uses": [
+        "predicate"
+      ],
+      "outside_selection": false,
       "attributes": {
         "display_name": "SKIP",
         "source_register": "SKIP",
@@ -1030,8 +1045,8 @@
           }
         },
         {
-          "text": "OPR_SKIP_REQ_TO_SKIP",
-          "target": "../../03-microarchitecture/02-micro-operations.md#opr_skip_req_to_skip",
+          "text": "its load of OPR_SKIP_REQ at every main-sequence TP ([Registers](../../01-architecture/01-registers.md#skip--skip))",
+          "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/01-flags.md",
             "line": 284
@@ -1057,6 +1072,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "IR_IS_IOT",
         "display_name": "IOT Instruction Flag",
@@ -1165,6 +1181,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "IR_IS_MRI",
         "display_name": "Memory Reference Instruction Flag",
@@ -1303,8 +1320,9 @@
       "category": "IR Class Flags",
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_IS_OPR",
         "display_name": "Operate Instruction Flag",
@@ -1381,6 +1399,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "IR_MRI_OPCODE",
         "display_name": "Memory Reference Instruction Opcode",
@@ -1513,6 +1532,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "IR_IS_CAF",
         "display_name": "Clear All Flags Instruction Flag",
@@ -1581,6 +1601,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "IR_IS_GTF",
         "display_name": "Get Flags Instruction Flag",
@@ -1657,6 +1678,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "IR_IS_RTF",
         "display_name": "Restore Flags Instruction Flag",
@@ -1762,7 +1784,10 @@
       "name": "IR_IS_SRQ",
       "category": "Instruction Selection",
       "width": 1,
-      "control_uses": [],
+      "control_uses": [
+        "none"
+      ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_IS_SRQ",
         "display_name": "Skip on Interrupt Request Instruction Flag",
@@ -1831,6 +1856,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "IR_INDIRECT",
         "display_name": "Indirect Addressing Flag",
@@ -1897,8 +1923,9 @@
       "category": "Addressing Mode",
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_ZERO_PAGE",
         "display_name": "Zero Page Select",
@@ -1973,8 +2000,9 @@
       "category": "OPR Class",
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_OPR_GROUP1",
         "display_name": "OPR Group 1 Selection",
@@ -2049,8 +2077,9 @@
       "category": "OPR Class",
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_OPR_GROUP2",
         "display_name": "OPR Group 2 Selection",
@@ -2125,8 +2154,9 @@
       "category": "OPR Class",
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_OPR_GROUP3",
         "display_name": "OPR Group 3 Selection",
@@ -2201,8 +2231,9 @@
       "category": "OPR Bit Flags",
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_OPR_BSW",
         "display_name": "Byte Swap / Rotate Modifier",
@@ -2269,8 +2300,9 @@
       "category": "OPR Bit Flags",
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_OPR_CLA",
         "display_name": "Clear Accumulator",
@@ -2337,8 +2369,9 @@
       "category": "OPR Bit Flags",
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_OPR_CLL",
         "display_name": "Clear Link",
@@ -2405,8 +2438,9 @@
       "category": "OPR Bit Flags",
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_OPR_CMA",
         "display_name": "Complement Accumulator",
@@ -2473,8 +2507,9 @@
       "category": "OPR Bit Flags",
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_OPR_CML",
         "display_name": "Complement Link",
@@ -2543,6 +2578,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "IR_OPR_HLT",
         "display_name": "Halt",
@@ -2609,8 +2645,9 @@
       "category": "OPR Bit Flags",
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_OPR_IAC",
         "display_name": "Increment Accumulator",
@@ -2677,8 +2714,9 @@
       "category": "OPR Bit Flags",
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_OPR_OSR",
         "display_name": "OR Switch Register",
@@ -2745,8 +2783,9 @@
       "category": "OPR Bit Flags",
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_OPR_MQA",
         "display_name": "MQ OR into AC",
@@ -2813,8 +2852,9 @@
       "category": "OPR Bit Flags",
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_OPR_MQL",
         "display_name": "AC load to MQ",
@@ -2881,8 +2921,9 @@
       "category": "OPR Bit Flags",
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_OPR_RAL",
         "display_name": "Rotate Accumulator Left Enable",
@@ -2949,8 +2990,9 @@
       "category": "OPR Bit Flags",
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_OPR_RAR",
         "display_name": "Rotate Accumulator Right Enable",
@@ -3017,8 +3059,9 @@
       "category": "OPR Bit Flags",
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_OPR_SKIP_MODE",
         "display_name": "Skip Mode Select",
@@ -3085,8 +3128,9 @@
       "category": "OPR Bit Flags",
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_OPR_SMA",
         "display_name": "Skip on AC Negative",
@@ -3153,8 +3197,9 @@
       "category": "OPR Bit Flags",
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_OPR_SNL",
         "display_name": "Skip on Link Non-Zero",
@@ -3221,8 +3266,9 @@
       "category": "OPR Bit Flags",
       "width": 1,
       "control_uses": [
-        "predicate"
+        "none"
       ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_OPR_SZA",
         "display_name": "Skip on AC Zero",
@@ -3291,6 +3337,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "IR_READS_DF",
         "display_name": "Data Field Read Flag",
@@ -3359,6 +3406,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "IR_READS_IB",
         "display_name": "Interrupt Buffer Read Flag",
@@ -3427,6 +3475,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "IR_READS_IF",
         "display_name": "Instruction Field Read Flag",
@@ -3495,6 +3544,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "IR_RESTORES_IB",
         "display_name": "Restore Memory Field From IB Flag",
@@ -3587,6 +3637,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "IR_WRITES_DF",
         "display_name": "Data Field Change Flag",
@@ -3655,6 +3706,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "IR_WRITES_IF",
         "display_name": "Instruction Field Change Flag",
@@ -3739,6 +3791,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "IR_IS_EXTERNAL_IOT",
         "display_name": "External-Device IOT Flag",
@@ -3815,6 +3868,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "IR_IS_MEMEXT_IOT",
         "display_name": "Memory Extension IOT Flag",
@@ -3891,6 +3945,7 @@
       "control_uses": [
         "value"
       ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_ADDR",
         "display_name": "Memory Address Field",
@@ -3960,6 +4015,7 @@
       "control_uses": [
         "value"
       ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_DF",
         "display_name": "Data Field",
@@ -4030,6 +4086,7 @@
         "predicate",
         "value"
       ],
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "IR_IOA",
         "display_name": "I/O Address Field",
@@ -4091,6 +4148,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "IR_IOT_OP",
         "display_name": "IOT Operation Field",
@@ -4160,6 +4218,7 @@
       "control_uses": [
         "value"
       ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "IR_IF",
         "display_name": "Instruction Field",
@@ -4229,6 +4288,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "IR_CLASS",
         "display_name": "Instruction Class",
@@ -4345,6 +4405,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "IR_NO_EXECUTE",
         "display_name": "No EXECUTE State",
@@ -4413,6 +4474,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "AUTO_INDEX_REQUIRED",
         "display_name": "Auto-Index Required",
@@ -4503,6 +4565,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "INTERRUPT_REQUEST_VALID",
         "display_name": "Interrupt Request Valid",
@@ -4589,7 +4652,10 @@
       "name": "ISZ_SKIP_REQ",
       "category": null,
       "width": 1,
-      "control_uses": [],
+      "control_uses": [
+        "predicate"
+      ],
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "ISZ_SKIP_REQ",
         "display_name": "Increment Skip if Zero - Skip Request",
@@ -4669,7 +4735,10 @@
       "name": "OPR_SKIP_REQ",
       "category": null,
       "width": 1,
-      "control_uses": [],
+      "control_uses": [
+        "value"
+      ],
+      "outside_selection": true,
       "attributes": {
         "mnemonic": "OPR_SKIP_REQ",
         "display_name": "OPR Skip Request",
@@ -4767,7 +4836,7 @@
       "constraints": [],
       "consumers": [
         {
-          "text": "[OPR_SKIP_REQ_TO_SKIP](../../03-microarchitecture/02-micro-operations.md#opr_skip_req_to_skip) (the value loaded into SKIP, which selects PC_INC in FETCH TS4)",
+          "text": "the SKIP register, which loads it at every main-sequence TP and selects PC_INC in a Group 2 OPR's FETCH TS4 ([Registers](../../01-architecture/01-registers.md#skip--skip))",
           "target": null,
           "source": {
             "path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
@@ -4794,6 +4863,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "display_name": "Front Panel Start Command",
         "input_type": "External Command Input",
@@ -4886,6 +4956,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "display_name": "Front Panel Clear Command",
         "input_type": "External Command Input",
@@ -5004,6 +5075,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "display_name": "Front Panel Continue Command",
         "input_type": "External Command Input",
@@ -5096,6 +5168,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "display_name": "Front Panel Stop Command",
         "input_type": "External Command Input",
@@ -5186,6 +5259,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "display_name": "Front Panel Load Address Command",
         "input_type": "External Command Input",
@@ -5269,6 +5343,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "display_name": "Front Panel Examine Command",
         "input_type": "External Command Input",
@@ -5352,6 +5427,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "display_name": "Front Panel Deposit Command",
         "input_type": "External Command Input",
@@ -5435,6 +5511,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "display_name": "Front Panel Single Instruction Mode",
         "input_type": "External Mode Input",
@@ -5525,6 +5602,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "display_name": "Front Panel Single Step Mode",
         "input_type": "External Mode Input",
@@ -5615,6 +5693,7 @@
       "control_uses": [
         "value"
       ],
+      "outside_selection": true,
       "attributes": {
         "display_name": "Front Panel Instruction Field Input",
         "input_type": "External Data Input",
@@ -5692,6 +5771,7 @@
       "control_uses": [
         "value"
       ],
+      "outside_selection": true,
       "attributes": {
         "display_name": "Front Panel Data Field Input",
         "input_type": "External Data Input",
@@ -5761,6 +5841,7 @@
       "control_uses": [
         "value"
       ],
+      "outside_selection": true,
       "attributes": {
         "display_name": "Front Panel Switch Register",
         "input_type": "External Data Input",
@@ -5855,6 +5936,7 @@
         "predicate",
         "value"
       ],
+      "outside_selection": false,
       "attributes": {
         "display_name": "Interrupt Request",
         "input_type": "External Request Input",
@@ -5953,6 +6035,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "display_name": "DMA Request",
         "input_type": "External Request Input",
@@ -6079,6 +6162,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "display_name": "I/O Read Request",
         "input_type": "External IOT Response Input",
@@ -6220,6 +6304,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "display_name": "I/O Write Request",
         "input_type": "External IOT Response Input",
@@ -6354,6 +6439,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "display_name": "I/O Skip Request",
         "input_type": "External IOT Response Input",
@@ -6458,6 +6544,7 @@
       "control_uses": [
         "predicate"
       ],
+      "outside_selection": false,
       "attributes": {
         "display_name": "I/O Clear AC Request",
         "input_type": "External IOT Response Input",
@@ -6622,38 +6709,5 @@
       }
     }
   ],
-  "diagnostics": [
-    {
-      "severity": "WARNING",
-      "code": "CONTROL_USES_UNRESOLVED",
-      "message": "Input has no reviewed control-use classification.",
-      "input_name": "SKIP",
-      "source_path": "docs/04-control/10-control-input-definitions/01-flags.md",
-      "source_line": 270
-    },
-    {
-      "severity": "WARNING",
-      "code": "CONTROL_USES_UNRESOLVED",
-      "message": "Input has no reviewed control-use classification.",
-      "input_name": "IR_IS_SRQ",
-      "source_path": "docs/04-control/10-control-input-definitions/02-ir-derived-fields.md",
-      "source_line": 681
-    },
-    {
-      "severity": "WARNING",
-      "code": "CONTROL_USES_UNRESOLVED",
-      "message": "Input has no reviewed control-use classification.",
-      "input_name": "ISZ_SKIP_REQ",
-      "source_path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-      "source_line": 101
-    },
-    {
-      "severity": "WARNING",
-      "code": "CONTROL_USES_UNRESOLVED",
-      "message": "Input has no reviewed control-use classification.",
-      "input_name": "OPR_SKIP_REQ",
-      "source_path": "docs/04-control/10-control-input-definitions/03-derived-flags.md",
-      "source_line": 19
-    }
-  ]
+  "diagnostics": []
 }

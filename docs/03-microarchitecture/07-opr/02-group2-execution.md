@@ -38,7 +38,7 @@ A Group 2 instruction completes in FETCH and does not enter EXECUTE (`IR_CLASS =
 
 - In FETCH TS3 ([FETCH and DEFER Execution §3.3](../04-fetch-defer.md#33-ts3)):
   - the control store selects `OPR_PASS`, which loads AC from the OPR pass unit at TP3 (section 4); L is reloaded unchanged
-  - `OPR_SKIP_REQ_TO_SKIP` loads the `SKIP` register with `OPR_SKIP_REQ` at the same TP3 (section 5)
+  - the `SKIP` register loads `OPR_SKIP_REQ` at the same TP3, as it does at every main-sequence TP (section 5)
   - a HLT sets `HLT_REQ` at the same TP3 (section 6)
 - In FETCH TS4, if `SKIP = 1`, `PC_INC` increments PC at TP4 ([FETCH and DEFER Execution §3.4](../04-fetch-defer.md#34-ts4)).
 - The instruction completes at FETCH TP4 ([Sequencing and Internal Direct Control §3.1.1](../../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#311-instruction-completion)).
@@ -88,6 +88,6 @@ The skip decision is `OPR_SKIP_REQ`, which combines the enabled skip conditions 
 
 ## 8. Notes
 
-- The stage controls come from IR bits; the control word carries only `OPR_PASS` (`AC_SRC` = OPR pass unit, `L_OP` = OPR pass unit link) and `SKIP_LOAD`
+- The stage controls come from IR bits; the control word carries only `OPR_PASS` (`AC_SRC` = OPR pass unit, `L_OP` = OPR pass unit link)
 - No symbolic instruction interpretation is used
 - Skip behavior is realized solely via `PC_INC`

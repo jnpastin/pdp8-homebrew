@@ -66,7 +66,9 @@ SCHEMA_TYPE = "control-input-schema"
 SCHEMA_VERSION = 1
 CONTROL_DESIGN_VERSION = DESIGN.name
 SCHEMA_DESCRIPTION = "Logical control-input schema for version 1 CPU control."
-CONTROL_USES = frozenset({"predicate", "value"})
+# "none" is a reviewed decision that the control store reads neither the input's condition
+# nor its value (Control Input Definitions §7); it stands alone. An empty list is unreviewed.
+CONTROL_USES = frozenset({"predicate", "value", "none"})
 
 # ---------------------------------------------------------------------------
 # Diagnostics
@@ -423,6 +425,7 @@ def is_valid_control_uses(uses: Any) -> bool:
         isinstance(uses, list)
         and all(isinstance(use, str) and use in CONTROL_USES for use in uses)
         and len(uses) == len(set(uses))
+        and ("none" not in uses or len(uses) == 1)
     )
 
 
@@ -507,7 +510,7 @@ def validate_maintained(
                 make_diagnostic(
                     ERROR,
                     "INVALID_CONTROL_USES",
-                    "control_uses must contain unique predicate/value entries.",
+                    "control_uses must contain unique predicate/value entries, or only none.",
                     input_name=name,
                 )
             )
@@ -543,6 +546,7 @@ def field_from_signal(signal: dict[str, Any], uses: list[str]) -> dict[str, Any]
         "category": signal.get("category"),
         "width": signal["bit_width"],
         "control_uses": list(uses),
+        "outside_selection": bool(signal.get("outside_selection", False)),
         "attributes": signal.get("attributes", {}),
         "polarity": signal.get("polarity"),
         "domain": signal.get("domain"),

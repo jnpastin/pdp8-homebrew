@@ -446,7 +446,6 @@ PC_SRC            = [Program Counter Source Select](../04-control/20-control-out
 
 RUN_NEXT          = [Run State Next Value](../04-control/20-control-output-definitions/03-sequencing-control-signals.md#42-run-state-next-value-run_next)
 
-SKIP_LOAD         = [Skip Register Load](../04-control/20-control-output-definitions/01-microarchitectural-control-signals.md#skip_load)
 
 ---
 

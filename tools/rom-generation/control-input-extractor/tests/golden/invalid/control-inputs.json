@@ -16,6 +16,7 @@
       "name": "ACN",
       "domain": "Primitive Flags",
       "category": null,
+      "outside_selection": false,
       "attributes": {
         "display_name": "AC Negative",
         "source_register": "AC",
@@ -64,6 +65,7 @@
       "name": "IR_IS_MRI",
       "domain": "IR-Derived Signals",
       "category": "Instruction Class",
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "IR_IS_MRI",
         "display_name": "MRI Flag",
@@ -121,6 +123,7 @@
       "name": "IR_IS_OPR",
       "domain": "IR-Derived Signals",
       "category": "Instruction Class",
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "IR_IS_OPR",
         "display_name": "OPR Flag",
@@ -178,6 +181,7 @@
       "name": "MRI_OR_OPR",
       "domain": "Derived Flags",
       "category": null,
+      "outside_selection": false,
       "attributes": {
         "mnemonic": "MRI_OR_OPR",
         "display_name": "MRI or OPR",
@@ -256,6 +260,7 @@
       "name": "FP_START",
       "domain": "External Inputs",
       "category": null,
+      "outside_selection": false,
       "attributes": {
         "display_name": "Front Panel Start",
         "input_type": "External Command Input",

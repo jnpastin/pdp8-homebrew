@@ -408,6 +408,8 @@ class ExtractionResult:
     signals: dict[str, SignalDefinition]
     global_constraints: tuple[GlobalConstraintEntry, ...]
     diagnostics: tuple[Diagnostic, ...]
+    # Inputs listed under "Inputs Outside the Control-Word Selection" in the index.
+    outside_selection: frozenset[str] = frozenset()
 
     @property
     def failed(self) -> bool:
@@ -1972,6 +1974,50 @@ def validate_opr_bits(
 
 
 # ---------------------------------------------------------------------------
+# Inputs outside the control-word selection
+# ---------------------------------------------------------------------------
+
+OUTSIDE_SELECTION_HEADING = re.compile(
+    r"^(?:\d+(?:\.\d+)*\.?\s+)?Inputs Outside the Control-Word Selection$", re.IGNORECASE
+)
+TABLE_NAME_PATTERN = re.compile(r"`([A-Z/][A-Z0-9_/]*)`")
+
+
+def parse_outside_selection(
+    document: SourceDocument, indexed_names: set[str]
+) -> tuple[frozenset[str], list[Diagnostic]]:
+    """Return the inputs named in the first column of the index's "Inputs Outside the
+    Control-Word Selection" table. They are read by no execution case, conditional
+    micro-operation, or direct-control context. A name that is not an indexed input is an
+    error. Without the section, the set is empty."""
+
+    names: set[str] = set()
+    diagnostics: list[Diagnostic] = []
+    in_section = False
+    for line_number, line in enumerate(document.text.splitlines(), start=1):
+        heading = HEADING_PATTERN.match(line)
+        if heading is not None:
+            if in_section:
+                break
+            in_section = bool(OUTSIDE_SELECTION_HEADING.match(normalize_heading(heading.group(2))))
+            continue
+        if not in_section or not line.startswith("|"):
+            continue
+        cells = line.split("|")
+        if len(cells) < 3:
+            continue
+        for name in TABLE_NAME_PATTERN.findall(cells[1]):
+            if name not in indexed_names:
+                diagnostics.append(Diagnostic(
+                    ERROR, "UNKNOWN_OUTSIDE_SELECTION_INPUT",
+                    "Input listed outside the control-word selection is not an indexed "
+                    "control input.",
+                    source_path=document.relative_path, line=line_number, signal_name=name))
+            names.add(name)
+    return frozenset(names & indexed_names), diagnostics
+
+
+# ---------------------------------------------------------------------------
 # Extraction pipeline
 # ---------------------------------------------------------------------------
 
@@ -1989,6 +2035,8 @@ def extract_control_inputs(
 
     entries, diagnostics = parse_index(index_document)
     indexed_names = {entry.name for entry in entries}
+    outside_selection, found = parse_outside_selection(index_document, indexed_names)
+    diagnostics += found
 
     blocks = [
         block
@@ -2029,6 +2077,7 @@ def extract_control_inputs(
         signals=signals,
         global_constraints=tuple(global_constraints),
         diagnostics=tuple(sorted(diagnostics, key=diagnostic_sort_key)),
+        outside_selection=outside_selection,
     )
 
 
@@ -2059,6 +2108,7 @@ def diagnostic_to_dict(diagnostic: Diagnostic) -> dict[str, object]:
 def signal_to_dict(
     entry: IndexEntry,
     signal: SignalDefinition | None,
+    outside_selection: bool = False,
 ) -> dict[str, object]:
     """Convert one indexed signal to its JSON representation."""
 
@@ -2069,6 +2119,7 @@ def signal_to_dict(
             "name": entry.name,
             "domain": entry.domain,
             "category": entry.category,
+            "outside_selection": outside_selection,
             "definition": None,
             "index_source": index_source,
             "extraction_status": STATUS_DEFINITION_MISSING,
@@ -2085,6 +2136,7 @@ def signal_to_dict(
         "name": entry.name,
         "domain": entry.domain,
         "category": entry.category,
+        "outside_selection": outside_selection,
         "attributes": {
             key: value
             for key, value in signal.attributes.items()
@@ -2150,7 +2202,8 @@ def build_json_result(result: ExtractionResult) -> dict[str, object]:
         "extraction_stage": EXTRACTION_STAGE,
         "sources": [path.as_posix() for path in SOURCE_PATHS],
         "signals": [
-            signal_to_dict(entry, result.signals.get(entry.name))
+            signal_to_dict(entry, result.signals.get(entry.name),
+                           entry.name in result.outside_selection)
             for entry in result.entries
         ],
         "constraints": [

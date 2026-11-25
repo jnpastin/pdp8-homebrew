@@ -235,6 +235,8 @@ class Cpu:
             if not console:  # CSO §5.4.1: MAPR loads at every main-sequence TP, never at TP_FP
                 m_addr = A.mapping_address(st["IR"], ts)
                 mapr_next = None if m_addr is None else self.store.mapping_entry(m_addr)
+                if self.design.opr_pass:   # Registers (SKIP): likewise SKIP <- OPR_SKIP_REQ (v2)
+                    effects.loads["SKIP"] = cond.get("OPR_SKIP_REQ")
         except SimError as e:
             raise e.with_context(**context) from e
 

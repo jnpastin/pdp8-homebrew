@@ -204,11 +204,17 @@ Ordering is deterministic: cases in artifact order; classes and branches in orde
 | WARNING | `CASE_OVERLAP` | the case's base context holds together with another's |
 | WARNING | `UNCOVERED_REGION` | no execution case applies in a reachable region |
 | WARNING | `UNREACHABLE_CASE`, `CONTRADICTORY_ASSIGNMENT_GUARD` | suspect unreachable behavior |
+| WARNING | `PREDICATE_UNUSED` | an input reviewed as a `predicate` is read by no condition |
+| WARNING | `PREDICATE_UNREVIEWED` | a condition reads an input whose reviewed `control_uses` has no `predicate` (an unreviewed input is reported by the control-input schema generator instead) |
+| WARNING | `OUTSIDE_SELECTION_READ` | a condition reads an input the documentation lists outside the control-word selection ([Control Input Definitions §7](../../../docs/04-control/10-control-input-definitions/00-index.md#7-inputs-outside-the-control-word-selection)) |
+| WARNING | `UNLISTED_UNREFERENCED_INPUT` | no symbolic word reads an input, and the documentation does not list it outside the control-word selection: the specification gap §7 describes |
 | WARNING | `CONTROL_FIELD_COMPARED_AS_INPUT` | an encoded control-word field is compared as an input, though the control-input schema does not define it |
 | WARNING | `ALIAS_NOT_COMPUTED` | a cross-case join was too large |
 | WARNING | `IR_DERIVATION_UNUSABLE` | an IR derivation cannot be parsed or evaluated, or depends on an input not derived from IR |
 | INFO | `JOINT_SIGNIFICANCE` | inputs that matter only together (section 4.7) |
 | INFO | `EXPECTED_UNREACHABLE` | count of expected unreachable entries |
+
+A condition reads an input whose category is `behavioral` or `no_effect`. The two checks against the documentation's list apply when the control-input schema records it (`outside_selection`). The pipeline's review proposes the classification each of these warnings calls for.
 
 Warnings describe the specification under review; they do not stop the analysis.
 

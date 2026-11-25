@@ -94,7 +94,7 @@ AND (
 ---
 
 **Used By μops:**
-- [OPR_SKIP_REQ_TO_SKIP](../../03-microarchitecture/02-micro-operations.md#opr_skip_req_to_skip) (the value loaded into `SKIP`, which selects `PC_INC` in FETCH TS4)
+- the `SKIP` register, which loads it at every main-sequence TP and selects `PC_INC` in a Group 2 OPR's FETCH TS4 ([Registers](../../01-architecture/01-registers.md#skip--skip))
 
 ---
 

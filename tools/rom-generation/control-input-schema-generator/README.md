@@ -150,9 +150,12 @@ Allowed values are:
 ```text
 predicate
 value
+none
 ```
 
-The array may contain either or both values, each at most once. An empty array is valid but means the input is still unresolved.
+`predicate` means a condition reads the input; `value` means its value reaches a register through a source the control word selects. `none` is the reviewed decision that the control store reads neither, as for the inputs listed outside the control-word selection ([Control Input Definitions §7](../../../docs/04-control/10-control-input-definitions/00-index.md#7-inputs-outside-the-control-word-selection)); it stands alone. The array may otherwise contain either or both of `predicate` and `value`, each at most once. An empty array is valid but means the input is still unresolved.
+
+The pipeline proposes these classifications from the run's evidence and records the reviewer's answers ([pipeline README](../pipeline/README.md), section 3); this generator only carries them forward.
 
 The extracted documentation determines whether an input is primitive, derived, or external. `control_uses` identifies how ROM-generation tools may consume it.
 
@@ -250,6 +253,7 @@ Each property is taken from the extractor's signal:
 | `category` | `category`: the index subcategory, `null` for domains without categories |
 | `width` | `bit_width` |
 | `control_uses` | the maintained field's `control_uses`, or `[]` |
+| `outside_selection` | `outside_selection` |
 | `attributes` | `attributes` |
 | `polarity` | `polarity` |
 | `domain` | `domain` |

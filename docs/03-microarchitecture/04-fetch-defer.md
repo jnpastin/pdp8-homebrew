@@ -92,7 +92,6 @@ Conditional μops:
 ```text
 IR_CLASS = 001 -> IR_ADDR_TO_PC
 IR_CLASS = 011 OR IR_CLASS = 100 OR IR_CLASS = 101 -> OPR_PASS
-IR_CLASS = 100 -> OPR_SKIP_REQ_TO_SKIP
 IR_CLASS = 101 -> OPR_PASS_TO_MQ
 IR_CLASS = 001 AND CIFP = 1 -> II_CLEAR
 ```
@@ -104,7 +103,7 @@ Description:
 | Instruction | At TP3 | Details |
 |---|---|---|
 | Group 1 OPR | AC and L load from the OPR pass unit | [Group 1 Execution](./07-opr/01-group1-execution.md) |
-| Group 2 OPR | AC loads from the pass unit; `SKIP` loads the skip decision; a HLT sets `HLT_REQ` | [Group 2 Execution](./07-opr/02-group2-execution.md), [HLT capture](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#344-hlt-instruction-request-capture) |
+| Group 2 OPR | AC loads from the pass unit; `SKIP` loads the skip decision, as it does at every main-sequence TP ([Registers](../01-architecture/01-registers.md#skip--skip)); a HLT sets `HLT_REQ` | [Group 2 Execution](./07-opr/02-group2-execution.md), [HLT capture](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#344-hlt-instruction-request-capture) |
 | Group 3 OPR | AC and MQ load from the pass unit | [Group 3 Execution](./07-opr/03-group3-execution.md) |
 | Direct JMP | PC loads the formed address; with a field change pending, `II` clears (the field loads at TP4) | [Deferred Field Application](../08-interrupts-and-skip/03-interrupt-enable-and-inhibit.md#12-deferred-field-application) |
 

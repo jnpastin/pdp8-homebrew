@@ -281,7 +281,7 @@ IOT_WRITE_PENDING = (IOT_TRANSFER = 10)
 - Control decision:
   - FETCH TS4 `PC_INC` selection for a Group 2 OPR (`IR_CLASS = 100`)
 - Modified by:
-  - [OPR_SKIP_REQ_TO_SKIP](../../03-microarchitecture/02-micro-operations.md#opr_skip_req_to_skip)
+  - its load of `OPR_SKIP_REQ` at every main-sequence TP ([Registers](../../01-architecture/01-registers.md#skip--skip))
 
 ---
 

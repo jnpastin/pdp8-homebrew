@@ -271,7 +271,8 @@ def operation(u, s, cw):
         "PC_SET_1": lambda: m153() + D157,
         "OPR_PASS": lambda: max(m151(opr), m153(opr)),
         "OPR_PASS_TO_MQ": lambda: m157(max(ir_ctl + GATE, r("AC", "MQ")) + 2 * GATE),
-        "OPR_SKIP_REQ_TO_SKIP": lambda: max(a(r("AC", "L"), ZERO), ir_ctl) + 3 * GATE + XOR,
+        # SKIP's input, OPR_SKIP_REQ; SKIP loads it at every main-sequence TP (Registers, SKIP).
+        "SKIP_DATA": lambda: max(a(r("AC", "L"), ZERO), ir_ctl) + 3 * GATE + XOR,
         "DB_READ_TO_AC": lambda: db_read(s, cw),
     }
     if u in table:
@@ -374,7 +375,7 @@ def budget(pullup, decoded):
             if ts == 1:
                 changed = set(REGISTERS) - {"IR"}           # anything a TP4 or TPC can commit
             else:
-                changed = {"MAPR", "HLT_REQ"}
+                changed = {"MAPR", "HLT_REQ", "SKIP"}       # MAPR and SKIP load at every TP
                 for c in by[ms, ts - 1]:
                     for u in case_ops(c):
                         changed |= targets[u]
@@ -444,6 +445,7 @@ def budget(pullup, decoded):
                     add("MS, RUN data", cws + SETUP)
                 if ms != "CONSOLE":
                     add("MAPR", max(TS_CODE, s.r("IR")) + SHADOW + SRAM + SETUP)
+                    add("SKIP data", operation("SKIP_DATA", s, cw) + SETUP)
                     rom = max(TS_CODE, s.ms_eff(), s.after(s.r("EA_ADDR"), EQ + GATE)) + SHADOW + SRAM
                     add("timing ROM at first compare", rom + EQ + 2 * FAST_GATE + F74_SETUP, 4 * STEP)
 

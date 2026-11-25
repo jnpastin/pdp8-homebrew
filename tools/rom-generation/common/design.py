@@ -35,6 +35,9 @@ class Design:
     # The state overlay group's low three bits pass through a 3-bit 2:1 multiplexer selected
     # by RUN: FP_CMD while halted, running-only signals while running (CSO §6.3).
     state_group_run_mux: bool = True
+    # The datapath slice's device count (Control Store Organization §4.2, §8): its width in
+    # bits must fit in this many 8-bit devices.
+    datapath_devices: int = 5
 
 
 DESIGNS = {
@@ -42,7 +45,7 @@ DESIGNS = {
     "v1": Design("v1", PurePosixPath("rom/microcode/v1"),
                  PurePosixPath("build/simulation_outputs/rom-generation"), frozen=True,
                  non_execute_variant=None, sequencer_a2=None, sequencer_a1=None,
-                 state_group_run_mux=False),
+                 state_group_run_mux=False, datapath_devices=6),
     "v2": Design("v2", PurePosixPath("rom/microcode/v2"),
                  PurePosixPath("build/simulation_outputs/rom-generation-v2"), frozen=False),
 }

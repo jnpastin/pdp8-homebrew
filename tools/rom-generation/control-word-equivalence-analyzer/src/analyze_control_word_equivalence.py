@@ -1792,6 +1792,31 @@ def assignment_json(guard: Guard) -> dict[str, Any]:
     return item
 
 
+def review_control_uses(name: str, field: dict[str, Any], category: str) -> list[Diagnostic]:
+    """Compare an input's reviewed control_uses, and the documentation's list of inputs outside
+    the control-word selection (Control Input Definitions §7), with what the symbolic words read.
+    A condition reads an input whose category is behavioral or no_effect."""
+
+    uses = field.get("control_uses") or []
+    read = category in ("behavioral", "no_effect")
+    found = []
+    if uses and "predicate" in uses and not read:
+        found.append(("PREDICATE_UNUSED",
+                      "Reviewed as a predicate, but no condition reads it."))
+    if uses and read and "predicate" not in uses:
+        found.append(("PREDICATE_UNREVIEWED",
+                      "A condition reads it, but its reviewed control_uses has no predicate."))
+    if "outside_selection" in field:
+        if read and field["outside_selection"]:
+            found.append(("OUTSIDE_SELECTION_READ",
+                          "Listed outside the control-word selection, but a condition reads it."))
+        if category == "unreferenced" and not field["outside_selection"]:
+            found.append(("UNLISTED_UNREFERENCED_INPUT",
+                          "No symbolic word reads it, and it is not listed outside the "
+                          "control-word selection: a specification gap."))
+    return [Diagnostic(WARNING, code, message, entry_id=name) for code, message in found]
+
+
 def analyze(model: Model) -> tuple[dict[str, Any], list[Diagnostic]]:
     engine = Engine(model.full)
     full = model.full
@@ -2111,7 +2136,11 @@ def analyze(model: Model) -> tuple[dict[str, Any], list[Diagnostic]]:
             category = "unreferenced"
         entry = {"name": name, "kind": kind, "category": category}
         if kind == "control_input":
-            entry["control_uses"] = model.input_fields[name].get("control_uses")
+            field = model.input_fields[name]
+            entry["control_uses"] = field.get("control_uses")
+            if "outside_selection" in field:
+                entry["outside_selection"] = field["outside_selection"]
+            diagnostics += review_control_uses(name, field, category)
         entry["significant_in_cases"] = significant_in.get(name, [])
         entry["selects_cases"] = selects.get(name, [])
         entry["supplies_values_in_cases"] = supplies.get(name, [])

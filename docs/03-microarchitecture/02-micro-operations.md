@@ -49,7 +49,7 @@ Example:
     if (L != 0):
         PC_INC
 
-No intermediate state or flag storage is created. The one exception is `SKIP`: a Group 2 OPR's skip decision is loaded into `SKIP` at FETCH TP3 (`OPR_SKIP_REQ_TO_SKIP`) and used at FETCH TP4, because CLA may clear AC at the same TP3 ([Skip Model §12](../08-interrupts-and-skip/05-skip-model.md#12-skip-state)).
+No intermediate state or flag storage is created. The one exception is `SKIP`: a Group 2 OPR's skip decision is loaded into `SKIP` at FETCH TP3 and used at FETCH TP4, because CLA may clear AC at the same TP3 ([Skip Model §12](../08-interrupts-and-skip/05-skip-model.md#12-skip-state)).
 
 ---
 
@@ -68,7 +68,6 @@ No intermediate state or flag storage is created. The one exception is `SKIP`: a
 ### 4.3 Control Flow
 - [IR_ADDR_TO_PC](#ir_addr_to_pc)
 - [MB_TO_PC](#mb_to_pc)
-- [OPR_SKIP_REQ_TO_SKIP](#opr_skip_req_to_skip)
 - [PC_INC](#pc_inc)
 - [PC_LOAD_EA_ADDR](#pc_load_ea_addr)
 
@@ -1092,25 +1091,6 @@ MQ ← OPR_PASS_MQ(AC, MQ, IR)
 
 **Sources:**
 AC, MQ, IR
-
----
-
-### OPR_SKIP_REQ_TO_SKIP
-
-**Category:**
-Control Flow
-
-**Description:**
-Loads the `SKIP` register with a Group 2 OPR's skip decision, `OPR_SKIP_REQ`, formed from the AC and L held before the TP. Selected in FETCH TS3 when `IR_CLASS = 100`; `SKIP` then selects `PC_INC` in FETCH TS4 ([Group 2 Execution](./07-opr/02-group2-execution.md)).
-
-**Target:**
-SKIP
-
-**Expression:**
-SKIP ← OPR_SKIP_REQ
-
-**Sources:**
-AC, L, IR
 
 ---
 

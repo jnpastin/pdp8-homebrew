@@ -62,7 +62,7 @@ A stage's result feeds the next stage, so AC and L reach stages C, D, and E thro
 | AC result | AC | `OPR_PASS` | FETCH TP3, every OPR |
 | L result | L | `OPR_PASS` | FETCH TP3, every OPR |
 | MQ result | MQ | `OPR_PASS_TO_MQ` | FETCH TP3, Group 3 |
-| skip decision (`OPR_SKIP_REQ`) | SKIP | `OPR_SKIP_REQ_TO_SKIP` | FETCH TP3, Group 2 |
+| skip decision (`OPR_SKIP_REQ`) | SKIP | none: `SKIP` loads at every main-sequence TP ([Registers](../../01-architecture/01-registers.md#skip--skip)) | used from FETCH TP3, Group 2 |
 
 ## 4. Stage Selection
 
@@ -117,5 +117,5 @@ Stage E's selection is given in [Group 1 Execution §4](./01-group1-execution.md
 
 - The unit holds no state.
 - Every input is the value held before TP3. All outputs commit together at TP3.
-- IR bits select what each stage does. The control store selects only whether the results load (`OPR_PASS`, `OPR_PASS_TO_MQ`, `OPR_SKIP_REQ_TO_SKIP`), as it does for every register load ([Control Model §8.4](../../04-control/01-control-model.md#84-realizations-outside-the-control-word)).
+- IR bits select what each stage does. The control store selects only whether AC, L, and MQ load the results (`OPR_PASS`, `OPR_PASS_TO_MQ`), as it does for every register load; `SKIP` loads the skip decision at every main-sequence TP ([Control Model §8.4](../../04-control/01-control-model.md#84-realizations-outside-the-control-word)).
 - A stage that is not selected passes its input unchanged.

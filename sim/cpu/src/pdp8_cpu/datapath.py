@@ -251,8 +251,6 @@ class _Eval:
             fx.loads["II"] = f["II_VAL"]
         if f["IOT_TRANSFER_LOAD"]:
             fx.loads["IOT_TRANSFER"] = self.sel("IOT_TRANSFER_VAL")
-        if f.get("SKIP_LOAD"):                           # OPR_SKIP_REQ_TO_SKIP (v2 only)
-            fx.loads["SKIP"] = self.cond.get("OPR_SKIP_REQ")
         return fx
 
     def ac_input(self, db_read):

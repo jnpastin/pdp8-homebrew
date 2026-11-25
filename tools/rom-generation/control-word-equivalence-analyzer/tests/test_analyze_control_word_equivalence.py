@@ -22,6 +22,7 @@ from analyze_control_word_equivalence import (  # noqa: E402
     build_analysis,
     main,
     read_json,
+    review_control_uses,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
@@ -591,6 +592,39 @@ class ValidationTests(unittest.TestCase):
 # ---------------------------------------------------------------------------
 # Determinism and command line
 # ---------------------------------------------------------------------------
+
+
+class ControlUseReviewTests(unittest.TestCase):
+    """Reviewed control_uses and Control Input Definitions section 7 against actual reads."""
+
+    def codes(self, uses, category, outside=None):
+        field = {"control_uses": uses}
+        if outside is not None:
+            field["outside_selection"] = outside
+        return [d.code for d in review_control_uses("X", field, category)]
+
+    def test_agreeing_classifications_are_quiet(self):
+        self.assertEqual(self.codes(["predicate"], "behavioral", False), [])
+        self.assertEqual(self.codes(["predicate"], "no_effect", False), [])
+        self.assertEqual(self.codes(["none"], "unreferenced", True), [])
+        self.assertEqual(self.codes(["value"], "supplied_data", True), [])
+
+    def test_unread_predicate(self):
+        self.assertEqual(self.codes(["predicate"], "unreferenced", True), ["PREDICATE_UNUSED"])
+
+    def test_read_without_predicate(self):
+        self.assertEqual(self.codes(["value"], "behavioral", False), ["PREDICATE_UNREVIEWED"])
+
+    def test_unresolved_is_left_to_the_schema_generator(self):
+        self.assertEqual(self.codes([], "behavioral", False), [])
+
+    def test_section_7_contradictions(self):
+        self.assertEqual(self.codes(["predicate"], "behavioral", True), ["OUTSIDE_SELECTION_READ"])
+        self.assertEqual(self.codes(["none"], "unreferenced", False),
+                         ["UNLISTED_UNREFERENCED_INPUT"])
+
+    def test_section_7_checks_need_the_flag(self):
+        self.assertEqual(self.codes(["none"], "unreferenced"), [])
 
 
 class DeterminismTests(unittest.TestCase):

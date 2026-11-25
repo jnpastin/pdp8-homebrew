@@ -38,6 +38,7 @@ from extract_control_inputs import (  # noqa: E402
     ValueRange,
     build_extraction_report,
     build_json_result,
+    parse_outside_selection,
     extract_control_inputs,
     extract_definition_blocks,
     extract_signal,
@@ -1315,6 +1316,40 @@ class ConstraintTests(unittest.TestCase):
         block = make_block("**Purpose:** Indicates whether AC is negative.")
 
         self.assertEqual(parse_definition_constraints(block), ([], []))
+
+
+class OutsideSelectionTests(unittest.TestCase):
+    TABLE = (
+        "## 6. Other\n\n| Input | Path |\n|---|---|\n| `NOT_HERE` | x |\n\n"
+        "## 7. Inputs Outside the Control-Word Selection\n\n"
+        "| Input | Path | Used through |\n|---|---|---|\n"
+        "| `ACN`, `ACZ` | derived-flag logic | `OPR_SKIP_REQ` |\n"
+        "| `IR_ADDR` | datapath | `IR_ADDR_TO_EA_ADDR` |\n\n"
+        "## 8. Later\n\n| `LZ` | x | y |\n"
+    )
+
+    def test_first_column_of_the_section_only(self) -> None:
+        names, diagnostics = parse_outside_selection(
+            make_document(self.TABLE), {"ACN", "ACZ", "IR_ADDR", "LZ", "NOT_HERE", "OPR_SKIP_REQ"}
+        )
+
+        self.assertEqual(names, frozenset({"ACN", "ACZ", "IR_ADDR"}))
+        self.assertEqual(diagnostics, [])
+
+    def test_unindexed_name_is_an_error(self) -> None:
+        names, diagnostics = parse_outside_selection(make_document(self.TABLE), {"ACN"})
+
+        self.assertEqual(names, frozenset({"ACN"}))
+        self.assertEqual(
+            [(d.code, d.signal_name) for d in diagnostics],
+            [("UNKNOWN_OUTSIDE_SELECTION_INPUT", "ACZ"),
+             ("UNKNOWN_OUTSIDE_SELECTION_INPUT", "IR_ADDR")],
+        )
+
+    def test_without_the_section_nothing_is_outside(self) -> None:
+        names, diagnostics = parse_outside_selection(make_document("## 1. Purpose\n"), {"ACN"})
+
+        self.assertEqual((names, diagnostics), (frozenset(), []))
 
 
 class GlobalConstraintTests(unittest.TestCase):

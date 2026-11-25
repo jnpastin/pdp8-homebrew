@@ -66,7 +66,7 @@ Else:
     μop is not executed
 
 
-The one exception is `SKIP`: a Group 2 OPR's skip decision is loaded into `SKIP` at FETCH TP3 (`OPR_SKIP_REQ_TO_SKIP`) and used at FETCH TP4, because CLA may clear AC at the same TP3 ([Skip Model §12](../08-interrupts-and-skip/05-skip-model.md#12-skip-state)).
+The one exception is `SKIP`: a Group 2 OPR's skip decision is loaded into `SKIP` at FETCH TP3 (`SKIP` loads `OPR_SKIP_REQ` at every main-sequence TP; [Registers](../01-architecture/01-registers.md#skip--skip)) and used at FETCH TP4, because CLA may clear AC at the same TP3 ([Skip Model §12](../08-interrupts-and-skip/05-skip-model.md#12-skip-state)).
 
 ---
 

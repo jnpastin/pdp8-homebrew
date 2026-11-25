@@ -93,7 +93,6 @@ DATAPATH_FIELDS = {f.name: f for f in [
     _f("PC_LOAD", 1, LOAD, "MCS PC_LOAD"),
     _f("PC_SRC", 2, {0: "IDB", 1: "Constant 0001 (hardwired)", 2: "IR address formation unit",
                      3: "reserved"}, "MCS PC_SRC"),
-    _f("SKIP_LOAD", 1, LOAD, "MCS SKIP_LOAD"),
 ]}
 
 # Fields whose definition differs by control design, keyed by design name (design.py).
@@ -116,7 +115,7 @@ _DESIGN_OVERRIDES = {
 
 
 # Fields a control design does not have.
-_DESIGN_ABSENT = {"v1": {"SKIP_LOAD"}}  # V1-ONLY
+_DESIGN_ABSENT: dict = {}
 
 
 def datapath_fields(design_name: str) -> dict:

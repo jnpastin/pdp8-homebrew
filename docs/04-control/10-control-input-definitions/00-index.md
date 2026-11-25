@@ -197,7 +197,7 @@ The following control inputs are defined here but are not read by any execution 
 |---|---|---|
 | `ACN`, `ACZ`, `LZ` | derived-flag logic | `OPR_SKIP_REQ` |
 | `IR_OPR_SKIP_MODE`, `IR_OPR_SMA`, `IR_OPR_SNL`, `IR_OPR_SZA` | derived-flag logic | `OPR_SKIP_REQ` |
-| `OPR_SKIP_REQ` | datapath | the value loaded into `SKIP` by `OPR_SKIP_REQ_TO_SKIP` |
+| `OPR_SKIP_REQ` | datapath | the value `SKIP` loads at every main-sequence TP |
 | `EAI` | derived-flag logic | `AUTO_INDEX_REQUIRED` |
 | `II` | derived-flag logic | `INTERRUPT_REQUEST_VALID` |
 | `MBZ` | derived-flag logic | `ISZ_SKIP_REQ` |

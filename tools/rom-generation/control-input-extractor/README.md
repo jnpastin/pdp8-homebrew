@@ -96,6 +96,7 @@ Names, attribute values, and extracted text have Markdown escapes (`\_`, `\[`, `
   ```
 
 - Links without a `.md#` anchor, such as links to whole documents, are not index entries.
+- The section headed "Inputs Outside the Control-Word Selection" ([Control Input Definitions §7](../../../docs/04-control/10-control-input-definitions/00-index.md#7-inputs-outside-the-control-word-selection)) lists, in the first column of its table, the inputs that no execution case, conditional micro-operation, or direct-control context reads. Each named input is emitted with `"outside_selection": true`; a name that is not an indexed input is `UNKNOWN_OUTSIDE_SELECTION_INPUT`.
 
 ### 4.3 Definitions
 
@@ -377,6 +378,7 @@ Most findings are `ERROR`. These findings are `WARNING` and do not fail the run:
 | Code | Meaning |
 |---|---|
 | `INDEX_ENTRY_WITHOUT_DOMAIN` | an index entry appears outside any recognized domain and is skipped |
+| `UNKNOWN_OUTSIDE_SELECTION_INPUT` | the list of inputs outside the control-word selection names something that is not an indexed input (an error) |
 | `MALFORMED_VALUE_ENCODING` | a value-encoding list item could not be parsed and is skipped |
 
 ## 11. Validation Boundary
@@ -444,6 +446,7 @@ Signal fields:
 | Field | Content |
 |---|---|
 | `name`, `domain`, `category` | from the index; `category` may be `null` |
+| `outside_selection` | `true` when the index lists the input outside the control-word selection (section 4.2), else `false` |
 | `attributes` | scalar attributes from section 4.4, excluding bit width and polarity |
 | `bit_width` | integer, or `null` if missing or invalid |
 | `polarity` | `{"value": "active-high" or "active-low", "source": "explicit", "name-derived", or "defaulted"}`, or `null` if invalid |
@@ -457,7 +460,7 @@ Signal fields:
 | `index_source` | `source` of the index entry |
 | `extraction_status` | `"structure-validated"` |
 
-An indexed input with no matching definition is emitted with only `name`, `domain`, `category`, `index_source`, `"definition": null`, and `"extraction_status": "definition-missing"`.
+An indexed input with no matching definition is emitted with only `name`, `domain`, `category`, `outside_selection`, `index_source`, `"definition": null`, and `"extraction_status": "definition-missing"`.
 
 Global constraint fields are `kind`, `inputs` (in source order), and `source`.
 

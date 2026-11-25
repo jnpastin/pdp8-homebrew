@@ -32,6 +32,8 @@ from typing import Callable, Sequence
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "common"))
 from design import DESIGN, ENVIRONMENT_VARIABLE, Design, select  # noqa: E402  (common/design.py)
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import review  # noqa: E402  (review.py: reviewed decisions the evidence disagrees with)
 from artifact_changes import (  # noqa: E402  (common/artifact_changes.py)
     MOVED, RENAMED, compare_artifacts, describe, only_moved, strip_locations)
 
@@ -145,6 +147,27 @@ def severity_counts(section: Sequence[str]) -> Counter:
     return counts
 
 
+def condensed(section: Sequence[str]) -> list[str]:
+    """The diagnostics section with every warning, error, and fatal error in full, and the
+    INFO diagnostics only counted, by code. A diagnostic's continuation lines (those not
+    starting with a severity) stay with it."""
+    kept: list[str] = []
+    info: Counter = Counter()
+    current_info = False
+    for line in section:
+        match = re.match(rf"({'|'.join(SEVERITIES)})\s+([A-Z][A-Z0-9_]*)", line)
+        if match:
+            current_info = match.group(1) == "INFO"
+            if current_info:
+                info[match.group(2)] += 1
+                continue
+        if not current_info:
+            kept.append(line)
+    while kept and not kept[-1].strip():
+        kept.pop()
+    return kept + [f"INFO {code} x{n}" for code, n in info.items()]
+
+
 def format_counts(counts: Counter) -> str:
     parts = [f"{counts[s]} {s.lower()}" for s in SEVERITIES if counts[s]]
     return ", ".join(parts) if parts else "no diagnostics"
@@ -188,6 +211,8 @@ class Outcome:
     stage: str
     status: str
     counts: Counter
+    decisions: int = 0                                  # the review only
+    skipped: frozenset = frozenset()                    # the review only: (artifact, name)
 
 
 Runner = Callable[[Sequence[str], Path], "subprocess.CompletedProcess[str]"]
@@ -204,6 +229,9 @@ def run_pipeline(
     *,
     dry_run: bool = False,
     accept_moved: bool = False,
+    verbose: bool = False,
+    review_decisions: bool = True,
+    skip: frozenset = frozenset(),
     ask: Callable[[str], str] = input,
     out: Callable[[str], None] = print,
     runner: Runner = run_tool,
@@ -211,16 +239,21 @@ def run_pipeline(
     outcomes: list[Outcome] = []
     total = len(stages)
     for number, stage in enumerate(stages, 1):
-        out("")
-        out(f"[{number}/{total}] {stage.name}")
         result = runner([sys.executable, str(root / stage.script), "--repo-root", str(root)], root)
         report_path = root / stage.report
         report = report_path.read_text(encoding="utf-8") if report_path.exists() else ""
         section = diagnostics_section(report)
         counts = severity_counts(section)
-        out(f"  Diagnostics: {format_counts(counts)}")
-        for line in section:
-            out(f"    {line}" if line else "")
+        if verbose:
+            out("")
+            out(f"[{number}/{total}] {stage.name}")
+            out(f"  Diagnostics: {format_counts(counts)}")
+            for line in section:
+                out(f"    {line}" if line else "")
+        else:
+            out(f"[{number}/{total}] {stage.name}: {format_counts(counts)}")
+            for line in condensed(section):
+                out(f"    {line}" if line else "")
 
         if result.returncode != 0:
             out(f"  FAILED: the tool exited with status {result.returncode}.")
@@ -245,7 +278,8 @@ def run_pipeline(
         maintained = (_normalized(maintained_path.read_text(encoding="utf-8"))
                       if maintained_path.exists() else None)
         if candidate == maintained:
-            out(f"  Candidate matches {stage.maintained.as_posix()}; nothing to promote.")
+            if verbose:
+                out(f"  Candidate matches {stage.maintained.as_posix()}; nothing to promote.")
             outcomes.append(Outcome(stage.name, "unchanged", counts))
             continue
 
@@ -324,16 +358,109 @@ def run_pipeline(
                 outcomes.append(Outcome(stage.name, "declined", counts))
                 return EXIT_DECLINED, outcomes
             out("  Answer y, n, d, a, or l.")
+    if review_decisions:
+        reviewed = run_review(root, stages, dry_run=dry_run, skip=skip, ask=ask, out=out)
+        if reviewed is not None:
+            outcomes.append(reviewed)
     return EXIT_OK, outcomes
+
+
+REVIEW = "review"
+
+
+def review_paths(stages: Sequence[Stage]) -> tuple[Path, Path, Path, Path] | None:
+    """The maintained schemas and the analysis the review reads, when this run made them."""
+    by_name = {s.name: s for s in stages}
+    names = ("control-input-schema-generator", "control-word-schema-generator",
+             "control-word-equivalence-analyzer")
+    if not all(n in by_name for n in names):
+        return None
+    inputs, words, analyzer = (by_name[n] for n in names)
+    return (inputs.maintained, words.maintained,
+            analyzer.report.parent / "control-word-equivalence.json", inputs.candidate)
+
+
+def run_review(root: Path, stages: Sequence[Stage], *, dry_run: bool, skip: frozenset,
+               ask: Callable[[str], str], out: Callable[[str], None]) -> Outcome | None:
+    """Ask about each reviewed decision the evidence disagrees with (review.py), and record the
+    answers in the maintained artifacts. None when there is nothing to review."""
+    paths = review_paths(stages)
+    if paths is None:
+        return None
+    items = review.collect(root, *paths[:3], skip=set(skip), input_candidate=paths[3])
+    if not items:
+        return None
+    out("")
+    out(f"Review: {len(items)} reviewed decision(s) disagree with the evidence.")
+    if dry_run:
+        for item in items:
+            for line in review.describe(item):
+                out(line)
+        out("  Dry run: nothing recorded.")
+        return Outcome(REVIEW, "pending", Counter(), decisions=len(items))
+    answers, skipped, accept_rest = [], set(), False
+    for number, item in enumerate(items, 1):
+        out("")
+        out(f"[{number}/{len(items)}]")
+        for line in review.describe(item):
+            out(line)
+        while True:
+            if accept_rest and item.proposed is not None:
+                answers.append((item, item.proposed))
+                out(f"  Recorded {item.proposed} (all).")
+                break
+            choices = "[y]es / [a]ll remaining / [s]kip / or type " + (
+                "a role" if item.key == review.ROLE else "predicate,value or none")
+            try:
+                answer = ask(f"  Record the proposal? {choices}: ").strip()
+            except EOFError:
+                answer = "s"
+                accept_rest = False
+            lowered = answer.lower()
+            if lowered in ("y", "yes", "a", "all"):
+                if item.proposed is None:
+                    out("  There is no proposal: type a classification, or s to skip.")
+                    continue
+                accept_rest = lowered in ("a", "all")
+                answers.append((item, item.proposed))
+                break
+            if lowered in ("s", "skip", ""):
+                skipped.add((item.artifact, item.name))
+                break
+            try:
+                answers.append((item, review.parse_answer(item, answer)))
+                break
+            except ValueError as exc:
+                out(f"  {exc}.")
+    if answers:
+        review.record(root, {review.INPUT_SCHEMA: paths[0], review.WORD_SCHEMA: paths[1]}, answers)
+        out(f"  Recorded {len(answers)} decision(s) in the maintained schemas.")
+    status = "recorded" if answers else "skipped"
+    return Outcome(REVIEW, status, Counter(), decisions=len(answers) if answers else len(skipped),
+                   skipped=frozenset(skipped))
 
 
 def summary(outcomes: Sequence[Outcome], total: int) -> list[str]:
     width = max((len(o.stage) for o in outcomes), default=0)
     lines = ["", "Summary", "-------"]
+    stage_outcomes = [o for o in outcomes if o.stage != REVIEW]
+    reviews = [o for o in outcomes if o.stage == REVIEW]
     for o in outcomes:
-        lines.append(f"{o.stage:<{width}}  {o.status:<9}  {format_counts(o.counts)}")
-    if len(outcomes) < total:
-        lines.append(f"{total - len(outcomes)} later stage(s) not run.")
+        detail = (f"{o.decisions} decision(s)" if o.stage == REVIEW else format_counts(o.counts))
+        lines.append(f"{o.stage:<{width}}  {o.status:<9}  {detail}")
+    if len(stage_outcomes) < total:
+        lines.append(f"{total - len(stage_outcomes)} later stage(s) not run.")
+    warnings = sum(o.counts["WARNING"] + o.counts["ERROR"] + o.counts["FATAL"]
+                   for o in stage_outcomes)
+    pending = sum(1 for o in stage_outcomes if o.status == "pending")
+    to_review = sum(o.decisions for o in reviews if o.status in ("pending", "skipped"))
+    if len(stage_outcomes) == total and not warnings and not pending and not to_review and all(
+            o.status in ("ok", "unchanged", "promoted") for o in stage_outcomes):
+        lines += ["", "Clean: no warnings, nothing pending."]
+    else:
+        review_text = f", {to_review} decision(s) to review" if to_review else ""
+        lines += ["", f"Not clean: {warnings} warning(s) or error(s), {pending} promotion(s) "
+                      f"pending{review_text}."]
     return lines
 
 
@@ -355,6 +482,8 @@ def parse_arguments(arguments: Sequence[str] | None = None) -> argparse.Namespac
     parser.add_argument("--accept-moved", action="store_true",
                         help="promote, without asking, a candidate whose only change is in "
                              "source line numbers")
+    parser.add_argument("--verbose", action="store_true",
+                        help="list every INFO diagnostic and every unchanged candidate")
     parser.add_argument("--list", action="store_true", help="list the stages and exit")
     parser.add_argument("--design", help=f"control design to build (default: ${ENVIRONMENT_VARIABLE} "
                                          f"or {DESIGN.name})")
@@ -400,7 +529,12 @@ def main(arguments: Sequence[str] | None = None) -> int:
     stages = select_stages(options.start, options.stop, all_stages)
     root = options.repo_root.resolve()
     code, outcomes = run_pipeline(root, stages, dry_run=options.dry_run,
-                                  accept_moved=options.accept_moved)
+                                  accept_moved=options.accept_moved, verbose=options.verbose)
+    last = outcomes[-1] if outcomes else None
+    if code == EXIT_OK and last is not None and last.stage == REVIEW and last.status == "recorded":
+        print(f"\nRecorded {last.decisions} decision(s); running again to confirm.")
+        code, outcomes = run_pipeline(root, stages, accept_moved=options.accept_moved,
+                                      verbose=options.verbose, skip=last.skipped)
     for line in summary(outcomes, len(stages)):
         print(line)
     status = {EXIT_OK: "SUCCEEDED", EXIT_TOOL_FAILED: "FAILED", EXIT_DECLINED: "STOPPED"}[code]

@@ -644,7 +644,8 @@ Invariants:
 - Power-on value undefined; it is not read before it is loaded
 
 Constraints:
-- Loaded only at the FETCH TP3 of a Group 2 OPR, with `OPR_SKIP_REQ` (`SKIP_LOAD`; OPR_SKIP_REQ_TO_SKIP micro-operation)
+- Loads `OPR_SKIP_REQ` at every main-sequence TP (TP1 to TP4), as `MAPR` does; it does not load at the console TP (`TP_FP`). No control-word field enables it.
+- `OPR_SKIP_REQ` is 0 except in a Group 2 OPR, and only the value loaded at that instruction's FETCH TP3 is used. The PDP-8/E's SKIP flip-flop likewise has no microcode control: gating sets it at TP3 when a skip condition holds, and TP1 of every FETCH resets it (PDP-8/E Maintenance Manual, volume 1, §3.38, p. 3-140).
 - `OPR_SKIP_REQ` is formed from the AC and L held before that TP, so a CLA committed at the same TP does not affect it
 - Must not be modified by any other μop
 

@@ -78,7 +78,7 @@ FORMAT_VERSION = 1
 # Control store organization (Control Store Organization sections 4-7).
 ADDRESS_BITS = 15
 DEVICE_WIDTH = 8
-DATAPATH_DEVICES = 6
+DATAPATH_DEVICES = DESIGN.datapath_devices   # common/design.py; CSO §4.2
 VARIANT_WIDTH = 5
 DP_OVL_WIDTH = 5
 DP_OVL_SEL_WIDTH = 2
