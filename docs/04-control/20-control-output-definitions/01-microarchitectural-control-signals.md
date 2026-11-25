@@ -339,8 +339,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 
 **Constraints:**
 - Drive must be asserted via either /RD or /WR
-
-**Used by μops:**
+- Assigned only by direct control ([Address Bus Source](../30-direct-control-definitions/01-sequencing-and-internal-control.md#41-address-bus-source)); no micro-operation assigns it
 
 ---
 
@@ -598,8 +597,7 @@ external bus value
 **Constraints:**
 - Must be stable when sampled  
 - No effect unless explicitly consumed  
-
-**Used by μops:**
+- Supplied by the selected controller on DB, not by the control word; read through `AC_SRC = DB` (`DB_READ_TO_AC`)
 
 ---
 
@@ -759,7 +757,6 @@ external bus value
 **Used by μops:**
 - [IR_ADDR_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#ir_addr_to_ea_addr) = 1
 - [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr) = 1
-- [PC_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_to_ea_addr) = 1
 
 ---
 
@@ -787,7 +784,6 @@ external bus value
 **Used by μops:**
 - [IR_ADDR_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#ir_addr_to_ea_addr) = 1
 - [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr) = 0
-- [PC_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_to_ea_addr) = 0
 
 ---
 
@@ -894,7 +890,6 @@ Bits 5:0 are the save field held in IB, not the current IF and DF ([IOT Instruct
 - [MB_TO_PC](../../03-microarchitecture/02-micro-operations.md#mb_to_pc) = 1
 - [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 1
 - [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr) = 1
-- [PC_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_to_ea_addr) = 1
 - [PC_TO_MB](../../03-microarchitecture/02-micro-operations.md#pc_to_mb) = 1
 
 ---
@@ -938,7 +933,6 @@ Bits 5:0 are the save field held in IB, not the current IF and DF ([IOT Instruct
 - [MB_TO_PC](../../03-microarchitecture/02-micro-operations.md#mb_to_pc) = 2
 - [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 7
 - [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr) = 5
-- [PC_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_to_ea_addr) = 1
 - [PC_TO_MB](../../03-microarchitecture/02-micro-operations.md#pc_to_mb) = 1
 
 
@@ -1019,7 +1013,8 @@ IF_DF_COMBINED[2:0]=DF  and
 IF_DF_COMBINED[5:3]=IF
 ```
 
-**Used by μops:**
+**Constraints:**
+- Supplied by the datapath, not by the control word; read by `IF_DF_TO_IB`
 
 ---
 
@@ -1162,11 +1157,7 @@ IF_DF_COMBINED[5:3]=IF
 - A transfer accepted at TP2 executes during TS3 and commits at TP3.
 - A transfer accepted at TP3 executes during TS4 and commits at TP4.
 - It uses a direct load path and does not involve the ALU or IDB.
-
-**Used by μops:**
-
-- [IOT_TRANSFER_CAPTURE](../../03-microarchitecture/02-micro-operations.md#iot_transfer_capture) = 1
-- [IOT_TRANSFER_CLEAR](../../03-microarchitecture/02-micro-operations.md#iot_transfer_clear) = 1
+- Assigned only by direct control ([Pending External-IOT Transfer Value](../30-direct-control-definitions/01-sequencing-and-internal-control.md#55-pending-external-iot-transfer-value)); no micro-operation loads `IOT_TRANSFER`.
 
 ---
 
@@ -1199,10 +1190,7 @@ IF_DF_COMBINED[5:3]=IF
 - If completion and request acceptance occur at the same TP, the newly accepted direction is selected instead of `NONE`.
 - Encoding `3` must never be selected.
 - The value has no effect unless `IOT_TRANSFER_LOAD` is asserted.
-
-**Used by μops:**
-
-- [IOT_TRANSFER_CLEAR](../../03-microarchitecture/02-micro-operations.md#iot_transfer_clear) = 0
+- Assigned only by direct control ([Pending External-IOT Transfer Value](../30-direct-control-definitions/01-sequencing-and-internal-control.md#55-pending-external-iot-transfer-value)).
 
 ---
 
@@ -1434,8 +1422,7 @@ memory bus value
 - Must be valid when sampled  
 - Only used during memory read operations  
 - Not interchangeable with IDB or DB sources  
-
-**Used by μops:**
+- Supplied by the datapath, not by the control word; read through `MB_SRC = MDB` (`MEM_READ_TO_MB`) and by IR's instruction load (`MDB_TO_IR`)
 
 ---
 
@@ -1461,6 +1448,8 @@ memory bus value
 
 **Constraints:**
 - Must contain a valid encoding in every control word
+- `Memory` means the CPU does not drive MDB: memory drives it for a read, or a DMA controller in DMA
+- No control word selects `DMA`: in DMA the CPU's MDB driver is released and the controller drives MDB
 
 **Used by μops:**
 - [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb) = 0
@@ -1490,7 +1479,7 @@ memory bus value
 **Constraints:**
 - Selects the MFB driver during CPU-initiated memory operations
 - Governs the address field only; must not be conflated with data-side selects (MDB_SRC)
-- Console EXAM/DEP use MFB_SRC = IF
+- Console EXAMINE and DEPOSIT use MFB_SRC = IF
 - During MS = DMA, the CPU does not drive MFB; MFB_SRC has no effect
 
 ---
@@ -1983,7 +1972,7 @@ Bit 11 is the most significant bit (DEC bit 0). `X·Y` concatenates bit fields, 
 | INC | (A + 1) mod 4096 | LIN XOR CARRY |
 | CLEAR | 0 | LIN |
 
-The link output treats LIN and A as one 13-bit value: a carry out of the most significant bit complements the link. This matches the PDP-8/e, where a carry out of AC bit 0 complements L.
+The link output treats LIN and A as one 13-bit value: a carry out of the most significant bit complements the link. This matches the PDP-8/E, where a carry out of AC bit 0 complements L (PDP-8/E Maintenance Manual, volume 1, §3.11, p. 3-45).
 
 Properties:
 
@@ -2033,10 +2022,11 @@ Each destination register has an input selection mechanism.
 Example:
 
 ```
-MA_INPUT =
+MB_INPUT =
     case:
-        IDB path
-        hardwired zero (MA_SRC = 2)
+        IDB path (MB_SRC = 0)
+        MDB (MB_SRC = 1)
+        FP_SR (MB_SRC = 2)
 ```
 
 General form:
@@ -2056,7 +2046,7 @@ If R_LOAD = 1:
 
 ### 7.5 State Commit
 
-At transfer phase (TP):
+At the timing pulse (TP):
 
 ```
 If R_LOAD = 1:
@@ -2157,6 +2147,7 @@ Data moves between domains only through defined paths:
 MDB → MB          (memory read)
 MDB → IR          (instruction fetch, with MB)
 MB → MDB          (memory write)
+FP_SR → MDB       (console DEPOSIT)
 IDB → registers   (internal transfers)
 ```
 
@@ -2224,11 +2215,12 @@ Memory read:
 
 Memory write:
     MB → MDB
+    FP_SR → MDB   (console DEPOSIT only)
 ```
 
 Additional constraints:
 
-- No register other than MB, and IR at an instruction fetch, may directly access MDB  
+- No register other than MB, and IR at an instruction fetch, may directly access MDB; FP_SR drives it for the console DEPOSIT  
 - MDB must not be driven by IDB  
 - MDB must not source IDB directly  
 
@@ -2396,7 +2388,6 @@ The IDB rules are stated once, in [section 6.5](#65-idb-internal-data-bus-constr
 - [MB_TO_PC](../../03-microarchitecture/02-micro-operations.md#mb_to_pc)
 - [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear)
 - [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr)
-- [PC_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_to_ea_addr)
 - [PC_TO_MB](../../03-microarchitecture/02-micro-operations.md#pc_to_mb)
 ---
 

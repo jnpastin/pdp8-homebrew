@@ -82,7 +82,7 @@ Description:
 - Forces instruction and data fields to 0, so the TS3 write addresses field 0
 - Clears `DIF` and `CIFP` so the ISR starts with no pending deferred instruction-field change
 
-IB captures the values IF and DF held before TP2, so the save and the clear commit at the same TP ([Microarchitectural Control Signals §11.5](../04-control/20-control-output-definitions/01-microarchitectural-control-signals.md#115-pre-ts-state-visibility)). All field state changes together, as on the PDP-8/e, where the memory extension saves and clears the fields before the return address is stored.
+IB captures the values IF and DF held before TP2, so the save and the clear commit at the same TP ([Microarchitectural Control Signals §11.5](../04-control/20-control-output-definitions/01-microarchitectural-control-signals.md#115-pre-ts-state-visibility)). All field state changes together, as on the PDP-8/E, where the KM8-E loads its interrupt buffers and clears IB, IF, and DF at the TP4 at which the interrupt is taken, before the return address is stored (PDP-8/E Maintenance Manual, volume 2, §2.16 and §2.19, pp. 2-18 and 2-19).
 
 ---
 

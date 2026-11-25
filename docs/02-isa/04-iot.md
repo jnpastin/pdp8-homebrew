@@ -2,7 +2,7 @@
 
 ## 1. Purpose
 
-Defines the CPU-internal IOT instructions decoded directly by the processor.
+Defines the CPU-internal IOT instructions decoded directly by the processor, and how an external-device IOT presents its address and operation (section 5).
 
 IOT instructions (opcode 6) fall into two categories:
 - External device IOTs, interpreted by an individual device controller. These are not defined here; see the device documentation in [Section 7](../07-io/README.md).
@@ -76,7 +76,7 @@ Where:
 - IE is the current interrupt-enable value.
 - IF (SF) and DF (SF) are the save field: the instruction and data fields saved in `IB` at the last interrupt entry, as RIB reads them. GTF reports the save field, not the current IF and DF. RTF loads these bits as the restored instruction field (staged in DIF) and data field (section 3.1.2).
 - Bit 10 is 0 because the EAE Greater-Than flag is not implemented.
-- Bit 8 is 0. GTF does not report the interrupt inhibit (`II`), as on the PDP-8/E: MAINDEC-8E-D1HA requires GTF to return the word RTF loaded while the inhibit RTF sets is still in effect.
+- Bit 8 is 0: GTF does not report the interrupt inhibit (`II`). The Small Computer Handbook, 1973 gives DEC bit 3 as the interrupt inhibit flip-flop (Table 4-1, p. 4-8), but the maintenance manual shows otherwise. The processor's GTF gating supplies only DEC bits 0, 2, and 4, and the other bits come from the KM8-E and KE8-E (PDP-8/E Maintenance Manual, volume 1, §3.42.3, p. 3-153). The KM8-E places INT INHIBIT on DATA 3 only for the console status display (volume 2, §2.14, p. 2-15). MAINDEC-8E-D1HA also requires GTF to return the word RTF loaded while the inhibit RTF sets is still in effect.
 - Bit 6 is 0 because user mode is not implemented.
 
 `IB` is not initialized at power-on or by system initialization; it is first written at interrupt entry. Until then, GTF bits 5:0 are undefined. The PDP-8/E likewise loads its save field only at interrupt entry (KM8-E Memory Extension Theory of Operation §2.16, §2.19).
@@ -138,6 +138,8 @@ CAF does not modify:
 - IF
 - DF
 - IB
+
+On the PDP-8/E, the KM8-E clears IB, IF, and DF only at an interrupt or at power-on, not at INITIALIZE (PDP-8/E Maintenance Manual, volume 2, §2.19, p. 2-19).
 
 CAF completes atomically at EXECUTE TP4. No CAF effect occurs before that boundary. No interrupt is recognized at the completion of CAF.
 
@@ -206,10 +208,7 @@ Semantics:
 
 ## 5. External Device Address and Operation Transport
 
-External-device IOT instructions present two distinct controller-facing fields:
-
-- `IOA[5:0]` carries the six-bit device address from `IR[8:3]`.
-- `IOP[2:0]` carries the three-bit device operation field from `IR[2:0]`.
+An external-device IOT presents its device address (`IR[8:3]`) and its operation field (`IR[2:0]`) to the controllers, as `IOA` and `IOP` ([Architectural Control Signals §4.6 and §4.7](../04-control/20-control-output-definitions/02-architectural-control-signals.md#46-io-address-bus-ioa50)).
 
 IOP semantics are defined by the selected controller.
 

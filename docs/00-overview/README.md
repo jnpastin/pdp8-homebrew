@@ -22,8 +22,4 @@ It is intended as the entry point for understanding:
 
 ## 3. Notes
 
-This section is incomplete and will evolve as the architecture and design mature.
-
-Key areas still under development:
-- Front panel
-- Backplane and physical design
+The areas not yet designed are listed in [System Overview §6](./01-system-overview.md#6-known-gaps).

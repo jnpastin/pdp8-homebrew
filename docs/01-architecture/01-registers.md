@@ -44,7 +44,7 @@ Every register has a capture rank and an output rank ([Timing Architecture §7.6
 
 ---
 
-## 5. Register Definitions
+## 5. Register Definitions (Alphabetical)
 
 ### AC – Accumulator
 Width: 12 bits
@@ -66,10 +66,10 @@ Constraints:
 Writers:
 - ALU result path
 - OPR pass unit (Group 1 OPR: CLA, CMA, IAC, rotates, BSW, [Group 1 Execution](../03-microarchitecture/07-opr/01-group1-execution.md); Group 2 OPR: CLA, OSR, [Group 2 Execution](../03-microarchitecture/07-opr/02-group2-execution.md); Group 3 OPR: CLA, MQA, MQL, SWP, [Group 3 Execution](../03-microarchitecture/07-opr/03-group3-execution.md))
-- IOT execution (GTF)
-- System initialization (CAF, front-panel CLEAR; AC_CLEAR micro-operation)
+- IOT execution: GTF (`GTF_FLAGS_TO_AC`); RDF, RIF, RIB (`DF_TO_AC`, `IF_TO_AC`, `IB_TO_AC`); an external-IOT read (`DB_READ_TO_AC`, at TP3 or TP4); an external-IOT clear request (`AC_CLEAR`, at TP2 to TP4)
+- DCA (`AC_CLEAR`, EXECUTE TP4)
+- System initialization (CAF, front-panel CLEAR, including the CLEAR that ends the power-on reset; AC_CLEAR micro-operation)
 - Console START (AC_CLEAR micro-operation)
-- Power-on reset
 
 ---
 
@@ -83,7 +83,7 @@ Visibility: Control-visible
 
 Invariants:
 - Set from execution of CIF, RMF, or RTF until the deferred field is applied at the next JMP/JMS
-- While set, interrupt recognition is inhibited by holding `II` set across the deferred-field-change interval, with two exceptions: after START (see the II constraints), and between the TP3 and TP4 of the JMP that applies the field, which clears II at TP3 and loads IF at TP4  
+- While set, interrupt recognition is inhibited by holding `II` set across the deferred-field-change interval. There are two exceptions: after START (see the II constraints), and between TP3 and TP4 of the JMP that applies the field, which clears II at TP3 and loads IF at TP4  
 
 Constraints:
 - Set only by CIF, RMF, or RTF execution
@@ -111,7 +111,7 @@ Invariants:
 - May differ from IF
 
 Constraints:
-- Modified only by field-control and processor-state restoration instructions
+- Modified only by the writers listed below: field-control and processor-state restoration instructions, interrupt entry, and LOAD ADDRESS
 - Must remain stable during a memory access sequence  
 
 Writers:
@@ -178,7 +178,7 @@ Constraints:
 - Must not change during EXECUTE
 
 Writers:
-- Address calculation logic: IR[6:0], with the page from MA[11:7] or zero (FETCH TS3)
+- Address calculation logic: IR[6:0], with the page from MA[11:7] or zero (FETCH TP3)
 - Indirect resolution path
 
 ---
@@ -273,9 +273,8 @@ Writers:
 - IOT execution (ION or RTF; IE_SET micro-operation)
 - IOT execution (IOF or SKON; IE_CLEAR micro-operation)
 - Interrupt entry (IE_CLEAR micro-operation)
-- System initialization (CAF, front-panel CLEAR; IE_CLEAR micro-operation)
+- System initialization (CAF, front-panel CLEAR, including the CLEAR that ends the power-on reset; IE_CLEAR micro-operation)
 - Console START (IE_CLEAR micro-operation)
-- Power-on reset
 
 ---
 
@@ -293,7 +292,7 @@ Invariants:
 - Also changed outside an instruction: cleared at interrupt entry, and loaded by the LOAD ADDRESS console operation
 
 Constraints:
-- Modified only by field control instructions
+- Modified only by the writers listed below: a JMP or JMS applying a deferred field change, interrupt entry, and LOAD ADDRESS
 - Must not change except where a JMP or JMS applies a pending deferred field change, at interrupt entry, or at LOAD ADDRESS
 
 Writers:
@@ -375,7 +374,7 @@ Consumers:
 - `/DB_READ` generation during the transfer TS
 - `/DB_WRITE` generation during the transfer TS
 - `DB_READ_TO_AC` selection at the transfer commit TP
-- `DB_WRITE_FROM_AC` selection during the transfer TS
+- the CPU's drive of AC onto DB during the transfer TS
 
 ---
 
@@ -418,18 +417,16 @@ Constraints:
   - Rotate operations
   - Explicit OPR instructions (CLL, CML, STL)
   - RTF processor-state restoration
-  - System initialization (CAF, front-panel CLEAR; L_CLEAR micro-operation)
+  - System initialization (CAF, front-panel CLEAR, including the CLEAR that ends the power-on reset; L_CLEAR micro-operation)
   - Console START (L_CLEAR micro-operation)
-  - Power-on reset
 - Multiple updates must follow defined micro-op ordering
 
 Writers:
-- ALU link output (ADD and INC; [ALU Evaluation](../04-control/20-control-output-definitions/01-microarchitectural-control-signals.md#731-alu-evaluation))
+- ALU link output (ADD; [ALU Evaluation](../04-control/20-control-output-definitions/01-microarchitectural-control-signals.md#731-alu-evaluation))
 - OPR pass unit link output (Group 1 OPR: CLL, CML, IAC carry, rotates)
 - IOT execution (RTF; AC_TO_L)
-- System initialization (CAF, front-panel CLEAR; L_CLEAR micro-operation)
+- System initialization (CAF, front-panel CLEAR, including the CLEAR that ends the power-on reset; L_CLEAR micro-operation)
 - Console START (L_CLEAR micro-operation)
-- Power-on reset
 
 ---
 
@@ -450,13 +447,14 @@ Constraints:
 - MA is the CPU's source of memory addresses, except for EXAMINE and DEPOSIT, which address memory from PC (`AB_SRC` = PC); during DMA the selected controller drives AB
 
 Writers:
-- PC path (instruction fetch)
-- EA path (operand access)
-- Address formation logic (page/indirect resolution)
+- PC path (instruction fetch, FETCH TP1; `PC_TO_MA`)
+- EA path (operand or pointer access, TP1 of DEFER or EXECUTE; `EA_ADDR_TO_MA`)
+- Interrupt entry (`MA_CLEAR`, INTERRUPT TP1)
+- Console EXAMINE and DEPOSIT (`PC_TO_MA`)
 
 Consumers:
 - AB (the memory address)
-- The EA formation unit: MA[11:7] supplies the current page. MA holds the instruction's address from FETCH TP1 until DEFER or EXECUTE TS1 reloads it
+- The EA formation unit: MA[11:7] supplies the current page. MA holds the instruction's address from FETCH TP1 until the TP1 of DEFER or EXECUTE reloads it; an IOT's EXECUTE does not reload it
 
 ---
 
@@ -482,7 +480,7 @@ Invariants:
 
 Constraints:
 - Loaded at every main-sequence TP (TP1 to TP4)
-- Not loaded at TPC
+- Not loaded at TP_FP
 - Not loaded by any micro-operation; it is not a control-word target
 - Power-on value undefined; not used before the first EXECUTE, which follows a FETCH TP4 because the power-on reset leaves the processor halted in FETCH
 
@@ -517,17 +515,17 @@ Constraints:
   - CPU datapath prior to memory write
 - Must not change while:
   - Memory strobe is active
-  - DMA transfer is in progress using MB
-- Cannot be bypassed for architecturally visible memory transfers, except by IR's instruction load (MDB_TO_IR)
+- Cannot be bypassed for architecturally visible memory transfers, except by IR's instruction load (MDB_TO_IR) and the console DEPOSIT write (`MEM_WRITE_FROM_FP_SR`)
+- A DMA transfer does not use MB: the selected controller drives AB, MFB, and MDB itself ([DMA Execution §2](../03-microarchitecture/10-dma-execution.md))
 
 Writers:
 - Memory data return path
 - CPU internal bus (store operations)
+- Console DEPOSIT (`FP_SR_TO_MB`, directly from FP_SR)
 
 Consumers:
 - CPU datapath (operand use)
 - Memory system (write cycles)
-- DMA logic
 
 Note: during instruction fetch, IR captures MDB at the same TP as MB, and MB still holds the instruction word.
 
@@ -545,11 +543,10 @@ Invariants:
 - Transitions follow defined state machine
 
 Constraints:
-- Changes only at TP4 while running; while halted, at the TPC of START, EXAMINE, or DEPOSIT; and set to FETCH by the power-on reset
+- Changes only at TP4 while running; while halted, at the console TP of START, EXAMINE, or DEPOSIT; and set to FETCH by the power-on reset
 - Loaded from MS_NEXT at a TP only when MS_LOAD = 1; held otherwise. While halted, only START, EXAMINE, and DEPOSIT load it, with FETCH
-- Set to FETCH by the power-on reset
 - Not directly influenced by datapath combinational logic
-- Initially only 0-4 are valid values 5-7 are reserved
+- Codes 0 to 4 are used; 5 to 7 are reserved (`MS_EFF` uses 7 for HALTED)
 
 Writers:
 - Control state machine (MS_NEXT, enabled by MS_LOAD)
@@ -620,7 +617,7 @@ Invariants:
 - When RUN = 1, the processor executes the normal major-state sequence
 - When RUN = 0, normal instruction sequencing is inactive and console operations may be performed
 - Preserves all other architectural state while halted
-- Changes only at a TP4, where a halt commits, or at a console TPC (START, CONTINUE)
+- Changes only at a TP4, where a halt commits, or at the console TP of START or CONTINUE
 
 Constraints:
 - Updated only from RUN_NEXT (sequencing control), committed at TP

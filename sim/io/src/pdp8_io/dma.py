@@ -57,10 +57,12 @@ class DmaArbiter:
     # -- combinational outputs -----------------------------------------------------------------
 
     def dma_enable(self, in_last_state: bool, in_dma: bool, ts: int) -> bool:
-        """ARB §5: 1 in EXECUTE TS4; the retained burst-enabled state in DMA; otherwise 0.
+        """ARB §5: 1 in a TS4 in which INSTR_END is asserted; the retained burst-enabled state in
+        DMA; otherwise 0.
 
-        `in_last_state`: the CPU is in an instruction's last major state, EXECUTE in v1 (ARB §5);
-        in option 2 also FETCH or DEFER for the instructions that end there (option2/spec.md §6.1)."""
+        `in_last_state`: the CPU is in an instruction's last major state, so that its TS4 asserts
+        INSTR_END (docs/04-control/20-control-output-definitions/02-architectural-control-signals.md
+        §4.10): EXECUTE, FETCH of a direct JMP or an OPR, or DEFER of a JMP I. In v1, EXECUTE only."""
         if in_last_state and ts == 4:
             return True
         if in_dma:
@@ -112,7 +114,7 @@ class DmaArbiter:
                 self.grant_id = NO_CONTROLLER
                 self.burst_count = 0
                 self._terminating = False
-        elif in_last_state and tp == 4:                  # ARB §4, §12: reenable at EXECUTE TP4
+        elif in_last_state and tp == 4:                  # ARB §4, §14: reenable at INSTR_END TP4
             self.burst_enabled = True
 
 

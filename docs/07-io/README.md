@@ -12,7 +12,7 @@ This section defines:
 
 - external IOT selection and operation transport
 - controller response signals
-- IOT timing and wait behavior
+- IOT timing
 - common controller obligations
 - system-wide controller initialization through /INITIALIZE
 - DMA ownership, arbitration, and timing
@@ -48,7 +48,7 @@ Those items belong to the physical implementation documentation.
 ## 4. Controller Documents
 
 - [Read Me](./10-controllers/README.md)
-- [KL8E Equivalent Serial Controller(Teletype keyboard/printer alternative)](./10-controllers/01-kl8e-uart.md)
+- [KL8E-Compatible UART Controller](./10-controllers/01-kl8e-uart.md)
 - [PC8E Equivalent Paper-Tape Controller](./10-controllers/02-pc8e-paper-tape.md)
 - [RK8E Equivalent Disk Controller](./10-controllers/03-rk8e-storage.md)
 
@@ -63,7 +63,7 @@ Those items belong to the physical implementation documentation.
 - [Sequencing Control Signals](../04-control/20-control-output-definitions/03-sequencing-control-signals.md)
 - [Buses and Signals](../05-buses-and-signals/README.md)
 - [I/O Interface](../05-buses-and-signals/10-io-interface.md)
-- [DMA Interface](../05-buses-and-signals/11-dma-interface.md)
+- [DMA Signal Interface](../05-buses-and-signals/11-dma-interface.md)
 - [Memory Interface](../06-memory/02-memory-interface.md)
 - [Timing Architecture](../09-timing/02-timing-architecture.md)
 

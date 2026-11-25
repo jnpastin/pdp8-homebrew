@@ -207,8 +207,7 @@ IOT_WRITE_PENDING = (IOT_TRANSFER = 10)
 
 **Consumed By:**
 
-- `/DB_WRITE` generation during the active transfer TS
-- `DB_WRITE_FROM_AC` selection during the active transfer TS
+- `/DB_WRITE` generation, and the CPU's drive of AC onto DB, during the active transfer TS
 
 **Constraints:**
 

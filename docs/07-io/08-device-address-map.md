@@ -20,7 +20,7 @@ All addresses are expressed in octal.
 
 ---
 
-## 3. P1 Address Assignments
+## 3. Address Assignments
 
 | Address | Controller | Function | Compatibility |
 |---:|---|---|---|

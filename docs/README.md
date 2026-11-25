@@ -24,11 +24,8 @@ Before editing, read the [Documentation Conventions](./00-overview/97-documentat
 - `07-io` - I/O system definition
 - `08-interrupts-and-skip` - Interrupt and skip behavior
 - `09-timing` - Clocking and timing model
-- `10-front-panel` - Operator interface definition (not yet written)
-- `11-backplane-and-physical` - Hardware structure (not yet written)
-- `12-verification` - Testing and validation (not yet written)
-- `13-implementation-plan` - Build phases and roadmap (not yet written)
-- `appendices` - Supporting material
+
+The front panel, the backplane and physical design, verification, and the implementation plan are not yet written; their sections will be added when they are.
 
 ### 2.1 Reading Order
 

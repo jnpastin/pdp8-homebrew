@@ -174,7 +174,7 @@ class Conditions:
             return t_and(eq(d["IR_MRI_OPCODE"], 0o2), f["MBZ"])
         if name == "AUTO_INDEX_REQUIRED":                             # DRV AUTO_INDEX_REQUIRED
             return t_and(d["IR_INDIRECT"], f["EAI"])
-        if name == "IF_CHANGE_PENDING":                               # DRV IF_CHANGE_PENDING
+        if name == "IF_CHANGE_PENDING":                               # V1-ONLY: v1's copy of CIFP
             return f["CIFP"]
         if name == "INTERRUPT_REQUEST_VALID":                         # DRV INTERRUPT_REQUEST_VALID
             return t_and(f["IE"], eq(f["II"], 0), eq(self.ext.int_req_n, 0))

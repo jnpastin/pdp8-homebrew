@@ -136,7 +136,7 @@ When both of the following are true at that boundary:
 - an interrupt request is valid
 - aggregate `/DMA_REQ` is asserted
 
-the interrupt request takes precedence and CPU control selects the INTERRUPT major state.
+the interrupt request takes precedence and CPU control selects the INTERRUPT major state. The exception is CAF's EXECUTE TP4, which never selects INTERRUPT ([Interrupt Recognition and Sequencing §6](./02-interrupt-recognition-and-sequencing.md#6-next-major-state-selection)).
 
 The pending DMA request is not consumed by this decision. DMA-capable controllers retain their request state according to the [Controller Contract](../07-io/04-controller-contract.md) and participate in later DMA arbitration when DMA service again becomes eligible.
 
@@ -178,7 +178,7 @@ The interrupt system must satisfy all of the following:
 - Hardware does not assign priority among interrupting controllers.
 - Interrupt-controller priority is determined by software polling order.
 - Interrupt recognition occurs only at the defined sequencing boundary.
-- A valid interrupt request takes precedence over an eligible DMA request at the same instruction-completion TP4.
+- A valid interrupt request takes precedence over an eligible DMA request at the same instruction-completion TP4, except at CAF's EXECUTE TP4.
 - Interrupt recognition selects INTERRUPT execution but does not perform interrupt-entry state changes directly.
 - Interrupt entry does not acknowledge or clear controller state.
 - Sampling a persistent interrupt request does not consume it.
@@ -198,6 +198,6 @@ The interrupt architecture uses:
 - software identification of interrupt sources
 - software-defined controller priority
 - persistent controller requests
-- fixed interrupt precedence over DMA at a shared instruction-completion TP4
+- fixed interrupt precedence over DMA at a shared instruction-completion TP4, except at CAF's EXECUTE TP4
 
 Detailed register, control, execution, timing, electrical, and controller behavior remains defined by the applicable owning documents.

@@ -40,7 +40,7 @@ class PowerOnTests(unittest.TestCase):
 
     def test_controllers_initialize_at_the_power_on_clear(self):
         # Timing Terminology §3.4 (review D4): the reset ends with a CLEAR transaction, and each
-        # controller initializes at its TPC, the only TP it sees during power-on.
+        # controller initializes at its TP_FP, the only TP it sees during power-on.
         class Device:
             def __init__(self):
                 self.commits = []
@@ -98,28 +98,32 @@ class ConsoleTests(unittest.TestCase):
         st = cpu.st
         self.assertEqual((st["PC"], st["IF"], st["DIF"], st["DF"], st["CIFP"]), (0o1234, 5, 5, 3, 0))
         self.assertEqual(st["RUN"], 0)
-        self.assertEqual((rec[-1].kind, rec[-1].mem_read, rec[-1].mem_write), ("TPC", None, None))
+        self.assertEqual((rec[-1].kind, rec[-1].mem_read, rec[-1].mem_write), ("TP_FP", None, None))
 
     def test_deposit(self):
-        # §8: MA, EA_ADDR <- PC; MB <- FP_SR; M[IF:PC] <- FP_SR; PC <- PC + 1
+        # §8: MA <- PC; MB <- FP_SR; M[IF:PC] <- FP_SR; PC <- PC + 1; EA_ADDR unchanged (§5)
         cpu, _ = new_cpu()
         load_address(cpu, 0o7776, fp_if=2)
         cpu.panel.sr = 0o5252
-        cpu.press("DEPOSIT")
         st = cpu.st
+        st["EA_ADDR"] = 0o1234
+        cpu.press("DEPOSIT")
+        ea = 0o7776 if cpu.design.name == "v1" else 0o1234   # V1-ONLY: v1 loads EA_ADDR from PC
         self.assertEqual(cpu.memory.read(2, 0o7776), 0o5252)
-        self.assertEqual((st["MA"], st["EA_ADDR"], st["MB"], st["PC"]), (0o7776, 0o7776, 0o5252, 0o7777))
+        self.assertEqual((st["MA"], st["EA_ADDR"], st["MB"], st["PC"]), (0o7776, ea, 0o5252, 0o7777))
         cpu.press("DEPOSIT")
         self.assertEqual(st["PC"], 0)                       # PC wraps within the field
 
     def test_examine(self):
-        # §7: MA, EA_ADDR <- PC; MB <- M[IF:PC]; PC <- PC + 1
+        # §7: MA <- PC; MB <- M[IF:PC]; PC <- PC + 1; EA_ADDR unchanged (§5)
         cpu, _ = new_cpu()
         cpu.memory.preload(1, 0o0400, [0o1357])
         load_address(cpu, 0o0400, fp_if=1)
-        cpu.press("EXAMINE")
         st = cpu.st
-        self.assertEqual((st["MB"], st["MA"], st["EA_ADDR"], st["PC"]), (0o1357, 0o400, 0o400, 0o401))
+        st["EA_ADDR"] = 0o1234
+        cpu.press("EXAMINE")
+        ea = 0o400 if cpu.design.name == "v1" else 0o1234    # V1-ONLY: v1 loads EA_ADDR from PC
+        self.assertEqual((st["MB"], st["MA"], st["EA_ADDR"], st["PC"]), (0o1357, 0o400, ea, 0o401))
 
     def test_clear(self):
         # §9 and ACS §4.9: AC, L, IE cleared by the CLEAR word's micro-operations; /INITIALIZE asserted;
@@ -135,14 +139,18 @@ class ConsoleTests(unittest.TestCase):
         self.assertEqual(st["RUN"], 0)
 
     def test_start(self):
-        # §10: AC, L, MQ, IE, II cleared; RUN <- 1; FETCH at TS1
-        cpu, _ = new_cpu()
+        # §10: AC, L, MQ, IE, II cleared; /INITIALIZE asserted (CLEAR then CONTINUE); RUN <- 1;
+        # FETCH at TS1
+        cpu, rec = new_cpu()
         load_address(cpu, 0o200)
         st = cpu.st
         st["AC"], st["MQ"], st["L"] = 0o1111, 0o2222, 1
         cpu.press("START")
         self.assertEqual((st["AC"], st["L"], st["MQ"], st["IE"], st["II"]), (0, 0, 0, 0, 0))
         self.assertEqual((st["RUN"], st["MS"], st.ts, st["PC"]), (1, E.FETCH, 1, 0o200))
+        start = [r for r in rec if r.kind == "TP_FP"][-1]
+        initialize_n = 1 if cpu.design.name == "v1" else 0   # V1-ONLY: v1's START does not initialize
+        self.assertEqual(start.sequencer["/INITIALIZE"], initialize_n)
 
     def test_continue_keeps_state(self):
         # §11: RUN <- 1; PC, AC, L, MQ, IF, DF, MA, EA_ADDR, MS, TS unchanged

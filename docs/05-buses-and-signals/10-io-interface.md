@@ -30,7 +30,7 @@ Ownership is defined in:
 
 DMA-specific behavior is defined in:
 
-- [DMA Interface](./11-dma-interface.md)
+- [DMA Signal Interface](./11-dma-interface.md)
 
 ---
 
@@ -148,7 +148,7 @@ At the following TP, the selected controller captures DB.
 - Only one source may drive DB.
 - Controller response signals do not directly modify CPU state.
 - All CPU and controller state changes occur only at TP.
-- I/O wait behavior is defined in [I/O Timing](../07-io/03-io-timing.md).
+- The external-IOT timing is fixed; there is no wait signal ([I/O Timing §5](../07-io/03-io-timing.md)).
 - /INITIALIZE is distributed to every I/O controller independently of external-IOT selection.
 - Every I/O controller must enter its documented initialized state when /INITIALIZE is asserted.
 - /INITIALIZE overrides controller actions that would otherwise commit at the same TP.

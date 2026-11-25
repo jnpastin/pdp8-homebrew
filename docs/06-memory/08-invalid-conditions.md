@@ -87,7 +87,7 @@ The following are invalid:
 - physical read-related internal actions changing the logical value returned by a later read, except through a valid write
 - write-endurance, wear-leveling, block-management, or erase-cycle mechanisms changing the logical definition of a memory write
 - volatility or nonvolatility affecting memory behavior while the system is powered and operating normally
-- a design assuming specific memory contents after power-up without an explicit definition elsewhere
+- a design assuming specific memory contents after power-on without an explicit definition elsewhere
 
 ---
 

@@ -1,6 +1,6 @@
 """The CPU: control-store lookup, datapath evaluation, and commit, one TS or console transaction at a time.
 
-Step granularity is one timing state, committing at its TP (handoff §5; MCS §7). The control word
+Step granularity is one timing state, committing at its TP (MCS §7). The control word
 for TS n is combinational and valid during TS n; there is no pipeline register
 (docs/04-control/08-control-store-organization.md, CSO §5.4.3). TSTEP-level timing (T_CS,
 CW_VALID, DB_VALID, /WR_PULSE) is below this granularity and not modelled.
@@ -36,7 +36,7 @@ class IotBus:
 
 @dataclass
 class TraceRecord:
-    kind: str                 # "TS" (main sequence) or "TPC" (console transaction)
+    kind: str                 # "TS" (main sequence) or "TP_FP" (console transaction)
     ms: int
     ts: int
     run: int
@@ -53,10 +53,9 @@ class TraceRecord:
     strobes: dict = field(default_factory=dict)
 
 
-# Simulated duration of each major state, in ns: the PDP-8/E's 1.2 µs memory cycle by default. The
-# documentation does not yet fix this machine's cycle time (TSTEP counts are an open item); time is
-# simulated only so that controllers can model real-time behavior such as Teletype character times.
-# The design's per-TS table (design.py) is the source; this is its per-state view.
+# Simulated time comes from the design's per-TS table (design.py): for v2, the TS lengths of
+# Timing Architecture §5.1. It lets controllers model real-time behavior such as Teletype character
+# times. DEFAULT_TIMING is the per-state view of v1's placeholder table, 1.2 µs per major state.
 DEFAULT_TIMING = DS.select("v1").state_ns()  # V1-ONLY: the v1 time base, for callers that name it
 
 
@@ -119,7 +118,7 @@ class Cpu:
 
     def power_on(self):
         """Timing Terminology §3.4. The reset loads CLEAR into the console latch and ends with that
-        transaction: controllers and the DMA arbiter initialize at its TPC, and AC, L, and IE clear."""
+        transaction: controllers and the DMA arbiter initialize at its TP_FP, and AC, L, and IE clear."""
         self.st.power_on()
         self.press("CLEAR")
 
@@ -135,7 +134,7 @@ class Cpu:
 
     def press(self, command: str) -> bool:
         """Press a console-command key. Accepted only while halted (EXT §4.1); an accepted
-        command runs as one console transaction committing at TPC (MST §8.2)."""
+        command runs as one console transaction committing at TP_FP (MST §8.2)."""
         if command not in COMMANDS:
             raise ValueError(f"unknown console command {command}")
         if self.running:
@@ -221,7 +220,9 @@ class Cpu:
             seq = self._sequencer_word(seq_addrs, seq_undef)
 
             D.check_initialize(seq["/INITIALIZE"], D.initialize_asserted(
-                cond.get("IR_IS_CAF"), ms, ts, run, self.panel.command_asserted("CLEAR")))
+                cond.get("IR_IS_CAF"), ms, ts, run, self.panel.command_asserted("CLEAR"),
+                # V1-ONLY: v1's START does not assert /INITIALIZE
+                0 if self.design.name == "v1" else self.panel.command_asserted("START")))
             seq_loads = sequencer_loads(seq, main_sequence=not console, ts=ts)
 
             # Timing Terminology §3.5: the timing ROM's context, from pre-TP state: the major
@@ -231,7 +232,7 @@ class Cpu:
                     and cond.get("AUTO_INDEX_REQUIRED") == 1):
                 timing_context = DS.DEFER_AUTOINDEX
             mapr_next = None
-            if not console:  # CSO §5.4.1: MAPR loads at every main-sequence TP, never at TPC
+            if not console:  # CSO §5.4.1: MAPR loads at every main-sequence TP, never at TP_FP
                 m_addr = A.mapping_address(st["IR"], ts)
                 mapr_next = None if m_addr is None else self.store.mapping_entry(m_addr)
         except SimError as e:
@@ -262,7 +263,7 @@ class Cpu:
             for device in self.devices:              # an instruction boundary (see KL8E model)
                 getattr(device, "at_boundary", lambda now_ns: None)(self.elapsed_ns)
 
-        record = TraceRecord("TPC" if console else "TS", ms, ts, run, context["IR"], context["PC"],
+        record = TraceRecord("TP_FP" if console else "TS", ms, ts, run, context["IR"], context["PC"],
                              self.panel.latched, dp_addrs, seq_addrs, dp_fields, seq,
                              dict(effects.loads, **seq_loads), effects.mem_read or dma_read,
                              effects.mem_write or dma_write, effects.strobes)

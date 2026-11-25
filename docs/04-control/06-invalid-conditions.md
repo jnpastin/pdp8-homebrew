@@ -43,7 +43,7 @@ The following are invalid:
 The following are invalid:
 
 - a control decision not fully encoded in CTRL_ADDR
-- decoding or interpretation occurring after ROM lookup
+- decoding or interpretation occurring after ROM lookup, other than the realizations listed in [Control Model §8.4](./01-control-model.md#84-realizations-outside-the-control-word)
 - CTRL_ADDR formation influenced by any signal outside `MS, TS, IR_FIELDS, FLAGS, EXT`
 - predecode logic depending on TS or MS, or encoding control, timing, or sequencing behavior
 - a conditional control decision computed or resolved outside CTRL_ADDR selection (i.e., outside the control store), other than by a realization listed in [Control Model §8.4](./01-control-model.md#84-realizations-outside-the-control-word)
@@ -75,7 +75,7 @@ The following are invalid:
 - new CONTROL_WORD fields defaulting to values that change pre-existing behavior
 - a new control decision implemented solely by extending CONTROL_WORD without a corresponding CTRL_ADDR distinction
 - CONTROL_WORD used to differentiate behaviors that are not uniquely identified by CTRL_ADDR
-- post-ROM decision logic, hidden decoding stages, or implicit interpretation of CONTROL_WORD fields introduced when extending control
+- post-ROM decision logic beyond the realizations listed in [Control Model §8.4](./01-control-model.md#84-realizations-outside-the-control-word), hidden decoding stages, or implicit interpretation of CONTROL_WORD fields introduced when extending control
 - an external arbitration mechanism (e.g., DMA) modifying CTRL_ADDR formation or suppressing CONTROL_WORD effects
 
 ---
@@ -112,7 +112,7 @@ The following are invalid:
 - more than one enable signal targeting the same destination asserted in the same cycle
 - more than one input source active for a register whose load enable is asserted
 - more than one source driving the internal data bus (IDB) in the same cycle
-- `IDB_DRIVE` asserted with no valid `IDB_SRC` selected, or `IDB_SRC` selecting a source while `IDB_DRIVE` is deasserted
+- `IDB_DRIVE` asserted with no valid `IDB_SRC` selected. With `IDB_DRIVE` deasserted, `IDB_SRC` may hold any encoding, as any select field may when its operation is not enabled ([Control Word §5.6](./04-control-word.md#56-physical-bit-sharing))
 - an ALU operand configuration violating its arity (e.g., `ALU_B_SRC` asserted for a unary operation, or `ALU_B_SRC = NONE` for a binary operation)
 - `PC_LOAD` and `PC_INC` asserted simultaneously
 - IDB, MDB, and DB conflated electrically or logically, or data crossing between them without passing through a defined boundary register
@@ -129,17 +129,17 @@ The following are invalid:
 The following are invalid:
 
 - an externally visible operation occurring with only one of {architectural control signal, corresponding μop} active
-- `/RD` asserted without `MEM_READ_TO_MB` (and `MS ≠ DMA`)
+- `/RD` asserted without `MEM_READ_TO_MB`, or asserted by the CPU in `MS = DMA`
 - `MEM_READ_TO_MB` asserted without `/RD` asserted
 - `/RD` asserted with `MDB_SRC` other than Memory
-- `/WR` asserted without a valid memory-write μop (`MEM_WRITE_FROM_MB`, `MEM_WRITE_FROM_FP_SR`, or DMA write)
+- `/WR` asserted without a valid memory-write μop (`MEM_WRITE_FROM_MB` or `MEM_WRITE_FROM_FP_SR`), or asserted by the CPU in `MS = DMA`
 - `MEM_WRITE_FROM_MB` or `MEM_WRITE_FROM_FP_SR` asserted without `/WR` asserted
 - `MEM_WRITE_FROM_MB` asserted with `MDB_SRC ≠ MB`, or `MEM_WRITE_FROM_FP_SR` asserted with `MDB_SRC ≠ FP_SR`
 - `/RD` and `/WR` asserted simultaneously
 - `IOT_READ_PENDING` and `IOT_WRITE_PENDING` both asserted
 - `IOT_TRANSFER` holding a value other than exactly one of `NONE`, `READ`, or `WRITE`
 - `/DB_READ` and `/DB_WRITE` asserted simultaneously
-- `/DB_READ` asserted without `DB_READ_TO_AC`, or `/DB_WRITE` asserted without `DB_WRITE_FROM_AC`
+- `/DB_READ` asserted without `DB_READ_TO_AC`
 - the CPU driving DB while `/DB_READ` is asserted, or an external device driving DB while `/DB_WRITE` is asserted
 - `IO_READ_REQ` and `IO_WRITE_REQ` both accepted for the same request
 - an accepted external-IOT transfer request whose transfer TS or commit TP falls outside the current external-IOT EXECUTE major state
@@ -251,7 +251,7 @@ The architecture does not require centralized runtime validation of control comp
 - [Control Word](./04-control-word.md)
 - [Datapath Mapping](./05-datapath-mapping.md)
 - [Primitive Flags](./10-control-input-definitions/01-flags.md)
-- [IR Derived Fields](./10-control-input-definitions/02-ir-derived-fields.md)
+- [IR-Derived Fields](./10-control-input-definitions/02-ir-derived-fields.md)
 - [External Inputs](./10-control-input-definitions/04-external-inputs.md)
 - [Microarchitectural Control Signals](./20-control-output-definitions/01-microarchitectural-control-signals.md)
 - [Architectural Control Signals](./20-control-output-definitions/02-architectural-control-signals.md)

@@ -66,14 +66,13 @@ MS_NEXT is determined by control logic during TS4 and is not represented as a μ
 
 MS updates are not produced by datapath operations.
 
-MS is stored in a register and updated only at TP4 while running; while halted, at the TPC of START, EXAMINE, or DEPOSIT; and set to FETCH by the power-on reset:
+MS is stored in a register and updated only at TP4 while running; while halted, at the console TP of START, EXAMINE, or DEPOSIT; and set to FETCH by the power-on reset:
 
-    MS <- MS_NEXT   (at TP4, or at a console TPC)
+    MS <- MS_NEXT   (at TP4, or at a console TP_FP)
 
 Constraints:
-- MS is stable during TP1–TP3
 - Exactly one MS is active at any time
-- MS must not change outside TP4, except at a console TPC and at power-on
+- MS must not change outside TP4, except at the console TP and at power-on
 
 ---
 
@@ -97,12 +96,13 @@ Execution obeys the following invariant:
         and evaluation occurs
 
     At TP:
-        state transitions occur
+        state transitions commit: captured at its leading edge,
+        visible as it ends
 
 Implications:
 - No register or architectural state changes outside TP
 - All observable behavior is the result of TP-triggered updates
-- TS provides setup; TP commits results
+- TS provides setup; TP commits results, which become visible as TP ends ([Timing Architecture §7.6](../09-timing/02-timing-architecture.md#76-rule-6--two-ranks))
 
 ---
 
@@ -115,7 +115,7 @@ All processor behavior must be expressible as a sequence of state updates of the
 
 Constraints:
 - No implicit state changes are permitted
-- No behavior may depend on intermediate (non-registered) values at TP
+- Every value loaded at TPn is a combinational function of state committed by TP(n-1) and of external inputs; no selection or decision depends on a result computed in TSn
 - All inputs to a state update must be stable during the preceding TS
 
 ---
@@ -141,7 +141,7 @@ External inputs are the only non-register inputs that may influence execution.
 
 Properties:
 - EXT includes signals such as interrupt and DMA requests
-- EXT must be stable before TP
+- EXT must be stable at least `T_CS` before the TP that accepts it ([External Inputs §2](../04-control/10-control-input-definitions/04-external-inputs.md#2-timing-model))
 
 Constraints:
 - EXT must not include datapath or control signals
@@ -156,9 +156,9 @@ The following invariants must always hold:
 - Exactly one MS is active
 - Exactly one TS is active
 - All architectural state resides in registers
-- All state changes occur only at TP
+- All state changes occur only at TP: captured at its leading edge, visible as it ends
 - The order of timing states does not depend on instruction behavior
-- MS transitions occur only at TP4, except at a console TPC and at power-on
+- MS transitions occur only at TP4, except at the console TP and at power-on
 
 ---
 
@@ -176,7 +176,7 @@ Allowed inputs:
 Disallowed inputs:
 - Transient datapath signals
 - Control signals
-- Combinational intermediate values
+- Results computed in the same TS, such as the ALU or OPR pass-unit output, before a TP has loaded them
 
 Requirement:
 - Any datapath result must be captured into a register before it can influence future execution

@@ -36,20 +36,20 @@ IR_OPR_GROUP2 = 1
 
 A Group 2 instruction completes in FETCH and does not enter EXECUTE (`IR_CLASS = 100`, `IR_NO_EXECUTE = 1`).
 
-- In FETCH TS3 ([Fetch & Defer §3.3](../04-fetch-defer.md#33-ts3)):
+- In FETCH TS3 ([FETCH and DEFER Execution §3.3](../04-fetch-defer.md#33-ts3)):
   - the control store selects `OPR_PASS`, which loads AC from the OPR pass unit at TP3 (section 4); L is reloaded unchanged
   - `OPR_SKIP_REQ_TO_SKIP` loads the `SKIP` register with `OPR_SKIP_REQ` at the same TP3 (section 5)
   - a HLT sets `HLT_REQ` at the same TP3 (section 6)
-- In FETCH TS4, if `SKIP = 1`, `PC_INC` increments PC at TP4 ([Fetch & Defer §3.4](../04-fetch-defer.md#34-ts4)).
-- The instruction completes at FETCH TP4 ([Sequencing and Internal Control §3.1.1](../../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#311-instruction-completion)).
+- In FETCH TS4, if `SKIP = 1`, `PC_INC` increments PC at TP4 ([FETCH and DEFER Execution §3.4](../04-fetch-defer.md#34-ts4)).
+- The instruction completes at FETCH TP4 ([Sequencing and Internal Direct Control §3.1.1](../../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#311-instruction-completion)).
 
-This follows the KK8-E: combinational skip logic sets the SKIP flip-flop at TP3, CLA and OSR act in the same pass, and PC, plus 1 if SKIP, is loaded at TP4.
+This follows the KK8-E: combinational skip logic sets the SKIP flip-flop at TP3 (PDP-8/E Maintenance Manual, volume 1, §3.38, p. 3-138), CLA and OSR act in the same pass, and PC, plus 1 if SKIP, is loaded at TP4.
 
 ---
 
 ## 4. OPR Pass
 
-A Group 2 instruction selects two stages of the OPR pass unit ([Group 1 Execution §4](./01-group1-execution.md#4-opr-pass)):
+A Group 2 instruction selects two stages of the OPR pass unit ([OPR Pass Unit §4](./00-pass-unit.md#4-stage-selection)):
 
 | Stage | Function | Selected by |
 |---|---|---|
@@ -72,8 +72,8 @@ The skip decision is `OPR_SKIP_REQ`, which combines the enabled skip conditions 
 ## 6. HLT
 
 - HLT is a control-level operation; no datapath μop is performed and no register other than `HLT_REQ` is modified
-- `HLT_REQ` is set at FETCH TP3 ([Sequencing and Internal Control §3.4.4](../../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#344-hlt-instruction-request-capture))
-- The pending halt is consumed at this instruction's completion, FETCH TP4 ([Sequencing and Internal Control §3.4.6](../../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#346-pending-halt-consumption)), concurrently with any skip increment committed at the same TP4
+- `HLT_REQ` is set at FETCH TP3 ([Sequencing and Internal Direct Control §3.4.4](../../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#344-hlt-instruction-request-capture))
+- The pending halt is consumed at this instruction's completion, FETCH TP4 ([Sequencing and Internal Direct Control §3.4.6](../../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#346-pending-halt-consumption)), concurrently with any skip increment committed at the same TP4
 
 ---
 

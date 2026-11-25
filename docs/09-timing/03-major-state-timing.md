@@ -36,7 +36,7 @@ All state changes occur exclusively at TP: captured at its leading edge, visible
 
 ### 3.6 TP3
 - EA_ADDR loaded
-- Direct JMP: PC loaded with the formed address; a pending instruction field is applied
+- Direct JMP: PC loaded with the formed address; with a field change pending, II clears
 - OPR: AC and L loaded from the pass unit; Group 2 also loads SKIP and captures HLT; Group 3 also loads MQ
 
 ### 3.7 TS4 — Finalization
@@ -44,6 +44,7 @@ All state changes occur exclusively at TP: captured at its leading edge, visible
 
 ### 3.8 TP4
 - Group 2 OPR with SKIP set: PC loaded with PC + 1
+- Direct JMP: a pending instruction field is applied (IF loaded, CIFP cleared)
 - MS transition decision; a direct JMP or an OPR completes here
 
 ---
@@ -65,15 +66,15 @@ All state changes occur exclusively at TP: captured at its leading edge, visible
 ### 4.4 TP2
 - MB loaded from MDB
 
-### 4.5 TS3 — Autoindex (conditional)
-- if EA_ADDR is within autoindex range: MB incremented
+### 4.5 TS3 — Auto-Index (conditional)
+- if EA_ADDR is within auto-index range: MB incremented
 
 ### 4.6 TP3
-- MB updated with incremented value (autoindex only)
+- MB updated with incremented value (auto-index only)
 
 ### 4.7 TS4 — Resolution
 - MB drives the resolved address
-- if autoindex: /WR asserted, MFB_SRC = IF, incremented value written back to the pointer location
+- if auto-index: /WR asserted, MFB_SRC = IF, incremented value written back to the pointer location
 
 ### 4.8 TP4
 - EA_ADDR loaded from MB (final resolved effective address)
@@ -181,11 +182,13 @@ No result committed at a TP may affect another action or decision committed at t
 ---
 
 ## 6. INTERRUPT
-- Sequence defined by control
+- Sequence defined in [Interrupt Execution §4](../03-microarchitecture/08-interrupt-execution.md#4-execution-sequence)
 
 ### 6.1 TS1–TS4
-- Save PC
-- Load vector
+- TP1: MB ← PC, MA ← 0000
+- TP2: IB ← IF and DF; IF, DF, and DIF cleared; CIFP cleared
+- TP3: M[0:0000] ← MB (the return address)
+- TP4: PC ← 0001, IE cleared
 
 ### 6.2 TP4
 - Return to FETCH
@@ -269,7 +272,7 @@ During the TS4 that completes the instruction, in which [`INSTR_END`](../04-cont
 - controllers establish `/DMA_REQ[n]`
 - the arbiter asserts combinational `DMA_ENABLE`
 - separate combinational aggregation logic continuously derives aggregate `/DMA_REQ`
-- `/DMA_REQ[n]`, `DMA_ENABLE`, and aggregate `/DMA_REQ` settle before TP4
+- `/DMA_REQ[n]`, `DMA_ENABLE`, and aggregate `/DMA_REQ` are stable at least `T_CS` before TP4, the TP that accepts it ([External Inputs §2](../04-control/10-control-input-definitions/04-external-inputs.md#2-timing-model))
 
 At that TP4, CPU control samples aggregate `/DMA_REQ` for the major-state transition decision.
 
@@ -326,20 +329,20 @@ accepted command latched
     →
 console transaction timer runs for 7 setup TSTEPs
     →
-TPC (two TSTEPs)
+TP_FP (two TSTEPs)
     →
-latched command cleared as TPC ends
+latched command cleared as TP_FP ends
 ```
 
 Properties:
 
 - The console transaction is the single TS-equivalent evaluation window for the command.
-- The latched command is stable from the start of the transaction through TPC.
+- The latched command is stable from the start of the transaction through TP_FP.
 - The control word is evaluated from the latched command for the whole transaction.
-- The transaction lasts 9 TSTEPs, with a two-step TPC ([Timing Architecture §5.1](./02-timing-architecture.md#51-structure)). That allows 7 steps of setup, as in the longest main-sequence read, and the same write pulse and hold as a main-sequence write.
-- A console memory read drives AB and MFB for the whole transaction, and MB captures MDB at TPC, matching TS2 and TP2.
-- A console memory write commits at TPC, matching TP2.
-- TPC commits every control-word result that a main-sequence TP commits, including `RUN_NEXT`, `HLT_REQ_NEXT`, and, when `MS_LOAD = 1`, `MS_NEXT`.
+- The transaction lasts 9 TSTEPs, with a two-step TP_FP ([Timing Architecture §5.1](./02-timing-architecture.md#51-structure)). That allows 7 steps of setup, as in the longest main-sequence read, and the same write pulse and hold as a main-sequence write.
+- A console memory read drives AB and MFB for the whole transaction, and MB captures MDB at TP_FP, matching TS2 and TP2.
+- A console memory write commits at TP_FP, matching TP2.
+- TP_FP commits every control-word result that a main-sequence TP commits, including `RUN_NEXT`, `HLT_REQ_NEXT`, and, when `MS_LOAD = 1`, `MS_NEXT`.
 - Only one console transaction is in progress at a time.
 - The console transaction timer never runs while `RUN = 1`.
 
@@ -371,6 +374,6 @@ DEFER is entered only from FETCH TP4 when `IR_INDIRECT = 1`, and IR is loaded on
 
 ### 9.3 An IR_NO_EXECUTE Instruction Never Reaches EXECUTE
 
-EXECUTE is entered only from FETCH TP4 or DEFER TP4 when `IR_NO_EXECUTE = 0` ([Sequencing and Internal Control §3.2.2, §3.2.4](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#322-fetch-transition-without-indirection)), and IR is loaded only at FETCH TP2. IR therefore never holds a JMP or an OPR in EXECUTE, including while halted in EXECUTE by Single Step:
+EXECUTE is entered only from FETCH TP4 or DEFER TP4 when `IR_NO_EXECUTE = 0` ([Sequencing and Internal Direct Control §3.2.2, §3.2.4](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#322-fetch-transition-without-indirection)), and IR is loaded only at FETCH TP2. IR therefore never holds a JMP or an OPR in EXECUTE, including while halted in EXECUTE by Single Step:
 
 - `IR_NO_EXECUTE = 0 IF MS = EXECUTE`

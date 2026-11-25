@@ -88,7 +88,7 @@ DMA_ENABLE = 0
 
 `DMA_ENABLE` does not itself contain state. It reflects the applicable retained arbiter state or the `INSTR_END` reenable condition.
 
-`DMA_ENABLE` must settle before TP4 whenever CPU control samples aggregate `/DMA_REQ`.
+`DMA_ENABLE` must be stable at least `T_CS` before TP4, the TP that accepts it ([External Inputs §2](../04-control/10-control-input-definitions/04-external-inputs.md#2-timing-model)).
 
 ---
 
@@ -150,7 +150,7 @@ During a CPU major state:
 - controllers may assert or deassert their `/DMA_REQ[n]` lines according to their controller contracts
 - the arbiter establishes `DMA_ENABLE`
 - the aggregation logic continuously derives aggregate `/DMA_REQ`
-- `/DMA_REQ[n]`, `DMA_ENABLE`, and aggregate `/DMA_REQ` must settle before the TP4 sampling boundary
+- `/DMA_REQ[n]`, `DMA_ENABLE`, and aggregate `/DMA_REQ` must be stable at least `T_CS` before TP4, the TP that accepts it
 
 At TP4, CPU control samples aggregate `/DMA_REQ` as an input to the major-state transition decision.
 
@@ -289,7 +289,7 @@ DMA_ENABLE = 1
 
 Controllers may assert pending `/DMA_REQ[n]` lines during that TS4. The combinational aggregation logic continuously derives aggregate `/DMA_REQ` from `DMA_ENABLE` and `/DMA_REQ[14:0]`.
 
-All inputs to the aggregation logic and the resulting aggregate `/DMA_REQ` must settle before TP4.
+All inputs to the aggregation logic and the resulting aggregate `/DMA_REQ` must be stable at least `T_CS` before TP4, the TP that accepts it ([External Inputs §2](../04-control/10-control-input-definitions/04-external-inputs.md#2-timing-model)).
 
 At that TP4:
 
@@ -327,11 +327,11 @@ While the CPU is halted:
 - `/DMA_GRANT` is deasserted, so the selected controller must not drive DMA-owned interfaces
 - console transaction TPs do not advance arbiter state, except for system initialization (section 13.2)
 
-When CONTINUE resumes at DMA TS1, the held selection continues the burst as though no halt had occurred. When START, or CONTINUE after an EXAMINE or DEPOSIT, resumes at FETCH TS1, the held selection continues at the next DMA entry, if its controller still requests then (section 13.3).
+When CONTINUE resumes at DMA TS1, the held selection continues the burst as though no halt had occurred. When CONTINUE after an EXAMINE or DEPOSIT resumes at FETCH TS1, the held selection continues at the next DMA entry, if its controller still requests then (section 13.3). CLEAR and START initialize the arbiter (section 13.2), which cancels the burst.
 
 ### 13.2 System Initialization
 
-When `/INITIALIZE` is asserted, at the TP ending the assertion (EXECUTE TP4 for CAF, TPC for CLEAR, including the CLEAR that ends the power-on reset), the arbiter:
+When `/INITIALIZE` is asserted, at the TP ending the assertion (EXECUTE TP4 for CAF, TP_FP for CLEAR or START, including the CLEAR that ends the power-on reset), the arbiter:
 
 - sets `DMA_GRANT_ID` to `15`
 - clears retained burst-enabled state
@@ -362,7 +362,7 @@ At DMA TP3 of a state with no selected controller, whether dropped or never made
 - `DMA_ENABLE` is asserted during a TS4 in which `INSTR_END` is asserted.
 - `DMA_ENABLE` is deasserted in every other TS outside DMA.
 - Aggregate `/DMA_REQ` is continuously derived from `DMA_ENABLE` and `/DMA_REQ[14:0]`.
-- Aggregate `/DMA_REQ` must settle before CPU control samples it at TP4.
+- Aggregate `/DMA_REQ` must be stable at least `T_CS` before TP4, the TP that accepts it.
 - CPU control uses the pre-TP4 aggregate `/DMA_REQ` value for the TP4 major-state transition.
 - Controller `/DMA_REQ[n]` lines may remain asserted while aggregate `/DMA_REQ` is deasserted.
 - A completed DMA burst cannot be followed by another DMA major state until one complete CPU instruction reaches its completion TP4.

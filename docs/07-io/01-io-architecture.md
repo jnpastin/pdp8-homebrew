@@ -114,7 +114,7 @@ Properties:
 - /INITIALIZE is independent of external-IOT selection.
 - A controller must respond to /INITIALIZE regardless of IOT_ACTIVE, IOA, IOP, interrupt state, or DMA state.
 - When /INITIALIZE is asserted, it overrides all controller commands, transfers, flag updates, interrupt requests, DMA activity, and other controller-local actions that would otherwise commit at the same TP.
-- Each controller enters its documented initialized state at the TP ending the assertion (EXECUTE TP4 for CAF, TPC for CLEAR).
+- Each controller enters its documented initialized state at the TP ending the assertion (EXECUTE TP4 for CAF, TP_FP for CLEAR or START).
 - A controller samples /INITIALIZE only at that TP and must not act on its level earlier.
 - Each controller must define the exact state of its registers, flags, interrupt-enable state, active operations, bus outputs, /INT_REQ output, and /DMA_REQ output after initialization.
 - A controller must terminate any active operation when /INITIALIZE is asserted.

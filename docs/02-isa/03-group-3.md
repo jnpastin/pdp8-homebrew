@@ -1,6 +1,12 @@
 # Group 3 OPR Encoding Model
 
-Prior to the PDP-8/E, any instruction that had bit 8 and bit 0 set was reserved for the EAE, and there was no Group 3.  Beginning with the PDP-8/E MQ was included in the system regardless of whether EAE was present or not.  As a result, code that is intended to be portable to older systems should not use these instructions.
+## 1. Purpose
+
+Defines the encoding of Group 3 OPR instructions, which move data between AC and MQ.
+
+---
+
+Prior to the PDP-8/E, the MQ instructions were "only available with EAE" (Small Computer Handbook, 1973, Table 2-1, p. 2-10), and there was no Group 3.  Beginning with the PDP-8/E the MQ is included regardless of whether an EAE is present: Group 3 is "also useful when the MQ is employed as a temporary storage register, even if an EAE is not installed" (p. 3-16).  As a result, code that is intended to be portable to older systems should not use these instructions.
 
 ```
 ┌────┬────┬─────┬────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
@@ -14,7 +20,7 @@ Prior to the PDP-8/E, any instruction that had bit 8 and bit 0 set was reserved 
 
 ---
 
-## 1. Flag Definition and Timing
+## 2. Flag Definitions and Order
 
 Each flag performs a single operation. The operations take effect in a fixed order: CLA; then MQA, MQL, or SWP.
 
@@ -24,13 +30,13 @@ Each flag performs a single operation. The operations take effect in a fixed ord
 | MQA | 2 | Logical OR AC and MQ, with result in AC.  MQ is not affected |
 | MQL | 2 | Clear MQ, then move the AC into MQ.  AC is cleared |
 
-When MQA and MQL are combined, the result is the SWP instruction (7521), which exchanges AC and MQ (section 2).
+When MQA and MQL are combined, the result is the SWP instruction (7521), which exchanges AC and MQ (section 3).
 
-Bits 5, 3, 2, and 1 are the SCA and operation-code bits of the KE8-E Extended Arithmetic Element (EAE). This machine has no EAE, so they select no operation; CLA, MQA, and MQL still execute. Software should keep them `0`, as DEC advises for machines without the EAE.
+Bits 5, 3, 2, and 1 are the SCA and operation-code bits of the KE8-E Extended Arithmetic Element (EAE). This machine has no EAE, so they select no operation; CLA, MQA, and MQL still execute. Software should keep them `0`.
 
 ---
 
-## 2. Combining Operations
+## 3. Combining Operations
 
 Similar to Group 1, combined operations take effect in their order.  `CLA MQL` will clear AC and then move that into MQ, effectively clearing both.  Conversely `CLA MQA` will clear the AC, then OR the MQ into the AC, resulting in AC = MQ.
 

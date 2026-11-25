@@ -140,7 +140,7 @@ MDB is logically independent from DB
 
 ---
 
-### 4.4 MFB — Memory Field Bus
+### 4.4 Memory Field Bus (MFB)
 
 #### 4.4.1 Logical Definition
 

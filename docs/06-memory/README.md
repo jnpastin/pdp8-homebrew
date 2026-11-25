@@ -60,6 +60,7 @@ The memory subsystem interface consists of:
 - MDB
 - /RD
 - /WR
+- /WR_PULSE
 
 Memory observes MFB and AB to select a word.
 

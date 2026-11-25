@@ -34,18 +34,18 @@ IR_OPR_GROUP3 = 1
 
 A Group 3 instruction completes in FETCH and does not enter EXECUTE (`IR_CLASS = 101`, `IR_NO_EXECUTE = 1`).
 
-- In FETCH TS3 ([Fetch & Defer §3.3](../04-fetch-defer.md#33-ts3)):
+- In FETCH TS3 ([FETCH and DEFER Execution §3.3](../04-fetch-defer.md#33-ts3)):
   - the control store selects `OPR_PASS`, which loads AC from the OPR pass unit at TP3 (section 4); L is reloaded unchanged
   - `OPR_PASS_TO_MQ` loads MQ from the pass unit's MQ output at the same TP3; without MQL, the MQ output is MQ itself, so MQ is reloaded unchanged
-- The instruction completes at FETCH TP4 ([Sequencing and Internal Control §3.1.1](../../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#311-instruction-completion)).
+- The instruction completes at FETCH TP4 ([Sequencing and Internal Direct Control §3.1.1](../../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#311-instruction-completion)).
 
-This follows the KK8-E: MQA is an OR in the data-line multiplexer, and SWP uses two paths loaded at the same TP3.
+This follows the KK8-E: MQA is an OR in the data-line multiplexer (PDP-8/E Maintenance Manual, volume 1, §3.35.2, p. 3-127), and SWP uses two paths loaded at the same TP3 (§3.40, p. 3-144).
 
 ---
 
 ## 4. OPR Pass
 
-A Group 3 instruction selects these functions of the OPR pass unit ([Group 1 Execution §4](./01-group1-execution.md#4-opr-pass)):
+A Group 3 instruction selects these functions of the OPR pass unit ([OPR Pass Unit §4](./00-pass-unit.md#4-stage-selection)):
 
 | Stage | Function | Selected by |
 |---|---|---|

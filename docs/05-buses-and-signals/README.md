@@ -14,7 +14,7 @@ Includes:
 - Memory, I/O, and DMA interface participation models
 
 Excludes:
-- Control signal semantics ([../04-control/README.md](../04-control/README.md))
+- Control signal semantics ([Control](../04-control/README.md))
 - Timing behavior ([../09-timing/README.md](../09-timing/README.md))
 - Register definitions ([../01-architecture/01-registers.md](../01-architecture/01-registers.md))
 

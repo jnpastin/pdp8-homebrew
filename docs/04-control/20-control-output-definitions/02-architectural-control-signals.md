@@ -65,15 +65,15 @@ The control word may take transient values for up to `T_CS` after each TS bounda
 |---|---|
 | `/RD` | the control word asserts it, `CW_VALID` is asserted, and the CPU is not in the EXECUTE of an IOT |
 | `/DB_READ` | `IOT_TRANSFER = READ` and `DB_VALID` is asserted |
-| `/DB_WRITE` | `IOT_TRANSFER = WRITE` and `DB_VALID` is asserted |
+| `/DB_WRITE`, and the CPU's drive of AC onto DB | `IOT_TRANSFER = WRITE` and `DB_VALID` is asserted |
 | CPU drive onto MDB (`MDB_SRC` = MB or FP_SR) | the control word selects it, `CW_VALID` is asserted, and the CPU is not in the EXECUTE of an IOT |
 | `/WR` | the control word asserts it; memory acts on it only during `/WR_PULSE`, so it needs no window |
-| `/INITIALIZE`, CAF and front-panel CLEAR | `INITIALIZE_ASSERTED` (section 4.9), decoded by gates, and `CW_VALID` is asserted |
+| `/INITIALIZE`, CAF and front-panel CLEAR and START | `INITIALIZE_ASSERTED` (section 4.9), decoded by gates, and `CW_VALID` is asserted |
 | `/INITIALIZE`, power-on | the power-on reset is active ([Timing Terminology §3.4](../../09-timing/01-terminology.md#34-power-on-reset)) |
 | `/DMA_GRANT`, `IOT_ACTIVE`, `INSTR_END` | always; derived from registered state, so they do not glitch (sections 4.5, 4.8, and 4.10) |
 | `IOA`, `IOP` | always; taken from IR |
 
-Each window is a gate on the signal: an OR with the inverted window for an active-low signal, an AND for an active-high one. The DB strobes are decoded outside the control store, because the control-store address carries controller responses that may change while their window is open. The control word's `/DB_READ` and `/DB_WRITE` fields specify the same values. `/INITIALIZE` is decoded for the same reason. `/RD` and the MDB drive are gated off by `MS_EFF_IS_EXECUTE AND IR_IS_IOT`, so a changing response or request cannot glitch them. An IOT's EXECUTE has no memory operation. The gate does not act in FETCH, so the IOT itself is read normally, nor in DEFER, INTERRUPT, DMA, or while halted.
+Each window is a gate on the signal: an OR with the inverted window for an active-low signal, an AND for an active-high one. The DB strobes are decoded from `IOT_TRANSFER` outside the control store, because the control-store address carries controller responses that may change while their window is open. They are not control-word fields. `/INITIALIZE` is decoded for the same reason. `/RD` and the MDB drive are gated off by `MS_EFF_IS_EXECUTE AND IR_IS_IOT`, so a changing response or request cannot glitch them. An IOT's EXECUTE has no memory operation. The gate does not act in FETCH, so the IOT itself is read normally, nor in DEFER, INTERRUPT, DMA, or while halted.
 
 Timing definitions:
 - [Timing Model](../../09-timing/README.md)
@@ -193,7 +193,7 @@ When asserted:
 **Bit Width:** 1
 
 **Default Value:** 1  
-**Explicit Value Required:** Yes  
+**Explicit Value Required:** No  
 **Value Required When:** Always  
 
 **Encoding:**
@@ -202,7 +202,7 @@ When asserted:
 1 → deasserted
 ```
 
-**Description:** Indicates that the CPU is performing an I/O read operation and will sample the System Data Bus (DB) during this timing state.
+**Description:** Indicates that the CPU is performing an I/O read operation and will sample the System Data Bus (DB) during this timing state. It is decoded from `IOT_TRANSFER = READ` within `DB_VALID` (section 3.2), not stored in the control word.
 
 **Polarity:** Active-low (/DB_READ)
 
@@ -220,9 +220,6 @@ When asserted:
 - CPU must not drive DB while /DB_READ is asserted
 - DB must be driven by at most one external device
 
-**Used by μops:**
-- [DB_READ_TO_AC](../../03-microarchitecture/02-micro-operations.md#db_read_to_ac) = 0
-
 ---
 
 ### 4.4 /DB_WRITE
@@ -234,7 +231,7 @@ When asserted:
 **Bit Width:** 1
 
 **Default Value:** 1  
-**Explicit Value Required:** Yes  
+**Explicit Value Required:** No  
 **Value Required When:** Always  
 
 **Encoding:**
@@ -243,27 +240,21 @@ When asserted:
 1 → deasserted
 ```
 
-**Description:** Indicates that the CPU is performing an I/O write operation and will drive the System Data Bus (DB) during this timing state.
+**Description:** Indicates that the CPU is performing an I/O write operation and will drive the System Data Bus (DB) during this timing state. It is decoded from `IOT_TRANSFER = WRITE` within `DB_VALID` (section 3.2), not stored in the control word, and the same decode enables the CPU's drive of AC onto DB. No micro-operation is involved.
 
 **Polarity:** Active-low (/DB_WRITE)
 
 **Role:**
 - Enables CPU-driven output onto DB
-- Must be paired with DB_WRITE_FROM_AC for valid operation
 
 **Behavior:**
-- When asserted, the CPU drives DB using the value contained in AC via DB_WRITE_FROM_AC
+- When asserted, the CPU drives DB with the value contained in AC
 - Selected I/O devices may capture DB during this interval
 
 **Constraints:**
 - Must not be asserted concurrently with /DB_READ
-- Must not be asserted without DB_WRITE_FROM_AC
 - CPU is the sole driver of DB when this signal is asserted
 - External devices must not drive DB during this interval
-
-**Used by μops:**
-
-- [DB_WRITE_FROM_AC](../../03-microarchitecture/02-micro-operations.md#db_write_from_ac) = 0
 
 ---
 
@@ -344,9 +335,8 @@ Controller selection uses the grant identity defined in [DMA Arbitration](../../
 
 Properties:
 
-- derived directly from IR
-- driven by control during EXECUTE
-- used by external devices to determine selection
+- `IR[8:3]`, presented at all times ([section 3.2](#32-timing-model)); no micro-operation or control-word field drives it
+- used by external devices to determine selection, only while `IOT_ACTIVE` is asserted
 
 **Preconditions**
 
@@ -414,7 +404,7 @@ Defined in:
 **Explicit Value Required:** No  
 **Value Required When:** Always  
 
-**Description:** Identifies execution of an external IOT and qualifies IOA, IOP, controller responses, and I/O wait behavior.
+**Description:** Identifies execution of an external IOT and qualifies IOA, IOP, and the controller responses. The external-IOT timing is fixed; there is no wait signal ([I/O Timing §5](../../07-io/03-io-timing.md)).
 
 **Derivation:**
 
@@ -440,7 +430,6 @@ IOT_ACTIVE = MS_EFF_IS_EXECUTE AND IR_IS_EXTERNAL_IOT
 
 - external I/O controllers
 - external IOT response qualification
-- I/O wait qualification
 
 ---
 
@@ -457,11 +446,12 @@ IOT_ACTIVE = MS_EFF_IS_EXECUTE AND IR_IS_EXTERNAL_IOT
 **Explicit Value Required:** Yes  
 **Value Required When:** Always  
 
-**Description:** System-wide reset signal to the I/O controllers, asserted by CAF, an accepted front-panel CLEAR operation, or the power-on reset.
+**Description:** System-wide reset signal to the I/O controllers, asserted by CAF, an accepted front-panel CLEAR or START operation, or the power-on reset.
 
 **Sources:**
 - CAF during EXECUTE TS4
 - an accepted front-panel CLEAR operation during its console transaction while RUN = 0
+- an accepted front-panel START operation during its console transaction while RUN = 0: START is CLEAR then CONTINUE in one key
 - the power-on reset, which ends with a CLEAR transaction ([Timing Terminology §3.4](../../09-timing/01-terminology.md#34-power-on-reset))
 
 **Assertion Condition:**
@@ -476,18 +466,18 @@ INITIALIZE_ASSERTED =
     OR
     (
         RUN = 0
-        AND FP_CLEAR
+        AND (FP_CLEAR OR FP_START)
     )
 ```
 
 `/INITIALIZE` is asserted when `INITIALIZE_ASSERTED = 1` and deasserted otherwise. The power-on reset also asserts it, while the reset is active ([Timing Terminology §3.4](../../09-timing/01-terminology.md#34-power-on-reset)); the reset is not a control input, so it is not part of this equation.
 
-While halted, `FP_CLEAR` is the latched accepted console command ([External Inputs §4.1](../10-control-input-definitions/04-external-inputs.md#41-console-command-acceptance)). It is held for one console transaction and is not stored as a pending request.
+While halted, `FP_CLEAR` and `FP_START` are the latched accepted console command ([External Inputs §4.1](../10-control-input-definitions/04-external-inputs.md#41-console-command-acceptance)). It is held for one console transaction and is not stored as a pending request.
 
 **Behavior:**
 - causes each I/O controller to enter its documented initialized state
 
-The CPU's AC, L, and IE are cleared by the `AC_CLEAR`, `L_CLEAR`, and `IE_CLEAR` micro-operations of CAF and CLEAR in the same TS, including the CLEAR that ends the power-on reset; `/INITIALIZE` has no direct CPU-register effect.
+The CPU's AC, L, and IE are cleared by the `AC_CLEAR`, `L_CLEAR`, and `IE_CLEAR` micro-operations of CAF, CLEAR, and START in the same TS, including the CLEAR that ends the power-on reset; `/INITIALIZE` has no direct CPU-register effect.
 
 **Preserved Processor State:**
 - II
@@ -499,7 +489,7 @@ The CPU's AC, L, and IE are cleared by the `AC_CLEAR`, `L_CLEAR`, and `IE_CLEAR`
 
 **Timing:**
 - CAF asserts /INITIALIZE during EXECUTE TS4; resulting state changes commit at TP4, and /INITIALIZE is deasserted when TS4 ends
-- an accepted front-panel CLEAR operation asserts /INITIALIZE for its whole console transaction while the processor is halted ([Major State Timing §8](../../09-timing/03-major-state-timing.md#8-halted-state-and-console-transactions)); resulting state changes commit at the console TP (TPC), and /INITIALIZE is deasserted when the transaction ends
+- an accepted front-panel CLEAR or START operation asserts /INITIALIZE for its whole console transaction while the processor is halted ([Major State Timing §8](../../09-timing/03-major-state-timing.md#8-halted-state-and-console-transactions)); resulting state changes commit at the console TP (`TP_FP`), and /INITIALIZE is deasserted when the transaction ends
 - /INITIALIZE is sampled only at that TP; controllers must not act on its level before the TP
 
 **Priority:**
@@ -507,13 +497,13 @@ The CPU's AC, L, and IE are cleared by the `AC_CLEAR`, `L_CLEAR`, and `IE_CLEAR`
 - only the controller's documented initialized state commits
 
 **Constraints:**
-- front-panel CLEAR is accepted only when RUN = 0
-- front-panel CLEAR is ignored when RUN = 1
-- one /INITIALIZE assertion is generated per distinct accepted front-panel CLEAR press
-- a held front-panel CLEAR input must not generate repeated /INITIALIZE assertions
-- front-panel CLEAR is re-armed only after the synchronized input is released
+- front-panel CLEAR and START are accepted only when RUN = 0
+- front-panel CLEAR and START are ignored when RUN = 1
+- one /INITIALIZE assertion is generated per distinct accepted front-panel CLEAR or START press
+- a held front-panel CLEAR or START input must not generate repeated /INITIALIZE assertions
+- front-panel CLEAR and START are re-armed only after the synchronized input is released
 - CAF has no effect unless execution reaches EXECUTE TP4
-- CAF and front-panel CLEAR produce the same initialization result
+- CAF, front-panel CLEAR, and front-panel START produce the same controller initialization
 - /INITIALIZE does not modify II, CIFP, DIF, IF, DF, or IB
 - controller-specific initialized states are defined in the corresponding controller documents
 
@@ -548,7 +538,7 @@ INSTR_END =
 
 `INSTR_END` is decoded by gates from `MS_EFF`, TS, and the predecodes `IR_NO_EXECUTE` and `IR_INDIRECT` ([IR-Derived Fields](../10-control-input-definitions/02-ir-derived-fields.md#ir_no_execute)). Every input is registered state that changes only as a TP ends, so `INSTR_END` does not glitch within a TS. It is not stored in the control word: a control-store output would feed back through the arbiter's `DMA_ENABLE` and aggregate `/DMA_REQ` into the sequencer slice's address within the same TS4. It is deasserted while halted (`MS_EFF = HALTED`).
 
-The derivation restates the instruction-completion condition of [Sequencing and Internal Control §3](../30-direct-control-definitions/01-sequencing-and-internal-control.md#3-sequencing-control); the two must agree.
+The derivation restates the instruction-completion condition of [Sequencing and Internal Direct Control §3](../30-direct-control-definitions/01-sequencing-and-internal-control.md#3-sequencing-control); the two must agree.
 
 **Timing**
 - asserted for the whole of the TS4 that ends an instruction

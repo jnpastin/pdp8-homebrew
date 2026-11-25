@@ -166,7 +166,7 @@ The controller enters its initialized state when /INITIALIZE is asserted.
 | Shared interrupt enable | Set |
 | Controller interrupt contribution | Inactive |
 
-Initialization sets the shared interrupt enable, as on the PDP-8/e, where INITIALIZE sets the PC8-E interrupt enable. Software disables the controller's interrupt contribution with PCE and enables it again with RPE. Both flags are clear after initialization, so no interrupt request results until a flag sets.
+Initialization sets the shared interrupt enable, as on the PDP-8/E, where the PC8-E is connected to the interrupt system "by a previous 6010 instruction, or by the INITIALIZE signal" (PDP-8/E Maintenance Manual, volume 3, §1.4, p. 2-2). Software disables the controller's interrupt contribution with PCE and enables it again with RPE. Both flags are clear after initialization, so no interrupt request results until a flag sets.
 
 The reader flag remains clear until a reader operation completes.  
 The punch flag remains clear until a punch operation completes.  
@@ -330,6 +330,8 @@ No controller response signal is required.
 ---
 
 ## 15. RRB RFC
+
+A character requested by this RFC cannot arrive at the TP that requests it, so preserving the old reader buffer through TP4 does not conflict with the event-wins rule of section 9.2.
 
 ### 15.1 Controller Contract
 

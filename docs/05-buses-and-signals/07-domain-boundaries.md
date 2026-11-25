@@ -49,6 +49,7 @@ The Address Domain consists of signals used to transport addresses within the sy
 This domain is represented by:
 
 - AB
+- MFB, the memory field that extends AB
 
 Defined in:
 

@@ -29,7 +29,7 @@ The main danger is that the extractors read ordinary Markdown. A sentence, a bol
 | `07-io` | The contracts with controllers and the DMA arbiter | Controller implementation |
 | `08-interrupts-and-skip` | How interrupts and skips work across the sections above | New register, instruction, or signal definitions |
 | `09-timing` | When events happen, and how long they take | What the events do |
-| `10` to `13`, `appendices` | Panel, physical design, verification, plan, supporting material | Architecture |
+| later sections, when written | Panel, physical design, verification, plan | Architecture |
 
 ### 2.2 Authority
 

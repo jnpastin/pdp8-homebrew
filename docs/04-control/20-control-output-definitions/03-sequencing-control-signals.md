@@ -113,7 +113,7 @@ Defined in:
 
 **Default Value:** 0  
 **Explicit Value Required:** Yes  
-**Value Required When:** TS=4  
+**Value Required When:** MS_LOAD=1  
 
 **Description:** Specifies the next Major State.
 
@@ -250,7 +250,7 @@ Defined in:
 
 **Used for**
 - every major-state transition at TP4 while running
-- front-panel START
+- front-panel START, EXAMINE, and DEPOSIT, which load FETCH at TP_FP
 
 ---
 

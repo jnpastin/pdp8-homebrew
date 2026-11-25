@@ -77,7 +77,7 @@ Control Decisions:
         MS_NEXT ← FETCH
 
 Description:
-- Continues the burst or returns to FETCH; see [Sequencing and Internal Control §3.2.9 and §3.2.10](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#329-dma-continuation).
+- Continues the burst or returns to FETCH; see [Sequencing and Internal Direct Control §3.2.9 and §3.2.10](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#329-dma-continuation).
 
 ---
 
@@ -92,8 +92,8 @@ When Single Step halts at DMA TP4 while the burst continues, `MS` holds `DMA`:
 - The arbiter keeps `DMA_GRANT_ID`, its burst-enabled state, and its burst count.
 - Console Examine and Deposit use the memory interface normally, and load FETCH as the held major state.
 - CONTINUE, with no EXAMINE or DEPOSIT since the halt, resumes at DMA TS1 with `/DMA_GRANT` asserted, and the burst continues with the same selection.
-- START, or CONTINUE after an EXAMINE or DEPOSIT, resumes at FETCH TS1. The selection is kept, and the burst continues at the next DMA entry, if its controller still requests then ([DMA Arbitration §13.3](../07-io/06-dma-arbitration.md#133-held-selection-without-a-request)).
-- CLEAR initializes the controllers and the arbiter ([DMA Arbitration §13.2](../07-io/06-dma-arbitration.md#132-system-initialization)), so a later CONTINUE runs one DMA major state with no selected controller.
+- CONTINUE after an EXAMINE or DEPOSIT resumes at FETCH TS1. The selection is kept, and the burst continues at the next DMA entry, if its controller still requests then ([DMA Arbitration §13.3](../07-io/06-dma-arbitration.md#133-held-selection-without-a-request)).
+- CLEAR and START initialize the controllers and the arbiter ([DMA Arbitration §13.2](../07-io/06-dma-arbitration.md#132-system-initialization)), which cancels the burst. A CONTINUE after CLEAR runs one DMA major state with no selected controller; START begins at FETCH.
 
 ---
 

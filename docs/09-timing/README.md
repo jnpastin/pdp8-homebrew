@@ -8,7 +8,7 @@ Defines when operations occur.
 ## 2. Core Rules
 - TS defines setup windows
 - TP defines state transitions
-- All state changes occur on TP
+- All state changes occur at TP: captured at its leading edge, visible as it ends ([Timing Architecture §7.6](./02-timing-architecture.md#76-rule-6--two-ranks))
 
 ---
 
@@ -17,7 +17,7 @@ Defines when operations occur.
 - Event ordering
 
 Excludes:
-- Behavior ([../04-control/README.md](../04-control/README.md))
+- Behavior ([Control](../04-control/README.md))
 
 ---
 

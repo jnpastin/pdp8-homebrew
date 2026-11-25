@@ -11,10 +11,13 @@ stays busy for the whole frame (11 bits at 110 baud, 10 above). The default of 9
 in the window MAINDEC-8E-D2AB accepts for a PDP-8/E KL8-E (no earlier than 9, no later than 9.55
 bit times after TLS), and back-to-back characters complete one frame apart, as D2AB expects.
 
-`at_boundary(now_ns)` is called after the TP4 of each EXECUTE or INTERRUPT major state, so the
-instruction-level reference model completes a character at the same instruction.
+`at_boundary(now_ns)` is called after each TP4 that completes an instruction (INSTR_END) and
+after INTERRUPT TP4, so the instruction-level reference model completes a character at the same
+instruction.
 
-Keyboard input arrives through `type_character()`.
+Keyboard input arrives through `type_character()`, visible at once, as if it had arrived at an
+earlier TP, or `arrive_at_next_tp()`, visible at the next TP after that TP's IOT clears, so a
+character that arrives at the TP of a KCF or KCC sets the flag (Controller Contract §5.1).
 """
 
 from __future__ import annotations
@@ -50,6 +53,7 @@ class KL8E:
                                           # (0 while pending, with a baud rate)
         self.output_due = None            # with a baud rate: the time its flag sets
         self._transfer = None             # "read" or "write" accepted for the TS after TP2/TP3
+        self._arriving = None             # a keyboard character that becomes visible at the next TP
         self._asserted = Response()
 
     def state(self) -> dict:
@@ -67,6 +71,12 @@ class KL8E:
         if not self.keyboard_flag:
             self.keyboard_buffer = char & 0o377
             self.keyboard_flag = 1
+
+    def arrive_at_next_tp(self, char: int):
+        """A character arrives, synchronized to the next TP (KL8E §25). It commits after that TP's
+        IOT clears, so the event wins (Controller Contract §5.1); it is rejected if the flag was
+        set before that TP (KL8E §9.2, §9.3), and /INITIALIZE at that TP cancels it (§8)."""
+        self._arriving = char & 0o377
 
     def at_boundary(self, now_ns: int = 0):
         if self.output_countdown is None:
@@ -126,9 +136,18 @@ class KL8E:
 
     def commit(self, bus: BusView, tp, db_write, initialize: bool):
         """Commit at TP1-TP4 (`tp` = 1..4) or the console TP (`tp` = "C")."""
+        arriving, self._arriving = self._arriving, None
         if initialize:                                           # KL8E §8: overrides everything else
             self.initialize()
             return
+        flag_before = self.keyboard_flag
+        self._commit_iot(bus, tp, db_write)
+        if arriving is not None and not flag_before:             # Controller Contract §5.1: after
+            self.keyboard_buffer = arriving                      # the clears, so the event wins
+            self.keyboard_flag = 1
+
+    def _commit_iot(self, bus: BusView, tp, db_write):
+        """The selected IOT's commits at this TP."""
         sel = self._selected(bus)
         if sel is None:
             self._transfer = None

@@ -20,7 +20,7 @@ The rules below are the ones most designs break. The sections that follow state 
 2. Every decision is made by selecting a control word in the control store. The only exceptions are the realizations in [Control Model §8.4](./01-control-model.md#84-realizations-outside-the-control-word) (section 8).
 3. Everything a TS uses was committed by the previous TP; nothing commits or selects during a TS (sections 4 and 11).
 4. `MS_NEXT`, `RUN_NEXT`, and `HLT_REQ_NEXT` come only from the control store (section 9).
-5. A register load has exactly one source, and a bus has at most one driver ([MCS §6.5 and §6.6](./20-control-output-definitions/01-microarchitectural-control-signals.md#65-idb-internal-data-bus-constraints)).
+5. A register load has exactly one source, and a bus has at most one driver ([Microarchitectural Control Signals §6.5 and §6.6](./20-control-output-definitions/01-microarchitectural-control-signals.md#65-idb-internal-data-bus-constraints)).
 6. Memory transfers and external-IOT responses commit only at the TPs their binding rules assign (section 12).
 7. A new behavior adds decisions to the control store, never logic outside it (section 14).
 
@@ -101,7 +101,7 @@ Constraint:
 ## 6. IR_FIELDS Constraints
 
 Defined in:
-- [IR Derived Fields](10-control-input-definitions/02-ir-derived-fields.md)
+- [IR-Derived Fields](10-control-input-definitions/02-ir-derived-fields.md)
 
 Additional constraints:
 
@@ -295,7 +295,7 @@ Where:
 
 The following are invalid and must not occur:
 
-- /RD = 0 without MEM_READ_TO_MB or MS = DMA  
+- /RD = 0 without MEM_READ_TO_MB  
   → external read initiated with no defined data consumption
 
 - MEM_READ_TO_MB without /RD = 0  
@@ -319,7 +319,8 @@ A memory write operation is defined by the combination of:
 Effective control required for memory writes:
 - /WR + MDB_SRC = MB + MEM_WRITE_FROM_MB
 - /WR + MDB_SRC = FP_SR + MEM_WRITE_FROM_FP_SR
-- /WR + MDB_SRC = DMA + MS = DMA
+
+In `MS = DMA` the CPU asserts neither `/RD` nor `/WR` and releases its memory-interface drivers; the DMA controller drives them ([DMA Execution §2](../03-microarchitecture/10-dma-execution.md)).
 
 
 #### Required Behavior
@@ -364,7 +365,7 @@ During external-IOT EXECUTE:
 - CPU control may accept `IO_READ_REQ` or `IO_WRITE_REQ` at TP2 or TP3.
 - At the acceptance TP, CPU control records the accepted transfer direction in `IOT_TRANSFER`.
 - During the immediately following TS, `IOT_READ_PENDING` selects `/DB_READ` and `DB_READ_TO_AC`.
-- During the immediately following TS, `IOT_WRITE_PENDING` selects `/DB_WRITE` and `DB_WRITE_FROM_AC`.
+- During the immediately following TS, `IOT_WRITE_PENDING` asserts the decoded `/DB_WRITE`, and the CPU drives AC onto DB; no micro-operation is selected.
 - The DB transfer depends on committed `IOT_TRANSFER` state, not directly on the current request inputs.
 - At the transfer commit TP, `IOT_TRANSFER` clears to `NONE` unless a new request is accepted at that TP.
 - When transfer completion and request acceptance occur at the same TP, the newly accepted transfer replaces the completed transfer.
@@ -411,7 +412,7 @@ Constraints:
 ## 13. External Inputs (EXT)
 
 Constraint:
-- EXT must be stable during control evaluation.
+- EXT must be stable at least `T_CS` before the TP that accepts it ([External Inputs §2](./10-control-input-definitions/04-external-inputs.md#2-timing-model)).
 
 Constraint:
 - EXT must be captured at a TP, or be a registered controller output that changes only as a TP ends ([External Inputs §2](./10-control-input-definitions/04-external-inputs.md#2-timing-model)).
@@ -482,7 +483,7 @@ Constraint:
 
 Constraint:
 - The following are prohibited when extending control:
-  - post-ROM decision logic
+  - post-ROM decision logic, beyond the realizations listed in [Control Model §8.4](./01-control-model.md#84-realizations-outside-the-control-word)
   - hidden decoding stages
   - implicit interpretation of CONTROL_WORD fields
 

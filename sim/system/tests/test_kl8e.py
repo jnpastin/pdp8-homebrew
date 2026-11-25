@@ -18,10 +18,10 @@ def run(blocks, kl=None, steps=200, typed=None):
     m = Machine(load_store(), devices=[kl])                 # power-on initializes the controller
     for (f, a), words in blocks.items():
         m.deposit_block(a, words, instruction_field=f)
-    if typed is not None:
-        kl.type_character(typed)
     m.load_address(0o200)
-    m.start()
+    m.start()                                               # START initializes the controller
+    if typed is not None:
+        kl.type_character(typed)                            # so the key arrives after START
     Lockstep(m).run(steps)
     return m, kl
 

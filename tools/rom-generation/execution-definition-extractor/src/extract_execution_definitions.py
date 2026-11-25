@@ -161,15 +161,6 @@ PHASE_BINDINGS = (
         (3, 4),
         {"predicate": "IOT_READ_PENDING = 1", "micro_operation": "DB_READ_TO_AC"},
     ),
-    (
-        "- IOT_WRITE_PENDING selects /DB_WRITE and DB_WRITE_FROM_AC during "
-        "the transfer TS.",
-        (3, 4),
-        {
-            "predicate": "IOT_WRITE_PENDING = 1",
-            "micro_operation": "DB_WRITE_FROM_AC",
-        },
-    ),
 )
 
 # Console operations are single transactions with no timing state.

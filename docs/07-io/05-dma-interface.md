@@ -147,7 +147,7 @@ During TS4:
 - controllers establish their `/DMA_REQ[n]` outputs
 - the arbiter establishes `DMA_ENABLE`
 - combinational aggregation logic continuously derives aggregate `/DMA_REQ`
-- `/DMA_REQ[n]`, `DMA_ENABLE`, and aggregate `/DMA_REQ` settle before TP4
+- `/DMA_REQ[n]`, `DMA_ENABLE`, and aggregate `/DMA_REQ` are stable at least `T_CS` before TP4, the TP that accepts it ([External Inputs §2](../04-control/10-control-input-definitions/04-external-inputs.md#2-timing-model))
 
 At TP4, CPU control samples aggregate `/DMA_REQ` and commits:
 
@@ -158,7 +158,7 @@ At TP4, CPU control samples aggregate `/DMA_REQ` and commits:
 
 The selected controller and arbiter prepare all selection-release and ownership-release decisions before TP4.
 
-A controller that cannot immediately complete another transfer has deasserted its request since TP2 (section 6.3), so the arbiter ends the selection at TP3.
+A controller that cannot immediately complete another transfer has deasserted its request since TP2 (section 6.3), so the arbiter clears burst-enable at TP3 and releases the selection at TP4 ([DMA Arbitration §12](./06-dma-arbitration.md)).
 
 ---
 

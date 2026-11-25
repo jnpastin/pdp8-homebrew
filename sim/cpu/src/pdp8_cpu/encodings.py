@@ -42,12 +42,11 @@ def _f(name, width, values, cite):
     return FieldDef(name, width, dict(values), cite)
 
 
-# Datapath-slice fields (CSO §4.2), encodings from MCS §5 and ACS §4.1-§4.4.
+# Datapath-slice fields (CSO §4.2), encodings from MCS §5 and ACS §4.1-§4.2. /DB_READ and
+# /DB_WRITE are decoded from IOT_TRANSFER, not control-word fields (ACS §3.2), except in v1.
 DATAPATH_FIELDS = {f.name: f for f in [
     _f("/RD", 1, ACTIVE_LOW, "ACS §4.1"),
     _f("/WR", 1, ACTIVE_LOW, "ACS §4.2"),
-    _f("/DB_READ", 1, ACTIVE_LOW, "ACS §4.3"),
-    _f("/DB_WRITE", 1, ACTIVE_LOW, "ACS §4.4"),
     _f("AB_SRC", 1, {0: "MA", 1: "PC"}, "MCS AB_SRC"),
     _f("AC_LOAD", 1, LOAD, "MCS AC_LOAD"),
     _f("AC_SRC", 3, {0: "IDB", 1: "DB", 2: "IF (field-merge)", 3: "DF (field-merge)",
@@ -110,6 +109,8 @@ _DESIGN_OVERRIDES = {
                                    **{c: "reserved" for c in range(0o13, 0o20)}}, "MCS ALU_OP"),
         "L_OP": _f("L_OP", 2, {0: "CLEAR", 1: "COMP", 2: "ALU_LINK", 3: "AC[11]"}, "MCS L_OP"),
         "MQ_SRC": _f("MQ_SRC", 1, {0: "IDB", 1: "AC"}, "MCS MQ_SRC"),
+        "/DB_READ": _f("/DB_READ", 1, ACTIVE_LOW, "ACS §4.3"),
+        "/DB_WRITE": _f("/DB_WRITE", 1, ACTIVE_LOW, "ACS §4.4"),
     },
 }
 

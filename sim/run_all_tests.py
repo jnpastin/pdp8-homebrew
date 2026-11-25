@@ -6,6 +6,8 @@
     python sim/run_all_tests.py --quick         # skip the system suite (about 6 minutes per design)
     python sim/run_all_tests.py --build         # first pack each design (pipeline dry runs)
     PDP8_LONG_TESTS=1 python sim/run_all_tests.py   # also D2AB timing (use PyPy)
+    PDP8_FULL_PASSES=short python sim/run_all_tests.py   # also MAINDEC full passes, about 15 min
+                                                         # (all: 2 to 3 hours; PyPy)
 
 Each design's suites run with PDP8_DESIGN set (sim/cpu/src/pdp8_cpu/design.py). The
 ROM-generation tool tests run once; they do not depend on the design. Exit status 0 when every

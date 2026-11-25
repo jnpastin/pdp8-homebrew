@@ -502,7 +502,7 @@
       ],
       "conditional_micro_operations": [
         {
-          "predicate": "IF_CHANGE_PENDING = 1",
+          "predicate": "CIFP = 1",
           "micro_operation": "DIF_TO_IF"
         },
         {
@@ -626,10 +626,6 @@
         {
           "predicate": "IOT_READ_PENDING = 1",
           "micro_operation": "DB_READ_TO_AC"
-        },
-        {
-          "predicate": "IOT_WRITE_PENDING = 1",
-          "micro_operation": "DB_WRITE_FROM_AC"
         }
       ]
     },
@@ -658,10 +654,6 @@
         {
           "predicate": "IOT_READ_PENDING = 1",
           "micro_operation": "DB_READ_TO_AC"
-        },
-        {
-          "predicate": "IOT_WRITE_PENDING = 1",
-          "micro_operation": "DB_WRITE_FROM_AC"
         }
       ]
     },
@@ -1444,7 +1436,7 @@
       "id": "console:6",
       "source": {
         "path": "docs/03-microarchitecture/09-console-execution.md",
-        "line": 159
+        "line": 137
       },
       "execution_model": "console-transaction",
       "context": [
@@ -1465,7 +1457,7 @@
       "id": "console:7",
       "source": {
         "path": "docs/03-microarchitecture/09-console-execution.md",
-        "line": 199
+        "line": 177
       },
       "execution_model": "console-transaction",
       "context": [
@@ -1475,7 +1467,6 @@
       "timing_state": null,
       "micro_operations": [
         "PC_TO_MA",
-        "PC_TO_EA_ADDR",
         "PC_INC",
         "MEM_READ_TO_MB"
       ],
@@ -1485,7 +1476,7 @@
       "id": "console:8",
       "source": {
         "path": "docs/03-microarchitecture/09-console-execution.md",
-        "line": 236
+        "line": 212
       },
       "execution_model": "console-transaction",
       "context": [
@@ -1495,7 +1486,6 @@
       "timing_state": null,
       "micro_operations": [
         "PC_TO_MA",
-        "PC_TO_EA_ADDR",
         "PC_INC",
         "FP_SR_TO_MB",
         "MEM_WRITE_FROM_FP_SR"
@@ -1506,7 +1496,7 @@
       "id": "console:9",
       "source": {
         "path": "docs/03-microarchitecture/09-console-execution.md",
-        "line": 282
+        "line": 256
       },
       "execution_model": "console-transaction",
       "context": [
@@ -1525,7 +1515,7 @@
       "id": "console:10",
       "source": {
         "path": "docs/03-microarchitecture/09-console-execution.md",
-        "line": 333
+        "line": 309
       },
       "execution_model": "console-transaction",
       "context": [
@@ -1546,7 +1536,7 @@
       "id": "console:11",
       "source": {
         "path": "docs/03-microarchitecture/09-console-execution.md",
-        "line": 380
+        "line": 360
       },
       "execution_model": "console-transaction",
       "context": [
@@ -1561,7 +1551,7 @@
       "id": "console:15",
       "source": {
         "path": "docs/03-microarchitecture/09-console-execution.md",
-        "line": 559
+        "line": 539
       },
       "execution_model": "console-transaction",
       "context": [

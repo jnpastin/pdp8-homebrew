@@ -13,7 +13,7 @@ External inputs originate outside the CPU control system and influence control d
 Related:
 - [Control Model](../01-control-model.md)
 - [Control Constraints](../03-control-constraints.md)
-- [Console Microarchitecture](../../03-microarchitecture/09-console-execution.md)
+- [Console Execution](../../03-microarchitecture/09-console-execution.md)
 - [Primitive Flags](./01-flags.md)
 - [Derived Flags](./03-derived-flags.md)
 
@@ -21,7 +21,7 @@ Related:
 
 ## 2. Timing Model
 
-Every external input changes only as a TP ends and settles before the next TP, so control and the datapath use one value for each TS ([Timing Architecture §7.6](../../09-timing/02-timing-architecture.md#76-rule-6--two-ranks)). An input is made stable in one of three ways:
+Every external input is derived from state that changes only as a TP ends, so control and the datapath use one value for each TS ([Timing Architecture §7.6](../../09-timing/02-timing-architecture.md#76-rule-6--two-ranks)). An input addresses the control store, so a change must also leave time for the control word to settle again: an input must be stable at least `T_CS` before the TP that accepts it ([Timing Architecture §11.4](../../09-timing/02-timing-architecture.md#114-timing-budget)). A controller response, which can change during a TS, is the case this limits. An input is made stable in one of three ways:
 
 | Inputs | How they are made stable |
 |---|---|
@@ -32,7 +32,7 @@ Every external input changes only as a TP ends and settles before the next TP, s
 The panel input register has two ranks, like every register:
 
 - While running, it loads at every TP.
-- While halted, it loads when a console command is accepted: the capture rank on the clock edge that latches the command, the output rank one TCLK period later. The transaction's control word does not depend on it, and its TPC follows seven setup TSTEPs.
+- While halted, it loads when a console command is accepted: the capture rank on the clock edge that latches the command, the output rank one TCLK period later. The transaction's control word does not depend on it, and its console TP follows seven setup TSTEPs.
 - The switches are asynchronous to TCLK. A capture rank that goes metastable has at least one TSTEP to settle before the output rank takes its value.
 - A switch that changes too late for one capture is seen at the next.
 
@@ -105,7 +105,7 @@ The console command inputs seen by control are the latched accepted commands:
 **Type:** External Command Input  
 **Bit Width:** 1
 
-**Purpose:** Indicates that the operator has requested START from the front panel.
+**Purpose:** Indicates that the operator has requested START from the front panel. START is CLEAR then CONTINUE in one key: its console transaction asserts `/INITIALIZE` ([Console Execution §10](../../03-microarchitecture/09-console-execution.md#10-start-operation)).
 
 **Value Encoding:**
 - 0 → START command not asserted
@@ -150,9 +150,8 @@ The console command inputs seen by control are the latched accepted commands:
 FP_CLEAR is accepted as a console command ([§4.1](#41-console-command-acceptance)). One accepted press produces one console transaction, during which `/INITIALIZE` is asserted for the whole transaction.
 
 The accepted FP_CLEAR command:
-- includes the RUN = 0 acceptance qualification
+- is accepted only while RUN = 0 ([§4.1](#41-console-command-acceptance))
 - is not a pending request
-- is not accepted when RUN = 1
 - does not directly modify processor or controller state
 
 ### FP_CONTINUE
@@ -398,7 +397,7 @@ Front-panel data inputs provide externally selected values used by console opera
 - contributes to `CTRL_ADDR` formation
 - is derived combinationally from `DMA_ENABLE` and registered controller `/DMA_REQ[n]` outputs
 - must not pass through an additional stateful synchronization stage
-- must satisfy the applicable setup and hold requirements before CPU control samples it at TP4
+- must be stable at least `T_CS` before TP4, the TP that accepts it (section 2)
 - must not directly modify processor state
 - must not directly assert memory, address, or data-bus control
 - may be deasserted while controller `/DMA_REQ[n]` lines remain asserted when `DMA_ENABLE = 0`
@@ -421,9 +420,9 @@ Front-panel data inputs provide externally selected values used by console opera
 - [GTF_FLAGS](../20-control-output-definitions/01-microarchitectural-control-signals.md#gtf_flags)
 
 **Constraints:**
-- is the wired OR of registered controller interrupt outputs, which change only as a TP ends
+- is the wired-OR of registered controller interrupt outputs, which change only as a TP ends
 - must not pass through an additional stateful synchronization stage
-- must settle, through its pull-up ([Signal Conventions §7](../../00-overview/98-signal-conventions.md#7-pull-resistors)), before the TP at which control samples it
+- must settle, through its pull-up ([Signal Conventions §7](../../00-overview/98-signal-conventions.md#7-pull-resistors)), and be stable at least `T_CS` before the TP that accepts it (section 2)
 - must not directly modify processor state
 
 ---
@@ -469,7 +468,7 @@ Shared properties:
 - Phase-specific.
 - Mutually exclusive with `IO_WRITE_REQ`.
 - Must be asserted early enough for the complete DB transfer to occur within the current external-IOT EXECUTE major state.
-- Must be stable before and through the TP at which CPU control accepts the request.
+- Must be stable at least `T_CS` before the TP that accepts it (section 2).
 - Must not cause the controller to drive DB during the request phase.
 - Must not directly modify AC.
 - The selected controller drives DB only while CPU control asserts `/DB_READ` during the following transfer phase.
@@ -501,7 +500,7 @@ Shared properties:
 - Phase-specific.
 - Mutually exclusive with `IO_READ_REQ`.
 - Must be asserted early enough for the complete DB transfer to occur within the current external-IOT EXECUTE major state.
-- Must be stable before and through the TP at which CPU control accepts the request.
+- Must be stable at least `T_CS` before the TP that accepts it (section 2).
 - Must not cause the controller to capture DB during the request phase.
 - The selected controller captures DB only at the TP following the transfer phase in which CPU control asserts `/DB_WRITE`.
 
@@ -567,5 +566,5 @@ They:
 - originate outside the CPU control system
 - participate in the `EXT` input domain
 - may influence control decisions
-- must be stable during control evaluation
+- must be stable at least `T_CS` before the TP that accepts it (section 2)
 - must not directly modify processor state

@@ -21,7 +21,7 @@ The governing model is defined in the [Direct-Control Model](../07-direct-contro
 
 ## 2. Definition Documents
 
-### 2.1 Sequencing and Internal Control
+### 2.1 Sequencing and Internal Direct Control
 
 [Sequencing and Internal Direct Control](./01-sequencing-and-internal-control.md) defines:
 
@@ -36,7 +36,7 @@ The governing model is defined in the [Direct-Control Model](../07-direct-contro
 
 ---
 
-### 2.2 Interface and Ownership Control
+### 2.2 Interface and Ownership Direct Control
 
 [Interface and Ownership Direct Control](./02-interface-and-ownership-control.md) defines:
 
@@ -52,10 +52,8 @@ It also documents the ownership implications of micro-operation-controlled outpu
 
 - `/RD`
 - `/WR`
-- `/DB_READ`
-- `/DB_WRITE`
 
-Those outputs remain assigned by their applicable micro-operation mappings.
+Those outputs remain assigned by their applicable micro-operation mappings. `/DB_READ` and `/DB_WRITE` are decoded from `IOT_TRANSFER` ([Architectural Control Signals §3.2](../20-control-output-definitions/02-architectural-control-signals.md#32-timing-model)).
 
 ---
 
@@ -68,7 +66,7 @@ Those outputs remain assigned by their applicable micro-operation mappings.
 | `MS_NEXT` | [Next Major State](./01-sequencing-and-internal-control.md#32-next-major-state) |
 | `RUN_NEXT` | [Run-State Sequencing](./01-sequencing-and-internal-control.md#33-run-state-sequencing) |
 | `HLT_REQ_NEXT` | [Halt-Request Sequencing](./01-sequencing-and-internal-control.md#34-halt-request-sequencing) |
-| `MS_LOAD` | [Major-State Load While Running](./01-sequencing-and-internal-control.md#3211-major-state-load-while-running), [Start](./01-sequencing-and-internal-control.md#333-start) |
+| `MS_LOAD` | [Major-State Load While Running](./01-sequencing-and-internal-control.md#3211-major-state-load-while-running), [Examine and Deposit Return to FETCH](./01-sequencing-and-internal-control.md#3212-examine-and-deposit-return-to-fetch), [Start](./01-sequencing-and-internal-control.md#333-start) |
 
 ---
 
@@ -85,7 +83,7 @@ Those outputs remain assigned by their applicable micro-operation mappings.
 
 | Destination | Direct-control value | Definition |
 |---|---|---|
-| `IOT_TRANSFER_VAL` | `READ`, `WRITE`, or `NONE` | [Pending External-IOT Transfer Value](./01-sequencing-and-internal-control.md#55-pending-external-iot-transfer-value) |
+| `IOT_TRANSFER_LOAD`, `IOT_TRANSFER_VAL` | load with `READ`, `WRITE`, or `NONE` | [Pending External-IOT Transfer Value](./01-sequencing-and-internal-control.md#55-pending-external-iot-transfer-value) |
 
 
 ---
@@ -127,17 +125,14 @@ The direct-control definitions supplement the micro-operation mappings.
 
 They do not redefine assignments already completely supplied by a selected micro-operation.
 
-Example:
+Example: no micro-operation loads `IOT_TRANSFER`, so direct control supplies both the load and its value ([Sequencing and Internal Direct Control §5.5](./01-sequencing-and-internal-control.md#55-pending-external-iot-transfer-value)):
 
 ```text
-IOT_TRANSFER_CLEAR micro-operation mapping:
-    IOT_TRANSFER_LOAD = 1
-
-Direct-control value:
-    IOT_TRANSFER_VAL = NONE
+IOT_TRANSFER_LOAD = 1
+IOT_TRANSFER_VAL  = READ, WRITE, or NONE
 ```
 
-Instruction fields are not bound into control-word values; they reach registers through datapath sources such as `DF_SRC = IR_DF` ([Sequencing and Internal Control §5](./01-sequencing-and-internal-control.md#5-control-provided-internal-values)).
+Instruction fields are not bound into control-word values; they reach registers through datapath sources such as `DF_SRC = IR_DF` ([Sequencing and Internal Direct Control §5](./01-sequencing-and-internal-control.md#5-control-provided-internal-values)).
 
 ---
 
@@ -151,9 +146,7 @@ These include:
 
 - `/RD`
 - `/WR`
-- `/DB_READ`
-- `/DB_WRITE`
-- register load enables
+- register load enables, except `IOT_TRANSFER_LOAD` (section 3.3)
 - datapath source selectors completely defined by the selected micro-operation
 - fixed values completely defined by the selected micro-operation
 

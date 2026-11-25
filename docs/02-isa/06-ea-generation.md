@@ -1,6 +1,8 @@
 # Effective Address (EA) Generation Algorithm
 
-## 1. Scope
+## 1. Purpose
+
+Defines how the effective address of a memory-reference instruction is formed.
 
 Applies only to Memory Reference Instructions (MRI).  
 
@@ -82,7 +84,7 @@ If P = 1:
 EA_ADDR = IA[11:7] || offset
 ```
 
-IA is the address from which the instruction was fetched, the PC before it is incremented, so an instruction at the last word of a page addresses its own page ([Addressing Model §8](./05-addressing-model.md#8-direct-addressing-i--0)). The CPU holds it in MA from FETCH TP1.
+IA is the address from which the instruction was fetched, the PC before it is incremented, so an instruction at the last word of a page addresses its own page ([Addressing Model §4.2](./05-addressing-model.md#42-current-page)). How the CPU holds it is described in [FETCH and DEFER Execution](../03-microarchitecture/04-fetch-defer.md).
 
 ---
 

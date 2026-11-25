@@ -237,7 +237,7 @@ When RMF is used before the return:
 
 The field-change application and interrupt-inhibit behavior are defined in [Interrupt Enable and Inhibit](./03-interrupt-enable-and-inhibit.md).
 
-The JMP execution sequence is defined in [Fetch & Defer](../03-microarchitecture/04-fetch-defer.md): a direct JMP completes in FETCH and a JMP I in DEFER.
+The JMP execution sequence is defined in [FETCH and DEFER Execution](../03-microarchitecture/04-fetch-defer.md): a direct JMP completes in FETCH and a JMP I in DEFER.
 
 ## 15. Interrupt Re-enabling and Return Sequence
 
@@ -263,7 +263,7 @@ The ION delay ensures that `JMP I 0000` completes before another interrupt may b
 
 This sequence restores the saved field context, re-enables interrupts, and returns through the automatically preserved `PC`. It does not restore `AC`, `L`, or `MQ`. Software must restore any required general processor state before executing this sequence.
 
-The instruction semantics are defined in [IOT Instruction Detail](../02-isa/04-iot.md), and the execution behavior is defined in [IOT Execution](../03-microarchitecture/06-iot-execution.md) and, for the return JMP I, [Fetch & Defer](../03-microarchitecture/04-fetch-defer.md).
+The instruction semantics are defined in [IOT Instruction Detail](../02-isa/04-iot.md), and the execution behavior is defined in [IOT Execution](../03-microarchitecture/06-iot-execution.md) and, for the return JMP I, [FETCH and DEFER Execution](../03-microarchitecture/04-fetch-defer.md).
 
 ## 16. DMA During Interrupt Service
 

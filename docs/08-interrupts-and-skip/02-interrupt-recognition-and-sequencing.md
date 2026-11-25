@@ -46,7 +46,7 @@ An interrupt request must not cause entry into the INTERRUPT major state:
 - directly from a change in the aggregate interrupt request
 - directly from a controller state change
 
-An interrupt request that becomes valid before the instruction-completion TP4 sampling boundary may participate in that boundary's major-state transition decision, subject to the applicable setup and hold requirements.
+An interrupt request that becomes valid before the instruction-completion TP4 sampling boundary may participate in that boundary's major-state transition decision, provided it is stable at least `T_CS` before TP4, the TP that accepts it ([External Inputs §2](../04-control/10-control-input-definitions/04-external-inputs.md#2-timing-model)).
 
 An interrupt request that does not satisfy those requirements is not available for that decision and may be recognized at a later eligible boundary if it remains valid.
 
@@ -108,7 +108,7 @@ else:
 
 This expression defines the required sequencing result. Its implementation remains governed by the [Control Model](../04-control/01-control-model.md).
 
-CAF's `/INITIALIZE` clears IE and every controller interrupt request at its TP4, so an interrupt recognized there would enter the service routine with no requesting device. CAF therefore never selects INTERRUPT. This matches the PDP-8/e, where CAF asserts INITIALIZE at TP3 and it clears the interrupt-enable, delay, and request-synchronizing flip-flops before TP4.
+CAF's `/INITIALIZE` clears IE and every controller interrupt request at its TP4, so an interrupt recognized there would enter the service routine with no requesting device. CAF therefore never selects INTERRUPT. This matches the PDP-8/E, where CAF asserts INITIALIZE from its TP3 (PDP-8/E Maintenance Manual, volume 1, §3.41.4, p. 3-149) and INITIALIZE clears the interrupt-enable flip-flop (§3.42.1, p. 3-152) before TP4.
 
 Every other IOT that clears an interrupt condition commits the clear by TP3 ([Controller Contract §9.1](../07-io/04-controller-contract.md#91-interrupt-contribution)), so the decision at its TP4 sees it.
 
@@ -118,7 +118,7 @@ At INTERRUPT TP4, `MS_NEXT` is unconditionally `FETCH`. Interrupt and DMA eligib
 
 ## 7. Interrupt Precedence over DMA
 
-When `INTERRUPT_REQUEST_VALID` is asserted and aggregate `/DMA_REQ` is also asserted for the same instruction-completion TP4 decision:
+When `INTERRUPT_REQUEST_VALID` is asserted and aggregate `/DMA_REQ` is also asserted for the same instruction-completion TP4 decision, other than CAF's EXECUTE TP4 (section 6):
 
 - `MS_NEXT` must select `INTERRUPT`
 - `MS_NEXT` must not select `DMA`
@@ -180,8 +180,8 @@ The following invariants apply:
 - CAF's EXECUTE TP4 never selects INTERRUPT.
 - Interrupt recognition does not directly evaluate unreduced processor state.
 - A valid interrupt request selects exactly one next major state.
-- A valid interrupt request takes precedence over an asserted aggregate `/DMA_REQ`.
-- DMA is selected only when no valid interrupt request exists at the same recognition boundary.
+- A valid interrupt request takes precedence over an asserted aggregate `/DMA_REQ`, except at CAF's EXECUTE TP4 (section 6).
+- DMA is selected only when no valid interrupt request exists at the same recognition boundary, or at CAF's EXECUTE TP4.
 - FETCH is selected only when neither interrupt nor DMA service is selected.
 - Recognition selects INTERRUPT execution but does not perform interrupt-entry state changes.
 - Interrupt recognition does not identify, acknowledge, service, or clear an interrupting controller.
@@ -195,6 +195,6 @@ The following invariants apply:
 
 Interrupt recognition is a synchronous sequencing decision made at instruction-completion TP4.
 
-The decision uses the existing `INTERRUPT_REQUEST_VALID` derived flag. A valid interrupt request selects the INTERRUPT major state and takes precedence over an eligible DMA request. If no interrupt is valid, an asserted aggregate `/DMA_REQ` selects DMA. Otherwise, execution returns to FETCH.
+The decision uses the existing `INTERRUPT_REQUEST_VALID` derived flag. A valid interrupt request selects the INTERRUPT major state and takes precedence over an eligible DMA request, except at CAF's EXECUTE TP4 (section 6). If no interrupt is valid, an asserted aggregate `/DMA_REQ` selects DMA. Otherwise, execution returns to FETCH.
 
 Recognition selects the next major state only. Interrupt entry occurs during the subsequent INTERRUPT major state.

@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from . import derived as D
 from . import encodings as E
 from .errors import SpecViolation
 from .logic import bit, bits, u
@@ -89,6 +90,14 @@ class _Eval:
     def asserted(self, name):
         return self.f[name] == 0  # active-low strobes (ACS §3.1)
 
+    def db_strobes(self):
+        """ACS §3.2: /DB_READ and /DB_WRITE, decoded from IOT_TRANSFER (READ, WRITE) within DB_VALID.
+        In v1 they are control-word fields."""
+        if self.design.name == "v1":                     # V1-ONLY
+            return self.asserted("/DB_READ"), self.asserted("/DB_WRITE")
+        transfer = self.st["IOT_TRANSFER"]
+        return transfer == E.IOT_READ, transfer == E.IOT_WRITE
+
     def alu(self):
         """MCS §7.3.1, with operands selected by ALU_A_SRC and ALU_B_SRC."""
         if self._alu is None:
@@ -156,7 +165,8 @@ class _Eval:
         """DMX §2: during DMA, CPU control performs no datapath work and holds its MFB, AB, MDB,
         /RD, and /WR drivers released (DMA §3); the selected controller owns the memory."""
         f = self.f
-        driven = [s for s in ("/RD", "/WR", "/DB_READ", "/DB_WRITE") if self.asserted(s)]
+        driven = [s for s in ("/RD", "/WR") if self.asserted(s)]
+        driven += [s for s, on in zip(("/DB_READ", "/DB_WRITE"), self.db_strobes()) if on]
         if self.cpu_mdb_drive()[0]:
             driven.append("MDB")
         loads = [name for name, v in f.items() if (name.endswith("_LOAD") or name == "PC_INC") and v]
@@ -167,6 +177,10 @@ class _Eval:
 
     def run(self) -> Effects:
         f, st, fx = self.f, self.st, self.fx
+        if self.design.name == "v1":                     # V1-ONLY: the strobe fields
+            D.check_db_strobes(f["/DB_READ"], f["/DB_WRITE"], st["IOT_TRANSFER"])
+        D.check_iot_gate(int(self.mseff == E.EXECUTE), self.cond.get("IR_IS_IOT"),
+                         self.asserted("/RD"), self.cpu_mdb_drive()[0])
         if self.mseff == E.DMA:
             return self.dma_released()
 
@@ -185,7 +199,7 @@ class _Eval:
             fx.mem_write = (address[0], address[1], value)
             fx.strobes["/WR"] = True
 
-        dbr, dbw = self.asserted("/DB_READ"), self.asserted("/DB_WRITE")
+        dbr, dbw = self.db_strobes()
         if dbr and dbw:
             raise SpecViolation("/DB_READ and /DB_WRITE asserted together", "ACS §4.3, §4.4")
         if dbw:

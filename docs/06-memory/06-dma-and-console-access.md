@@ -25,6 +25,7 @@ From the memory subsystem perspective, all memory operations are defined by the 
 - MDB
 - /RD
 - /WR
+- /WR_PULSE
 
 If those interface values define a valid read or write operation, memory performs the corresponding operation regardless of whether the requester is the CPU, DMA logic, or console logic.
 

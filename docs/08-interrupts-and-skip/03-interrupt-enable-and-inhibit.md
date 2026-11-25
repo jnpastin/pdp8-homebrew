@@ -113,10 +113,12 @@ IOF does not:
 
 ## 8. System Initialization
 
-On system initialization (CAF, front-panel CLEAR, or power-on reset):
+On system initialization (CAF, front-panel CLEAR, or power-on reset; START also clears II, by its own micro-operation):
 - IE is cleared
 - II is unchanged
 - CIFP is unchanged
+
+After the power-on reset, II and CIFP are undefined, like every register the reset does not set ([Timing Terminology §3.4](../09-timing/01-terminology.md#34-power-on-reset)). LOAD ADDRESS clears CIFP and START clears II, so the operator's normal sequence defines both before the program runs.
 
 Clearing IE prevents interrupt recognition without canceling a pending deferred instruction-field change.  
 /INITIALIZE does not acknowledge or clear a controller interrupt condition except through the initialized-state behavior defined by that controller.
@@ -199,7 +201,7 @@ While CIFP remains set:
 - interrupt recognition remains inhibited
 - the restored instruction field remains pending for application by the next JMP or JMS
 
-RTF sets IE regardless of AC[7], matching the defined PDP-8/E behavior. Setting IE does not permit immediate interrupt recognition because RTF also sets II and CIFP.
+RTF sets IE regardless of AC[7], as on the PDP-8/E, where "the interrupt system is enabled in the same manner as by an ION instruction" (Small Computer Handbook, 1973, Table 4-1, p. 4-8) and RTF "sets the INT ENA flip-flop at TP3 time" (PDP-8/E Maintenance Manual, volume 1, §3.42.3, p. 3-153). Setting IE does not permit immediate interrupt recognition because RTF also sets II and CIFP.
 
 The instruction-level behavior is defined in [IOT Instruction Detail](../02-isa/04-iot.md#312-rtf), and defined in [IOT Execution](../03-microarchitecture/06-iot-execution.md#96-ir119--110-and-ioa--00-and-ir20--101).
 
@@ -213,7 +215,7 @@ At that operation:
 - `CIFP` is cleared
 - `II` is cleared
 
-The JMP execution sequences are defined in [Fetch & Defer](../03-microarchitecture/04-fetch-defer.md) (a JMP completes in FETCH or DEFER), and the JMS sequence in [MRI Execution](../03-microarchitecture/05-mri-execution.md).
+The JMP execution sequences are defined in [FETCH and DEFER Execution](../03-microarchitecture/04-fetch-defer.md) (a JMP completes in FETCH or DEFER), and the JMS sequence in [MRI Execution](../03-microarchitecture/05-mri-execution.md).
 
 When each commits:
 
@@ -223,7 +225,7 @@ When each commits:
 | JMP I | DEFER TP3 | DEFER TP4 | DEFER TP4 |
 | JMS | EXECUTE TP1 | EXECUTE TP1 | EXECUTE TP4 |
 
-Both JMPs load the field at the TP4 that completes them. A JMP I could not load it sooner: the auto-index write-back of its pointer, in DEFER TS4, still uses the old field ([Fetch & Defer §4.5](../03-microarchitecture/04-fetch-defer.md#45-ts4)). In every case `II` is clear before the instruction's completion, so interrupt recognition may occur at the instruction-completion TP4 of that same JMP or JMS if all eligibility conditions are satisfied. The interrupt entry then saves the new instruction field in `IB` and the transfer address (JMP) or the address after the return-address word (JMS) in location `0000`, so no field change is lost.
+Both JMPs load the field at the TP4 that completes them. A JMP I could not load it sooner: the auto-index write-back of its pointer, in DEFER TS4, still uses the old field ([FETCH and DEFER Execution §4.5](../03-microarchitecture/04-fetch-defer.md#45-ts4)). In every case `II` is clear before the instruction's completion, so interrupt recognition may occur at the instruction-completion TP4 of that same JMP or JMS if all eligibility conditions are satisfied. The interrupt entry then saves the new instruction field in `IB` and the transfer address (JMP) or the address after the return-address word (JMS) in location `0000`, so no field change is lost.
 
 The JMP timing matches the PDP-8/E (KM8-E Memory Extension, Theory of Operation):
 
@@ -237,7 +239,7 @@ A JMS differs: it clears `II` and loads IF at EXECUTE TP1, one TP after the KM8-
 
 FETCH TS1 clears `II` only when `CIFP` is clear. A direct JMP also clears it in FETCH TS3 when `CIFP` is set, as it applies the pending field (section 12).
 
-The FETCH execution rule is defined in [Fetch and Defer](../03-microarchitecture/04-fetch-defer.md#31-ts1).
+The FETCH execution rule is defined in [FETCH and DEFER Execution](../03-microarchitecture/04-fetch-defer.md#31-ts1).
 
 This conditional clear serves two distinct cases:
 

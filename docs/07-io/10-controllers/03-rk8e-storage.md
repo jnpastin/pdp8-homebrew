@@ -481,7 +481,7 @@ The drive then seeks on its own. When it reaches the cylinder:
 - `STATUS[10]` clears
 - Control Done is set again if `COMMAND[7]` (Enable Done on Seek Done) is set
 
-This follows the RK8-E's seek-only programming sequence: after DLAG, wait for Transfer Done, clear it, and then either wait for Done again with Command Register bit 4 set, or poll status bit 1, "which is zero when the seek is complete" (PDP-8/E Small Computer Handbook (1973), RK8-E, "Seek Only" and "Overlapped Seeks", pp. 6-73 and 6-74). DEC's bit 4 and bit 1, numbered from the most significant bit, are `COMMAND[7]` and `STATUS[10]` here. For DCLD the handbook gives only "Recalibrate Selected Drive to track 000 and clear Status Register" (p. 6-72); treating it as a seek to cylinder `000` follows SIMH.
+This follows the RK8-E's seek-only programming sequence. After DLAG, the program waits for Transfer Done and clears it. It then either waits for Done again with Command Register bit 4 set, or polls status bit 1, "which is zero when the seek is complete". The sequence is in the PDP-8/E Small Computer Handbook (1973), RK8-E, "Seek Only" and "Overlapped Seeks", pp. 6-73 and 6-74. DEC's bit 4 and bit 1, numbered from the most significant bit, are `COMMAND[7]` and `STATUS[10]` here. For DCLD the handbook gives only "Recalibrate Selected Drive to track 000 and clear Status Register" (p. 6-72); treating it as a seek to cylinder `000` follows SIMH.
 
 `DCLC` may abort an active operation.
 
@@ -560,7 +560,7 @@ At TP3:
 - the selected DCLR operation commits
 - AC clears
 
-The Status Register clear follows DEC, whose DCLS and DCLD both clear it ({H}, p. 6-72), and SIMH, whose DCLR clears status before every function, including a refused one.
+The Status Register clear follows DEC, whose DCLS and DCLD both clear it (PDP-8/E Small Computer Handbook, 1973, p. 6-72), and SIMH, whose DCLR clears status before every function, including a refused one.
 
 The selected operation uses the pre-TP3 DB value. The commit is at TP3, not TP4, so that the instruction-completion decision at TP4 sees the cleared Done and Error, and, after DCLC, the deasserted DMA request ([Controller Contract §9.1](../04-controller-contract.md#91-interrupt-contribution)).  
 No intermediate selector register is required.
@@ -1050,8 +1050,8 @@ When the controller-facing grant ends:
 - the controller releases MFB
 - the controller releases AB
 - the controller releases MDB when applicable
-- the controller deasserts /RD
-- the controller deasserts /WR
+- the controller releases /RD
+- the controller releases /WR
 
 The active RK8E disk operation remains pending when additional words remain.
 
@@ -1177,7 +1177,7 @@ memory field 0
 address 0000
 ```
 
-The standard bootstrap relies on this: it waits in a `JMP .` at `0031`, which the incoming sector overwrites.
+The standard bootstrap relies on this: it ends in a `JMP .` (PDP-8/E Maintenance Manual, volume 3, §11.12.3, p. 11-45), at `0031` in the commonly used listing (SIMH `pdp8_rk.c`, a secondary source), which the incoming sector overwrites.
 
 The remainder of the sector is transferred into sequential memory locations using the RK8E Current Address rules.
 
@@ -1232,7 +1232,7 @@ If an operation remains active after status is cleared, later completion or a la
 
 This section coordinates the existing controller operations for interrupt-service use. The individual instruction, status, abort, completion, and busy-state definitions remain authoritative for their complete behavior and timing.
 
-----
+---
 
 ## 32. Unsupported Operations
 

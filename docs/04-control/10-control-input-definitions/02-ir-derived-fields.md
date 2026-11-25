@@ -1,4 +1,4 @@
-# IR-Derived Flags
+# IR-Derived Fields
 
 ## 1. Purpose
 
@@ -48,7 +48,7 @@ Derivations are machine-read by the ROM-generation tools. Anything that is not p
 
 ## 2. Signal Classes
 
-### 2.1 IR Derived Fields
+### 2.1 Instruction Classes
 
 Divide the instruction space based on opcode field `IR[11:9]`.
 
@@ -142,6 +142,7 @@ Represents evaluation of device-0 processor IOT instructions.
 Matches:
 - GTF
 - RTF
+- SRQ
 - CAF
 
 ---
@@ -229,6 +230,7 @@ Predecode the instruction's path through the major states. They are decoded by g
 ### Processor IOT Detection
 - [IR_IS_GTF](#ir_is_gtf)
 - [IR_IS_RTF](#ir_is_rtf)
+- [IR_IS_SRQ](#ir_is_srq)
 - [IR_IS_CAF](#ir_is_caf)
 
 ### IOT Device Classes
@@ -305,9 +307,9 @@ IR_CLASS = {IR_OPR_GROUP2 OR IR_OPR_GROUP3,
 
 **Consumed By:**
 
-- [Fetch & Defer](../../03-microarchitecture/04-fetch-defer.md): FETCH TS3 (including `OPR_PASS`) and TS4, DEFER TS3 and TS4
+- [FETCH and DEFER Execution](../../03-microarchitecture/04-fetch-defer.md): FETCH TS3 (including `OPR_PASS`) and TS4, DEFER TS3 and TS4
 
-**Realization:** Decoded by predecode gates from the live IR, valid from FETCH TP2. The three lines of the derivation are bits 2, 1, and 0 of the code: bit 2 is set for Groups 2 and 3; bit 1 for JMP I and Group 1; bit 0 for direct JMP, Group 1, and Group 3. Whenever `MS_EFF_IS_EXECUTE = 0` it drives the datapath slice's `VARIANT[2:0]`, with `VARIANT[4:3] = 0` ([Control Store Organization §5.4.2](../08-control-store-organization.md#542-execute-selection)).
+**Realization:** Decoded by predecode gates from the live IR, valid from FETCH TP2. The three lines of the derivation are bits 2, 1, and 0 of the code. Bit 2 is set for Groups 2 and 3, bit 1 for JMP I and Group 1, and bit 0 for direct JMP, Group 1, and Group 3. Whenever `MS_EFF_IS_EXECUTE = 0` it drives the datapath slice's `VARIANT[2:0]`, with `VARIANT[4:3] = 0` ([Control Store Organization §5.4.2](../08-control-store-organization.md#542-execute-selection)).
 
 ---
 
@@ -640,7 +642,7 @@ IR_IS_OPR = (IR[11:9] == 111)
 
 **Consumed By:**
 
-- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
+- [OPR pass unit](../../03-microarchitecture/07-opr/00-pass-unit.md#4-stage-selection)
 - [IR_NO_EXECUTE](#ir_no_execute)
 
 ---
@@ -673,6 +675,35 @@ AND (IR[2:0] == 101)
 - [CIFP_SET](../../03-microarchitecture/02-micro-operations.md#cifp_set)
 - [IE_SET](../../03-microarchitecture/02-micro-operations.md#ie_set)
 - [II_SET](../../03-microarchitecture/02-micro-operations.md#ii_set)
+
+---
+
+### IR_IS_SRQ
+  
+**Mnemonic:** IR_IS_SRQ  
+**Name:** Skip on Interrupt Request Instruction Flag  
+**Type:** Processor IOT Detection  
+**Bit Width:** 1  
+
+**Purpose:** Indicates that the current instruction is SRQ (`6003`).  
+
+**Derivation:**
+
+```text
+IR_IS_SRQ =
+    IR_IS_IOT
+AND (IR_IOA == 000000)
+AND (IR[2:0] == 011)
+```
+
+**Value Encoding:**
+- 0 -> not SRQ
+- 1 -> SRQ
+
+**Realization:** Decoded by a gate from IR. It qualifies `/INT_REQ` before overlay group 2: that group's `DP_OVL[0]` input is `/INT_REQ OR NOT IR_IS_SRQ`, so every instruction other than SRQ sees `/INT_REQ` deasserted (1). A late change on that shared line therefore cannot disturb another external IOT's TS4 control word ([Control Store Organization §6.2](../08-control-store-organization.md#62-multiplexer-inputs)). It selects no control word.
+
+**Consumed By:**
+- [Control Store Organization §6.2](../08-control-store-organization.md#62-multiplexer-inputs)
 
 ---
 
@@ -735,7 +766,7 @@ IR_NO_EXECUTE = IR[11:9] = 101 OR IR_IS_OPR   // JMP; OPR
 
 **Consumed By:**
 
-- Sequencing at FETCH TS4 and DEFER TS4 ([Sequencing and Internal Control §3](../30-direct-control-definitions/01-sequencing-and-internal-control.md#3-sequencing-control))
+- Sequencing at FETCH TS4 and DEFER TS4 ([Sequencing and Internal Direct Control §3](../30-direct-control-definitions/01-sequencing-and-internal-control.md#3-sequencing-control))
 
 **Realization:** Decoded by predecode gates from the live IR. It drives the sequencer slice's A2 input whenever `MS_EFF_IS_EXECUTE = 0`; together with `IR_INDIRECT` on A3 it tells FETCH TS4 whether the instruction completes there or continues to DEFER ([Control Store Organization §5.6](../08-control-store-organization.md)).
 
@@ -750,12 +781,7 @@ IR_NO_EXECUTE = IR[11:9] = 101 OR IR_IS_OPR   // JMP; OPR
 
 **Purpose:** Modifier bit used in Group 1 OPR operations.
 
-This bit participates in:
-
-- rotation behavior (single vs double rotation)
-- byte swap operation
-
-Interpretation depends on combination with other OPR bits.
+Alone it selects a byte swap; with RAR or RAL it makes the rotation double (RTR, RTL); with both, no rotate or swap ([OPR Pass Unit §4](../../03-microarchitecture/07-opr/00-pass-unit.md#4-stage-selection)).
 
 **Derivation:**
 ```text
@@ -768,7 +794,7 @@ IR_OPR_BSW = IR_OPR_GROUP1 AND IR[1]
 - 1 → modifier active  
 
 **Consumed By:**
-- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
+- [OPR pass unit](../../03-microarchitecture/07-opr/00-pass-unit.md#4-stage-selection)
 
 
 ---
@@ -793,7 +819,7 @@ IR_OPR_CLA = IR_IS_OPR AND IR[7]
 - 1 → clear AC  
 
 **Consumed By:**
-- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass) (stage A)
+- [OPR pass unit](../../03-microarchitecture/07-opr/00-pass-unit.md#4-stage-selection) (stage A)
 
 ---
 
@@ -817,7 +843,7 @@ IR_OPR_CLL = IR_OPR_GROUP1 AND IR[6]
 - 1 → clear Link  
 
 **Consumed By:**
-- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass) (stage A)
+- [OPR pass unit](../../03-microarchitecture/07-opr/00-pass-unit.md#4-stage-selection) (stage A)
 
 ---
 
@@ -841,7 +867,7 @@ IR_OPR_CMA = IR_OPR_GROUP1 AND IR[5]
 - 1 → complement AC  
 
 **Consumed By:**
-- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
+- [OPR pass unit](../../03-microarchitecture/07-opr/00-pass-unit.md#4-stage-selection)
 
 ---
 
@@ -865,7 +891,7 @@ IR_OPR_CML = IR_OPR_GROUP1 AND IR[4]
 - 1 → complement Link  
 
 **Consumed By:**
-- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
+- [OPR pass unit](../../03-microarchitecture/07-opr/00-pass-unit.md#4-stage-selection)
 
 ---
 
@@ -890,7 +916,7 @@ IR_OPR_GROUP1 = IR_IS_OPR AND (IR[8] == 0)
 
 **Consumed By:**
 
-- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
+- [OPR pass unit](../../03-microarchitecture/07-opr/00-pass-unit.md#4-stage-selection)
 - [IR_CLASS](#ir_class)
 
 
@@ -970,7 +996,7 @@ IR_OPR_HLT = IR_OPR_GROUP2 AND IR[1]
 - 1 → halt  
 
 **Consumed By:**
-- Halt-request capture at FETCH TS3 ([Sequencing and Internal Control §3.4.4](../30-direct-control-definitions/01-sequencing-and-internal-control.md#344-hlt-instruction-request-capture))
+- Halt-request capture at FETCH TS3 ([Sequencing and Internal Direct Control §3.4.4](../30-direct-control-definitions/01-sequencing-and-internal-control.md#344-hlt-instruction-request-capture))
 
 **Realization:** Decoded by predecode gates from the live IR. It drives the sequencer slice's A1 input ([Control Store Organization §5.6](../08-control-store-organization.md#56-sequencer-slice-address)).
 
@@ -997,7 +1023,7 @@ IR_OPR_IAC = IR_OPR_GROUP1 AND IR[0]
 
 **Consumed By:**
 
-- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
+- [OPR pass unit](../../03-microarchitecture/07-opr/00-pass-unit.md#4-stage-selection)
 
 ---
 
@@ -1098,7 +1124,7 @@ IR_OPR_RAL = IR_OPR_GROUP1 AND IR[2]
 **Consumed By:**
 
 
-- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
+- [OPR pass unit](../../03-microarchitecture/07-opr/00-pass-unit.md#4-stage-selection)
 
 ---
 
@@ -1123,7 +1149,7 @@ IR_OPR_RAR = IR_OPR_GROUP1 AND IR[3]
 
 **Consumed By:**
 
-- [OPR pass unit](../../03-microarchitecture/07-opr/01-group1-execution.md#4-opr-pass)
+- [OPR pass unit](../../03-microarchitecture/07-opr/00-pass-unit.md#4-stage-selection)
 
 ---
 

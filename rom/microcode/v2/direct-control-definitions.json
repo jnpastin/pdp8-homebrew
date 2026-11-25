@@ -32,7 +32,7 @@
       "constraints": [],
       "sources": [
         {
-          "label": "Fetch & Defer",
+          "label": "FETCH and DEFER Execution",
           "target": "../../03-microarchitecture/04-fetch-defer.md"
         }
       ],
@@ -65,7 +65,7 @@
       "constraints": [],
       "sources": [
         {
-          "label": "Fetch & Defer",
+          "label": "FETCH and DEFER Execution",
           "target": "../../03-microarchitecture/04-fetch-defer.md"
         }
       ],
@@ -98,7 +98,7 @@
       "constraints": [],
       "sources": [
         {
-          "label": "Fetch & Defer",
+          "label": "FETCH and DEFER Execution",
           "target": "../../03-microarchitecture/04-fetch-defer.md"
         }
       ],
@@ -129,7 +129,7 @@
       "value_relationships": [],
       "widths": [],
       "constraints": [
-        "CAF never selects INTERRUPT: its `/INITIALIZE` clears IE and every controller request at the same TP4, and on the PDP-8/e CAF's INITIALIZE clears the interrupt logic before TP4 (sections 3.2.6 and 3.2.7)."
+        "CAF never selects INTERRUPT: its `/INITIALIZE` clears IE and every controller request at the same TP4, and on the PDP-8/E CAF asserts INITIALIZE from its TP3, which clears the interrupt enable before TP4 (PDP-8/E Maintenance Manual, volume 1, §3.41.4, p. 3-149, and §3.42.1, p. 3-152; sections 3.2.6 and 3.2.7)."
       ],
       "sources": [
         {
@@ -173,7 +173,7 @@
       "widths": [],
       "constraints": [
         "The interrupt decision has priority over DMA entry.",
-        "`/DMA_REQ` must be established before TS4.",
+        "`/DMA_REQ` must be stable at least `T_CS` before TP4 (section 3.2.9).",
         "DMA entry must be selected through the control word.",
         "The DMA arbiter does not modify `MS_NEXT`."
       ],
@@ -289,7 +289,7 @@
       "widths": [],
       "constraints": [
         "`/DMA_REQ` is the aggregate CPU-facing request.",
-        "The request value used by CPU control must settle before TP4.",
+        "The request must be stable at least `T_CS` before TP4, the TP that accepts it ([External Inputs §2](../10-control-input-definitions/04-external-inputs.md#2-timing-model)).",
         "DMA continuation must be selected through the control word.",
         "External DMA ownership must not modify `MS_NEXT`."
       ],
@@ -407,7 +407,7 @@
       "control_supplied_values": [],
       "micro_operation_assignments": [],
       "state_commits": [
-        "MS <- FETCH at TPC"
+        "MS <- FETCH at TP_FP"
       ],
       "value_relationships": [],
       "widths": [],
@@ -483,7 +483,7 @@
       "control_supplied_values": [],
       "micro_operation_assignments": [],
       "state_commits": [
-        "RUN <- 1 at TPC\nMS  <- FETCH at TPC"
+        "RUN <- 1 at TP_FP\nMS  <- FETCH at TP_FP"
       ],
       "value_relationships": [],
       "widths": [],
@@ -520,7 +520,7 @@
       "control_supplied_values": [],
       "micro_operation_assignments": [],
       "state_commits": [
-        "RUN <- 1 at TPC"
+        "RUN <- 1 at TP_FP"
       ],
       "value_relationships": [],
       "widths": [],
@@ -689,7 +689,7 @@
       "control_supplied_values": [],
       "micro_operation_assignments": [],
       "state_commits": [
-        "RUN <- 0 at TPC"
+        "RUN <- 0 at TP_FP"
       ],
       "value_relationships": [],
       "widths": [],
@@ -902,7 +902,7 @@
         "The halt request is cleared only when consumed.",
         "Consumption and transition to the halted state commit at the same TP.",
         "Consumption applies regardless of whether another run-state halt condition also applies at that boundary.",
-        "Single Instruction completion and EXECUTE Single Step completion do not prevent consumption of an existing pending halt request.",
+        "Single Instruction completion and Single Step completion at an instruction's completion do not prevent consumption of an existing pending halt request.",
         "A `HLT_REQ_NEXT = 1` value committed at the current TP is not available as `HLT_REQ = 1` for another decision at that same TP."
       ],
       "sources": [
@@ -1007,7 +1007,7 @@
       "constraints": [],
       "sources": [
         {
-          "label": "Fetch & Defer",
+          "label": "FETCH and DEFER Execution",
           "target": "../../03-microarchitecture/04-fetch-defer.md"
         }
       ],
@@ -1044,7 +1044,7 @@
     },
     {
       "id": "01:4.3.3",
-      "title": "4.3.3 DEFER Auto-Index Writeback",
+      "title": "4.3.3 DEFER Auto-Index Write-Back",
       "group": "4.3 Memory-Address Register Context",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
@@ -1098,7 +1098,7 @@
     },
     {
       "id": "01:4.3.5",
-      "title": "4.3.5 ISZ Writeback",
+      "title": "4.3.5 ISZ Write-Back",
       "group": "4.3 Memory-Address Register Context",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
@@ -1199,7 +1199,7 @@
       ],
       "sources": [
         {
-          "label": "Fetch & Defer",
+          "label": "FETCH and DEFER Execution",
           "target": "../../03-microarchitecture/04-fetch-defer.md"
         },
         {
@@ -1238,7 +1238,7 @@
       "constraints": [],
       "sources": [
         {
-          "label": "Fetch & Defer",
+          "label": "FETCH and DEFER Execution",
           "target": "../../03-microarchitecture/04-fetch-defer.md"
         }
       ],
@@ -1275,7 +1275,7 @@
     },
     {
       "id": "01:4.5.2.2",
-      "title": "4.5.2.2 Direct ISZ Writeback",
+      "title": "4.5.2.2 Direct ISZ Write-Back",
       "group": "4.5.2 Direct MRI Access",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
@@ -1354,7 +1354,7 @@
           "target": "../../02-isa/05-addressing-model.md"
         },
         {
-          "label": "Fetch & Defer",
+          "label": "FETCH and DEFER Execution",
           "target": "../../03-microarchitecture/04-fetch-defer.md"
         }
       ],
@@ -1365,7 +1365,7 @@
     },
     {
       "id": "01:4.5.4",
-      "title": "4.5.4 Indirect Autoindex Writeback",
+      "title": "4.5.4 Indirect Auto-Index Write-Back",
       "group": "4.5 Memory Field Selection Rules",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
@@ -1383,8 +1383,8 @@
       "value_relationships": [],
       "widths": [],
       "constraints": [
-        "Pointer read and autoindex writeback use the same field.",
-        "Autoindex processing does not change the pointer-location field from `IF` to `DF`."
+        "Pointer read and auto-index write-back use the same field.",
+        "Auto-index processing does not change the pointer-location field from `IF` to `DF`."
       ],
       "sources": [
         {
@@ -1392,7 +1392,7 @@
           "target": "../../02-isa/05-addressing-model.md"
         },
         {
-          "label": "Fetch & Defer",
+          "label": "FETCH and DEFER Execution",
           "target": "../../03-microarchitecture/04-fetch-defer.md"
         }
       ],
@@ -1404,7 +1404,7 @@
     {
       "id": "01:4.5.5.1",
       "title": "4.5.5.1 Indirect MRI Read",
-      "group": "4.5 Memory Field Selection Rules",
+      "group": "4.5.5 Final Indirect MRI Access",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
         "line": 1714
@@ -1429,8 +1429,8 @@
     },
     {
       "id": "01:4.5.5.2",
-      "title": "4.5.5.2 Indirect ISZ Writeback",
-      "group": "4.5 Memory Field Selection Rules",
+      "title": "4.5.5.2 Indirect ISZ Write-Back",
+      "group": "4.5.5 Final Indirect MRI Access",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
         "line": 1737
@@ -1456,7 +1456,7 @@
     {
       "id": "01:4.5.5.3",
       "title": "4.5.5.3 Indirect DCA Write",
-      "group": "4.5 Memory Field Selection Rules",
+      "group": "4.5.5 Final Indirect MRI Access",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
         "line": 1756
@@ -1482,7 +1482,7 @@
     {
       "id": "01:4.5.5.4",
       "title": "4.5.5.4 Indirect JMS Write",
-      "group": "4.5 Memory Field Selection Rules",
+      "group": "4.5.5 Final Indirect MRI Access",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
         "line": 1775
@@ -1639,7 +1639,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 2002
+        "line": 1998
       },
       "applicable_context": [
         "IR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_READ_REQ = 1"
@@ -1685,7 +1685,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 2031
+        "line": 2027
       },
       "applicable_context": [
         "IR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_WRITE_REQ = 1"
@@ -1731,7 +1731,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 2060
+        "line": 2056
       },
       "applicable_context": [
         "(\n    IOT_READ_PENDING = 1\n    OR IOT_WRITE_PENDING = 1\n)\nIR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_READ_REQ = 0\nIO_WRITE_REQ = 0"
@@ -1777,7 +1777,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 2097
+        "line": 2093
       },
       "applicable_context": [
         "(\n    IOT_READ_PENDING = 1\n    OR IOT_WRITE_PENDING = 1\n)\nIR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_READ_REQ = 1"
@@ -1824,7 +1824,7 @@
       "group": "5.5 Pending External-IOT Transfer Value",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md",
-        "line": 2134
+        "line": 2130
       },
       "applicable_context": [
         "(\n    IOT_READ_PENDING = 1\n    OR IOT_WRITE_PENDING = 1\n)\nIR_IS_EXTERNAL_IOT = 1\nMS = EXECUTE\nIO_WRITE_REQ = 1"
@@ -2194,7 +2194,7 @@
         "line": 552
       },
       "applicable_context": [
-        "DB_WRITE_FROM_AC is not selected"
+        "IOT_WRITE_PENDING = 0"
       ],
       "direct_assignments": [],
       "control_supplied_values": [],
@@ -2238,13 +2238,11 @@
         "line": 581
       },
       "applicable_context": [
-        "DB_WRITE_FROM_AC is selected"
+        "IOT_WRITE_PENDING = 1"
       ],
       "direct_assignments": [],
       "control_supplied_values": [],
-      "micro_operation_assignments": [
-        "/DB_READ  = 1\n/DB_WRITE = 0"
-      ],
+      "micro_operation_assignments": [],
       "state_commits": [],
       "value_relationships": [],
       "widths": [],
@@ -2252,8 +2250,7 @@
         "`/DB_READ` and `/DB_WRITE` must not both be asserted.",
         "The CPU is the sole `DB` driver.",
         "External controllers must not drive `DB`.",
-        "`/DB_WRITE` must be paired with `DB_WRITE_FROM_AC`.",
-        "The `/DB_WRITE` assignment and AC-to-DB datapath selection remain owned by the `DB_WRITE_FROM_AC` micro-operation mapping rather than a separate direct-control result."
+        "`/DB_WRITE` and the CPU DB driver are decoded from `IOT_TRANSFER = WRITE` within `DB_VALID`; neither is a control-word field or a direct-control assignment."
       ],
       "sources": [
         {
@@ -2270,7 +2267,9 @@
       ],
       "external_ownership": [],
       "memory_behavior": [],
-      "derived_values": []
+      "derived_values": [
+        "/DB_READ  = 1\n/DB_WRITE = 0"
+      ]
     },
     {
       "id": "02:6.3",
@@ -2278,16 +2277,14 @@
       "group": "6 System Data Bus Ownership",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 617
+        "line": 616
       },
       "applicable_context": [
         "DB_READ_TO_AC is selected"
       ],
       "direct_assignments": [],
       "control_supplied_values": [],
-      "micro_operation_assignments": [
-        "/DB_READ  = 0\n/DB_WRITE = 1"
-      ],
+      "micro_operation_assignments": [],
       "state_commits": [],
       "value_relationships": [],
       "widths": [],
@@ -2296,7 +2293,7 @@
         "`/DB_READ` must be paired with `DB_READ_TO_AC`.",
         "The CPU must not drive `DB`.",
         "At most one selected external controller may drive `DB`.",
-        "The `/DB_READ` assignment and DB-to-AC datapath selection remain owned by the `DB_READ_TO_AC` micro-operation mapping rather than a separate direct-control result."
+        "`/DB_READ` is decoded from `IOT_TRANSFER = READ` within `DB_VALID`; it is not a control-word field. The DB-to-AC datapath selection remains owned by the `DB_READ_TO_AC` micro-operation mapping."
       ],
       "sources": [
         {
@@ -2315,7 +2312,9 @@
         "the selected controller may drive DB"
       ],
       "memory_behavior": [],
-      "derived_values": []
+      "derived_values": [
+        "/DB_READ  = 0\n/DB_WRITE = 1"
+      ]
     },
     {
       "id": "02:7.2",
@@ -2323,7 +2322,7 @@
       "group": "7 External-IOT Qualification",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 680
+        "line": 679
       },
       "applicable_context": [
         "RUN = 1\nMS = EXECUTE\nIR_IS_EXTERNAL_IOT = 1"
@@ -2338,7 +2337,7 @@
         "`IOT_ACTIVE`, `IOA`, and `IOP` are derived outputs rather than direct-control assignments.",
         "Only the address-matched controller may respond.",
         "Controller response inputs are valid only while `IOT_ACTIVE = 1`.",
-        "`IOT_ACTIVE` does not itself determine whether a read, write, skip, clear-AC, or wait response is accepted.",
+        "`IOT_ACTIVE` does not itself determine whether a read, write, skip, or clear-AC response is accepted.",
         "DB ownership remains governed by `/DB_READ`, `/DB_WRITE`, and the accepted transfer state."
       ],
       "sources": [
@@ -2368,7 +2367,7 @@
       "group": "7 External-IOT Qualification",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 714
+        "line": 713
       },
       "applicable_context": [
         "NOT (\n    RUN = 1\n    AND MS = EXECUTE\n    AND IR_IS_EXTERNAL_IOT = 1\n)"
@@ -2407,7 +2406,7 @@
       "group": "8 System Initialization",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 771
+        "line": 770
       },
       "applicable_context": [
         "MS = EXECUTE\nTS = 4\nIR_IS_CAF = 1"
@@ -2454,7 +2453,7 @@
       "group": "8 System Initialization",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 809
+        "line": 808
       },
       "applicable_context": [
         "RUN = 0\nFP_CLEAR = 1"
@@ -2468,7 +2467,7 @@
       "value_relationships": [],
       "widths": [],
       "constraints": [
-        "`/INITIALIZE` is asserted for the console transaction and its effects commit at TPC.",
+        "`/INITIALIZE` is asserted for the console transaction and its effects commit at TP_FP.",
         "The associated CPU-state changes remain represented by their selected micro-operations and sequencing results.",
         "`/INITIALIZE` does not replace those internal state assignments.",
         "Controller initialization behavior remains defined by each controller contract."
@@ -2496,14 +2495,59 @@
     },
     {
       "id": "02:8.4",
-      "title": "8.4 Inactive Initialization Output",
+      "title": "8.4 Front-Panel Start Initialization",
       "group": "8 System Initialization",
       "source": {
         "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
-        "line": 845
+        "line": 844
       },
       "applicable_context": [
-        "NOT (\n    MS = EXECUTE\n    AND TS = 4\n    AND IR_IS_CAF = 1\n)\nNOT (\n    RUN = 0\n    AND FP_CLEAR = 1\n)"
+        "RUN = 0\nFP_START = 1"
+      ],
+      "direct_assignments": [
+        "/INITIALIZE = 0"
+      ],
+      "control_supplied_values": [],
+      "micro_operation_assignments": [],
+      "state_commits": [],
+      "value_relationships": [],
+      "widths": [],
+      "constraints": [
+        "START is CLEAR then CONTINUE in one key. `/INITIALIZE` is asserted for the console transaction and its effects commit at TP_FP, the TP at which `RUN` also becomes 1 ([Sequencing and Internal Direct Control §3.3.3](./01-sequencing-and-internal-control.md#333-start)).",
+        "The associated CPU-state changes remain represented by their selected micro-operations and sequencing results.",
+        "Controller initialization behavior remains defined by each controller contract."
+      ],
+      "sources": [
+        {
+          "label": "Console Execution",
+          "target": "../../03-microarchitecture/09-console-execution.md#10-start-operation"
+        },
+        {
+          "label": "External Inputs",
+          "target": "../10-control-input-definitions/04-external-inputs.md#fp_start"
+        },
+        {
+          "label": "Architectural Control Signals",
+          "target": "../20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize"
+        }
+      ],
+      "drive_states": [
+        "CPU /INITIALIZE driver = DRIVE_LOW"
+      ],
+      "external_ownership": [],
+      "memory_behavior": [],
+      "derived_values": []
+    },
+    {
+      "id": "02:8.5",
+      "title": "8.5 Inactive Initialization Output",
+      "group": "8 System Initialization",
+      "source": {
+        "path": "docs/04-control/30-direct-control-definitions/02-interface-and-ownership-control.md",
+        "line": 879
+      },
+      "applicable_context": [
+        "NOT (\n    MS = EXECUTE\n    AND TS = 4\n    AND IR_IS_CAF = 1\n)\nNOT (\n    RUN = 0\n    AND FP_CLEAR = 1\n)\nNOT (\n    RUN = 0\n    AND FP_START = 1\n)"
       ],
       "direct_assignments": [
         "/INITIALIZE = 1"
@@ -2514,7 +2558,7 @@
       "value_relationships": [],
       "widths": [],
       "constraints": [
-        "`/INITIALIZE` must not be asserted outside the TS or console transaction defined in sections 8.2 and 8.3."
+        "`/INITIALIZE` must not be asserted outside the TS or console transaction defined in sections 8.2 to 8.4."
       ],
       "sources": [
         {

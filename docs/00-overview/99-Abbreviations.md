@@ -33,7 +33,9 @@ DB   = [System Data Bus](../05-buses-and-signals/01-class-a-buses.md#42-system-d
 
 MDB  = [Memory Data Bus](../05-buses-and-signals/01-class-a-buses.md#43-memory-data-bus-mdb) (MDB[11:0])
 
-MFB  = [Memory Field Bus](../05-buses-and-signals/01-class-a-buses.md#44-mfb--memory-field-bus) (MFB[2:0])
+MFB  = [Memory Field Bus](../05-buses-and-signals/01-class-a-buses.md#44-memory-field-bus-mfb) (MFB[2:0])
+
+IDB  = [Internal Data Bus](../05-buses-and-signals/05-class-e-internal.md#5-internal-data-bus-idb), CPU-internal (IDB[11:0])
 
 ---
 
@@ -109,6 +111,12 @@ SKIP = [Skip](../01-architecture/01-registers.md#skip--skip)
 ## 6. Control-Store Signals
 
 
+ALU = [Arithmetic Logic Unit](../04-control/20-control-output-definitions/01-microarchitectural-control-signals.md#731-alu-evaluation)
+
+CONTROL_WORD = [Control Word](../04-control/04-control-word.md#2-control-word-definition)
+
+CTRL_ADDR = [Control Address](../04-control/02-control-addressing.md#2-control-address-definition)
+
 DP_OVL[4:0] = [Datapath Overlay](../04-control/08-control-store-organization.md#6-datapath-overlay)
 
 DP_OVL_SEL[1:0] = [Datapath Overlay Select](../04-control/08-control-store-organization.md#542-execute-selection)
@@ -121,7 +129,11 @@ IR_CLASS[2:0] = [Instruction Class](../04-control/10-control-input-definitions/0
 
 IR_NO_EXECUTE = [Instruction Never Enters EXECUTE](../04-control/10-control-input-definitions/02-ir-derived-fields.md#ir_no_execute)
 
+INITIALIZE_ASSERTED = [The `/INITIALIZE` assertion condition](../04-control/20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize)
+
 IR_SEQ = [Sequencer Instruction Decode](../04-control/08-control-store-organization.md#542-execute-selection)
+
+LOADING = [Shadow-copy load in progress](../04-control/08-control-store-organization.md#81-shadow-copy)
 
 MS_EFF[2:0] = [Effective Major State](../04-control/08-control-store-organization.md#51-major-state-and-timing-state-codes)
 
@@ -130,6 +142,8 @@ MS_EFF_IS_EXECUTE = [Effective Major State Is EXECUTE](../04-control/08-control-
 OPR_PASS = [OPR Pass Unit Load](../03-microarchitecture/02-micro-operations.md#opr_pass)
 
 SEQ_OVL[2:0] = [Sequencer Overlay](../04-control/08-control-store-organization.md#56-sequencer-slice-address)
+
+TIMING_MODE[1:0] = [Speed mode jumper](../09-timing/01-terminology.md#35-timing-rom)
 
 TS_CODE[1:0] = [Timing-State Code](../04-control/08-control-store-organization.md#51-major-state-and-timing-state-codes)
 
@@ -149,8 +163,6 @@ TSTEP = [Timing Step](../09-timing/01-terminology.md#31-timing-step-tstep)
 
 TSEQ  = [Timing Sequence](../09-timing/01-terminology.md#32-timing-sequence-tseq)
 
-TPn   = [Timing Pulse n](../09-timing/01-terminology.md#4-timing-pulses-tp)
-
 TSn   = [Timing State n](../09-timing/01-terminology.md#5-timing-states-ts)
 
 T_CS  = [Control-Store Settle Time](../09-timing/01-terminology.md#55-control-store-settle-time-t_cs)
@@ -161,7 +173,9 @@ CW_VALID = [Control Word Valid](../09-timing/01-terminology.md#56-control-word-v
 
 DB_VALID  = [DB Transfer Window](../09-timing/01-terminology.md#58-db-transfer-window-db_valid)
 
-TP    = [Timing Pulse: the one commit clock](../09-timing/01-terminology.md#44-generation)
+TP, TPn = [Timing Pulse: the one commit clock; TPn is the TP that ends TSn](../09-timing/01-terminology.md#44-generation)
+
+TP_FP = [Console Timing Pulse: the TP that ends a console transaction](../09-timing/01-terminology.md#33-console-transaction-timer)
 
 r1, r2   = [Capture rank and output rank of a register](../09-timing/02-timing-architecture.md#76-rule-6--two-ranks)
 
@@ -171,11 +185,17 @@ r1, r2   = [Capture rank and output rank of a register](../09-timing/02-timing-a
 ## 8. I/O Signals
 
 
+DMA_ENABLE = [DMA Enable](../07-io/06-dma-arbitration.md#5-dma_enable-output)
+
+DMA_GRANT_ID[3:0] = [Selected DMA controller](../07-io/06-dma-arbitration.md#8-grant-interface)
+
 IOA[5:0] = [I/O Device Address Bus](../04-control/20-control-output-definitions/02-architectural-control-signals.md#46-io-address-bus-ioa50)
 
 IOP[2:0] = [I/O Operation Field](../04-control/20-control-output-definitions/02-architectural-control-signals.md#47-io-operation-field-iop20)
 
 IOT_ACTIVE = [External IOT Active](../04-control/20-control-output-definitions/02-architectural-control-signals.md#48-external-iot-active-iot_active)
+
+HIGH_Z, DRIVE_HIGH, DRIVE_LOW = [CPU output-drive states](../04-control/30-direct-control-definitions/02-interface-and-ownership-control.md#2-source-and-representation-rules)
 
 
 ---
@@ -214,11 +234,9 @@ ACN                     = [AC_IS_NEGATIVE](../04-control/10-control-input-defini
 
 ACZ                     = [AC_IS_ZERO](../04-control/10-control-input-definitions/01-flags.md#acz)
 
-AUTO_INDEX_REQUIRED     = [Auto Index Required](../04-control/10-control-input-definitions/03-derived-flags.md#auto_index_required)
+AUTO_INDEX_REQUIRED     = [Auto-Index Required](../04-control/10-control-input-definitions/03-derived-flags.md#auto_index_required)
 
 EAI                     = [EA_IS_AUTOINDEX](../04-control/10-control-input-definitions/01-flags.md#eai)
-
-IF_CHANGE_PENDING       = [Instruction Field Change Pending](../04-control/10-control-input-definitions/03-derived-flags.md#if_change_pending)
 
 INTERRUPT_REQUEST_VALID = [Interrupt Request Valid](../04-control/10-control-input-definitions/03-derived-flags.md#interrupt_request_valid)
 
@@ -437,6 +455,13 @@ SKIP_LOAD         = [Skip Register Load](../04-control/20-control-output-definit
 - Bracket notation indicates bus width (e.g., AB[11:0])
 - Uppercase denotes signal-level identifiers
 - Names reflect function, not implementation
+
+General terms:
+
+- IA: Instruction Address, the address the instruction was fetched from ([EA Generation](../02-isa/06-ea-generation.md))
+- ISA: Instruction Set Architecture ([02-isa](../02-isa/README.md))
+- SRAM, EEPROM: static RAM and electrically erasable PROM, the control-store devices ([Control Store Organization §8](../04-control/08-control-store-organization.md#8-device-summary))
+- `/WE`, `/OE`, `/CE`: a memory device's write-enable, output-enable, and chip-enable pins ([Control Store Organization §8.1](../04-control/08-control-store-organization.md#81-shadow-copy))
 
 ---
 

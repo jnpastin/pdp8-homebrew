@@ -19,7 +19,7 @@ For constraints and formal rules, see:
 
 For definitions of control input signals, see:
 - [Primitive Flags](./10-control-input-definitions/01-flags.md)
-- [IR Derived Fields](./10-control-input-definitions/02-ir-derived-fields.md)
+- [IR-Derived Fields](./10-control-input-definitions/02-ir-derived-fields.md)
 - [Derived Flags](./10-control-input-definitions/03-derived-flags.md)
 - [External Inputs](./10-control-input-definitions/04-external-inputs.md)
 
@@ -249,7 +249,7 @@ Examples:
 Properties:
 - originate outside the CPU
 - influence control decisions
-- must be stable before TP
+- must be stable at least `T_CS` before the TP that accepts it ([External Inputs §2](./10-control-input-definitions/04-external-inputs.md#2-timing-model))
 
 Defined in:
 - [External Inputs](./10-control-input-definitions/04-external-inputs.md)
@@ -312,7 +312,7 @@ CTRL_ADDR → CONTROL_WORD
   - CONTROL_WORD must be stable
 
 - At TP(n):
-  - all state updates occur simultaneously
+  - all state updates commit together: captured at its leading edge, visible as it ends ([Timing Architecture §7.6](../09-timing/02-timing-architecture.md#76-rule-6--two-ranks))
 
 ### 8.4 Realizations Outside the Control Word
 
@@ -325,6 +325,10 @@ Some control is realized outside the control store, as gates, registers, or a sm
 | Registered control state | `MAPR`, `MS_EFF_IS_EXECUTE`, and `SKIP` | [Control Store Organization §5](./08-control-store-organization.md), [Registers](../01-architecture/01-registers.md) |
 | RUN-selected overlays | `SEQ_OVL`, and the state group forced while halted | [Control Store Organization §5.6 and §6](./08-control-store-organization.md) |
 | Decoded outputs | `/DMA_GRANT`, `IOT_ACTIVE`, `/DB_READ`, `/DB_WRITE`, `/INITIALIZE`, and `INSTR_END` | [Architectural Control Signals](./20-control-output-definitions/02-architectural-control-signals.md) |
+| Output gates and windows | the gate holding `/RD` and the CPU's MDB drive off in an IOT's EXECUTE (`MS_EFF_IS_EXECUTE AND IR_IS_IOT`); the `CW_VALID` and `DB_VALID` windows on the outputs that act immediately; the release of the CPU's memory-interface drivers that the `/DMA_GRANT` decode enables | [Architectural Control Signals §3.2](./20-control-output-definitions/02-architectural-control-signals.md#32-timing-model), [Interface and Ownership Direct Control §5](./30-direct-control-definitions/02-interface-and-ownership-control.md#5-dma-authorization-and-ownership) |
+| Console and panel inputs | the console command latch and its `FP_CMD` encoding, and the panel input register | [External Inputs §2 and §4.1](./10-control-input-definitions/04-external-inputs.md#2-timing-model), [Control Store Organization §5.2](./08-control-store-organization.md#52-front-panel-command-code) |
+| Control-store loading | the shadow copy's `LOADING`-driven output enables and address buffers, active only during the power-on reset | [Control Store Organization §8.1](./08-control-store-organization.md#81-shadow-copy) |
+| Request qualifier | `/INT_REQ` gated by `IR_IS_SRQ` before overlay group 2 | [IR-Derived Fields](./10-control-input-definitions/02-ir-derived-fields.md#ir_is_srq), [Control Store Organization §6.2](./08-control-store-organization.md#62-multiplexer-inputs) |
 | Timing ROM | the length of each TS and the width of its TP | [Timing Terminology §3.5](../09-timing/01-terminology.md#35-timing-rom) |
 
 Each realization:

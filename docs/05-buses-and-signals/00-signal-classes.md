@@ -99,9 +99,13 @@ System-wide control signals that coordinate behavior across modules.
 - MS[2:0]
 - INSTR_END
 
-##### 4.3.4 System Control
+#### 4.3.4 System Control
 
 - /INITIALIZE
+
+#### 4.3.5 External IOT and DMA Arbitration
+
+Class B also carries the external-IOT interface (`IOT_ACTIVE`, `IOA`, `IOP`, `/DB_READ`, `/DB_WRITE`, and the controller responses `IO_READ_REQ`, `IO_WRITE_REQ`, `IO_CLEAR_AC_REQ`, `IO_SKIP_REQ`) and the DMA arbitration signals (`/DMA_REQ[14:0]`, `DMA_ENABLE`, `DMA_GRANT_ID[3:0]`). The complete list is in [Class B §6](./02-class-b-control.md#6-width-classification).
 
 ### 4.4 Rules
 
@@ -131,11 +135,16 @@ CPU-local timing signals:
 - TCLK
 - TSTEP
 - TSEQ
+- CW_VALID
+- DB_VALID
 
 Architecturally distributed timing signals:
 
 - TS
 - TP
+- /WR_PULSE, to memory
+
+See [Class C §3](./03-class-c-timing.md#3-distribution-scope).
 
 ### 5.4 Rules
 

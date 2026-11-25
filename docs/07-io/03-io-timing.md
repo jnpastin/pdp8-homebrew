@@ -27,10 +27,10 @@ For CAF:
 - No CAF initialization effect occurs before TP4.
 - /INITIALIZE is deasserted when EXECUTE TS4 ends.
 
-For an accepted front-panel CLEAR operation, and the CLEAR transaction that ends the power-on reset ([Timing Terminology §3.4](../09-timing/01-terminology.md#34-power-on-reset)):
+For an accepted front-panel CLEAR or START operation, and the CLEAR transaction that ends the power-on reset ([Timing Terminology §3.4](../09-timing/01-terminology.md#34-power-on-reset)):
 - the processor is halted
 - /INITIALIZE is asserted for the whole console transaction ([Major State Timing §8](../09-timing/03-major-state-timing.md#8-halted-state-and-console-transactions))
-- all processor and controller initialization effects commit at the console TP (TPC) ending that transaction; TPC is presented to controllers as a TP event
+- all processor and controller initialization effects commit at the console TP (`TP_FP`) ending that transaction; TP_FP is presented to controllers as a TP event
 - /INITIALIZE is deasserted when the transaction ends
 
 /INITIALIZE:
@@ -128,7 +128,17 @@ If real hardware needs a longer IOT, the fallback is a fixed extension that keep
 - CPU control registers the request at TP2.
 - The timing ROM reads the registered bit as an address input and lengthens TS3 by a fixed number of TSTEPs.
 
-The PDP-8/E's NOT LAST TRANSFER, which stops the timing until the device's BUS STROBE, is asynchronous and is not used.
+The PDP-8/E's NOT LAST TRANSFER, which stops the processor timing in TS3 until the device negates it and generates BUS STROBE (PDP-8/E Maintenance Manual, volume 1, §3.9.5, p. 3-34), is asynchronous and is not used.
+
+Some DEC options depend on NOT LAST TRANSFER, so a compatible controller for one of them needs a flag-based design or the fixed extension above:
+
+- the KE8-E Extended Arithmetic Element, which runs its own timing chain within the instruction (PDP-8/E Maintenance Manual, volume 2, §1.24, p. 1-37)
+- the KG8-E parity generator/detector, whose result reaches the data lines too late for TP3 (volume 3, §6.7, p. 6-17)
+- the TA8-E cassette interface, which switches its C lines during an instruction to clear AC and read status in one IOT (volume 3, §10.9 and §10.12.1, pp. 10-11 and 10-15)
+- the TM8-E magtape control, whose data-late error check stops the processor timing at TP3 (volume 3, §9.13.7, p. 9-83)
+- any peripheral attached through the KA8-E positive I/O bus interface (volume 1, §3.9.5, p. 3-34)
+
+The KL8E, PC8E, and RK8E controllers defined here need neither; the RK8-E's operations complete through Done and DMA (volume 3, chapter 11).
 
 ---
 
@@ -144,7 +154,7 @@ The following signals apply only to one assigned TS:
 Rules:
 
 - A phase-specific response is asserted only during its assigned TS.
-- The response must be stable before the TP at which CPU control accepts it.
+- The response must be stable at least `T_CS` before the TP that accepts it (section 3.3).
 - The response must remain stable through that TP.
 - The response is released no earlier than the end of that TP, which supplies its hold interval.
 - A response asserted during one TS does not remain effective during a later TS.

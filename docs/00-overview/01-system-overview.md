@@ -1,8 +1,8 @@
 # System Overview
 
-## 1. Objective
+## 1. Purpose
 
-The goal of this project is to design and build a homebrew computer using discrete logic that is compatible with the PDP-8/e architecture.
+The goal of this project is to design and build a homebrew computer using discrete logic that is compatible with the PDP-8/E architecture.
 
 Primary target:
 - Run OS/8 and associated PDP-8 software
@@ -12,7 +12,7 @@ Primary target:
 ## 2. Key Features
 
 - 12-bit architecture
-- PDP-8/e instruction set compatibility
+- PDP-8/E instruction set compatibility
 - SRAM-based memory system
 - Modular PCB-based hardware design
 - Backplane-based expansion
@@ -32,7 +32,7 @@ The system aims to achieve:
 
 ### 3.2 Not Required (initially)
 - Full DEC hardware replication
-- Timesharing support (UF not implemented initially)
+- Time-share support (the KM8-E user flag is not implemented)
 
 
 ---
@@ -59,7 +59,7 @@ The system uses a ROM-based control store.
   - Flags
 - Outputs:
   - Datapath control signals
-  - Next Major State
+  - Sequencing: the next major state, the run and halt-request state, and `/INITIALIZE` ([Control Store Organization §4](../04-control/08-control-store-organization.md#4-slices))
 
 All instruction execution behavior is defined by ROM entries, except the few realizations listed in [Control Model §8.4](../04-control/01-control-model.md#84-realizations-outside-the-control-word), chiefly the OPR pass unit, whose stages are selected by IR bits directly.
 
@@ -81,9 +81,9 @@ Also defined:
 - Interrupt and skip coordination ([08-interrupts-and-skip](../08-interrupts-and-skip/README.md))
 
 Not yet defined:
-- Front panel ([10-front-panel](../10-front-panel/README.md))
-- Backplane and physical design, beyond the limits the timing budget sets ([11-backplane-and-physical](../11-backplane-and-physical/README.md))
-- Verification and implementation plans (12, 13)
+- Front panel
+- Backplane and physical design, beyond the limits the timing budget sets
+- Verification and implementation plans
 
 ---
 

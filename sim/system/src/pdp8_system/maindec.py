@@ -78,9 +78,11 @@ DIAGNOSTICS = {
     # after a RUBOUT at start-up). §6.2: an error printout starts "F".
     "d0jc": Diagnostic("maindec-8e-d0jc", "Random JMP-JMS Test", markers=frozenset({ord("C") | 0o200}),
                        ignored=NEWLINE | {ord("J") | 0o200, RUBOUT}),
-    # No write-up in the archive: started at 0200 with SR = 0 and judged by halts until its output
-    # is known.
-    "d1aa": Diagnostic("maindec-8e-d1aa", "MM8-E 4K Memory Checkerboard", printout_halts=True),
+    # No write-up in the archive: started at 0200 with SR = 0 and judged by halts. Not in a write-up:
+    # CR LF "5" after each pass, as the archive's note says of D1BC (observed after 127,159,300
+    # instructions).
+    "d1aa": Diagnostic("maindec-8e-d1aa", "MM8-E 4K Memory Checkerboard",
+                       markers=frozenset({ord("5"), ord("5") | 0o200}), printout_halts=True),
     # §7.1: "EC" after every 96 loops, before each relocation; §6.1: errors print "A xxxx C yyyy"
     # and halt (SR0 = 0). The "C" is counted, so an "A" or a digit is error text.
     "d1ec": Diagnostic("maindec-8e-d1ec", "Memory Address Test", markers=frozenset({ord("C") | 0o200}),

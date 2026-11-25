@@ -6,6 +6,11 @@
   §5.3, §7.2, §7.3). The simulator evaluates those definitions exactly as written and requires
   them to agree with the decode in every context it reaches.
 - `/INITIALIZE`'s assertion condition is ACS §4.9; the sequencer slice produces the signal.
+- `/DB_READ`, `/DB_WRITE`, and the gate on `/RD` and the CPU's MDB drive are realized outside
+  the control store (ACS §3.2). The simulator decodes the DB strobes from IOT_TRANSFER. It
+  applies the rest of the control word as it stands, so it requires the word to give the same
+  values as the gate in every TS it reaches. v1 has /DB_READ and /DB_WRITE fields, which must
+  agree with the decode.
 """
 
 from __future__ import annotations
@@ -62,11 +67,32 @@ def check_derived(run, ms, mseff, is_execute, ir_is_external_iot):
     return grant, active
 
 
-def initialize_asserted(ir_is_caf, ms, ts, run, fp_clear):
-    """ACS §4.9: (IR_IS_CAF AND MS = EXECUTE AND TS = 4) OR (RUN = 0 AND FP_CLEAR)."""
+def initialize_asserted(ir_is_caf, ms, ts, run, fp_clear, fp_start=0):
+    """ACS §4.9: (IR_IS_CAF AND MS = EXECUTE AND TS = 4) OR (RUN = 0 AND (FP_CLEAR OR FP_START))."""
     caf = t_and(ir_is_caf, int(ms == E.EXECUTE), int(ts == 4))
-    clear = t_and(int(run == 0), fp_clear)
+    command = 1 if 1 in (fp_clear, fp_start) else (None if None in (fp_clear, fp_start) else 0)
+    clear = t_and(int(run == 0), command)
     return 1 if caf == 1 or clear == 1 else (None if None in (caf, clear) else 0)
+
+
+def check_db_strobes(db_read_n, db_write_n, iot_transfer):
+    """V1-ONLY. ACS §3.2: the DB strobes are decoded from IOT_TRANSFER (READ, WRITE), within
+    DB_VALID; v1's control word also has /DB_READ and /DB_WRITE fields, which must agree."""
+    if iot_transfer is None:
+        return
+    expected = (int(iot_transfer != E.IOT_READ), int(iot_transfer != E.IOT_WRITE))
+    if (db_read_n, db_write_n) != expected:
+        raise SpecViolation(f"control word /DB_READ = {db_read_n}, /DB_WRITE = {db_write_n}; the "
+                            f"decode of IOT_TRANSFER = {iot_transfer} gives {expected[0]}, {expected[1]}",
+                            "ACS §3.2")
+
+
+def check_iot_gate(is_execute, ir_is_iot, rd_asserted, cpu_drives_mdb):
+    """ACS §3.2: /RD and the CPU's MDB drive are gated off by MS_EFF_IS_EXECUTE AND IR_IS_IOT. The
+    simulator applies the control word ungated, so the word must assert neither there."""
+    if t_and(is_execute, ir_is_iot) == 1 and (rd_asserted or cpu_drives_mdb):
+        raise SpecViolation(f"control word asserts {'/RD' if rd_asserted else 'the MDB drive'} in an "
+                            f"IOT's EXECUTE, where the gate holds it off", "ACS §3.2")
 
 
 def check_initialize(seq_initialize_n, expected):

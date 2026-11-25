@@ -13,14 +13,14 @@ Defines the programmer-visible machine model. This includes what software can ob
 
 ## 3. Scope
 Includes:
-- Architectural registers (PC, AC, L, MQ, IF, DF, IE)
+- Architectural registers ([Registers §2](./01-registers.md#2-architectural-registers))
 - Memory model and addressing (fields, 12-bit addressing)
 - Interrupt visibility (IE and /INT_REQ interaction)
 
 Excludes:
-- Execution behavior ([Microarchitecture/README.md](../03-microarchitecture/README.md))
-- Instruction semantics ([ISA/README.md](../02-isa/README.md))
-- Control signals ([Control/README.md](../04-control/README.md))
+- Execution behavior ([Microarchitecture](../03-microarchitecture/README.md))
+- Instruction semantics ([Instruction Set Architecture](../02-isa/README.md))
+- Control signals ([Control](../04-control/README.md))
 
 ---
 

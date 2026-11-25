@@ -26,7 +26,7 @@ Bus semantics are defined in:
 
 DMA-specific ownership behavior is defined in:
 
-- [DMA Interface](./11-dma-interface.md)
+- [DMA Signal Interface](./11-dma-interface.md)
 
 ---
 

@@ -36,7 +36,7 @@ CTRL_ADDR fully determines the control word.
 
 Constraint:
 - Every control decision must be encoded in CTRL_ADDR.
-- No additional decoding or interpretation is permitted after ROM lookup.
+- No additional decoding or interpretation is permitted after ROM lookup, except the realizations listed in [Control Model §8.4](./01-control-model.md#84-realizations-outside-the-control-word).
 
 The control store may be partitioned into slices and built in two levels (section 2.1). The model above holds for each slice: every slice computes its part of CONTROL_WORD as a ROM lookup at its own CTRL_ADDR.
 
@@ -374,11 +374,11 @@ Properties:
 
 Constraint:
 - Only IR_FIELDS or a mapping-stage variant code (section 2.1) may carry instruction-dependent information into CTRL_ADDR.
-- Raw IR bits must not be included in CTRL_ADDR, except as an IR_FIELDS signal decoded from IR. In v2 the OPR micro-operation bits reach only the OPR pass unit, not the address; the only OPR bit decode on the address is `IR_OPR_HLT`, on bit A1 of the sequencer slice ([Control Store Organization](./08-control-store-organization.md)).
+- Raw IR bits must not be included in CTRL_ADDR, except as an IR_FIELDS signal decoded from IR. The OPR micro-operation bits reach only the OPR pass unit, not the address; the only OPR bit decode on the address is `IR_OPR_HLT`, on bit A1 of the sequencer slice ([Control Store Organization](./08-control-store-organization.md)).
 - IR_FIELDS must represent decisions, not encoded instruction state.
 
 For definitions, see:
-- [IR Derived Field Definitions](10-control-input-definitions/02-ir-derived-fields.md)
+- [IR-Derived Fields](10-control-input-definitions/02-ir-derived-fields.md)
 
 ---
 
@@ -396,7 +396,7 @@ Constraint:
 - Only FLAGS may represent conditional state in CTRL_ADDR.
 
 For definitions, see:
-- [Primitive Flag Definitions](10-control-input-definitions/01-flags.md)
+- [Primitive Flags](10-control-input-definitions/01-flags.md)
 - [Derived Flag Definitions](10-control-input-definitions/03-derived-flags.md)
 
 ---
@@ -410,7 +410,7 @@ Properties:
 - may affect control flow
 
 Constraint:
-- EXT must be stable during control evaluation.
+- EXT must be stable at least `T_CS` before the TP that accepts it ([External Inputs §2](./10-control-input-definitions/04-external-inputs.md#2-timing-model)).
 - EXT must not introduce non-determinism.
 
 ---
@@ -607,7 +607,7 @@ Constraint:
 The following are prohibited when extending control:
 
 - partial decoding outside CTRL_ADDR
-- secondary decision logic after ROM lookup
+- secondary decision logic after ROM lookup, beyond the realizations listed in [Control Model §8.4](./01-control-model.md#84-realizations-outside-the-control-word)
 - implicit interpretation of CONTROL_WORD fields
 - introduction of control behavior not defined by CTRL_ADDR
 

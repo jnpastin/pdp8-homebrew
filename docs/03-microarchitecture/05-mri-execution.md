@@ -115,7 +115,7 @@ TS1:
 Conditional μops:
 
 ```text
-IF_CHANGE_PENDING = 1 -> DIF_TO_IF
+CIFP = 1 -> DIF_TO_IF
 CIFP = 1 -> CIFP_CLEAR
 CIFP = 1 -> II_CLEAR
 ```
@@ -130,11 +130,11 @@ TS3:
 TS4:
 - PC_INC  
 
-A pending instruction-field change is applied at TP1, so the TS3 return-address write and the following FETCH both use the new instruction field, as on the PDP-8/e. The same TP1 clears `II`, so an interrupt may be recognized at this instruction's TP4 ([Interrupt Enable and Inhibit §12](../08-interrupts-and-skip/03-interrupt-enable-and-inhibit.md#12-deferred-field-application)).
+A pending instruction-field change is applied at TP1, so the TS3 return-address write and the following FETCH both use the new instruction field. The result is the PDP-8/E's; the timing is one TP later than the KM8-E's, which loads IF at the FETCH TP4 before the target ([Interrupt Enable and Inhibit §12](../08-interrupts-and-skip/03-interrupt-enable-and-inhibit.md#12-deferred-field-application)). The same TP1 clears `II`, so an interrupt may be recognized at this instruction's TP4 ([Interrupt Enable and Inhibit §12](../08-interrupts-and-skip/03-interrupt-enable-and-inhibit.md#12-deferred-field-application)).
 
 ---
 
-JMP (IR[11:9] = 101) does not enter EXECUTE; it completes in FETCH (direct) or DEFER (indirect) ([Fetch & Defer §3.3, §4.5](./04-fetch-defer.md)).
+JMP (IR[11:9] = 101) does not enter EXECUTE; it completes in FETCH (direct) or DEFER (indirect) ([FETCH and DEFER Execution §3.3, §4.5](./04-fetch-defer.md)).
 
 ---
 

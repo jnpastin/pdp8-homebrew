@@ -53,7 +53,7 @@ CONTROL_WORD = ROM[CTRL_ADDR]
 
 The control word completely defines the CPU-controlled behavior applicable to the selected control case.
 
-No control decision may be introduced after the control-store lookup.
+No control decision may be introduced after the control-store lookup, except by the realizations listed in [Control Model §8.4](./01-control-model.md#84-realizations-outside-the-control-word).
 
 Direct-control information is selected through the same control-input and control-store mechanism as micro-operation control information.
 
@@ -106,19 +106,14 @@ If a micro-operation mapping completely defines a control-output assignment, dir
 
 If a micro-operation mapping selects a control-owned source but does not supply the required value, direct control supplies only the missing value binding.
 
-For example, the documented `IOT_TRANSFER_CLEAR` micro-operation loads the pending-transfer state:
+A direct-control binding supplements the micro-operations. It does not replace or redefine one.
+
+An output that no micro-operation assigns is owned entirely by direct control. For example, no micro-operation loads `IOT_TRANSFER`; direct control supplies the load and its value ([Sequencing and Internal Direct Control §5.5](./30-direct-control-definitions/01-sequencing-and-internal-control.md#55-pending-external-iot-transfer-value)):
 
 ```text
 IOT_TRANSFER_LOAD = 1
+IOT_TRANSFER_VAL  = READ, WRITE, or NONE
 ```
-
-The corresponding direct-control assignment supplies the value it loads:
-
-```text
-IOT_TRANSFER_VAL = NONE
-```
-
-The direct-control binding supplements the micro-operation. It does not replace or redefine it.
 
 ---
 
@@ -373,7 +368,7 @@ It must not be represented as:
 
 - a default binary value
 - deassertion of an unrelated control signal
-- suppression applied after control-word selection
+- suppression applied after control-word selection, other than by the realizations listed in [Control Model §8.4](./01-control-model.md#84-realizations-outside-the-control-word)
 - an inferred consequence of a major state
 - an undocumented hardware side effect
 
@@ -529,7 +524,7 @@ The following invariants apply:
 - No two components may assign conflicting values to the same control-word field.
 - No two participants may actively drive a single-owner interface simultaneously.
 - Sequencing outputs must remain explicit next-state values.
-- No post-control-store decision may modify a direct-control result.
+- No post-control-store decision may modify a direct-control result, except by the realizations listed in [Control Model §8.4](./01-control-model.md#84-realizations-outside-the-control-word).
 - Tooling must conform to the documentation rather than define undocumented behavior.
 
 ---
@@ -538,10 +533,10 @@ The following invariants apply:
 
 - [Design Principles](../00-overview/00-design-principles.md)
 - [Signal Conventions](../00-overview/98-signal-conventions.md)
-- [Architectural Registers](../01-architecture/01-registers.md)
+- [Register Model Specification](../01-architecture/01-registers.md)
 - [Dataflow and Bus Model](../01-architecture/02-dataflow-and-bus-model.md)
 - [State Model](../03-microarchitecture/00-state-model.md)
-- [Execution Architecture](../03-microarchitecture/01-execution-model.md)
+- [Execution Model](../03-microarchitecture/01-execution-model.md)
 - [Micro-Operations](../03-microarchitecture/02-micro-operations.md)
 - [Control Model](./01-control-model.md)
 - [Control Addressing](./02-control-addressing.md)

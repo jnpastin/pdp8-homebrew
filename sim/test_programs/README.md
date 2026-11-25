@@ -30,13 +30,13 @@ Each program came from the sub-folder named in section 3, retrieved on 2026-11-1
 | `maindec-8e-d0hc` | D0HC Random JMP Test | `MAINDEC-8E D0H Random JMP Test` | 1 | no label file in the archive |
 | `maindec-8e-d0ib` | D0IB Basic JMP-JMS Test | `MAINDEC-8E D0I Basic JMP-JMS Test` | 1 | no label file in the archive |
 | `maindec-8e-d0jc` | D0JC Random JMP-JMS Test | `MAINDEC-8E D0J Random JMP-JMS Test` | 1 | |
-| `maindec-8e-d1aa` | D1AA MM8-E 4K Memory Checkerboard | `MAINDEC-8E D1A MM8E 4K Memory Checkerboard` | 2 | no write-up in the archive |
+| `maindec-8e-d1aa` | D1AA MM8-E 4K Memory Checkerboard | `MAINDEC-8E D1A MM8E 4K Memory Checkerboard` | 2 | no write-up in the archive; observed to print "5" after each pass (127 million instructions) |
 | `maindec-8e-d1bc` | D1BC KM8-E Extended Memory Checkerboard | `MAINDEC-8E D1B KM8E Extended Memory Checkerboard` | 2 | no write-up; the archive's note says it prints "5" on the teletype after each pass, so it needs the console controller |
 | `maindec-8e-d1ec` | D1EC Memory Address Test | `MAINDEC-8E D1E Memory Address Test` | 2 | |
 | `maindec-8e-d1fb` | D1FB Extended Memory Address Test | `MAINDEC-8E D1F Extended Memory Address Test` | 2 | |
 | `maindec-8e-d1ha` | D1HA Memory Extension and Time Share Control Test | `MAINDEC-8E D1H Memory Extension and Timeshare Control Test` | 2 | the D1HB write-up is included, but the archive holds only the D1HA tape; time-share (user mode) is not implemented |
 | `maindec-8e-d2ab` | D2AB Teletype KL8 Data Control Test | `MAINDEC-8E D2A PDP8E Teletype-KL8 Data Control Test` | 3 | |
-| `maindec-8e-d2ca` | D2CA High Speed Reader Punch Tests | `MAINDEC-8E D2CA High Speed Reader Punch Tests` | 3 | no write-up in the archive |
+| `maindec-8e-d2ca` | D2CA High Speed Reader Punch Tests | `MAINDEC-8E D2CA High Speed Reader Punch Tests` | 3 | no write-up in the archive; not run, because it needs a PC8-E reader/punch model |
 
 ## 4. Integrity
 

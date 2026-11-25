@@ -1,11 +1,11 @@
 # Microarchitecture
 
-Reference Diagram:
-![High-Level Architecture Diagram](../../diagrams/architecture/High-Level-Architecture/export/High-Level-Architecture.png)
-
 ## 1. Purpose
 
 Defines how ISA behavior is executed over time using the system’s timing and control model.
+
+Reference Diagram:
+![High-Level Architecture Diagram](../../diagrams/architecture/High-Level-Architecture/export/High-Level-Architecture.png)
 
 This layer specifies:
 - Execution ordering
@@ -45,7 +45,7 @@ Excludes:
 - TS: Timing State
 
 Behavior is evaluated during TS and committed at TP.
-All state changes occur only at TP.
+All state changes occur only at TP: captured at its leading edge, visible as it ends ([Timing Architecture §7.6](../09-timing/02-timing-architecture.md#76-rule-6--two-ranks)).
 
 Effective addresses are implemented as:
 
@@ -125,7 +125,7 @@ Microarchitecture defines structured execution as microstate sequences driven by
 | [Execution Model](./01-execution-model.md) | evaluation during a TS and commit at a TP |
 | [Micro-Operations](./02-micro-operations.md) | every micro-operation, its target, and its sources |
 | [Micro-Operation Sequencing](./03-microoperation-sequencing.md) | how micro-operations are selected and combined |
-| [Fetch & Defer](./04-fetch-defer.md) | FETCH and DEFER, including the JMPs and every OPR |
+| [FETCH and DEFER Execution](./04-fetch-defer.md) | FETCH and DEFER, including the JMPs and every OPR |
 | [MRI Execution](./05-mri-execution.md) | EXECUTE for AND, TAD, ISZ, DCA, and JMS |
 | [IOT Execution](./06-iot-execution.md) | EXECUTE for the IOTs, internal and external |
 | [OPR Execution](./07-opr/README.md) | the OPR pass unit and the three groups |

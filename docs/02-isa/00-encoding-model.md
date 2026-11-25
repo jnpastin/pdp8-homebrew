@@ -1,21 +1,14 @@
 # Instruction Encoding Model
 
-Status: normative
-
 ## 1. Purpose
 
-Defines how IR bits map directly into control behavior for a ROM-based microarchitecture.
+Defines the instruction formats: which IR bits encode each instruction class and its operands. How control uses those bits is defined in [Control Model](../04-control/01-control-model.md).
 
 ---
 
 ## 2. Control Interpretation
 
-IR must be interpreted strictly as a bitfield.
-
-Control logic operates on:
-(MS, TS, IR bits, FLAGS)
-
-No instruction decoding into symbolic instructions is permitted.
+IR is interpreted as a bitfield: an instruction's fields are its bits, and no symbolic decoding stands between IR and control ([Control Model](../04-control/01-control-model.md)).
 
 ---
 
@@ -23,23 +16,13 @@ No instruction decoding into symbolic instructions is permitted.
 
 The opcode occupies `IR[11:9]`.
 
-Instruction-class predicates are derived directly from that field:
+Its value selects the instruction class, and so the model that applies:
 
-```text
-IR_IS_MRI = 1 when IR[11:9] is 0 through 5
-IR_IS_IOT = 1 when IR[11:9] is 6
-IR_IS_OPR = 1 when IR[11:9] is 7
-```
+- 0 through 5: a memory-reference instruction (section 4)
+- 6: an I/O transfer instruction (section 5)
+- 7: an operate instruction (section 6)
 
-Exactly one instruction-class predicate is asserted for every instruction-register value.
-
-These predicates identify the applicable instruction model:
-
-- `IR_IS_MRI = 1` selects the Memory Reference Instruction model.
-- `IR_IS_IOT = 1` selects the I/O Transfer Instruction model.
-- `IR_IS_OPR = 1` selects the Operate Instruction model.
-
-The predicates classify the instruction without replacing the underlying IR bit fields used by more specific instruction-selection logic.
+The control inputs that identify the classes (`IR_IS_MRI`, `IR_IS_IOT`, `IR_IS_OPR`) are defined in [IR-Derived Fields](../04-control/10-control-input-definitions/02-ir-derived-fields.md).
 
 ---
 
@@ -104,7 +87,7 @@ The CPU implements two internal IOT device groups directly. See the [IOT](./04-i
 
 ## 6. OPR Model
 
-There are three groups of OPR instructions, they are distinguished by sentinel bits.  Group two is further divided into an AND group and an OR Group
+There are three groups of OPR instructions, distinguished by sentinel bits. Group 2 is further divided into an AND sub-group and an OR sub-group.
 
 ```
 ┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┐
@@ -118,8 +101,8 @@ There are three groups of OPR instructions, they are distinguished by sentinel b
 
 See the pages linked below for full context on each group
 - A=0 - [Group 1](./01-group-1.md)
-- A=1 & B=1 & C=0 - [Group 2 (AND)](./02-group-2.md#1-and-sub-group-definition-and-timing)
-- A=1 & B=0 & C=0 - [Group 2 (OR)](./02-group-2.md#4-or-sub-group-definition-and-timing)
+- A=1 & B=1 & C=0 - [Group 2 (AND)](./02-group-2.md#2-and-sub-group-definition)
+- A=1 & B=0 & C=0 - [Group 2 (OR)](./02-group-2.md#5-or-sub-group-definition)
 - A=1 & C=1 - [Group 3](./03-group-3.md)
 
 Each remaining bit represents an independent operation, these operations may be combined in various ways depending on the rules imposed at the group level
@@ -128,16 +111,10 @@ Each remaining bit represents an independent operation, these operations may be 
 
 ## 7. Operation Ordering
 
-TS defines execution ordering within each major state. Operations combined in one OPR act in their defined order within a single pass in FETCH.
-
-Operations assigned to different TS execute in strict order.
+Operations combined in one OPR act in the order the group documents give ([Group 1](./01-group-1.md), [Group 2](./02-group-2.md), [Group 3](./03-group-3.md)). When each takes effect is defined in [OPR Execution](../03-microarchitecture/07-opr/README.md).
 
 ---
 
 ## 8. Composition Constraint
 
-Operations that:
-- target the same register
-- and occur in the same TS
-
-are not required to be supported unless explicitly defined.
+A combination of operations is defined only where the group documents define it. Combinations they reserve or leave undefined must not be used.

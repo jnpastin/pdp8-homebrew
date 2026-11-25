@@ -1,4 +1,4 @@
-# Memory Interface
+# Memory Signal Interface
 
 ## 1. Purpose
 
@@ -30,7 +30,7 @@ Ownership is defined in:
 
 DMA-specific behavior is defined in:
 
-- [DMA Interface](./11-dma-interface.md)
+- [DMA Signal Interface](./11-dma-interface.md)
 
 ---
 
@@ -41,9 +41,11 @@ Memory communication involves:
 - CPU
 - Memory
 - AB
+- MFB
 - MDB
 - /RD
 - /WR
+- /WR_PULSE
 
 ### 2.1 Address Domain
 
@@ -52,6 +54,7 @@ The Address Domain provides the address associated with a memory operation.
 This domain is represented by:
 
 - AB
+- MFB
 
 ### 2.2 Memory Data Domain
 
@@ -147,7 +150,7 @@ Control behavior and timing are defined elsewhere.
 
 Memory operations use:
 
-- Address Domain (AB)
+- Address Domain (AB and MFB)
 - Memory Data Domain (MDB)
 
 Domain definitions and isolation requirements are defined in:

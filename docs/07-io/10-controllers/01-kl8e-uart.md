@@ -168,7 +168,7 @@ The controller enters its initialized state when /INITIALIZE is asserted.
 | Shared interrupt enable | Set |
 | Controller interrupt contribution | Inactive |
 
-Initialization sets the shared interrupt enable, as on the PDP-8/e, where INITIALIZE sets the KL8-E interrupt enable. Software disables the controller's interrupt contribution with KIE (`AC[0] = 0`). Both flags are clear after initialization, so no interrupt request results until a flag sets.
+Initialization sets the shared interrupt enable, as on the PDP-8/E, where "the INTER ENABLE flip-flop is also set by CAF and by operation of the CLEAR key" (PDP-8/E Maintenance Manual, volume 1, §3.46.2, p. 3-160). Software disables the controller's interrupt contribution with KIE (`AC[0] = 0`). Both flags are clear after initialization, so no interrupt request results until a flag sets.
 
 /INITIALIZE cancels any controller operation not yet reported as complete.  
 Any characters not yet represented by a completed programmer-visible operation may be discarded.

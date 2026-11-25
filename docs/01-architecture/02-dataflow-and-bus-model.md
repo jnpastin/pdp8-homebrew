@@ -1,15 +1,19 @@
 # Dataflow and Bus Model
 
-Buses are defined and described in more detail [here](../05-buses-and-signals/01-class-a-buses.md).
+## 1. Purpose
 
-## 1. Core Principle
+Describes, at the architectural level, how data moves between the buses, the registers, and memory. The buses themselves are defined in [Class A Buses](../05-buses-and-signals/01-class-a-buses.md).
+
+---
+
+## 2. Core Principle
 All data movement follows:
 
 Bus → Register → Consumer
 
 ---
 
-## 2. Address Path
+## 3. Address Path
 
 MA → AB → Memory
 - MA is the authoritative CPU address register
@@ -19,7 +23,7 @@ MA → AB → Memory
 
 ---
 
-## 3. Memory Data Path
+## 4. Memory Data Path
 MDB → MB → CPU
 
 - MDB is transient
@@ -28,7 +32,7 @@ MDB → MB → CPU
 
 ---
 
-## 4. System Data Bus
+## 5. System Data Bus
 DB → Register → Consumer
 
 - DB values must be captured
@@ -50,14 +54,14 @@ Constraints:
 
 ---
 
-## 5. Constraints
+## 6. Constraints
 - Buses are not storage
 - Registers are the only stable sources
-- No component may rely on bus state
+- No component may rely on bus state: a register may capture a bus at a TP, as IR captures MDB, but nothing holds a value on a bus
 
 ---
 
-## 6. Timing Relationship
-- TS: stabilization
-- TP: capture
+## 7. Timing Relationship
+- TS: values settle from state committed at the previous TP
+- TP: the capture rank loads at its rising edge, and the output rank publishes at its falling edge ([Timing Architecture §7.6](../09-timing/02-timing-architecture.md#76-rule-6--two-ranks))
 

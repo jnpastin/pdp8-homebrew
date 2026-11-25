@@ -1,6 +1,8 @@
 # Addressing Modes and Effective Address Model
 
-## 1. Scope
+## 1. Purpose
+
+Defines the addressing modes of memory-reference instructions and the rule for which field each access uses.
 
 This section applies only to Memory Reference Instructions (MRI).
 
@@ -21,7 +23,7 @@ All MRI addressing operates on a 12-bit logical address within a field.
 
 ### 2.2 Extended Address Notation
 
-EA_ADDR is a phase-dependent working value that becomes the final operand address before EXECUTE.  It contains all of the information that the system requires in order to address the entire memory system.
+The effective address is the final operand address, after any indirection. With the field it is enough to address the whole memory system. How the CPU forms it is described in [FETCH and DEFER Execution](../03-microarchitecture/04-fetch-defer.md).
 
 
 Final effective address is defined as:
@@ -139,7 +141,7 @@ Indirect pointer fetch                       | IF
 Final indirect operand (AND, TAD, ISZ, DCA)  | DF        
 JMP/JMS target, direct or indirect           | IF (after any pending field change)
 
-This matches the PDP-8/e.
+This matches the PDP-8/E: "If the current instruction is an AND, TAD, ISZ, DCA or EAE instruction, and if the processor is currently in the DEFER state, the next EXECUTE cycle will use the data field. All other machine cycles that are not data break cycles use the instruction field" (PDP-8/E Maintenance Manual, volume 2, §2.9.6, pp. 2-9 and 2-10). This machine has no EAE.
 
 ---
 
@@ -269,7 +271,7 @@ Auto-indexing applies only when:
 - MRI-only behavior
 - IF defines instruction context and direct access
 - DF is used only for the final operand of an indirect AND, TAD, ISZ, or DCA
-- Indirection is a field transition mechanism
+- Indirection is how AND, TAD, ISZ, and DCA reach DF; a JMP I or JMS I stays in IF
 - Auto-indexing applies only with I = 1
 - Final EA expressed as FXXXX
 

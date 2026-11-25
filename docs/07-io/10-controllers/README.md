@@ -38,7 +38,7 @@ Each controller document must define:
 
 ---
 
-### 4. Interrupt-Service Documentation
+## 4. Interrupt-Service Documentation
 
 Each interrupt-capable controller document must identify:
 

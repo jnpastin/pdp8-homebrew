@@ -26,7 +26,7 @@ Clock that drives the CPU timing sequence.
 - Derived from MCLK
 - All timing progression occurs on TCLK
 
-Note: Multiple TCLK generation options are planned (MCLK source selection, counter division ratios). The specific options and configuration are not yet defined.
+Note: TCLK is 20 MHz ([Timing Architecture §5.1](./02-timing-architecture.md#51-structure)). How it is derived from MCLK (the MCLK source and the division ratio) is not yet defined.
 
 ---
 
@@ -81,7 +81,7 @@ Properties:
 - Runs only while `RUN = 0`.
 - Starts when a console command is accepted.
 - Advances on TCLK rising edges.
-- Ends with exactly one console timing pulse (TPC), two TSTEPs wide.
+- Ends with exactly one TP, the console TP (`TP_FP`), two TSTEPs wide.
 - Does not advance, hold, or modify TSEQ.
 
 ### 3.4 Power-On Reset
@@ -97,9 +97,9 @@ While the power-on reset is active:
 - every value the reset sets is set in both ranks of its register ([Timing Architecture §7.6](./02-timing-architecture.md#76-rule-6--two-ranks))
 - `/INITIALIZE` is asserted
 
-When it ends, the console transaction timer runs the latched CLEAR as an ordinary console transaction ([Console Execution §9](../03-microarchitecture/09-console-execution.md#9-clear-operation)). At its TPC, every I/O controller and the DMA arbiter enter their initialized states, and AC, L, and IE clear ([System Initialization](../04-control/20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize)). Controllers act on `/INITIALIZE` only at a TP, and the reset itself has none.
+When it ends, the console transaction timer runs the latched CLEAR as an ordinary console transaction ([Console Execution §9](../03-microarchitecture/09-console-execution.md#9-clear-operation)). At its TP_FP, every I/O controller and the DMA arbiter enter their initialized states, and AC, L, and IE clear ([System Initialization](../04-control/20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize)). Controllers act on `/INITIALIZE` only at a TP, and the reset itself has none.
 
-The processor is then halted in FETCH and waits for a console command. Every other register is undefined, including PC, IF, DF, MQ, and `MAPR`; the operator sets the start address with LOAD ADDRESS. This matches the PDP-8/E, which comes up halted and asserts INITIALIZE at power-up, the same signal as its CLEAR key (maintenance manual, volume 1, §3.16).
+The processor is then halted in FETCH and waits for a console command. Every other register is undefined, including PC, IF, DF, MQ, and `MAPR`; the operator sets the start address with LOAD ADDRESS. This matches the PDP-8/E, which comes up halted and asserts INITIALIZE at power-on, the same signal as its CLEAR key (maintenance manual, volume 1, §3.16).
 
 ### 3.5 Timing ROM
 
@@ -112,7 +112,7 @@ The length of each TS, and the width of its TP, are read from the timing ROM, a 
 | `AUTO_INDEX_REQUIRED` | 1 | selects the slow DEFER (Timing Architecture §5.1) |
 | `TIMING_MODE[1:0]` | 2 | the speed mode, set by a board jumper (Timing Architecture §5.1) |
 
-`MS` changes only at a TP4, or at a console TPC, so during each TS `MS_EFF` names the state whose TS is running.
+`MS` changes only at a TP4, or at the console TP, so during each TS `MS_EFF` names the state whose TS is running.
 
 The ROM gives two values:
 
@@ -125,9 +125,9 @@ TSEQ counts the TSTEPs of the TS and sets TP after step N − W (section 4.4). A
 
 Every input of the ROM is registered state or a static jumper, so its outputs are stable through the whole TS. They settle before `CW_VALID` enables the comparison.
 
-Like the control store, the timing ROM is an EEPROM shadowed in SRAM at power-on ([Control Store Organization §8](../04-control/08-control-store-organization.md#8-device-summary)).
+Like the control store, the timing ROM is an EEPROM shadowed in SRAM at power-on ([Control Store Organization §8.1](../04-control/08-control-store-organization.md#81-shadow-copy)).
 
-`TIMING_MODE` follows the precedent of the PDP-8/E's M8330 timing generator, whose slow-cycle jumper selects its cycle lengths. It is static: it does not change while the processor runs.
+`TIMING_MODE` follows the precedent of the PDP-8/E's M8330 timing generator, whose jumper W1 holds it in the slow cycle (PDP-8/E Maintenance Manual, volume 1, §3.17, p. 3-53). It is static: it does not change while the processor runs.
 
 ---
 
@@ -146,7 +146,7 @@ TPn is the last W TSTEPs of TSn, steps N − W + 1 to N (section 3.5). W is 2 in
 - Active-high.
 - Active for W TCLK cycles, one or two.
 - Driven by a flip-flop, never decoded combinationally, so it cannot glitch (section 4.4).
-- TP1, TP2, TP3, TP4, and TPC are mutually exclusive: they are one signal, named by when it occurs.
+- TP1, TP2, TP3, TP4, and TP_FP are mutually exclusive: they are one signal, named by when it occurs.
 - Represents a discrete execution event.
 
 ---
@@ -167,7 +167,7 @@ Nothing visible changes during TP.
 
 ### 4.4 Generation
 
-TP, including TPC, is the output of one flip-flop clocked by TCLK:
+TP, including TP_FP, is the output of one flip-flop clocked by TCLK:
 
 ```text
 set:    (TSTEP = N - W) AND CW_VALID
@@ -199,7 +199,7 @@ TS1, TS2, TS3, TS4
 
 Each TS is a run of N consecutive timing steps, N from the timing ROM (section 3.5). The current TS is held in a register as a 2-bit TS code (TS1 = 00, TS2 = 01, TS3 = 10, TS4 = 11) that advances as each TP ends, from TS4 back to TS1. The register drives the control store's `TS_CODE` directly and is decoded into the TS1 to TS4 signals.
 
-The lengths are defined in [Timing Architecture §5.1](./02-timing-architecture.md#51-structure): TS2 is the longest, to accommodate the memory access, following DEC's fast- and slow-cycle design.
+The lengths are defined in [Timing Architecture §5.1](./02-timing-architecture.md#51-structure): TS2 is the longest, to accommodate the memory access, following DEC's fast- and slow-cycle design (PDP-8/E Maintenance Manual, volume 1, §3.14, p. 3-48).
 
 ---
 
@@ -232,7 +232,7 @@ TS does not trigger state changes.
 
 - Deasserted at the first TSTEP of every TS and of every console transaction.
 - Asserted from a fixed TSTEP of each TS, chosen so that at least `T_CS` has elapsed since the TS began.
-- Remains asserted through the end of that TS's TP, or through TPC for a console transaction.
+- Remains asserted through the end of that TS's TP, or through TP_FP for a console transaction.
 
 `CW_VALID` is generated by a flip-flop clocked by TCLK from the TSEQ position, not decoded combinationally, so it cannot glitch.
 
@@ -242,7 +242,7 @@ TS does not trigger state changes.
 
 `/WR_PULSE` times every memory write.
 
-- Asserted for the first TSTEP of every two-step TP, and of TPC. Not asserted in a one-step TP.
+- Asserted for the first TSTEP of every two-step TP, and of TP_FP. Not asserted in a one-step TP.
 - The output of one flip-flop clocked by TCLK, so both of its edges come from TCLK rising edges and it cannot glitch.
 - Reaches memory through at most one driver and one receiver, whose unequal rise and fall delays narrow it, over a terminated line.
 - Carries no operation: memory writes only when `/WR` is also asserted ([Memory Timing §4](../06-memory/04-memory-timing.md#4-active-write-window)).

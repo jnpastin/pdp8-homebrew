@@ -7,7 +7,7 @@ Defines the complete and authoritative index of all control input signals.
 All definitions reside in:
 
 - [Primitive Flags](./01-flags.md)
-- [IR Derived Fields](./02-ir-derived-fields.md)
+- [IR-Derived Fields](./02-ir-derived-fields.md)
 - [Derived Flags](./03-derived-flags.md)  
 - [External Inputs](./04-external-inputs.md)
 
@@ -50,7 +50,7 @@ Defined in:
 ## 4. IR-Derived Signals
 
 Defined in:
-- [IR Derived Fields](./02-ir-derived-fields.md)
+- [IR-Derived Fields](./02-ir-derived-fields.md)
 
 ---
 
@@ -68,6 +68,7 @@ Defined in:
 - [IR_IS_CAF](./02-ir-derived-fields.md#ir_is_caf)
 - [IR_IS_GTF](./02-ir-derived-fields.md#ir_is_gtf)
 - [IR_IS_RTF](./02-ir-derived-fields.md#ir_is_rtf)
+- [IR_IS_SRQ](./02-ir-derived-fields.md#ir_is_srq)
 
 ---
 
@@ -147,7 +148,6 @@ Defined in:
 Defined in: [Derived Flags](./03-derived-flags.md)
 
 - [AUTO_INDEX_REQUIRED](./03-derived-flags.md#auto_index_required)  
-- [IF_CHANGE_PENDING](./03-derived-flags.md#if_change_pending)
 - [INTERRUPT_REQUEST_VALID](./03-derived-flags.md#interrupt_request_valid)  
 - [ISZ_SKIP_REQ](./03-derived-flags.md#isz_skip_req)  
 - [OPR_SKIP_REQ](./03-derived-flags.md#opr_skip_req)  
@@ -206,6 +206,7 @@ The following control inputs are defined here but are not read by any execution 
 | `FP_SR` | datapath | values used by `FP_SR_TO_PC`, `FP_SR_TO_MB`, `MEM_WRITE_FROM_FP_SR`, and `OPR_PASS` (OSR) |
 | `IR_IS_OPR`, `IR_OPR_GROUP1`, `IR_OPR_GROUP2`, `IR_OPR_GROUP3` | predecode gates | `IR_CLASS`, `IR_NO_EXECUTE`, and the OPR pass unit's group qualification |
 | `IR_OPR_BSW`, `IR_OPR_CLA`, `IR_OPR_CLL`, `IR_OPR_CMA`, `IR_OPR_CML`, `IR_OPR_IAC`, `IR_OPR_OSR`, `IR_OPR_MQA`, `IR_OPR_MQL`, `IR_OPR_RAL`, `IR_OPR_RAR` | OPR pass unit | its stage selects, through `OPR_PASS` and `OPR_PASS_TO_MQ` ([OPR Execution](../../03-microarchitecture/07-opr/README.md)) |
+| `IR_IS_SRQ` | gate on `/INT_REQ` | the `/INT_REQ` input of overlay group 2 ([Control Store Organization §6.2](../08-control-store-organization.md#62-multiplexer-inputs)) |
 | `IR_DF`, `IR_IF` | datapath | values loaded by `IR_DF_TO_DF` (`DF_SRC = IR_DF`) and `IR_IF_TO_DIF` (`DIF_SRC = IR_IF`) |
 
 The control-word equivalence analyzer reports these as `unreferenced`. An input that appears there and is not listed in this table is a specification gap.

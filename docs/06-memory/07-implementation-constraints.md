@@ -134,9 +134,9 @@ Volatility or nonvolatility must not affect memory behavior while the system is 
 
 ## 10. Power-Up Contents
 
-Section 6 does not define memory contents after power-up.
+Section 6 does not define memory contents after power-on.
 
-Unless explicitly defined elsewhere, memory contents after power-up are unspecified.
+Unless explicitly defined elsewhere, memory contents after power-on are unspecified.
 
 A memory implementation may power up with retained contents, cleared contents, random contents, or technology-defined contents, provided that normal read/write behavior is valid after the memory subsystem is ready.
 

@@ -41,9 +41,9 @@ All modules are in `src/pdp8_cpu/`.
 
 1. Form `MS_EFF`, the mapping-register selection, the overlay group, and both slice addresses from the state committed at the previous TP.
 2. Read the datapath and sequencer words and evaluate the datapath. Evaluation starts from the enabled operations, so a select field is interpreted only when its operation is enabled (Control Word §5.6, §8.2).
-3. Commit every load, the memory write, and the sequencer results together at the TP. At TP1–TP4, `MAPR` loads the mapping-ROM entry addressed by the pre-TP IR and the current TS; it never loads at the console TP (TPC).
+3. Commit every load, the memory write, and the sequencer results together at the TP. At TP1–TP4, `MAPR` loads the mapping-ROM entry addressed by the pre-TP IR and the current TS; it never loads at the console TP (`TP_FP`).
 
-A console command is accepted only while halted and runs as one console transaction with `MS_EFF = HALTED` and the held TS1, committing at TPC.
+A console command is accepted only while halted and runs as one console transaction with `MS_EFF = HALTED` and the held TS1, committing at TP_FP.
 
 ### 4.2 Undefined Values
 

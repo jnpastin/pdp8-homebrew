@@ -376,14 +376,6 @@
     {
       "severity": "ERROR",
       "code": "MISSING_PHASE_BINDING",
-      "message": "Expected binding not found: '- IOT_WRITE_PENDING selects /DB_WRITE and DB_WRITE_FROM_AC during the transfer TS.'",
-      "source_path": "docs/03-microarchitecture/06-iot-execution.md",
-      "line": 1,
-      "case_id": null
-    },
-    {
-      "severity": "ERROR",
-      "code": "MISSING_PHASE_BINDING",
       "message": "Expected binding not found: '- IO_CLEAR_AC_REQ selects AC_CLEAR during the TS in which the request is asserted.'",
       "source_path": "docs/03-microarchitecture/06-iot-execution.md",
       "line": 1,

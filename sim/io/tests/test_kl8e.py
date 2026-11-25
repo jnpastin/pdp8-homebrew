@@ -33,13 +33,17 @@ class Iot:
                    == (0, 0, 0, 0, None) for r in self.responses)
 
 
-def iot(kl, device, op, ac=0, iot_active=1, console=False):
+def iot(kl, device, op, ac=0, iot_active=1, console=False, arrive=None, initialize_at=None):
+    """`arrive`: (TP, character), a keyboard character that arrives at that TP.
+    `initialize_at`: a TP at which /INITIALIZE is asserted."""
     responses, write_ts = [], None
     for ts in (1, 2, 3, 4):
         bus = BusView(iot_active, device, op, ts, console)
         r = kl.present(bus)
         responses.append(r)
-        kl.commit(bus, ts, ac if ts == write_ts else None, False)
+        if arrive is not None and arrive[0] == ts:
+            kl.arrive_at_next_tp(arrive[1])
+        kl.commit(bus, ts, ac if ts == write_ts else None, ts == initialize_at)
         if ts in (2, 3) and r.io_write_req:
             write_ts = ts + 1
     return Iot(responses)
@@ -108,6 +112,44 @@ class Keyboard(unittest.TestCase):
         self.assertEqual(iot(self.kl, KEYBOARD, 6).db, 0o301)
         self.kl.type_character(0o302)
         self.assertEqual(iot(self.kl, KEYBOARD, 6).db, 0o302)
+
+
+class EventAndClearAtOneTp(unittest.TestCase):
+    """§9.2 and Controller Contract §5.1: FLAG_next = EVENT OR (FLAG AND NOT CLEAR)."""
+
+    def test_arrival_without_an_iot_is_visible_after_its_tp(self):
+        kl = KL8E()
+        kl.arrive_at_next_tp(0o301)
+        self.assertEqual(kl.keyboard_flag, 0)                    # not visible before the TP
+        iot(kl, 0o10, 0)                                         # some other device's IOT
+        self.assertEqual((kl.keyboard_flag, kl.keyboard_buffer), (1, 0o301))
+
+    def test_kcf_and_kcc_at_the_arrival_tp_leave_the_flag_set(self):
+        for op in (0, 2):                                        # KCF, KCC: clear at TP2
+            with self.subTest(op=op):
+                kl = KL8E()
+                r = iot(kl, KEYBOARD, op, arrive=(2, 0o301))
+                self.assertEqual((kl.keyboard_flag, kl.keyboard_buffer), (1, 0o301))
+                self.assertTrue(kl.interrupt_request())
+                self.assertEqual(r.db, None)
+
+    def test_kcf_after_the_arrival_tp_clears_it(self):
+        kl = KL8E()
+        iot(kl, KEYBOARD, 0, arrive=(1, 0o301))                  # visible at TP1, cleared at TP2
+        self.assertEqual(kl.keyboard_flag, 0)
+
+    def test_arrival_while_the_flag_is_set_is_rejected(self):
+        # §9.3: KRB consumes 301 at TP3; 302, arriving at that TP, met a set flag.
+        kl = KL8E()
+        kl.type_character(0o301)
+        r = iot(kl, KEYBOARD, 6, arrive=(3, 0o302))
+        self.assertEqual((r.db, kl.keyboard_flag, kl.keyboard_buffer), (0o301, 0, 0o301))
+
+    def test_initialize_at_the_arrival_tp_cancels_it(self):
+        # Controller Contract §5.1: /INITIALIZE wins over the event (§8).
+        kl = KL8E()
+        iot(kl, KEYBOARD, 0, arrive=(4, 0o301), initialize_at=4)
+        self.assertEqual((kl.keyboard_flag, kl.keyboard_buffer), (0, 0))
 
 
 class Teleprinter(unittest.TestCase):

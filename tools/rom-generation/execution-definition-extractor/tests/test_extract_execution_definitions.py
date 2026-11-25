@@ -172,8 +172,8 @@ IOT = (
     "- `IO_SKIP_REQ` selects `PC_INC` during TS4.\n"
     "- `IOT_READ_PENDING` selects `/DB_READ` and `DB_READ_TO_AC` during the "
     "transfer TS.\n"
-    "- `IOT_WRITE_PENDING` selects `/DB_WRITE` and `DB_WRITE_FROM_AC` during "
-    "the transfer TS.\n\n"
+    "- `IOT_WRITE_PENDING` asserts the decoded `/DB_WRITE` during the transfer "
+    "TS, and the CPU drives AC onto DB; no micro-operation is selected.\n\n"
     "## 9. Instruction Definitions (CPU Control - Device 0)\n\n"
     + instruction(
         "9.3",
@@ -261,7 +261,6 @@ KNOWN_MICRO_OPERATIONS = [
     "AC_RAR",
     "CIFP_CLEAR",
     "DB_READ_TO_AC",
-    "DB_WRITE_FROM_AC",
     "DIF_TO_IF",
     "EA_ADDR_TO_MA",
     "FP_SR_TO_PC",
@@ -707,15 +706,11 @@ class PhaseBindingTests(unittest.TestCase):
             "predicate": "IOT_READ_PENDING = 1",
             "micro_operation": "DB_READ_TO_AC",
         }
-        write = {
-            "predicate": "IOT_WRITE_PENDING = 1",
-            "micro_operation": "DB_WRITE_FROM_AC",
-        }
         conditionals = {
             1: [],
             2: [clear],
-            3: [clear, read, write],
-            4: [clear, skip, read, write],
+            3: [clear, read],
+            4: [clear, skip, read],
         }
         self.assertEqual(
             cases,

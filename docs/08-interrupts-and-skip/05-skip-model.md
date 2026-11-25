@@ -230,7 +230,7 @@ When an instruction defines multiple predicates, those predicates are reduced to
 The CPU stores one skip decision only: the 1-bit `SKIP` register ([Registers](../01-architecture/01-registers.md#skip--skip)).
 
 - `SKIP` loads at FETCH TP3 of a Group 2 OPR with `OPR_SKIP_REQ`, and is read only in FETCH TS4 of the same instruction, where it selects `PC_INC`.
-- It is needed because the skip decision and a CLA commit at the same TP3, while the increment commits at TP4. The KK8-E's SKIP flip-flop is set at TP3 in the same way.
+- It is needed because the skip decision and a CLA commit at the same TP3, while the increment commits at TP4. The KK8-E's SKIP flip-flop is set at TP3 in the same way (PDP-8/E Maintenance Manual, volume 1, §3.38, p. 3-138).
 - Its value at any other time has no effect.
 
 Every other skip condition (ISZ, CPU-internal IOT, external-controller IOT) is not stored. It is:

@@ -1,3 +1,0 @@
-# Front Panel
-
-Status: draft

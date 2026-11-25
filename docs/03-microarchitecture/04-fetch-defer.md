@@ -45,7 +45,7 @@ Responsibilities:
 
 - DEFER:
   - resolve indirect addressing
-  - handle autoindex
+  - handle auto-index
   - finalize EA_ADDR
   - complete a JMP I
 
@@ -109,7 +109,7 @@ Description:
 | Direct JMP | PC loads the formed address; with a field change pending, `II` clears (the field loads at TP4) | [Deferred Field Application](../08-interrupts-and-skip/03-interrupt-enable-and-inhibit.md#12-deferred-field-application) |
 
 - Every input is the value held before TP3, so the skip decision does not see a CLA in the same instruction.
-- Because `II` clears at TP3, an interrupt may be recognized when the JMP completes at TP4, as on the KM8-E, which negates INT INHIBIT at TP3 of a JMP or JMS.
+- Because `II` clears at TP3, an interrupt may be recognized when the JMP completes at TP4, as on the KM8-E, which negates INT INHIBIT "at TP3 whenever a JMP or JMS instruction occurs" (PDP-8/E Maintenance Manual, volume 2, §2.10.1, p. 2-11).
 
 ---
 
@@ -136,7 +136,7 @@ Control Decisions:
         MS_NEXT ← EXECUTE
 
 Description:
-- Determines the next major state. The instruction-completion rules (interrupt entry, DMA entry, halts) are defined in [Sequencing and Internal Control §3](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#3-sequencing-control)
+- Determines the next major state. The instruction-completion rules (interrupt entry, DMA entry, halts) are defined in [Sequencing and Internal Direct Control §3](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#3-sequencing-control)
 - A Group 2 OPR whose `SKIP` is set increments PC at this TP4, concurrently with the instruction-completion decision. An interrupt recognized at the same TP4 saves the incremented PC as the return address; no special case applies ([Skip Model §14](../08-interrupts-and-skip/05-skip-model.md#14-relationship-to-interrupt-and-dma-recognition))
 - A direct JMP with a pending field change loads IF and clears `CIFP` at this TP4, the TP that completes it, as the KM8-E does ([Interrupt Enable and Inhibit §12](../08-interrupts-and-skip/03-interrupt-enable-and-inhibit.md#12-deferred-field-application)). An interrupt recognized at the same TP4 saves the new field, because INTERRUPT reads IF after it.
 
@@ -147,7 +147,7 @@ Description:
 ### 4.1 Purpose
 
 Resolves indirect addressing by replacing EA with M[EA].
-Handles autoindex increment when applicable.
+Handles auto-index increment when applicable.
 
 ---
 
@@ -236,7 +236,7 @@ Description:
 All address resolution is completed before entering EXECUTE.
 
 Instructions in EXECUTE must treat EA as final and must not
-perform any indirect or autoindex handling.
+perform any indirect or auto-index handling.
 
 ---
 

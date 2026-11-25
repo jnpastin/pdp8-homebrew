@@ -4,8 +4,8 @@
 
 Defines fully pre-decoded control condition signals derived from:
 
-- IR-derived flags (02-ir_derived_fields.md)
-- Primitive FLAGS (01-flags.md)
+- IR-derived fields ([IR-Derived Fields](./02-ir-derived-fields.md))
+- primitive flags ([Primitive Flags](./01-flags.md))
 - the external input `/INT_REQ`, for `INTERRUPT_REQUEST_VALID` (04-external-inputs.md)
 
 Derived flags are combinational and reduce multi-input control conditions into single-bit inputs for control.
@@ -132,7 +132,7 @@ AND MBZ
 ### AUTO_INDEX_REQUIRED
 
 **Mnemonic:** AUTO_INDEX_REQUIRED
-**Name:** Auto Index Required
+**Name:** Auto-Index Required
 
 **Inputs:**
 - IR_INDIRECT
@@ -140,7 +140,7 @@ AND MBZ
 
 ---
 
-**Purpose:** Determines whether auto-index increment and writeback must occur.
+**Purpose:** Determines whether auto-index increment and write-back must occur.
 
 ---
 
@@ -203,30 +203,6 @@ AND (/INT_REQ = 0)
 
 **Used By μops:**
 - (none — used for MS transition control)
-
----
-
-### IF_CHANGE_PENDING
-
-**Mnemonic:** IF_CHANGE_PENDING
-**Name:** Instruction Field Change Pending
-
-**Inputs:**
-- CIFP
-
-**Purpose:** Indicates that a pending field value is staged for application. Gates the DIF_TO_IF apply at JMP/JMS.
-
-**Expression:** 
-```
-IF_CHANGE_PENDING = CIFP
-```
-
-**Value Encoding:**
-- 0 → CIFP=0 (no pending field to apply)
-- 1 → CIFP=1 (pending field to apply)
-
-**Used By μops:**
-- [DIF_TO_IF](../../03-microarchitecture/02-micro-operations.md#dif_to_if)
 
 ---
 

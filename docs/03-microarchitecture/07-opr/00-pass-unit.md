@@ -53,7 +53,7 @@ The stages act in the order A to E, in one pass.
 | L | stage A; also the skip logic |
 | MQ | stage B (MQA); also the MQ output |
 | FP_SR | stage B (OSR) |
-| IR bit decodes, each qualified by `IR_CLASS` | the selection of every stage ([Group 1 Execution §4](./01-group1-execution.md#4-opr-pass)) |
+| IR bit decodes, each qualified by `IR_CLASS` | the selection of every stage (section 4) |
 
 A stage's result feeds the next stage, so AC and L reach stages C, D, and E through the stages before them.
 
@@ -64,7 +64,32 @@ A stage's result feeds the next stage, so AC and L reach stages C, D, and E thro
 | MQ result | MQ | `OPR_PASS_TO_MQ` | FETCH TP3, Group 3 |
 | skip decision (`OPR_SKIP_REQ`) | SKIP | `OPR_SKIP_REQ_TO_SKIP` | FETCH TP3, Group 2 |
 
-## 4. Effect on Each Group
+## 4. Stage Selection
+
+Each stage is selected by its IR bit, qualified by the instruction's class (`IR_CLASS`). The stages compose in the order of the [Group 1 ISA](../../02-isa/01-group-1.md) §2:
+
+| Stage | Function | Selected by |
+|---|---|---|
+| A: zero gating | AC ← 0 | `IR_OPR_CLA`; also `IR_OPR_MQL` (Group 3) |
+| A: zero gating | L ← 0 | `IR_OPR_CLL` |
+| B: OR inputs | AC ← AC OR FP_SR (Group 2 OSR) | `IR_OPR_OSR` |
+| B: OR inputs | AC ← AC OR MQ (Group 3 MQA) | `IR_OPR_MQA` |
+| C: true/complement | AC ← NOT AC | `IR_OPR_CMA` |
+| C: true/complement | L ← NOT L | `IR_OPR_CML` |
+| D: increment | L·AC ← L·AC + 1, as a 13-bit increment: a carry out of AC bit 11 complements L | `IR_OPR_IAC` |
+| E: rotate or swap | rotate the 13-bit L·AC right or left once (RAR, RAL), twice (RTR, RTL), or exchange AC[11:6] and AC[5:0] (BSW, L unchanged) | `IR_OPR_RAR`, `IR_OPR_RAL`, `IR_OPR_BSW` |
+
+Stage E's selection is given in [Group 1 Execution §4](./01-group1-execution.md#4-opr-pass). The qualification by class:
+
+| Stage | Group 1 (`011`) | Group 2 (`100`) | Group 3 (`101`) |
+|---|---|---|---|
+| A | CLA, CLL | CLA | CLA, MQL |
+| B | none | OSR | MQA |
+| C | CMA, CML | none | none |
+| D | IAC | none | none |
+| E | rotates, BSW | none | none |
+
+## 5. Effect on Each Group
 
 | Part | Group 1 | Group 2 | Group 3 |
 |---|---|---|---|
@@ -77,7 +102,7 @@ A stage's result feeds the next stage, so AC and L reach stages C, D, and E thro
 | MQ output | not loaded | not loaded | MQL: AC, or 0 with CLA. Otherwise MQ |
 | Skip logic | not loaded | loads SKIP | not loaded |
 
-## 5. Examples
+## 6. Examples
 
 | Instruction | Before | Through the unit | After TP3 |
 |---|---|---|---|
@@ -88,7 +113,7 @@ A stage's result feeds the next stage, so AC and L reach stages C, D, and E thro
 | SWP (7521) | AC = 1111, MQ = 2222 | A clears the AC path, B gives 2222, MQ output gives 1111 | AC = 2222, MQ = 1111 |
 | CLA MQL (7621) | AC = 1111, MQ = 2222 | A gives 0000; MQ output gives 0 | AC = 0000, MQ = 0000 |
 
-## 6. Invariants
+## 7. Invariants
 
 - The unit holds no state.
 - Every input is the value held before TP3. All outputs commit together at TP3.

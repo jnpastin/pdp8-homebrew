@@ -329,10 +329,6 @@
         {
           "predicate": "IOT_READ_PENDING = 1",
           "micro_operation": "DB_READ_TO_AC"
-        },
-        {
-          "predicate": "IOT_WRITE_PENDING = 1",
-          "micro_operation": "DB_WRITE_FROM_AC"
         }
       ]
     },
@@ -361,10 +357,6 @@
         {
           "predicate": "IOT_READ_PENDING = 1",
           "micro_operation": "DB_READ_TO_AC"
-        },
-        {
-          "predicate": "IOT_WRITE_PENDING = 1",
-          "micro_operation": "DB_WRITE_FROM_AC"
         }
       ]
     },

@@ -94,7 +94,7 @@ Two clears win over the event:
 Every controller must accept the active-low /INITIALIZE signal.
 
 When /INITIALIZE is asserted:
-- the controller enters its documented initialized state at the TP ending the assertion (EXECUTE TP4 for CAF, TPC for CLEAR)
+- the controller enters its documented initialized state at the TP ending the assertion (EXECUTE TP4 for CAF, TP_FP for CLEAR or START)
 - /INITIALIZE overrides all controller commands, transfers, flag updates, interrupt requests, DMA activity, and other controller-local actions that would otherwise commit at the same TP
 - the controller samples /INITIALIZE only at that TP and must not act on its level earlier
 - any active controller operation is terminated
@@ -225,11 +225,11 @@ The controller does not generate aggregate `/DMA_REQ`.
 
 Controller interrupt contributions and `/DMA_REQ[n]` are registered controller outputs.
 
-Aggregate `/INT_REQ` is the wired OR of those registered interrupt contributions. Like aggregate `/DMA_REQ`, it is not passed through an additional synchronization stage, and it must settle before the TP at which CPU control samples it.
+Aggregate `/INT_REQ` is the wired-OR of those registered interrupt contributions. Like aggregate `/DMA_REQ`, it is not passed through an additional synchronization stage, and it must be stable at least `T_CS` before the TP that accepts it ([External Inputs §2](../04-control/10-control-input-definitions/04-external-inputs.md#2-timing-model)).
 
 Aggregate `/DMA_REQ` is a combinational CPU input derived from `DMA_ENABLE` and the registered controller `/DMA_REQ[n]` outputs. It is not passed through an additional synchronization stage.
 
-`DMA_ENABLE`, `/DMA_REQ[n]`, and aggregate `/DMA_REQ` must satisfy the applicable setup and hold requirements before CPU control samples aggregate `/DMA_REQ` at TP4.
+`DMA_ENABLE`, `/DMA_REQ[n]`, and aggregate `/DMA_REQ` must be stable at least `T_CS` before TP4, the TP that accepts it ([External Inputs §2](../04-control/10-control-input-definitions/04-external-inputs.md#2-timing-model)).
 
 ---
 
@@ -303,8 +303,8 @@ An unsynchronized physical-device signal must not directly drive:
 
 Synchronization of a physical-device event is the responsibility of the controller that interprets that event.
 
-Aggregate `/INT_REQ` is not synchronized through an additional stateful stage. It is the wired OR of registered controller outputs, which change only as a TP ends.
+Aggregate `/INT_REQ` is not synchronized through an additional stateful stage. It is the wired-OR of registered controller outputs, which change only as a TP ends.
 
-Aggregate `/DMA_REQ` is not synchronized through an additional stateful stage. It is derived combinationally from `DMA_ENABLE` and registered controller `/DMA_REQ[n]` outputs and must satisfy the CPU’s TP4 setup and hold requirements.
+Aggregate `/DMA_REQ` is not synchronized through an additional stateful stage. It is derived combinationally from `DMA_ENABLE` and registered controller `/DMA_REQ[n]` outputs and must be stable at least `T_CS` before TP4, the TP that accepts it ([External Inputs §2](../04-control/10-control-input-definitions/04-external-inputs.md#2-timing-model)).
 
 The synchronization mechanism and metastability-mitigation implementation belong to the controller design and are outside this architectural contract.

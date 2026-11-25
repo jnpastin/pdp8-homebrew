@@ -15,7 +15,7 @@ It describes:
 
 The CPU timing model is illustrated in the following diagram:
 
-![alt text](../../diagrams/timing/cpu-timing/export/cpu-timing-overview.png "CPU Timing Diagram")
+![CPU timing overview](../../diagrams/timing/cpu-timing/export/cpu-timing-overview.png "CPU Timing Diagram")
 
 This diagram represents the canonical timing structure:
 - Timing States (TS) define phase windows
@@ -91,14 +91,14 @@ The lengths include TP. TP is two steps wide, in both modes, in the TSs that can
 | EXECUTE, whatever the instruction | TS3, TS4 | DCA and JMS in TS3; ISZ in TS4 |
 | INTERRUPT | TS3 | return address |
 | DMA | TS2 | controller |
-| Console transaction | TPC | DEPOSIT |
+| Console transaction | TP_FP | DEPOSIT |
 
 `TIMING_MODE` codes 2 and 3 are reserved. Mode 0 is the normal mode; mode 1 is for hardware bring-up.
 
-The two lengths follow the PDP-8/E's fast and slow memory cycles (KK8-E; M8330):
+The two lengths follow the PDP-8/E's fast and slow memory cycles (KK8-E and M8330; PDP-8/E Maintenance Manual, volume 1, §3.14, p. 3-48, and §3.17, p. 3-53):
 
-- **Which states are slow:** FETCH and non-autoindex DEFER are fast; EXECUTE and autoindex DEFER are slow. The slow cycle lengthens the TSs of a state that writes memory, or may write it: the auto-index write-back, the MRI and interrupt writes, and a DMA transfer.
-- **Matching the PDP-8/E:** under mode 0, a directly addressed memory-reference instruction takes 2.6 µs, as on the PDP-8/E.
+- **Which states are slow:** FETCH and non-auto-index DEFER are fast; EXECUTE and auto-index DEFER are slow. The slow cycle lengthens the TSs of a state that writes memory, or may write it: the auto-index write-back, the MRI and interrupt writes, and a DMA transfer.
+- **Matching the PDP-8/E:** under mode 0, a directly addressed memory-reference instruction takes 2.6 µs, as on the PDP-8/E, where it "requires one fast and one slow memory cycle or 2.6 µs" (PDP-8/E Maintenance Manual, volume 1, §1.3, Table 1-1, p. 1-7).
 - **The diagnostic check:** the ISZ + JMP loop of a timing routine takes 2 × 24 + 28 = 76 TSTEPs = 3.80 µs, the PDP-8/E figure that MAINDEC-8E-D2AB checks.
 
 Each length allows the TS's longest path, from its control word and memory access to the leading edge of its TP, within the limits of section 11.4, and is padded to these totals. TS2 is the longest setup interval, to accommodate the memory access.
@@ -249,7 +249,7 @@ Major State changes occur at defined TP events.
 
 Timing speed is controlled by the length of each TS, read from the timing ROM ([Timing Terminology §3.5](./01-terminology.md#35-timing-rom)).
 
-- Fast: a FETCH or non-autoindex DEFER (5/8/6/5 TSTEPs, mode 0)
+- Fast: a FETCH or non-auto-index DEFER (5/8/6/5 TSTEPs, mode 0)
 - Slow: every other major state (6/8/7/7 TSTEPs)
 
 The selection is dynamic, by major state and `AUTO_INDEX_REQUIRED`, within the static `TIMING_MODE` (section 5.1).
@@ -294,7 +294,7 @@ The control word is formed combinationally from registered state, the timing sta
 
 Every control signal is one of:
 
-- **TP-qualified:** acts only when a TP or TPC commits a result. A transient value has no effect provided the signal is stable before the TP. Register load enables, source selects, ALU fields, value fields, the sequencing fields, and `/WR` are TP-qualified.
+- **TP-qualified:** acts only when a TP, including `TP_FP`, commits a result. A transient value has no effect provided the signal is stable before the TP. Register load enables, source selects, ALU fields, value fields, the sequencing fields, and `/WR` are TP-qualified.
 - **Immediate-effect:** acts while it is asserted, for example by driving a bus or strobing memory. An immediate-effect signal is presented only within its validity window.
 
 The immediate-effect signals and their windows are defined in [Architectural Control Signals §3.2](../04-control/20-control-output-definitions/02-architectural-control-signals.md#32-timing-model).

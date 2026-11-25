@@ -140,7 +140,7 @@ MS is updated separately from μops.
 Rules:
 
 - MS_NEXT is determined during TS4 by control logic
-- MS is updated at TP4
+- MS is updated at TP4, or at the console TP (`TP_FP`)
 
 Constraint:
 
@@ -153,8 +153,8 @@ Constraint:
 The EXECUTE definitions, for the memory reference instructions other than JMP and for the IOTs, assume:
 
 - MS = EXECUTE
-- EA_ADDR is the fully resolved effective address and is stored in the EA register
-- All indirect addressing and autoindex effects have completed
+- `EA_ADDR` holds the fully resolved effective address
+- All indirect addressing and auto-index effects have completed
 - IR is stable and valid for the duration of execution
 
 ---
@@ -173,7 +173,7 @@ Rules:
 
 Constraints:
 
-- EXT must be stable for the duration of the TS in which it is evaluated ([External Inputs §2](../04-control/10-control-input-definitions/04-external-inputs.md#2-timing-model))
+- EXT must be stable at least `T_CS` before the TP that accepts it ([External Inputs §2](../04-control/10-control-input-definitions/04-external-inputs.md#2-timing-model))
 - EXT must not introduce implicit or asynchronous state changes
 
 

@@ -79,7 +79,6 @@ No intermediate state or flag storage is created. The one exception is `SKIP`: a
 
 ### 4.5 I/O / External
 - [DB_READ_TO_AC](#db_read_to_ac)
-- [DB_WRITE_FROM_AC](#db_write_from_ac)
 
 ### 4.6 Register Transfer
 - [AC_TO_DF](#ac_to_df)
@@ -104,7 +103,6 @@ No intermediate state or flag storage is created. The one exception is `SKIP`: a
 - [IR_IF_TO_DIF](#ir_if_to_dif)
 - [MB_TO_EA_ADDR](#mb_to_ea_addr)
 - [MDB_TO_IR](#mdb_to_ir)
-- [PC_TO_EA_ADDR](#pc_to_ea_addr)
 - [PC_TO_MA](#pc_to_ma)
 - [PC_TO_MB](#pc_to_mb)
 
@@ -119,8 +117,6 @@ No intermediate state or flag storage is created. The one exception is `SKIP`: a
 - [IF_CLEAR](#if_clear)
 - [II_CLEAR](#ii_clear)
 - [II_SET](#ii_set)
-- [IOT_TRANSFER_CAPTURE](#iot_transfer_capture)
-- [IOT_TRANSFER_CLEAR](#iot_transfer_clear)
 - [L_CLEAR](#l_clear)
 - [MA_CLEAR](#ma_clear)
 - [MB_INC](#mb_inc)
@@ -325,36 +321,11 @@ AC, DB_input
 
 **Preconditions:**  
 - A device is currently driving DB  
-- DB contains valid data for the duration of the TS  
+- DB contains valid data within `DB_VALID` of the TS ([Timing Terminology §5.8](../09-timing/01-terminology.md#58-db-transfer-window-db_valid))  
 
 **Constraints:**  
 - AC must not be written by any other μop in the same TS  
 - DB_input validity is defined externally and must not be assumed by control  
-
----
-
-### DB_WRITE_FROM_AC
-
-**Category:** I/O / External  
-**Description:** Writes the value stored in AC to the System Data Bus (DB).
-
-**Target:** DB  
-
-**Expression:**  
-DB_output ← AC  
-
-**Sources:**  
-AC  
-
-**Preconditions:**  
-- The CPU has control of the DB bus  
-- No other device is actively driving DB  
-- DB is in High-Z state prior to the write  
-
-**Constraints:**  
-- Must not be used concurrently with DB_READ_TO_AC  
-- AC must remain stable for the duration of the TS  
-- Only one device may drive DB at any time  
 
 ---
 
@@ -371,25 +342,6 @@ DF
 
 **Expression:**  
 DF ← 0
-
-**Sources:**  
-(none)
-
----
-
-### DIF_CLEAR
-
-**Category:**  
-State Manipulation
-
-**Description:**  
-Clears the deferred instruction field register.
-
-**Target:**  
-DIF
-
-**Expression:**  
-DIF ← 0
 
 **Sources:**  
 (none)
@@ -413,6 +365,25 @@ AC remaining bits unaffected
 
 **Sources:**  
 AC, DF
+
+---
+
+### DIF_CLEAR
+
+**Category:**  
+State Manipulation
+
+**Description:**  
+Clears the deferred instruction field register.
+
+**Target:**  
+DIF
+
+**Expression:**  
+DIF ← 0
+
+**Sources:**  
+(none)
 
 ---
 
@@ -781,64 +752,6 @@ II ← 1
 
 ---
 
-### IOT_TRANSFER_CAPTURE
-
-**Category:** State Manipulation  
-**Description:** Captures the accepted external-IOT DB transfer direction for use during the following TS.  
-**Target:** `IOT_TRANSFER`
-
-**Expression:**
-
-```text
-if IO_READ_REQ = 1:
-    IOT_TRANSFER <- READ
-else if IO_WRITE_REQ = 1:
-    IOT_TRANSFER <- WRITE
-else:
-    IOT_TRANSFER <- NONE
-```
-
-**Sources:**
-
-- `IO_READ_REQ`
-- `IO_WRITE_REQ`
-
-**Constraints:**
-
-- Valid only at TP2 or TP3 of external-IOT EXECUTE.
-- The accepted request executes during the immediately following transfer TS and commits at its associated TP.
-- `IO_READ_REQ` and `IO_WRITE_REQ` must not both be asserted.
-- The resulting value must be `NONE`, `READ`, or `WRITE`.
-- Encoding `11` must never be produced.
-- When a pending transfer completes at the same TP, `IOT_TRANSFER_CAPTURE` replaces that transfer directly.
-- `IOT_TRANSFER_CLEAR` must not also be selected at that TP.
-
----
-
-### IOT_TRANSFER_CLEAR
-
-**Category:** State Manipulation  
-**Description:** Clears a completed external-IOT DB transfer at its associated commit TP when no new transfer request is accepted at that TP.  
-**Target:** `IOT_TRANSFER`
-
-**Expression:**
-
-```text
-IOT_TRANSFER <- NONE
-```
-
-**Sources:** none
-
-**Constraints:**
-
-- Valid only at the commit TP of the pending external-IOT transfer.
-- Selected only when a pending transfer completes and no new transfer request is accepted at the same TP.
-- A transfer accepted at TP2 clears at TP3 when it is not replaced by another request accepted at TP3.
-- A transfer accepted at TP3 clears at TP4.
-- Must not be selected concurrently with `IOT_TRANSFER_CAPTURE`.
-
----
-
 ### IR_ADDR_TO_EA_ADDR
 
 **Category:**  
@@ -1066,33 +979,6 @@ MA or PC, IF or DF
 
 ---
 
-### MEM_WRITE_FROM_MB
-
-**Category:**  
-Memory Operations
-
-**Description:**  
-Writes the value stored in MB to the memory location specified by MA.
-
-**Target:**  
-M[MEM_ADDR]
-
-**Expression:**  
-M[MEM_ADDR] ← MB
-
-Where:
-
-```text
-MEM_ADDR = {MFB, AB}  
-    AB  = MA when AB_SRC = MA, PC when AB_SRC = PC  
-    MFB = IF when MFB_SRC = IF, DF when MFB_SRC = DF  
-```
-
-**Sources:** 
-MA or PC, IF or DF, MB
-
----
-
 ### MEM_WRITE_FROM_FP_SR
   
 **Category:**  
@@ -1125,6 +1011,33 @@ MA or PC, IF or DF, FP_SR
 
 ---
 
+### MEM_WRITE_FROM_MB
+
+**Category:**  
+Memory Operations
+
+**Description:**  
+Writes the value stored in MB to the memory location on AB (MA, or PC for a console DEPOSIT's address, per `AB_SRC`).
+
+**Target:**  
+M[MEM_ADDR]
+
+**Expression:**  
+M[MEM_ADDR] ← MB
+
+Where:
+
+```text
+MEM_ADDR = {MFB, AB}  
+    AB  = MA when AB_SRC = MA, PC when AB_SRC = PC  
+    MFB = IF when MFB_SRC = IF, DF when MFB_SRC = DF  
+```
+
+**Sources:** 
+MA or PC, IF or DF, MB
+
+---
+
 ### MQ_CLEAR
   
 **Category:**  
@@ -1150,7 +1063,7 @@ MQ ← 0
 Arithmetic / Logical
 
 **Description:**
-Loads AC and L from the OPR pass unit, which performs the AC and L operations of a whole OPR instruction in one pass. The pass unit's stage functions are selected directly by IR bits ([Group 1 Execution §4](./07-opr/01-group1-execution.md#4-opr-pass), [Group 2 Execution §4](./07-opr/02-group2-execution.md#4-opr-pass), [Group 3 Execution §4](./07-opr/03-group3-execution.md#4-opr-pass)); this μop selects only that AC and L load from it. Selected in FETCH TS3 when `IR_CLASS` = 011, 100, or 101.
+Loads AC and L from the OPR pass unit, which performs the AC and L operations of a whole OPR instruction in one pass. The pass unit's stage functions are selected directly by IR bits ([OPR Pass Unit §4](./07-opr/00-pass-unit.md#4-stage-selection)); this μop selects only that AC and L load from it. Selected in FETCH TS3 when `IR_CLASS` = 011, 100, or 101.
 
 **Target:**
 AC, L
@@ -1255,25 +1168,6 @@ PC ← 0001
 
 **Sources:**  
 (none)
-
----
-
-### PC_TO_EA_ADDR
-
-**Category:**  
-Register Transfer
-
-**Description:**  
-Transfers the program counter into the effective address register for instruction fetch.
-
-**Target:**  
-EA_ADDR
-
-**Expression:**  
-EA_ADDR ← PC
-
-**Sources:**  
-PC
 
 ---
 

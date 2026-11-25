@@ -1,13 +1,19 @@
 # Design Principles
 
-## 1. Core Principles
+## 1. Purpose
 
-### 1.1 Correctness Over Performance
-The system must behave correctly according to PDP-8/e semantics before any effort is made to optimize performance.
+States the principles that guide design decisions, what the project does not aim to do, and the decisions that are settled.
 
 ---
 
-### 1.2 Separation of Concerns
+## 2. Core Principles
+
+### 2.1 Correctness Over Performance
+The system must behave correctly according to PDP-8/E semantics before any effort is made to optimize performance.
+
+---
+
+### 2.2 Separation of Concerns
 
 The design must clearly separate:
 
@@ -24,7 +30,7 @@ These layers must not be conflated.
 
 ---
 
-### 1.3 Incremental Development
+### 2.3 Incremental Development
 
 The system should be built and validated in stages:
 
@@ -36,7 +42,7 @@ The system should be built and validated in stages:
 
 ---
 
-### 1.4 Observability and Debuggability
+### 2.4 Observability and Debuggability
 
 The system must support detailed inspection of internal state.
 
@@ -48,7 +54,7 @@ Examples:
 
 ---
 
-### 1.5 Modularity
+### 2.5 Modularity
 
 The system will be divided into independent modules:
 
@@ -61,7 +67,7 @@ Each module should have clearly defined interfaces.
 
 ---
 
-### 1.6 Conservative Electrical Assumptions
+### 2.6 Conservative Electrical Assumptions
 
 Design decisions should account for:
 
@@ -73,7 +79,7 @@ Clock targets are progressive, not fixed.
 
 ---
 
-### 1.7 Faithful Behavior, Not Exact Replica
+### 2.7 Faithful Behavior, Not Exact Replica
 
 The system aims to reproduce observed PDP-8 behavior, not exact internal implementation.
 
@@ -84,7 +90,7 @@ Examples:
 
 ---
 
-## 2. Non-Goals
+## 3. Non-Goals
 
 - Exact reproduction of PDP-8 hardware schematics
 - Maximum performance at the expense of clarity
@@ -92,7 +98,7 @@ Examples:
 
 ---
 
-## 3. Open Decisions
+## 4. Open Decisions
 
 The following architectural decisions remain unresolved:
 
@@ -100,21 +106,20 @@ The following architectural decisions remain unresolved:
 
 ---
 
-### 3.1 Resolved Decisions
+### 4.1 Resolved Decisions
 
 The following architectural decisions are fixed:
 
 - Control strategy: **ROM-based microcoded control**
-  - Control is implemented as a ROM lookup:
-    CONTROL = ROM[MS, TS, IR, FLAGS]
+  - Control is, in idea, a ROM lookup, CONTROL = ROM[MS, TS, IR, FLAGS]; the actual address is formed as [Control Store Organization §5](../04-control/08-control-store-organization.md#5-address-formation) describes
   - No hardwired control logic is used for instruction sequencing
-  - One exception, inside the datapath: the OPR pass unit's stage functions are selected directly by IR bits; the control store decides when the pass acts (`OPR_PASS`), as it decides every register load ([Group 1 Execution](../03-microarchitecture/07-opr/01-group1-execution.md))
+  - The exceptions are the realizations listed in [Control Model §8.4](../04-control/01-control-model.md#84-realizations-outside-the-control-word). Chief among them, inside the datapath: the OPR pass unit's stage functions are selected directly by IR bits; the control store decides when the pass acts (`OPR_PASS`), as it decides every register load ([OPR Pass Unit](../03-microarchitecture/07-opr/00-pass-unit.md))
 
-- Timing model: TS/TP event-driven model (defined in 09-timing)
+- Timing model: TS/TP event-driven model ([Timing Architecture](../09-timing/02-timing-architecture.md))
 
 ---
 
-## 4. Notes
+## 5. Notes
 
 These principles are intended to guide decisions as the project evolves.
 

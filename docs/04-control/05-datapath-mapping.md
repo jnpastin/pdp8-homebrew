@@ -149,7 +149,7 @@ Behavior:
 
 Constraint:
 - All datapath results must be determined before TP.
-- All state updates must occur only at TP.
+- All state updates must occur only at TP: captured at its leading edge, visible as it ends ([Timing Architecture §7.6](../09-timing/02-timing-architecture.md#76-rule-6--two-ranks)).
 
 ---
 
@@ -254,7 +254,7 @@ Default DMA service behavior:
 - `PC_LOAD` inactive
 - CPU-initiated `/RD` inactive
 - CPU-initiated `/WR` inactive
-- `/DMA_GRANT` asserted
+- the CPU's memory-interface drivers released; `/DMA_GRANT`, decoded from `MS_EFF` rather than held in the control word, is asserted
 
 Constraint:
 - Any CPU state update during `MS = DMA` must be explicitly defined by `CONTROL_WORD`.

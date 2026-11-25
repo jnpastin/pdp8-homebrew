@@ -87,7 +87,7 @@ For both transaction types:
 - `MFB` and `AB` remain stable while `/RD` is asserted or a write pulse is active, and through the associated commit TP.
 - Exactly one of `/RD` or `/WR` is asserted for a valid memory transaction.
 - During a memory read, memory drives `MDB[11:0]`, and the CPU captures the value at the commit TP.
-- During a memory write, the CPU drives `MDB[11:0]`, and memory captures the value at the commit TP.
+- During a memory write, the CPU drives `MDB[11:0]`, and memory writes the value during `/WR_PULSE`, the first step of the commit TP ([Memory Timing §4](./04-memory-timing.md)).
 - `MDB` remains valid for the required setup and hold interval around the commit TP.
 
 The diagram uses TS2 and TP2 as a representative transaction phase. The active TS and commit TP depend on the specific memory operation. The signal relationships and stability requirements remain unchanged when a memory transaction occurs during another TS and TP.

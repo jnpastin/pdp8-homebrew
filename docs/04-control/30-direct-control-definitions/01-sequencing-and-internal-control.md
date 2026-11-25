@@ -24,7 +24,7 @@ This document does not redefine:
 - physical interface ownership
 - externally visible output-drive states
 
-Physical interface ownership and output-drive states are defined separately in [Interface and Ownership Control](./02-interface-and-ownership-control.md).
+Physical interface ownership and output-drive states are defined separately in [Interface and Ownership Direct Control](./02-interface-and-ownership-control.md).
 
 ---
 
@@ -79,7 +79,7 @@ These outputs:
 - are not micro-operations
 - are not modified by micro-operations
 - commit only at their documented TP boundaries
-- commit at a console TP (TPC) when evaluated during a console transaction ([Major State Timing §8](../../09-timing/03-major-state-timing.md#8-halted-state-and-console-transactions))
+- commit at the console TP (`TP_FP`) when evaluated during a console transaction ([Major State Timing §8](../../09-timing/03-major-state-timing.md#8-halted-state-and-console-transactions))
 - must not be computed or modified outside the control store
 
 Current state and next-state value remain distinct:
@@ -172,7 +172,7 @@ MS <- EXECUTE at TP4
 
 Source:
 
-- [Fetch & Defer](../../03-microarchitecture/04-fetch-defer.md)
+- [FETCH and DEFER Execution](../../03-microarchitecture/04-fetch-defer.md)
 
 ---
 
@@ -201,7 +201,7 @@ MS <- DEFER at TP4
 
 Source:
 
-- [Fetch & Defer](../../03-microarchitecture/04-fetch-defer.md)
+- [FETCH and DEFER Execution](../../03-microarchitecture/04-fetch-defer.md)
 
 ---
 
@@ -230,7 +230,7 @@ MS <- EXECUTE at TP4
 
 Source:
 
-- [Fetch & Defer](../../03-microarchitecture/04-fetch-defer.md)
+- [FETCH and DEFER Execution](../../03-microarchitecture/04-fetch-defer.md)
 
 ---
 
@@ -264,7 +264,7 @@ MS <- INTERRUPT at TP4
 
 Constraints:
 
-- CAF never selects INTERRUPT: its `/INITIALIZE` clears IE and every controller request at the same TP4, and on the PDP-8/e CAF's INITIALIZE clears the interrupt logic before TP4 (sections 3.2.6 and 3.2.7).
+- CAF never selects INTERRUPT: its `/INITIALIZE` clears IE and every controller request at the same TP4, and on the PDP-8/E CAF asserts INITIALIZE from its TP3, which clears the interrupt enable before TP4 (PDP-8/E Maintenance Manual, volume 1, §3.41.4, p. 3-149, and §3.42.1, p. 3-152; sections 3.2.6 and 3.2.7).
 
 Source:
 
@@ -308,7 +308,7 @@ MS <- DMA at TP4
 Constraints:
 
 - The interrupt decision has priority over DMA entry.
-- `/DMA_REQ` must be established before TS4.
+- `/DMA_REQ` must be stable at least `T_CS` before TP4 (section 3.2.9).
 - DMA entry must be selected through the control word.
 - The DMA arbiter does not modify `MS_NEXT`.
 
@@ -412,7 +412,7 @@ MS <- DMA at TP4
 Constraints:
 
 - `/DMA_REQ` is the aggregate CPU-facing request.
-- The request value used by CPU control must settle before TP4.
+- The request must be stable at least `T_CS` before TP4, the TP that accepts it ([External Inputs §2](../10-control-input-definitions/04-external-inputs.md#2-timing-model)).
 - DMA continuation must be selected through the control word.
 - External DMA ownership must not modify `MS_NEXT`.
 
@@ -512,12 +512,12 @@ MS_LOAD = 1
 Commit:
 
 ```text
-MS <- FETCH at TPC
+MS <- FETCH at TP_FP
 ```
 
-EXAMINE and DEPOSIT change PC, MA, EA_ADDR, and MB, which a DEFER or EXECUTE halted by Single Step would use. Loading FETCH makes a following CONTINUE start a new instruction at PC, as on the PDP-8/E, where CONT after EXAM or DEP causes a FETCH cycle (maintenance manual, volume 1, §3.8.2).
+EXAMINE and DEPOSIT advance PC, so a DEFER or EXECUTE halted by Single Step would finish and continue from the wrong address. On the PDP-8/E, too, EXAM and DEP increment PC (Small Computer Handbook, 1973, Table 3-1, pp. 3-2 and 3-3). Loading FETCH makes a following CONTINUE start a new instruction at PC, as on the PDP-8/E, where CONT after EXAM or DEP causes a FETCH cycle (maintenance manual, volume 1, §3.8.2).
 
-A held DMA selection is kept, as after START: the burst continues at the next DMA entry ([DMA Arbitration §13.1](../../07-io/06-dma-arbitration.md#131-halt-between-dma-cycles)).
+A held DMA selection is kept: the burst continues at the next DMA entry ([DMA Arbitration §13.1](../../07-io/06-dma-arbitration.md#131-halt-between-dma-cycles)).
 
 Sources:
 
@@ -641,11 +641,11 @@ MS_LOAD  = 1
 Commit:
 
 ```text
-RUN <- 1 at TPC
-MS  <- FETCH at TPC
+RUN <- 1 at TP_FP
+MS  <- FETCH at TP_FP
 ```
 
-START also establishes the documented processor execution state and begins execution in FETCH at the first timing state.
+START also establishes the documented processor execution state, asserts `/INITIALIZE` for the transaction ([Interface and Ownership Direct Control §8.4](./02-interface-and-ownership-control.md#84-front-panel-start-initialization)), and begins execution in FETCH at the first timing state.
 
 The START micro-operations are separate from the `RUN_NEXT` and `MS_NEXT` assignments.
 
@@ -675,7 +675,7 @@ RUN_NEXT = 1
 Commit:
 
 ```text
-RUN <- 1 at TPC
+RUN <- 1 at TP_FP
 ```
 
 CONTINUE resumes execution from the preserved machine state without executing architectural micro-operations or modifying the documented preserved state.
@@ -911,7 +911,7 @@ RUN_NEXT = 0
 Commit:
 
 ```text
-RUN <- 0 at TPC
+RUN <- 0 at TP_FP
 ```
 
 Constraints:
@@ -1161,7 +1161,7 @@ Constraints:
 - The halt request is cleared only when consumed.
 - Consumption and transition to the halted state commit at the same TP.
 - Consumption applies regardless of whether another run-state halt condition also applies at that boundary.
-- Single Instruction completion and EXECUTE Single Step completion do not prevent consumption of an existing pending halt request.
+- Single Instruction completion and Single Step completion at an instruction's completion do not prevent consumption of an existing pending halt request.
 - A `HLT_REQ_NEXT = 1` value committed at the current TP is not available as `HLT_REQ = 1` for another decision at that same TP.
 
 Sources:
@@ -1332,7 +1332,7 @@ MA holds the instruction's address from FETCH TP1; PC has already advanced at th
 
 Sources:
 
-- [Fetch & Defer](../../03-microarchitecture/04-fetch-defer.md)
+- [FETCH and DEFER Execution](../../03-microarchitecture/04-fetch-defer.md)
 
 #### 4.3.2 DEFER Pointer Read
 
@@ -1350,7 +1350,7 @@ Assignment:
 AB_SRC = MA
 ```
 
-#### 4.3.3 DEFER Auto-Index Writeback
+#### 4.3.3 DEFER Auto-Index Write-Back
 
 Applicable context:
 
@@ -1405,7 +1405,7 @@ Assignment:
 AB_SRC = MA
 ```
 
-#### 4.3.5 ISZ Writeback
+#### 4.3.5 ISZ Write-Back
 
 Applicable context:
 
@@ -1482,7 +1482,7 @@ Constraints:
 
 Sources:
 
-- [Fetch & Defer](../../03-microarchitecture/04-fetch-defer.md)
+- [FETCH and DEFER Execution](../../03-microarchitecture/04-fetch-defer.md)
 - [MRI Execution](../../03-microarchitecture/05-mri-execution.md)
 - [Interrupt Execution](../../03-microarchitecture/08-interrupt-execution.md)
 
@@ -1536,7 +1536,7 @@ MFB_SRC = IF
 
 Source:
 
-- [Fetch & Defer](../../03-microarchitecture/04-fetch-defer.md)
+- [FETCH and DEFER Execution](../../03-microarchitecture/04-fetch-defer.md)
 
 ---
 
@@ -1585,7 +1585,7 @@ Assignment:
 MFB_SRC = IF
 ```
 
-##### 4.5.2.2 Direct ISZ Writeback
+##### 4.5.2.2 Direct ISZ Write-Back
 
 Applicable context:
 
@@ -1654,11 +1654,11 @@ Constraints:
 Sources:
 
 - [Addressing Model](../../02-isa/05-addressing-model.md)
-- [Fetch & Defer](../../03-microarchitecture/04-fetch-defer.md)
+- [FETCH and DEFER Execution](../../03-microarchitecture/04-fetch-defer.md)
 
 ---
 
-#### 4.5.4 Indirect Autoindex Writeback
+#### 4.5.4 Indirect Auto-Index Write-Back
 
 Applicable context:
 
@@ -1674,17 +1674,17 @@ Assignment:
 MFB_SRC = IF
 ```
 
-The autoindex writeback updates the same pointer location that was read in the instruction field.
+The auto-index write-back updates the same pointer location that was read in the instruction field.
 
 Constraints:
 
-- Pointer read and autoindex writeback use the same field.
-- Autoindex processing does not change the pointer-location field from `IF` to `DF`.
+- Pointer read and auto-index write-back use the same field.
+- Auto-index processing does not change the pointer-location field from `IF` to `DF`.
 
 Sources:
 
 - [Addressing Model](../../02-isa/05-addressing-model.md)
-- [Fetch & Defer](../../03-microarchitecture/04-fetch-defer.md)
+- [FETCH and DEFER Execution](../../03-microarchitecture/04-fetch-defer.md)
 
 ---
 
@@ -1697,12 +1697,12 @@ This applies to the final resolved memory access performed by an indirect:
 - ISZ
 - DCA
 
-JMS is excluded: it writes its return address in the instruction field whether or not it is indirect (section 4.5.5.4). This matches the PDP-8/e, where the data field applies only to AND, TAD, ISZ, and DCA operands. JMP does not enter EXECUTE, so it has no memory access here.
+JMS is excluded: it writes its return address in the instruction field whether or not it is indirect (section 4.5.5.4). This matches the PDP-8/E, where the data field applies only to AND, TAD, ISZ, DCA, and EAE operands (PDP-8/E Maintenance Manual, volume 2, §2.9.6, pp. 2-9 and 2-10); this machine has no EAE. JMP does not enter EXECUTE, so it has no memory access here.
 
-Constraints:
+The definitions below (sections 4.5.5.1 to 4.5.5.4) follow these rules:
 
 - `DF` applies only to the final memory access after indirect address resolution.
-- The indirect pointer read and any autoindex writeback remain in `IF`.
+- The indirect pointer read and any auto-index write-back remain in `IF`.
 - The resolved 12-bit address is supplied separately from the field selection.
 - `MFB_SRC = DF` does not alter the resolved address portion.
 
@@ -1711,7 +1711,7 @@ Sources:
 - [Addressing Model](../../02-isa/05-addressing-model.md)
 - [MRI Execution](../../03-microarchitecture/05-mri-execution.md)
 
-#### 4.5.5.1 Indirect MRI Read
+##### 4.5.5.1 Indirect MRI Read
 
 Applicable context:
 
@@ -1734,7 +1734,7 @@ Assignment:
 MFB_SRC = DF
 ```
 
-#### 4.5.5.2 Indirect ISZ Writeback
+##### 4.5.5.2 Indirect ISZ Write-Back
 
 Applicable context:
 
@@ -1753,7 +1753,7 @@ Assignment:
 MFB_SRC = DF
 ```
 
-#### 4.5.5.3 Indirect DCA Write
+##### 4.5.5.3 Indirect DCA Write
 
 Applicable context:
 
@@ -1772,7 +1772,7 @@ Assignment:
 MFB_SRC = DF
 ```
 
-#### 4.5.5.4 Indirect JMS Write
+##### 4.5.5.4 Indirect JMS Write
 
 Applicable context:
 
@@ -1898,7 +1898,7 @@ Memory context                              MFB_SRC
 Instruction fetch                           IF
 Direct MRI memory access                    IF
 Indirect pointer read                       IF
-Indirect autoindex writeback                IF
+Indirect auto-index write-back                IF
 Final indirect AND, TAD, ISZ, DCA access    DF
 JMS return-address write                    IF (the new field if a change was pending)
 Interrupt return-address write              IF
@@ -1915,7 +1915,7 @@ IR_INDIRECT = 0:
 
 IR_INDIRECT = 1:
     DEFER pointer access uses IF
-    DEFER autoindex writeback uses IF
+    DEFER auto-index write-back uses IF
     EXECUTE final memory access uses DF, except JMS, which uses IF
 ```
 
@@ -1938,7 +1938,7 @@ During `MS = DMA`:
 - `MFB_SRC` has no effect on the externally driven field value
 - `AB_SRC` has no effect on the externally driven address value
 
-The required physical output-drive states are defined in [Interface Ownership & Control](./02-interface-and-ownership-control.md).
+The required physical output-drive states are defined in [Interface and Ownership Direct Control](./02-interface-and-ownership-control.md).
 
 Sources:
 
@@ -1973,11 +1973,7 @@ A control-store ROM cannot output a value it does not receive on its address, so
 
 ### 5.4 Fixed Control Values Already Owned by Micro-Operations
 
-The following control-selected values are completely defined by their corresponding micro-operation mappings and must not be duplicated as direct-control bindings:
-
-- `IOT_TRANSFER_VAL = NONE` for an unconditional `IOT_TRANSFER_CLEAR`
-
-The maintained micro-operation mapping remains responsible for these fixed assignments.
+No control-selected value is completely defined by a micro-operation mapping, so none is excluded here. `IOT_TRANSFER` is loaded only by direct control, load and value together (section 5.5).
 
 `IF_CLEAR`, `MA_CLEAR`, `PC_SET_1`, `DF_CLEAR`, and `DIF_CLEAR` select hardwired constant sources (`IF_SRC = 0`, `MA_SRC = 2`, `PC_SRC = 1`, `DF_SRC = 0`, `DIF_SRC = 1`), and `IR_DF_TO_DF` and `IR_IF_TO_DIF` select hardwired instruction-field sources (`DF_SRC = 4`, `DIF_SRC = 4`); none carries a value field.
 
@@ -2207,7 +2203,7 @@ In particular:
 - [Control Input Definitions](../10-control-input-definitions/00-index.md)
 - [Control Output Definitions](../20-control-output-definitions/00-index.md)
 - [Micro-Operations](../../03-microarchitecture/02-micro-operations.md)
-- [Fetch & Defer](../../03-microarchitecture/04-fetch-defer.md)
+- [FETCH and DEFER Execution](../../03-microarchitecture/04-fetch-defer.md)
 - [MRI Execution](../../03-microarchitecture/05-mri-execution.md)
 - [IOT Execution](../../03-microarchitecture/06-iot-execution.md)
 - [Interrupt Execution](../../03-microarchitecture/08-interrupt-execution.md)

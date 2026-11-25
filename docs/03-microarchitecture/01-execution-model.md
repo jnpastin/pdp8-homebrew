@@ -89,7 +89,7 @@ All execution must be expressed as:
         target <- evaluated_result
 
 Constraints:
-- all state updates occur only at TP
+- all state updates occur only at TP: captured at its leading edge, visible as it ends ([Timing Architecture §7.6](../09-timing/02-timing-architecture.md#76-rule-6--two-ranks))
 - no implicit or hidden behavior is permitted
 
 ---
@@ -122,7 +122,7 @@ Constraint:
 Constraints:
 - all sources must be stable during the TS in which they are used
 - FLAGS are derived only from registers
-- EXT must be stable prior to TP
+- EXT must be stable at least `T_CS` before the TP that accepts it ([External Inputs §2](../04-control/10-control-input-definitions/04-external-inputs.md#2-timing-model))
 
 ---
 
@@ -200,7 +200,7 @@ Execution decisions may depend only on:
 Must NOT depend on:
 - transient datapath signals
 - control signals
-- intermediate combinational values
+- results computed in the same TS, before a TP has loaded them
 
 ---
 
@@ -214,7 +214,7 @@ This model operates over [00-state-model](./00-state-model.md):
 
 Constraints:
 - The order of timing states is independent of execution
-- MS transitions occur only at TP4, except at a console TPC (START, EXAMINE, DEPOSIT) and at power-on
+- MS transitions occur only at TP4, except at the console TP of START, EXAMINE, or DEPOSIT and at power-on
 
 ---
 
@@ -273,7 +273,7 @@ This document must not redefine encoding semantics.
 
 Execution for each major state and instruction class is defined in separate documents:
 
-- [Fetch & Defer](./04-fetch-defer.md), including the JMPs and every OPR, which complete there
+- [FETCH and DEFER Execution](./04-fetch-defer.md), including the JMPs and every OPR, which complete there
 - [MRI Execution](./05-mri-execution.md)
 - [IOT Execution](./06-iot-execution.md)
 - [OPR Execution](./07-opr/README.md)

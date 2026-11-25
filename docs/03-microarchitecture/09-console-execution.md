@@ -16,7 +16,7 @@ It describes:
 
 Control implementation details are defined in [Control](../04-control/README.md).
 
-Operator-visible front-panel behavior belongs to [Front Panel](../10-front-panel/README.md), which is not yet written.
+Operator-visible front-panel behavior belongs to the front-panel documentation, which is not yet written.
 
 ---
 
@@ -94,13 +94,13 @@ The following switches execute console operations:
 ```text
 CLEAR
 LOAD ADDRESS
-EXAM
+EXAMINE
 DEPOSIT
 START
 CONTINUE
 ```
 
-Each console operation executes as one console transaction ([Major State Timing §8](../09-timing/03-major-state-timing.md#8-halted-state-and-console-transactions)). The main timing sequence is held while halted, so CONTINUE resumes a halted Single Step or Single Instruction exactly where it stopped, unless an EXAMINE or DEPOSIT came between. Those change PC, MA, EA_ADDR, and MB, which an interrupted DEFER or EXECUTE would use, so they load FETCH as the held major state, as START does. CONTINUE then starts a new instruction at PC, as on the PDP-8/E ([Sequencing and Internal Control §3.2.12](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#3212-examine-and-deposit-return-to-fetch)).
+Each console operation executes as one console transaction ([Major State Timing §8](../09-timing/03-major-state-timing.md#8-halted-state-and-console-transactions)). The main timing sequence is held while halted, so CONTINUE resumes a halted Single Step or Single Instruction exactly where it stopped, unless an EXAMINE or DEPOSIT came between. Those advance PC, so an interrupted DEFER or EXECUTE would finish and continue from the wrong address; they load FETCH as the held major state, as START does. CONTINUE then starts a new instruction at PC, as on the PDP-8/E ([Sequencing and Internal Direct Control §3.2.12](../04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#3212-examine-and-deposit-return-to-fetch)).
 
 Only one console command is accepted at a time; the first accepted wins ([External Inputs §4.1](../04-control/10-control-input-definitions/04-external-inputs.md#41-console-command-acceptance)).
 
@@ -128,31 +128,9 @@ A halt request remains pending until consumed.
 
 ## 5. Console Address Context
 
-EXAMINE and DEPOSIT update both:
+LOAD ADDRESS loads PC from FP_SR. EXAMINE and DEPOSIT then address memory from PC, and load MA from PC so that the front panel shows the address just examined or deposited.
 
-```text
-MA
-EA_ADDR
-```
-
-This maintains the expected state when the CPU resumes normal operations.
-
-The two registers are maintained in lockstep during console operation.
-
-Purpose:
-
-```text
-MA
-    Observable address register
-    Visible on the front panel
-
-EA_ADDR
-    Internal address context used by existing CPU address-loading paths
-```
-
-This allows CONT to reuse existing execution mechanisms.
-
-The PC is loaded via FP_SR, this is then used to drive MA and EA for EXAM and DEP actions
+They do not load `EA_ADDR`. An EXAMINE or DEPOSIT always leaves FETCH as the held major state (section 3), and FETCH reloads `EA_ADDR` at TP3 before anything reads it.
 
 ---
 
@@ -214,7 +192,6 @@ single TS-equivalent console transaction
 μops:
 
 - PC_TO_MA
-- PC_TO_EA_ADDR
 - PC_INC
 - MEM_READ_TO_MB
 
@@ -222,7 +199,6 @@ Result:
 
 ```text
 MA      ← PC
-EA_ADDR ← PC
 MB      ← Memory[IF:PC]
 PC      ← PC + 1
 ```
@@ -251,7 +227,6 @@ single TS-equivalent console transaction
 μops:
 
 - PC_TO_MA
-- PC_TO_EA_ADDR
 - PC_INC
 - FP_SR_TO_MB
 - MEM_WRITE_FROM_FP_SR
@@ -261,7 +236,6 @@ Result:
 ```text
 
 MA              ← PC
-EA_ADDR         ← PC
 MB              ← FP_SR
 Memory[IF:PC]   ← FP_SR
 PC              ← PC + 1
@@ -302,7 +276,7 @@ single TS-equivalent console transaction
 - L_CLEAR
 - IE_CLEAR
 
-The μops clear AC, L, and IE at TPC. `/INITIALIZE` initializes the I/O controllers.
+The μops clear AC, L, and IE at TP_FP. `/INITIALIZE` initializes the I/O controllers.
 
 The power-on reset ends with one CLEAR transaction, loaded into the command latch by the reset rather than accepted from the key ([Timing Terminology §3.4](../09-timing/01-terminology.md#34-power-on-reset)).
 
@@ -326,11 +300,15 @@ Result:
 - Each I/O controller enters its documented initialized state.
 - II, CIFP, DIF, IF, DF, and IB are unchanged.
 
+On the PDP-8/E, CLEAR "generates an INITIALIZE pulse that loads a binary 0 into bits 0-11 of the AC, the link, all I/O device flag registers and all interrupt system flip-flops", the same as CAF (Small Computer Handbook, 1973, Table 3-1, p. 3-2). CLEAR here leaves II unchanged: II has no effect while IE is 0, and ION and RTF, the only instructions that set IE, also set II ([Interrupt Enable and Inhibit](../08-interrupts-and-skip/03-interrupt-enable-and-inhibit.md)). GTF does not report II ([IOT Instruction Detail §3.1](../02-isa/04-iot.md#31-processor-flags-word-gtf-rtf)).
+
 The authoritative signal behavior is defined in [System Initialization](../04-control/20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize).
 
 ---
 
 ## 10. Start Operation
+
+START is CLEAR then CONTINUE in one key. The PDP-8/E has no START key: "Program execution is started by operating and releasing the CLEAR switch, then operating and releasing the CONTinue switch" (Small Computer Handbook, 1973, p. 2-12). START gives the same result, and also clears MQ and II, which the PDP-8/E's CLEAR does not list.
 
 Applicable context:
 
@@ -363,6 +341,8 @@ IE ← 0
 II ← 0
 ```
 
+`/INITIALIZE` is asserted for the whole console transaction, so each I/O controller and the DMA arbiter enter their initialized states at TP_FP, the TP that also sets `RUN` ([System Initialization](../04-control/20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize)). A DMA burst suspended by Single Step is therefore cancelled ([DMA Arbitration §13.2](../07-io/06-dma-arbitration.md#132-system-initialization)).
+
 Execution begins in:
 
 ```text
@@ -371,7 +351,7 @@ FETCH
 
 at the first timing state.
 
-The address that execution begins at is set via the LOAD command.
+The address that execution begins at is set by LOAD ADDRESS (section 6).
 
 The processor enters the Running state.
 
@@ -513,7 +493,7 @@ DMA
 
 each execute individually.
 
-A DMA major state is a step of its own, matching DEC's SING STEP, which halts at the end of every memory cycle, including data break cycles. When the halt leaves `MS = DMA` with the burst still selected, the burst is suspended: `/DMA_GRANT` is deasserted while halted, the controller and arbiter hold their state, and CONTINUE resumes the burst at DMA TS1, or at the next DMA entry after an EXAMINE or DEPOSIT. See [DMA Execution §4](./10-dma-execution.md#4-halting-between-dma-cycles).
+A DMA major state is a step of its own, matching DEC's SING STEP, which "halts at the end of the current cycle" (PDP-8/E Maintenance Manual, volume 1, §3.7, p. 3-16), and a data break is a cycle of its own. When the halt leaves `MS = DMA` with the burst still selected, the burst is suspended: `/DMA_GRANT` is deasserted while halted, the controller and arbiter hold their state, and CONTINUE resumes the burst at DMA TS1, or at the next DMA entry after an EXAMINE or DEPOSIT. See [DMA Execution §4](./10-dma-execution.md#4-halting-between-dma-cycles).
 
 Resumption requires:
 

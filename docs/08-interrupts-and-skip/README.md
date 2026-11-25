@@ -54,7 +54,7 @@ Interrupt requests are aggregated without preserving controller identity. CPU co
 
 Software identifies and services the requesting controller or controllers. Hardware does not assign priority among interrupting controllers.
 
-A valid interrupt takes precedence over DMA at the same instruction-completion TP4 boundary. The INTERRUPT major state exits unconditionally to FETCH, so neither interrupt nor DMA service may begin directly from INTERRUPT.
+A valid interrupt takes precedence over DMA at the same instruction-completion TP4 boundary, except at CAF's EXECUTE TP4 ([Interrupt Recognition and Sequencing §6](./02-interrupt-recognition-and-sequencing.md#6-next-major-state-selection)). The INTERRUPT major state exits unconditionally to FETCH, so neither interrupt nor DMA service may begin directly from INTERRUPT.
 
 A taken skip increments `PC` exactly once in addition to the normal FETCH increment. Skip conditions are evaluated and consumed at their assigned execution point. The only stored one is a Group 2 OPR's `SKIP`, held from FETCH TP3 to FETCH TP4.
 
@@ -64,7 +64,7 @@ A taken skip increments `PC` exactly once in addition to the normal FETCH increm
 - Interrupt recognition occurs only at instruction-completion TP4.
 - Interrupt entry occurs only during the INTERRUPT major state.
 - INTERRUPT exits unconditionally to FETCH.
-- A valid interrupt takes precedence over an eligible DMA request at the same instruction-completion TP4 boundary.
+- A valid interrupt takes precedence over an eligible DMA request at the same instruction-completion TP4 boundary, except at CAF's EXECUTE TP4.
 - Interrupt recognition and entry do not identify, acknowledge, service, or clear an interrupting controller.
 - Interrupt-controller priority and dispatch are controlled by software.
 - ION delays interrupt recognition until the following instruction completes.

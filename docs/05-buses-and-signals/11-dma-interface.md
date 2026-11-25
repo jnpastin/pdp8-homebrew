@@ -1,4 +1,4 @@
-# DMA Interface
+# DMA Signal Interface
 
 ## 1. Purpose
 
@@ -7,7 +7,7 @@ This document defines the architectural signals used for DMA communication among
 DMA arbitration and transfer sequencing are defined in:
 
 - [DMA Arbitration](../07-io/06-dma-arbitration.md)
-- [DMA Interface Timing](../07-io/05-dma-interface.md)
+- [DMA Interface](../07-io/05-dma-interface.md)
 
 ---
 
@@ -45,7 +45,7 @@ Separate combinational aggregation logic derives the aggregate CPU-facing reques
 
 The aggregate request identifies only that DMA service is eligible and pending. It does not identify an individual controller.
 
-/DMA_REQ[n], DMA_ENABLE, and aggregate /DMA_REQ must settle before the TP at which CPU control samples aggregate /DMA_REQ.
+/DMA_REQ[n], DMA_ENABLE, and aggregate /DMA_REQ must be stable at least `T_CS` before TP4, the TP that accepts it ([External Inputs §2](../04-control/10-control-input-definitions/04-external-inputs.md#2-timing-model)).
 
 ---
 

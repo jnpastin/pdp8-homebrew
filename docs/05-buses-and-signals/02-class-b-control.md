@@ -186,7 +186,7 @@ DMA priority 15 is reserved as the no-controller-selected encoding and has no co
 
 - aggregate `/DMA_REQ`
 
-Aggregate `/DMA_REQ` is continuously derived from `DMA_ENABLE` and `/DMA_REQ[14:0]`. It must settle before CPU control samples it at TP4.
+Aggregate `/DMA_REQ` is continuously derived from `DMA_ENABLE` and `/DMA_REQ[14:0]`. It must be stable at least `T_CS` before TP4, the TP that accepts it ([External Inputs §2](../04-control/10-control-input-definitions/04-external-inputs.md#2-timing-model)).
 
 #### 6.5.4 CPU to DMA Arbiter and Controllers
 

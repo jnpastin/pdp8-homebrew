@@ -5,6 +5,7 @@ D0BB pass by returning to their restart points with no error halt. The random an
 tests (D0CC-D0JC) take 1 to 4 million instructions per pass, so the regression runs are bounded:
 a fixed number of instructions with no error halt and no error printout, under two core
 residues. The simulator and the reference model must agree on every instruction.
+test_maindec_full_passes.py runs them to complete passes (opt-in).
 """
 
 import sys

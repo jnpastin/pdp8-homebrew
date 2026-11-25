@@ -3,7 +3,8 @@
 - MCS ALU_OP (2 bits: ADD, AND, INC, CLEAR), ALU_B_SRC (1 bit: NONE, MB); AC_SRC 5, reserved by
   decision 13, is ZERO since review item D2
 - MCS §7.3.1 (the operations that remain)
-- CSO §7.2 (44 datapath bits)
+- CSO §7.2 (41 datapath bits since the /DB_READ and /DB_WRITE fields were removed; 43 after
+  docs review C3.7 removed PC_TO_EA_ADDR)
 """
 
 import unittest
@@ -31,7 +32,7 @@ class Encodings(unittest.TestCase):
 
     def test_packed_width(self):
         store = ControlStore.load(design=DS.select("v2"))
-        self.assertEqual(store.packing["summary"]["datapath_bits"], 44)
+        self.assertEqual(store.packing["summary"]["datapath_bits"], 41)
 
 
 class Datapath(unittest.TestCase):

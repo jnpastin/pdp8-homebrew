@@ -211,14 +211,16 @@ The FETCH TS3 class decode distinguishes the groups by IR bits 3 and 11 (PDP-8 n
 
 - Remove `rom/microcode/v1/`, the v1 `Design` records, every `V1-ONLY` line and test, and the selector. Rename v2 as the user decides.
 - **Verification:** `grep -r V1-ONLY` returns nothing; the full v2 suite and the MAINDEC regression pass unchanged; a pipeline dry run succeeds.
+- **Reference-model defaults** (user, 2026-11-23): `sim/reference/src/pdp8_reference/model.py` defaults to v1's time base (1,200 ns per major state) and v1's major-state sequence (`default_instruction_states`), and neither is marked `V1-ONLY`. Lock-step and the D2AB test replace both, so no test depends on them. Make the defaults the surviving design's, or take them from the design.
 - **Schema cleanup** (user, 2026-11-22): remove stale information from the maintained schema objects. Fix the docs or generators and regenerate; the user promotes. Found so far:
   - **Description:** both schema generators hard-code "for version 1 CPU control", so the v2 schemas say it.
   - **Stage:** four maintained artifacts say `generation_stage: candidate-generation`.
-  - **`control_uses`:** carried forward from the previous schema and never re-derived. The 11 OPR stage-select inputs still say `predicate`, though only the pass unit uses them. `SKIP`, `ISZ_SKIP_REQ` and `OPR_SKIP_REQ` have none (the pipeline's three warnings). Review the other classifications with no direct reference; some are legitimate through derivations.
-  - **Reserved values:** in eight output fields and `IR_CLASS`. Keep real spare codes, and remove leftovers of retired ones.
-  - **Unselected micro-operations:** no case selects `IOT_TRANSFER_CAPTURE` or `IOT_TRANSFER_CLEAR`. Establish whether they are stale or realized by direct control.
+  - **`control_uses`:** carried forward from the previous schema and never re-derived. The 11 OPR stage-select inputs still say `predicate`, though only the pass unit uses them. `SKIP`, `ISZ_SKIP_REQ`, `OPR_SKIP_REQ` and `IR_IS_SRQ` (added 2026-11-24, docs review C4.3) have none (the pipeline's four warnings). Review the other classifications with no direct reference; some are legitimate through derivations.
+  - **Reserved values:** in eight output fields and `IR_CLASS`. Keep real spare codes, and remove leftovers of retired ones. `IDB_SRC` 3 (MQ) and 6 (IR), and `MDB_SRC` 3 (DMA; in DMA the controller drives MDB), are leftovers: no control word selects them, since phase 9 moved the MQ paths to the OPR pass unit and IR loads from MDB (user, 2026-11-24).
+  - **Unselected micro-operations:** resolved 2026-11-24 (user, docs review C4.8): direct control owns `IOT_TRANSFER` loading, and the two micro-operations are removed.
+  - **DB strobe fields** (user, 2026-11-24, docs review C4.2): remove `/DB_READ` and `/DB_WRITE` from the control word; they duplicate the `IOT_TRANSFER` decode and drive no pin. Architectural Control Signals §4.3 and §4.4 become decoded signals listed in Control Model §8.4; drop the exception note in Control Word §6.3; the simulator checks `DB_READ_TO_AC` and `DB_WRITE_FROM_AC` against the decode instead of the fields. Their two unshared bits are freed (43 to 41; still six devices).
   - **Text copied from docs:** stale consumers and constraints (docs-review A1 and A2; `IR_IS_IOT` has no consumer).
-  - **Verification:** every removed item explained; ROM images byte-identical; the three warnings gone.
+  - **Verification:** every removed item explained; ROM images byte-identical; the four warnings gone.
 - **Pipeline change reports** (user, 2026-11-23): a stage whose candidate differs from the maintained artifact only in source line references must be reported apart from one with a material change, so it is clear what is worth reviewing.
   - **Stage summary:** distinguish the two, for example `promoted (line references only)` against `promoted (content changed)`, in both normal and `--dry-run` runs.
   - **Diagnostics:** `CHANGED_DEFINITION`, `CHANGED_CASE`, `CHANGED_CONSTRAINT` and the like say which kind each change is, or are suppressed for line-only changes.

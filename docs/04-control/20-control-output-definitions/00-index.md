@@ -109,7 +109,7 @@ Defined in:
 
 - [/DB_READ](./02-architectural-control-signals.md#43-db_read)  
 - [/DB_WRITE](./02-architectural-control-signals.md#44-db_write) 
-- [/INITIALIZE](./02-architectural-control-signals.md#49-system-initialization-initialize )
+- [/INITIALIZE](./02-architectural-control-signals.md#49-system-initialization-initialize)
 - [IOA[5:0]](./02-architectural-control-signals.md#46-io-address-bus-ioa50)  
 - [IOP[2:0]](./02-architectural-control-signals.md#47-io-operation-field-iop20)
 - [IOT_ACTIVE](./02-architectural-control-signals.md#48-external-iot-active-iot_active)

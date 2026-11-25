@@ -44,5 +44,3 @@ EA_ADDR is a 12-bit value; EA_FIELD is provided by IF or DF.
 
 Addressing and effective address behavior is defined in:
 
-- [05-addressing-model.md](./05-addressing-model.md)
-- [06-ea-generation.md](./06-ea-generation.md)

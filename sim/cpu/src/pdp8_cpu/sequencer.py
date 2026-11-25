@@ -13,7 +13,7 @@ from .errors import SpecViolation
 
 
 def sequencer_loads(seq, main_sequence: bool, ts: int) -> dict:
-    """The register loads the sequencer word commits at this TP (or TPC)."""
+    """The register loads the sequencer word commits at this TP (or TP_FP)."""
     loads = {"RUN": seq["RUN_NEXT"], "HLT_REQ": seq["HLT_REQ_NEXT"]}   # SCS §3.1: applied every TP
     if seq["MS_LOAD"]:
         if E.SEQUENCER_FIELDS["MS_NEXT"].is_reserved(seq["MS_NEXT"]):

@@ -74,7 +74,7 @@ The `## n. External IOT Phase Binding` section is prose. The extractor requires 
 - IO_SKIP_REQ selects PC_INC during TS4.
 ```
 
-From them it builds four cases, `iot:external:ts1` to `ts4`, with context `MS = EXECUTE` and `IR_IS_EXTERNAL_IOT = 1`. TS2 to TS4, the timing states in which a controller may assert the request ([Major State Timing §5.2](../../../docs/09-timing/03-major-state-timing.md#52-execute-external-iot)), have the conditional `IO_CLEAR_AC_REQ = 1 -> AC_CLEAR`; TS4 also has `IO_SKIP_REQ = 1 -> PC_INC`; TS3 and TS4, the possible transfer timing states, also have `IOT_READ_PENDING = 1 -> DB_READ_TO_AC` and `IOT_WRITE_PENDING = 1 -> DB_WRITE_FROM_AC`. If the section's wording changes, the extractor's table of bindings must be updated with it.
+From them it builds four cases, `iot:external:ts1` to `ts4`, with context `MS = EXECUTE` and `IR_IS_EXTERNAL_IOT = 1`. TS2 to TS4, the timing states in which a controller may assert the request ([Major State Timing §5.2](../../../docs/09-timing/03-major-state-timing.md#52-execute-external-iot)), have the conditional `IO_CLEAR_AC_REQ = 1 -> AC_CLEAR`; TS4 also has `IO_SKIP_REQ = 1 -> PC_INC`; TS3 and TS4, the possible transfer timing states, also have `IOT_READ_PENDING = 1 -> DB_READ_TO_AC`. A write selects no micro-operation: `/DB_WRITE` and the CPU's DB drive are decoded from `IOT_TRANSFER`. If the section's wording changes, the extractor's table of bindings must be updated with it.
 
 ### 3.5 INTERRUPT
 

@@ -166,7 +166,7 @@ The applicable control case must define:
 - `/RD`
 - `/WR`
 
-The required `AB_SRC` and `MFB_SRC` derivations are defined in [Sequencing & Internal Control](./01-sequencing-and-internal-control.md).
+The required `AB_SRC` and `MFB_SRC` derivations are defined in [Sequencing and Internal Direct Control](./01-sequencing-and-internal-control.md).
 
 The required `/RD`, `/WR`, and `MDB_SRC` assignments associated with memory micro-operations remain owned by their reviewed micro-operation mappings.
 
@@ -533,7 +533,7 @@ When a controller selection terminates:
 - CPU control deasserts `/DMA_GRANT` when control exits `MS = DMA`
 - CPU ownership resumes during the following FETCH TS1
 
-Constraints:
+The release obeys these rules, which the definitions in sections 4 and 5 implement:
 
 - The selected controller must release its drivers before CPU ownership resumes.
 - CPU drivers must remain `HIGH_Z` through the end of the DMA major state.
@@ -554,7 +554,7 @@ Source:
 Applicable context:
 
 ```text
-DB_WRITE_FROM_AC is not selected
+IOT_WRITE_PENDING = 0
 ```
 
 CPU output-drive state:
@@ -583,10 +583,10 @@ Sources:
 Applicable context:
 
 ```text
-DB_WRITE_FROM_AC is selected
+IOT_WRITE_PENDING = 1
 ```
 
-Micro-operation assignments:
+Related derived values:
 
 ```text
 /DB_READ  = 1
@@ -604,8 +604,7 @@ Constraints:
 - `/DB_READ` and `/DB_WRITE` must not both be asserted.
 - The CPU is the sole `DB` driver.
 - External controllers must not drive `DB`.
-- `/DB_WRITE` must be paired with `DB_WRITE_FROM_AC`.
-- The `/DB_WRITE` assignment and AC-to-DB datapath selection remain owned by the `DB_WRITE_FROM_AC` micro-operation mapping rather than a separate direct-control result.
+- `/DB_WRITE` and the CPU DB driver are decoded from `IOT_TRANSFER = WRITE` within `DB_VALID`; neither is a control-word field or a direct-control assignment.
 
 Sources:
 
@@ -622,7 +621,7 @@ Applicable context:
 DB_READ_TO_AC is selected
 ```
 
-Micro-operation assignments:
+Related derived values:
 
 ```text
 /DB_READ  = 0
@@ -647,7 +646,7 @@ Constraints:
 - `/DB_READ` must be paired with `DB_READ_TO_AC`.
 - The CPU must not drive `DB`.
 - At most one selected external controller may drive `DB`.
-- The `/DB_READ` assignment and DB-to-AC datapath selection remain owned by the `DB_READ_TO_AC` micro-operation mapping rather than a separate direct-control result.
+- `/DB_READ` is decoded from `IOT_TRANSFER = READ` within `DB_VALID`; it is not a control-word field. The DB-to-AC datapath selection remains owned by the `DB_READ_TO_AC` micro-operation mapping.
 
 Sources:
 
@@ -700,7 +699,7 @@ Constraints:
 - `IOT_ACTIVE`, `IOA`, and `IOP` are derived outputs rather than direct-control assignments.
 - Only the address-matched controller may respond.
 - Controller response inputs are valid only while `IOT_ACTIVE = 1`.
-- `IOT_ACTIVE` does not itself determine whether a read, write, skip, clear-AC, or wait response is accepted.
+- `IOT_ACTIVE` does not itself determine whether a read, write, skip, or clear-AC response is accepted.
 - DB ownership remains governed by `/DB_READ`, `/DB_WRITE`, and the accepted transfer state.
 
 Sources:
@@ -759,7 +758,7 @@ Encoding:
 
 - is specified by the control word and presented by the equivalent decode, outside the control store
 - is not a micro-operation
-- is asserted for one timing state
+- is asserted for EXECUTE TS4 of CAF, for a CLEAR or START console transaction, or during the power-on reset
 - initializes controller state according to the controller contracts; the CPU-register effects are the micro-operations of the same TS
 
 Source:
@@ -829,7 +828,7 @@ CPU /INITIALIZE driver = DRIVE_LOW
 
 Constraints:
 
-- `/INITIALIZE` is asserted for the console transaction and its effects commit at TPC.
+- `/INITIALIZE` is asserted for the console transaction and its effects commit at TP_FP.
 - The associated CPU-state changes remain represented by their selected micro-operations and sequencing results.
 - `/INITIALIZE` does not replace those internal state assignments.
 - Controller initialization behavior remains defined by each controller contract.
@@ -842,11 +841,46 @@ Sources:
 
 ---
 
-### 8.4 Inactive Initialization Output
+### 8.4 Front-Panel Start Initialization
 
 Applicable context:
 
-- Neither CAF initialization nor accepted front-panel CLEAR applies
+```text
+RUN = 0
+FP_START = 1
+```
+
+Assignment:
+
+```text
+/INITIALIZE = 0
+```
+
+CPU output-drive state:
+
+```text
+CPU /INITIALIZE driver = DRIVE_LOW
+```
+
+Constraints:
+
+- START is CLEAR then CONTINUE in one key. `/INITIALIZE` is asserted for the console transaction and its effects commit at TP_FP, the TP at which `RUN` also becomes 1 ([Sequencing and Internal Direct Control §3.3.3](./01-sequencing-and-internal-control.md#333-start)).
+- The associated CPU-state changes remain represented by their selected micro-operations and sequencing results.
+- Controller initialization behavior remains defined by each controller contract.
+
+Sources:
+
+- [Console Execution](../../03-microarchitecture/09-console-execution.md#10-start-operation)
+- [External Inputs](../10-control-input-definitions/04-external-inputs.md#fp_start)
+- [Architectural Control Signals](../20-control-output-definitions/02-architectural-control-signals.md#49-system-initialization-initialize)
+
+---
+
+### 8.5 Inactive Initialization Output
+
+Applicable context:
+
+- Neither CAF initialization nor an accepted front-panel CLEAR or START applies
 
 ```text
 NOT (
@@ -857,6 +891,10 @@ NOT (
 NOT (
     RUN = 0
     AND FP_CLEAR = 1
+)
+NOT (
+    RUN = 0
+    AND FP_START = 1
 )
 ```
 
@@ -874,7 +912,7 @@ CPU /INITIALIZE driver = DRIVE_HIGH
 
 Constraint:
 
-- `/INITIALIZE` must not be asserted outside the TS or console transaction defined in sections 8.2 and 8.3.
+- `/INITIALIZE` must not be asserted outside the TS or console transaction defined in sections 8.2 to 8.4.
 
 Source:
 
@@ -893,6 +931,7 @@ External-device IOT, RUN = 1        IOT_ACTIVE = 1
 All other control cases             IOT_ACTIVE = 0
 CAF initialization interval         /INITIALIZE = 0
 Accepted front-panel CLEAR          /INITIALIZE = 0
+Accepted front-panel START          /INITIALIZE = 0
 All other control cases             /INITIALIZE = 1
 DMA ownership                       CPU memory-interface drivers = HIGH_Z
 CPU DB read                         CPU DB driver = HIGH_Z
@@ -905,8 +944,6 @@ The following output assignments remain owned by micro-operation mappings:
 ```text
 /RD
 /WR
-/DB_READ
-/DB_WRITE
 ```
 
 The following outputs are derived rather than direct-control assignments; the summary above shows their values:
@@ -916,6 +953,8 @@ The following outputs are derived rather than direct-control assignments; the su
 IOT_ACTIVE
 IOA
 IOP
+/DB_READ
+/DB_WRITE
 ```
 
 The following are external or arbiter-owned rather than CPU direct-control results:
@@ -986,7 +1025,7 @@ The following invariants apply:
 - [Direct-Control Model](../07-direct-control-model.md)
 - [Control Constraints](../03-control-constraints.md)
 - [Invalid Conditions](../06-invalid-conditions.md)
-- [Sequencing & Internal Control](./01-sequencing-and-internal-control.md)
+- [Sequencing and Internal Direct Control](./01-sequencing-and-internal-control.md)
 - [Control Output Signals](../20-control-output-definitions/00-index.md)
 - [Signal Conventions](../../00-overview/98-signal-conventions.md)
 - [Bus Semantics](../../05-buses-and-signals/06-bus-semantics.md)

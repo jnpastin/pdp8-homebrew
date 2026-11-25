@@ -24,7 +24,7 @@ It also replaced the timing model and settled a long design review. Two control 
 
 ### 1.1 State at handoff (2026-11-23)
 
-- Branch HEAD `fdee60f`, plus one uncommitted change: the new [docs/03-microarchitecture/07-opr/00-pass-unit.md](docs/03-microarchitecture/07-opr/00-pass-unit.md), linked from the OPR README, and the two tools in `option2/experiments/` (section 5.3). The user checks and commits it.
+- Branch HEAD `9598dad`. Its last commit added [docs/03-microarchitecture/07-opr/00-pass-unit.md](docs/03-microarchitecture/07-opr/00-pass-unit.md), linked from the OPR README, and the two tools in `option2/experiments/` (section 5.3).
 - Every review item in `option2/docs-review.md` is applied or closed, except section O (moves out of `option2/`) and H3 (a DEC references appendix, which the user declined).
 - Plan phases 0 to 9 are done. **Phase 10 (v1 removal, schema cleanup, pipeline reporting, rebase) has not started.**
 - No diagram source has changed on the branch (`git diff main -- diagrams` is empty). The user is updating them now.
@@ -35,12 +35,12 @@ It also replaced the timing model and settled a long design review. Two control 
 |---|---|
 | `run_pipeline.py --dry-run --design v2` | every stage unchanged, nothing pending |
 | `run_pipeline.py --dry-run --design v1` | packer only, succeeds |
-| packed v2 images | 44 datapath bits in 6 devices; 7-bit sequencer slice; 90,219 addresses verified |
+| packed v2 images | 43 datapath bits in 6 devices; 7-bit sequencer slice; 105,411 address checks |
 | `sim/run_all_tests.py --quick` | all suites pass |
-| system suite (PyPy), each design | 82 tests, OK, 1 skipped (the long D2AB timing test) |
-| `option2/experiments/timing_budget.py` | 2,739 checks, 0 failing |
-| `option2/experiments/check_links.py` | 1,822 links, 0 bad |
-| pipeline warnings | 3 `CONTROL_USES_UNRESOLVED` (SKIP, ISZ_SKIP_REQ, OPR_SKIP_REQ), known; phase 10 removes them |
+| system suite (PyPy), each design | 83 tests, OK, 2 skipped (the long D2AB timing test and the opt-in MAINDEC full passes) |
+| `option2/experiments/timing_budget.py` | 2,737 checks, 0 failing |
+| `option2/experiments/check_links.py` | 1,923 links, 0 bad |
+| pipeline warnings | 4 `CONTROL_USES_UNRESOLVED` (SKIP, ISZ_SKIP_REQ, OPR_SKIP_REQ, IR_IS_SRQ), known; phase 10 removes them |
 
 ---
 
@@ -53,7 +53,7 @@ These are the user's decisions. **Do not re-open them**; check the documents and
 - **The invariant:** everything a TSn uses derives from state committed by TP(n−1). Nothing selects or commits during a TS, and a controller's response never depends on DB in the same TS.
 - **Nothing visible changes during TP.** Each register that holds machine state has two ranks: r1 captures at TP's rising edge; r2 publishes at TP's falling edge, together with the TS change. Only r2 reads r1. The one decode between ranks is `MS_EFF_IS_EXECUTE` (decision 11a).
 - **One TP clock** from one flip-flop. TSn is a synchronous enable. Never gate a clock from TP and TS.
-- **TCLK 20 MHz.** TS lengths: fast 5/8/6/5, slow 6/8/7/7, console transaction 9. TP is two TSTEPs only where memory can be written (DEFER with auto-index TS4, EXECUTE TS3 and TS4, INTERRUPT TS3, DMA TS2, TPC); `/WR_PULSE` is its first step.
+- **TCLK 20 MHz.** TS lengths: fast 5/8/6/5, slow 6/8/7/7, console transaction 9. TP is two TSTEPs only where memory can be written (DEFER with auto-index TS4, EXECUTE TS3 and TS4, INTERRUPT TS3, DMA TS2, TP_FP); `/WR_PULSE` is its first step.
 - DB strobes are decoded from `IOT_TRANSFER` within `DB_VALID`. `/RD` and the CPU's MDB drive are gated off in an IOT's EXECUTE. `/INITIALIZE` is decoded.
 - `/IO_WAIT` is removed. Its fallback, if hardware ever needs one, is recorded in I/O Timing §5.
 - **Rejected; never propose again:** trailing-edge capture; bus-hold latches with single-rank registers; both ranks on one edge; r2 before r1; a 28-bit memory capture register; mid-TS validity windows such as `WR_VALID`.
@@ -71,7 +71,7 @@ These are the user's decisions. **Do not re-open them**; check the documents and
 
 - The panel input register (STOP, SS, SI, FP_SR, FP_IF, FP_DF) captures at every TP, and at command acceptance while halted. `/INT_REQ` has no extra synchronizer (External Inputs §2).
 - EXAMINE and DEPOSIT load FETCH as the held major state, as START does. CONTINUE then starts a new instruction, matching the PDP-8/E.
-- The power-on reset ends by running one console CLEAR transaction, so controllers initialize at a TPC.
+- The power-on reset ends by running one console CLEAR transaction, so controllers initialize at a console TP (`TP_FP`).
 
 ### 2.4 I/O and DMA
 
@@ -180,6 +180,7 @@ python tools/rom-generation/pipeline/src/run_pipeline.py --dry-run --design v2
 python tools/rom-generation/pipeline/src/run_pipeline.py --dry-run --design v1
 python sim/run_all_tests.py --quick
 cd sim/system/tests; PDP8_DESIGN=v2 <pypy> -m unittest discover -p "test_*.py"   # and v1
+cd sim/system/tests; PDP8_FULL_PASSES=short PDP8_DESIGN=v2 <pypy> -m unittest test_maindec_full_passes   # all: 2 to 3 hours
 python -I -X utf8 option2/experiments/timing_budget.py
 python -I option2/experiments/check_links.py
 ```
@@ -209,8 +210,8 @@ Element ids and full detail are in `option2/diagrams.md`. Its "Final list" preda
 | `microarchitecture/cpu-architecture/CPU_Architecture.xml` | MDB → IR, with IR no longer loaded from the IDB. MA → EA_ADDR as the page source. The formed address → PC. An `INSTR_END` output to the DMA arbiter. The OPR pass unit (inputs AC, L, MQ, FP_SR; outputs AC, L, MQ). The `SKIP` register. Remove FP_SR → ALU B, MQ → ALU B, and MQ → AC. The AC zero input (`AC_SRC` = 5) and the panel input register, only if the diagram shows that level. |
 | `control/ms_next-flowchart.xml` | FETCH goes to the instruction-completion decision for a direct JMP or any OPR; DEFER does for a JMP I. If console paths are drawn: START, EXAMINE, and DEPOSIT load FETCH; power-on ends with CLEAR. |
 | `control/control-store-mapping.xml` | The wired 0 into the 5-bit variant MUX becomes `00·IR_CLASS`. |
-| `control/control-store-organization.xml` | Sequencer slice inputs `IR_NO_EXECUTE` (A2) and `IR_OPR_HLT` (A1). The datapath slice is 44 bits. Optionally, the EEPROM-to-SRAM shadow with `LOADING`-driven output enables. |
-| `control/control-store-overlay.xml` | The RUN multiplexer on the group 1 low bits. Group 3's DP_OVL[4] (old `SKIP_TAKEN`) becomes wired 0. `ISZ_SKIP_REQUIRED` becomes `ISZ_SKIP_REQ`. `/INT_REQ` qualified by the SRQ decode. |
+| `control/control-store-organization.xml` | Sequencer slice inputs `IR_NO_EXECUTE` (A2) and `IR_OPR_HLT` (A1). The datapath slice is 43 bits. Optionally, the EEPROM-to-SRAM shadow with `LOADING`-driven output enables. |
+| `control/control-store-overlay.xml` | The RUN multiplexer on the group 1 low bits. Group 3's DP_OVL[4] (old `SKIP_TAKEN`) and DP_OVL[3] become wired 0; `ISZ_SKIP_REQUIRED` becomes `ISZ_SKIP_REQ` on DP_OVL[2]; `IF_CHANGE_PENDING` is removed (docs review C4.4). `/INT_REQ` qualified by the SRQ decode. |
 | `control/control-store-address-formation.xml` | `MS_EFF_IS_EXECUTE` is a registered bit (decision 11a), not a comparator on `MS_EFF`. Read the source to see what it shows. |
 | `timing/cpu-timing-overview.json` | Fast 5/8/6/5 and slow 6/8/7/7, two-step TPs where memory can be written, console 9. |
 | `io/io_timing.json` | EXECUTE 6/8/7/7, TP3 and TP4 two steps. The DB strobes and DB open 100 ns into the transfer TS. A transfer is in TS3 (requested in TS2) or TS4 (requested in TS3). |

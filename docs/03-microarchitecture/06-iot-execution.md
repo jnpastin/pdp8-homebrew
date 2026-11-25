@@ -82,7 +82,7 @@ else if a pending transfer commits at this TP:
 During the transfer TS:
 
 - `IOT_READ_PENDING` selects `/DB_READ` and `DB_READ_TO_AC`.
-- `IOT_WRITE_PENDING` selects `/DB_WRITE` and `DB_WRITE_FROM_AC`.
+- `IOT_WRITE_PENDING` asserts the decoded `/DB_WRITE`, and the CPU drives AC onto DB; no micro-operation is selected ([Architectural Control Signals §3.2](../04-control/20-control-output-definitions/02-architectural-control-signals.md#32-timing-model)).
 - `IOT_TRANSFER = NONE` selects no DB transfer.
 
 Transfer timing is:
@@ -118,9 +118,9 @@ Properties:
 
 - `IOA[5:0]` reflects `IR[8:3]`.
 - `IOP[2:0]` reflects `IR[2:0]`.
-- IOA and IOP are driven by control, not by a micro-operation.
+- IOA and IOP are IR's bits, presented at all times; no micro-operation or control-word field drives them.
 - IOA and IOP do not participate in the CPU datapath.
-- IOA and IOP remain stable throughout external-IOT EXECUTE.
+- IOA and IOP remain stable throughout external-IOT EXECUTE, because IR loads only at FETCH TP2.
 - IOA and IOP are meaningful to external controllers only while `IOT_ACTIVE` is asserted.
 
 Constraints:
@@ -141,7 +141,7 @@ This document defines the microarchitectural operations that occur within that t
 - A transfer request accepted at TP2 is recorded in `IOT_TRANSFER` and executes during TS3.
 - A transfer request accepted at TP3 is recorded in `IOT_TRANSFER` and executes during TS4.
 - `IOT_READ_PENDING` selects `/DB_READ` and `DB_READ_TO_AC` during the transfer TS.
-- `IOT_WRITE_PENDING` selects `/DB_WRITE` and `DB_WRITE_FROM_AC` during the transfer TS.
+- `IOT_WRITE_PENDING` asserts the decoded `/DB_WRITE` during the transfer TS, and the CPU drives AC onto DB; no micro-operation is selected.
 - The transfer commits at the TP associated with the transfer TS.
 - A completed transfer clears `IOT_TRANSFER` to `NONE` unless another request is accepted at the same TP.
 - When completion and request acceptance occur at the same TP, the newly accepted transfer replaces the completed transfer.
@@ -276,16 +276,16 @@ Description:
   
 **Mnemonic (non-normative):** GTF 
  
-  TS1:
+TS1:
 - AC_CLEAR  
 
-  TS2:
+TS2:
 - GTF_FLAGS_TO_AC  
 
-  TS3:
+TS3:
 - (no μops)  
 
-  TS4:
+TS4:
 - (no μops)  
 
 Description:
@@ -299,10 +299,10 @@ Description:
   
 **Mnemonic (non-normative):** RTF  
 
-  TS1:
+TS1:
 - (no μops)  
 
-  TS2:
+TS2:
 - AC_TO_L
 - AC_TO_DF
 - AC_TO_DIF
@@ -310,10 +310,10 @@ Description:
 - II_SET
 - CIFP_SET  
 
-  TS3:
+TS3:
 - (no μops)  
 
-  TS4:
+TS4:
 - (no μops)  
 
 Description:
@@ -386,7 +386,7 @@ Description:
 
 Memory extension IOTs execute internally. They never assert `IOT_ACTIVE` and do not qualify external controllers.
 
-One case covers every device 20–27 IOT. The instruction is selected by the memory-management decode flags in [IR-Derived Flags](../04-control/10-control-input-definitions/02-ir-derived-fields.md#25-memory-management), and each micro-operation is conditional on its flag. A combined instruction such as CDF CIF (`62n3`) sets both `IR_WRITES_DF` and `IR_WRITES_IF` and performs both actions in the same TS. A device 20–27 IOT that matches no flag performs no micro-operations.
+One case covers every device 20–27 IOT. The instruction is selected by the memory-management decode flags in [IR-Derived Fields](../04-control/10-control-input-definitions/02-ir-derived-fields.md#25-memory-management), and each micro-operation is conditional on its flag. A combined instruction such as CDF CIF (`62n3`) sets both `IR_WRITES_DF` and `IR_WRITES_IF` and performs both actions in the same TS. A device 20–27 IOT that matches no flag performs no micro-operations.
 
 ---
 
