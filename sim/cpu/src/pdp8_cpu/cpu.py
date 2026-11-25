@@ -85,7 +85,9 @@ class Cpu:
         self.devices = list(devices)
         self.dma = dma
         self.design = getattr(store, "design", None) or DS.select()
-        table = dict(ts_ns or self.design.ts_ns)
+        # Timing: an explicit table, else the timing ROM image the store was loaded with, else
+        # the design's own table (v1).
+        table = dict(ts_ns or getattr(store, "ts_ns", None) or self.design.ts_ns)
         if timing:
             table.update(DS.ts_table_from_states(timing))
         self.ts_ns = table

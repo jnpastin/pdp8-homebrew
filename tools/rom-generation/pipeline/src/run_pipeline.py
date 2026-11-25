@@ -101,6 +101,7 @@ def _all_stages(_stage) -> tuple[Stage, ...]:
         _stage("control-word-equivalence-analyzer", "analyze_control_word_equivalence.py",
                "analysis-report.txt"),
         _stage("control-store-packer", "pack_control_store.py", "packing-report.txt"),
+        _stage("timing-rom-generator", "generate_timing_rom.py", "generation-report.txt"),
     )
 
 

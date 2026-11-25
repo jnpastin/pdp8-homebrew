@@ -1855,7 +1855,7 @@
       "control_word_role": "encoded",
       "default_value": "0",
       "explicit_value_required": "Conditionally",
-      "value_required_when": "(IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1 OR (L_LOAD=1 AND L_OP=2)",
+      "value_required_when": "(IDB_DRIVE=1 AND IDB_SRC=5) OR PC_INC=1 OR (L_LOAD=1 AND L_OP=2)",
       "attributes": {
         "mnemonic": "ALU_A_SRC",
         "display_name": "ALU Input A Select",
@@ -1980,7 +1980,7 @@
       "control_word_role": "encoded",
       "default_value": "0",
       "explicit_value_required": "Conditionally",
-      "value_required_when": "(IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1 OR (L_LOAD=1 AND L_OP=2)",
+      "value_required_when": "(IDB_DRIVE=1 AND IDB_SRC=5) OR PC_INC=1 OR (L_LOAD=1 AND L_OP=2)",
       "attributes": {
         "mnemonic": "ALU_B_SRC",
         "display_name": "ALU Input B Select",
@@ -2089,7 +2089,7 @@
       "control_word_role": "encoded",
       "default_value": "0",
       "explicit_value_required": "Conditionally",
-      "value_required_when": "(IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1 OR (L_LOAD=1 AND L_OP=2)",
+      "value_required_when": "(IDB_DRIVE=1 AND IDB_SRC=5) OR PC_INC=1 OR (L_LOAD=1 AND L_OP=2)",
       "attributes": {
         "mnemonic": "ALU_OP",
         "display_name": "ALU Operation",
@@ -2686,7 +2686,7 @@
         },
         {
           "encoding": "3",
-          "meaning": "MQ",
+          "meaning": "FP_SR",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
             "line": 913
@@ -2694,7 +2694,7 @@
         },
         {
           "encoding": "4",
-          "meaning": "FP_SR",
+          "meaning": "EA_ADDR",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
             "line": 914
@@ -2702,7 +2702,7 @@
         },
         {
           "encoding": "5",
-          "meaning": "EA_ADDR",
+          "meaning": "ALU",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
             "line": 915
@@ -2710,7 +2710,7 @@
         },
         {
           "encoding": "6",
-          "meaning": "IR",
+          "meaning": "reserved",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
             "line": 916
@@ -2718,7 +2718,7 @@
         },
         {
           "encoding": "7",
-          "meaning": "ALU",
+          "meaning": "reserved",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
             "line": 917
@@ -2751,7 +2751,7 @@
       "used_by_micro_operations": [
         {
           "micro_operation": "AC_AND_MB",
-          "value": "7",
+          "value": "5",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
             "line": 926
@@ -2767,7 +2767,7 @@
         },
         {
           "micro_operation": "ADD_AC_MB",
-          "value": "7",
+          "value": "5",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
             "line": 928
@@ -2775,7 +2775,7 @@
         },
         {
           "micro_operation": "FP_SR_TO_PC",
-          "value": "4",
+          "value": "3",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
             "line": 929
@@ -2783,7 +2783,7 @@
         },
         {
           "micro_operation": "MB_INC",
-          "value": "7",
+          "value": "5",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
             "line": 930
@@ -2807,7 +2807,7 @@
         },
         {
           "micro_operation": "MQ_CLEAR",
-          "value": "7",
+          "value": "5",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
             "line": 933
@@ -2815,7 +2815,7 @@
         },
         {
           "micro_operation": "PC_LOAD_EA_ADDR",
-          "value": "5",
+          "value": "4",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
             "line": 934
@@ -3198,7 +3198,7 @@
         },
         {
           "encoding": "3",
-          "meaning": "DMA",
+          "meaning": "reserved",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
             "line": 1445
@@ -3221,7 +3221,7 @@
           }
         },
         {
-          "text": "No control word selects DMA: in DMA the CPU's MDB driver is released and the controller drives MDB",
+          "text": "In DMA the CPU's MDB driver is released and the controller drives MDB; no encoding selects a DMA source",
           "source": {
             "document": "docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md",
             "line": 1451

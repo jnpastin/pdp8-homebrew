@@ -73,6 +73,11 @@ class Design:
         return self.build / "control-store-packer" / "images"
 
     @property
+    def timing_image(self) -> Path:
+        """The timing ROM image (Timing Terminology §3.5), when the design has one."""
+        return self.build / "timing-rom-generator" / "images" / "timing.hex"
+
+    @property
     def packing(self) -> Path:
         return self.build / "control-store-packer" / "control-store-packing.json"
 

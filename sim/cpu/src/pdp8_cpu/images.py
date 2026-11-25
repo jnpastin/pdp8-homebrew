@@ -29,6 +29,26 @@ DEFAULT_SCHEMA = DEFAULT_DESIGN.schema
 IMAGE_DEPTH = 1 << 15  # 28C256: 15 address bits (CSO §2)
 DATAPATH_DEVICES = 6  # CSO §4.2; the packing's summary gives the design's own count
 NON_EXECUTE_GROUP = 1  # CSO §5.4.2: the MS_EFF_IS_EXECUTE = 0 group is wired as group 1
+TSTEP_NS = 50          # Timing Architecture §5.1: TCLK = 20 MHz
+TIMING_MODE = 0        # Timing Architecture §5.1: the normal mode, a board jumper
+
+
+def timing_rom_ts_ns(path: Path, mode: int = TIMING_MODE) -> dict:
+    """Timing Terminology §3.5: each timing context's TS durations, in ns, read from the timing
+    ROM image. A byte holds the setup length in D2..D0 and TP width - 1 in D3; the address is
+    MS_EFF (A7..A5), TS - 1 (A4..A3), AUTO_INDEX_REQUIRED (A2), and TIMING_MODE (A1..A0)."""
+    image = read_hex_image(path)
+
+    def durations(ms, auto_index):
+        out = []
+        for ts in (1, 2, 3, 4):
+            byte = image[(ms << 5) | ((ts - 1) << 3) | (auto_index << 2) | mode]
+            out.append(((byte & 7) + ((byte >> 3) & 1) + 1) * TSTEP_NS)
+        return tuple(out)
+
+    table = {name: durations(code, 0) for code, name in E.MS_NAMES.items() if code != E.HALTED}
+    table[D.DEFER_AUTOINDEX] = durations(E.DEFER, 1)
+    return table
 
 # CSO §4.1 and §4.2: the fields each slice produces.
 SEQUENCER_FIELD_NAMES = {"MS_NEXT", "MS_LOAD", "RUN_NEXT", "HLT_REQ_NEXT", "/INITIALIZE"}
@@ -61,8 +81,10 @@ def read_hex_image(path: Path) -> list[int]:
 class ControlStore:
     """The mapping ROM, the six datapath devices, and the sequencer device, with their wiring."""
 
-    def __init__(self, mapping, datapath, sequencer, packing, design: D.Design = DEFAULT_DESIGN):
+    def __init__(self, mapping, datapath, sequencer, packing, design: D.Design = DEFAULT_DESIGN,
+                 ts_ns: dict | None = None):
         self.design = design      # the control design these images belong to (design.py)
+        self.ts_ns = ts_ns        # TS durations from the timing ROM image, when there is one
         self.mapping = mapping
         self.datapath = datapath  # 48-bit words
         self.sequencer = sequencer
@@ -104,7 +126,9 @@ class ControlStore:
         devices = [read_hex_image(image_dir / f"datapath-{n}.hex") for n in range(count)]
         datapath = [sum(devices[n][a] << (8 * n) for n in range(count))
                     for a in range(IMAGE_DEPTH)]
-        return cls(mapping, datapath, sequencer, packing, design)
+        timing = design.timing_image    # v1 has no timing ROM: its durations are design.py's
+        ts_ns = timing_rom_ts_ns(timing) if timing.exists() else None
+        return cls(mapping, datapath, sequencer, packing, design, ts_ns)
 
     # -- validation against the documentation ---------------------------------------------
 

@@ -224,16 +224,35 @@ Checked with no change for C2, C11, and D2: `CPU_Architecture.xml` (its FP_SR bo
 
 ---
 
+## Bus sources, DB strobes, SKIP_LOAD (2026-11-25)
+
+`IDB_SRC` no longer has MQ or IR (it is AC, PC, MB, FP_SR, EA_ADDR, ALU); `MDB_SRC` has no DMA value; the `/DB_READ`, `/DB_WRITE`, and `SKIP_LOAD` control-word fields are gone, leaving the datapath slice 40 bits in five devices.
+
+### `diagrams/microarchitecture/cpu-architecture/source/CPU_Architecture.xml`
+
+| # | Current content (source) | Required change | Doc | Status |
+|---|---|---|---|---|
+| E1 | IR – IDB edge `2Ph0Qde3JH9-hkXoXRvS-128`: IR (`2Ph0Qde3JH9-hkXoXRvS-49`) to the IDB's right leg (free end at (990, 1210)), arrowheads at both ends, IDB colour `#9673a6`. | Remove the edge: IR neither drives the IDB nor loads from it. Supersedes A1's "IR → IDB only"; A1's MDB → IR stands. | MCS `IDB_SRC`; `01-registers.md` IR | open |
+| E2 | MQ – IDB edge `2Ph0Qde3JH9-hkXoXRvS-124`: from MQ (`cX9REWVKWh3u19Wi5yly-26`, source point (160, 1070)) to (210, 1070) on the IDB, arrowheads at both ends. | Make it IDB → MQ only (keep the arrowhead at MQ, remove the one at the IDB): `MQ_CLEAR` loads MQ from the IDB (`MQ_SRC` = IDB), and MQ no longer drives it. Supersedes C3-1's "MQ – IDB stays". | MCS `IDB_SRC`, `MQ_SRC` | open |
+
+### `diagrams/control/control-store-organization/source/control-store-organization.xml`
+
+| # | Current content (source) | Required change | Doc | Status |
+|---|---|---|---|---|
+| E3 | "Datapath Slice ROM [45 Bits]" (`Smnm8CKmp2vPJFrs1iI9-14`). | **40** bits (five devices). Supersedes P9-2's 44. | CSO §4.2, §7.2 | open |
+
+---
+
 ## Final list (phase 9, 2026-11-21)
 
 No diagram source has changed on this branch (`git diff main -- diagrams` is empty), so every entry above is still open. Superseded entries are folded into the entry that replaces them. Per diagram:
 
 | Diagram | Entries | Change |
 |---|---|---|
-| `CPU_Architecture.xml` | A1, A2, B6, B7, C1-1, C2-6, C2-7, C3-1, P9-1 | MDB → IR, IR → IDB only (A1); MA → EA_ADDR for the page (A2); formed address → PC (B6); INSTR_END output to the DMA arbiter (B7); the OPR pass unit with AC, L, FP_SR, and MQ inputs and AC, L, and MQ outputs (C1-1, C2-6, C3-1); the SKIP register (C2-7). Remove FP_SR → ALU B, MQ → ALU B, and MQ → AC (P9-1). |
+| `CPU_Architecture.xml` | A1, A2, B6, B7, C1-1, C2-6, C2-7, C3-1, P9-1, E1, E2 | MDB → IR (A1); remove IR – IDB, and MQ – IDB becomes IDB → MQ only (E1, E2); MA → EA_ADDR for the page (A2); formed address → PC (B6); INSTR_END output to the DMA arbiter (B7); the OPR pass unit with AC, L, FP_SR, and MQ inputs and AC, L, and MQ outputs (C1-1, C2-6, C3-1); the SKIP register (C2-7). Remove FP_SR → ALU B, MQ → ALU B, and MQ → AC (P9-1). |
 | `ms_next-flowchart.xml` | B1 + C3-2 (C1-2, C2-8 superseded), B2 | FETCH: a direct JMP or any OPR (`IR_NO_EXECUTE = 1`, not indirect) goes to the instruction-completion decision; DEFER: a JMP I does too. |
 | `control-store-mapping.xml` | B3 | The wired 0 into the 5-bit MUX becomes `00·IR_CLASS`. |
-| `control-store-organization.xml` | B4, C2-4, P9-2 (B5, C2-5 superseded), D2 (optional) | Sequencer ROM inputs `IR_NO_EXECUTE` (A2) and `IR_OPR_HLT` (A1); the datapath slice label "[45 Bits]" becomes **44** (P9-2); optionally, EEPROMs shadowed into SRAM. |
+| `control-store-organization.xml` | B4, C2-4, E3 (B5, C2-5, P9-2 superseded), D2 (optional) | Sequencer ROM inputs `IR_NO_EXECUTE` (A2) and `IR_OPR_HLT` (A1); the datapath slice label "[45 Bits]" becomes **40**, in five devices (E3); optionally, EEPROMs shadowed into SRAM. |
 | `control-store-overlay.xml` | C2-1, C2-2, C2-3 | The `RUN` multiplexer on group 1 bits 2 to 0 (`SKIP`, 0, 0 when running); group 3's DP_OVL[4] input `SKIP_TAKEN` becomes wired 0; `ISZ_SKIP_REQUIRED` → `ISZ_SKIP_REQ`. |
 | `cpu-timing-overview.json` | D1 | Add the fast state (5/8/6/5) beside the slow state (6/9/7/6). |
 | Not drawn | D (note) | No diagram exists for the timing ROM, the TSEQ counter, or the shadow-copy logic; drawing them is your call. |

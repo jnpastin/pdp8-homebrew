@@ -119,11 +119,12 @@ class _Eval:
         if self.f["IDB_DRIVE"] != 1:
             raise SpecViolation("a register loads from the IDB while IDB_DRIVE = 0", "MCS IDB_DRIVE, §7.12")
         st = self.st
-        src = self.sel("IDB_SRC")
-        if src == 7:
+        source = E.datapath_fields(self.design.name)["IDB_SRC"].meaning(self.sel("IDB_SRC"))
+        if source == "ALU":
             return self.alu()[0]
-        return {0: st["AC"], 1: st["PC"], 2: st["MB"], 3: st["MQ"], 4: self.panel.sr,
-                5: st["EA_ADDR"], 6: st["IR"]}[src]
+        if source == "FP_SR":
+            return self.panel.sr
+        return st[source]           # AC, PC, MB, EA_ADDR (v1 also MQ and IR)
 
     def memory_address(self, purpose):
         """MEM §3: MEM_ADDR = {MFB, AB}; AB by AB_SRC, MFB by MFB_SRC."""

@@ -431,7 +431,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Bit Width:** 2  
 **Default Value:** 0  
 **Explicit Value Required:** Conditionally  
-**Value Required When:** (IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1 OR (L_LOAD=1 AND L_OP=2)  
+**Value Required When:** (IDB_DRIVE=1 AND IDB_SRC=5) OR PC_INC=1 OR (L_LOAD=1 AND L_OP=2)  
 
 **Purpose:** Select primary ALU operand.
 
@@ -465,7 +465,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Bit Width:** 1  
 **Default Value:** 0  
 **Explicit Value Required:** Conditionally  
-**Value Required When:** (IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1 OR (L_LOAD=1 AND L_OP=2)  
+**Value Required When:** (IDB_DRIVE=1 AND IDB_SRC=5) OR PC_INC=1 OR (L_LOAD=1 AND L_OP=2)  
 
 **Purpose:** Select secondary ALU operand.
 
@@ -497,7 +497,7 @@ All numeric encodings in this section are octal unless otherwise noted.
 **Bit Width:** 2  
 **Default Value:** 0  
 **Explicit Value Required:** Conditionally  
-**Value Required When:** (IDB_DRIVE=1 AND IDB_SRC=7) OR PC_INC=1 OR (L_LOAD=1 AND L_OP=2)  
+**Value Required When:** (IDB_DRIVE=1 AND IDB_SRC=5) OR PC_INC=1 OR (L_LOAD=1 AND L_OP=2)  
 
 **Purpose:** Defines ALU computation.
 
@@ -910,11 +910,11 @@ Bits 5:0 are the save field held in IB, not the current IF and DF ([IOT Instruct
 0 → AC
 1 → PC
 2 → MB
-3 → MQ
-4 → FP_SR
-5 → EA_ADDR
-6 → IR
-7 → ALU
+3 → FP_SR
+4 → EA_ADDR
+5 → ALU
+6 → reserved
+7 → reserved
 ```
 
 **Constraints:**
@@ -923,15 +923,15 @@ Bits 5:0 are the save field held in IB, not the current IF and DF ([IOT Instruct
 - Reserved values must not be used  
 
 **Used by μops:**
-- [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 7
+- [AC_AND_MB](../../03-microarchitecture/02-micro-operations.md#ac_and_mb) = 5
 - [AC_TO_MB](../../03-microarchitecture/02-micro-operations.md#ac_to_mb) = 0
-- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 7
-- [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc) = 4
-- [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc) = 7
+- [ADD_AC_MB](../../03-microarchitecture/02-micro-operations.md#add_ac_mb) = 5
+- [FP_SR_TO_PC](../../03-microarchitecture/02-micro-operations.md#fp_sr_to_pc) = 3
+- [MB_INC](../../03-microarchitecture/02-micro-operations.md#mb_inc) = 5
 - [MB_TO_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#mb_to_ea_addr) = 2
 - [MB_TO_PC](../../03-microarchitecture/02-micro-operations.md#mb_to_pc) = 2
-- [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 7
-- [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr) = 5
+- [MQ_CLEAR](../../03-microarchitecture/02-micro-operations.md#mq_clear) = 5
+- [PC_LOAD_EA_ADDR](../../03-microarchitecture/02-micro-operations.md#pc_load_ea_addr) = 4
 - [PC_TO_MB](../../03-microarchitecture/02-micro-operations.md#pc_to_mb) = 1
 
 
@@ -1442,13 +1442,13 @@ memory bus value
 0 → Memory
 1 → MB
 2 → FP_SR
-3 → DMA
+3 → reserved
 ```
 
 **Constraints:**
 - Must contain a valid encoding in every control word
 - `Memory` means the CPU does not drive MDB: memory drives it for a read, or a DMA controller in DMA
-- No control word selects `DMA`: in DMA the CPU's MDB driver is released and the controller drives MDB
+- In DMA the CPU's MDB driver is released and the controller drives MDB; no encoding selects a DMA source
 
 **Used by μops:**
 - [MEM_READ_TO_MB](../../03-microarchitecture/02-micro-operations.md#mem_read_to_mb) = 0

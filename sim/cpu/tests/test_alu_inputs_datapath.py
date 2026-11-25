@@ -148,7 +148,7 @@ class DatapathTests(unittest.TestCase):
 
     def test_binary_alu_needs_operand(self):
         with self.assertRaises(SpecViolation):
-            self.run_word(AC_LOAD=1, AC_SRC=0, IDB_DRIVE=1, IDB_SRC=7, ALU_OP=E.alu_code(DS.select().name, E.ADD),
+            self.run_word(AC_LOAD=1, AC_SRC=0, IDB_DRIVE=1, IDB_SRC=E.field_code(DS.select().name, "IDB_SRC", "ALU"), ALU_OP=E.alu_code(DS.select().name, E.ADD),
                           ALU_B_SRC=0)
 
     def test_ea_formation_page_from_ma(self):

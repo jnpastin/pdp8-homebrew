@@ -62,7 +62,7 @@ On each rising edge of TCLK:
 
 Each TS ends with its TP:
 
-TPn = active during the last W steps of TSn ([Timing Terminology §3.5](./01-terminology.md#35-timing-rom))
+TPn = active during the last steps of TSn, as many as its TP width ([Timing Terminology §3.5](./01-terminology.md#35-timing-rom))
 
 TP is:
 - one timing step wide, or two in a TS that can write memory (section 5.1)
@@ -76,7 +76,7 @@ TP is:
 
 ### 5.1 Structure
 
-Each timing state is a run of N timing steps, N read from the timing ROM ([Timing Terminology §3.5](./01-terminology.md#35-timing-rom)). TSTEP is 50 ns (TCLK = 20 MHz). The lengths, in TSTEPs (TS1/TS2/TS3/TS4):
+Each timing state is a run of timing steps, its TS length, read from the timing ROM ([Timing Terminology §3.5](./01-terminology.md#35-timing-rom)). TSTEP is 50 ns (TCLK = 20 MHz). The lengths, in TSTEPs (TS1/TS2/TS3/TS4):
 
 | Context | Mode 0 (optimized) | Mode 1 (uniform slow) |
 |---|---|---|
@@ -314,7 +314,7 @@ Budgets are expressed in TSTEPs.
 
 - A path starts as the previous TP ends, when the output ranks and TS change.
 - It must settle by the leading edge of this TS's TP.
-- A TS of N steps with a W-step TP therefore allows N − W steps, less the output rank's clock-to-output delay.
+- A TS therefore allows its setup length (TS length − TP width) in steps, less the output rank's clock-to-output delay.
 
 Those steps must be enough for:
 

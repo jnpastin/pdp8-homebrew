@@ -67,8 +67,8 @@ DATAPATH_FIELDS = {f.name: f for f in [
     _f("EA_ADDR_SRC", 1, {0: "IDB", 1: "IR address formation unit"}, "MCS EA_ADDR_SRC"),
     _f("IB_LOAD", 1, LOAD, "MCS IB_LOAD"),
     _f("IDB_DRIVE", 1, {0: "no drive", 1: "drive IDB"}, "MCS IDB_DRIVE"),
-    _f("IDB_SRC", 3, {0: "AC", 1: "PC", 2: "MB", 3: "MQ", 4: "FP_SR", 5: "EA_ADDR", 6: "IR",
-                      7: "ALU"}, "MCS IDB_SRC"),
+    _f("IDB_SRC", 3, {0: "AC", 1: "PC", 2: "MB", 3: "FP_SR", 4: "EA_ADDR", 5: "ALU",
+                      6: "reserved", 7: "reserved"}, "MCS IDB_SRC"),
     _f("IE_LOAD", 1, LOAD, "MCS IE_LOAD"),
     _f("IE_VAL", 1, BOOL_VAL, "MCS IE_VAL"),
     _f("IF_LOAD", 1, LOAD, "MCS IF_LOAD"),
@@ -85,7 +85,7 @@ DATAPATH_FIELDS = {f.name: f for f in [
     _f("MA_SRC", 2, {0: "PC", 1: "EA_ADDR", 2: "Zero (hardwired 0000)", 3: "reserved"}, "MCS MA_SRC"),
     _f("MB_LOAD", 1, LOAD, "MCS MB_LOAD"),
     _f("MB_SRC", 2, {0: "IDB", 1: "MDB", 2: "FP_SR", 3: "reserved"}, "MCS MB_SRC"),
-    _f("MDB_SRC", 2, {0: "Memory", 1: "MB", 2: "FP_SR", 3: "DMA"}, "MCS MDB_SRC"),
+    _f("MDB_SRC", 2, {0: "Memory", 1: "MB", 2: "FP_SR", 3: "reserved"}, "MCS MDB_SRC"),
     _f("MFB_SRC", 1, {0: "IF", 1: "DF"}, "MCS MFB_SRC"),
     _f("MQ_LOAD", 1, LOAD, "MCS MQ_LOAD"),
     _f("MQ_SRC", 1, {0: "IDB", 1: "OPR pass unit MQ output"}, "MCS MQ_SRC"),
@@ -108,6 +108,9 @@ _DESIGN_OVERRIDES = {
                                    **{c: "reserved" for c in range(0o13, 0o20)}}, "MCS ALU_OP"),
         "L_OP": _f("L_OP", 2, {0: "CLEAR", 1: "COMP", 2: "ALU_LINK", 3: "AC[11]"}, "MCS L_OP"),
         "MQ_SRC": _f("MQ_SRC", 1, {0: "IDB", 1: "AC"}, "MCS MQ_SRC"),
+        "IDB_SRC": _f("IDB_SRC", 3, {0: "AC", 1: "PC", 2: "MB", 3: "MQ", 4: "FP_SR", 5: "EA_ADDR",
+                                     6: "IR", 7: "ALU"}, "MCS IDB_SRC"),
+        "MDB_SRC": _f("MDB_SRC", 2, {0: "Memory", 1: "MB", 2: "FP_SR", 3: "DMA"}, "MCS MDB_SRC"),
         "/DB_READ": _f("/DB_READ", 1, ACTIVE_LOW, "ACS §4.3"),
         "/DB_WRITE": _f("/DB_WRITE", 1, ACTIVE_LOW, "ACS §4.4"),
     },
@@ -154,6 +157,11 @@ _V1_ALU_OPS = (ADD, AND, OR, NOT, INC, ROR, ROL, RTR, RTL, BSW, CLEAR)  # V1-ONL
 def alu_operation(design_name: str, code: int) -> int:
     """The operation that a design's ALU_OP code selects."""
     return _V1_ALU_OPS[code] if design_name == "v1" else code  # V1-ONLY: the v1 translation
+
+
+def field_code(design_name: str, name: str, meaning: str) -> int:
+    """The code of field `name` whose meaning is `meaning`, in a design."""
+    return next(c for c, m in datapath_fields(design_name)[name].values.items() if m == meaning)
 
 
 def alu_code(design_name: str, operation: int) -> int:

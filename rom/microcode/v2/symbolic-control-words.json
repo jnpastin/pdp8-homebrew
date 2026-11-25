@@ -1451,7 +1451,7 @@
         "IF_SRC": [],
         "IDB_SRC": [
           {
-            "value": "7",
+            "value": "5",
             "when": "(((MS = DEFER AND TS = 3) AND RUN = 1) AND AUTO_INDEX_REQUIRED = 1)",
             "origin": "conditional micro-operation mapping",
             "source": "MB_INC"
@@ -2378,7 +2378,7 @@
         "IF_SRC": [],
         "IDB_SRC": [
           {
-            "value": "7",
+            "value": "5",
             "when": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 000) AND TS = 3) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "AC_AND_MB"
@@ -3157,7 +3157,7 @@
         "IF_SRC": [],
         "IDB_SRC": [
           {
-            "value": "7",
+            "value": "5",
             "when": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 001) AND TS = 3) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "ADD_AC_MB"
@@ -3929,7 +3929,7 @@
         "IF_SRC": [],
         "IDB_SRC": [
           {
-            "value": "7",
+            "value": "5",
             "when": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 010) AND TS = 3) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "MB_INC"
@@ -5530,7 +5530,7 @@
         "IF_SRC": [],
         "IDB_SRC": [
           {
-            "value": "5",
+            "value": "4",
             "when": "((((MS = EXECUTE AND IR_IS_MRI = 1) AND IR_MRI_OPCODE = 100) AND TS = 3) AND RUN = 1)",
             "origin": "micro-operation mapping",
             "source": "PC_LOAD_EA_ADDR"
@@ -14599,7 +14599,7 @@
         ],
         "IDB_SRC": [
           {
-            "value": "4",
+            "value": "3",
             "when": "(RUN = 0 AND FP_LOAD_ADDRESS = 1)",
             "origin": "micro-operation mapping",
             "source": "FP_SR_TO_PC"
@@ -15517,7 +15517,7 @@
         "IF_SRC": [],
         "IDB_SRC": [
           {
-            "value": "7",
+            "value": "5",
             "when": "(RUN = 0 AND FP_START = 1)",
             "origin": "micro-operation mapping",
             "source": "MQ_CLEAR"

@@ -25,6 +25,7 @@ It replaces running the tools one at a time and copying candidates by hand. It a
 | 13 | `symbolic-control-word-generator` | `symbolic-control-words.json` |
 | 14 | `control-word-equivalence-analyzer` | |
 | 15 | `control-store-packer` | |
+| 16 | `timing-rom-generator` | |
 
 A generator reads the artifacts promoted before it, so the order matters.
 

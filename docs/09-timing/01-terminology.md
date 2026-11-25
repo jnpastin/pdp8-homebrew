@@ -46,7 +46,7 @@ A single position in the timing sequence.
 
 Properties:
 
-- Counted within each TS: TSTEP 1 to N, where N is the length of the current TS given by the timing ROM (section 3.5).
+- Counted within each TS: TSTEP 1 up to the TS length, the current TS's length in TSTEPs, given by the timing ROM (section 3.5).
 - Exactly one TSTEP is active at a time.
 - TSTEP advances on each TCLK rising edge, except while halted.
 - TSTEP transition logic evaluates the pre-edge TSTEP value.
@@ -58,9 +58,9 @@ Properties:
 
 The ordered progression of timing steps:
 
-TS1 step 1 → … → step N₁ → TS2 step 1 → … → step N₂ → TS3 … → TS4 step N₄ → repeat
+TS1 step 1 → … → last step of TS1 → TS2 step 1 → … → last step of TS2 → TS3 … → last step of TS4 → repeat
 
-where N₁ to N₄ are the lengths of the four timing states of the current major state (section 3.5).
+where each TS has its own length, from the timing ROM, for the current major state (section 3.5).
 
 TSEQ is the fundamental timebase of the system.
 
@@ -105,23 +105,42 @@ The processor is then halted in FETCH and waits for a console command. Every oth
 
 The length of each TS, and the width of its TP, are read from the timing ROM, a 32K × 8 device of which 8 address bits are used, the others tied low:
 
-| Address input | Width | Meaning |
+| Address bits | Input | Meaning |
 |---|---|---|
-| `MS_EFF` | 3 | the current major state |
-| TS code | 2 | the current timing state |
-| `AUTO_INDEX_REQUIRED` | 1 | selects the slow DEFER (Timing Architecture §5.1) |
-| `TIMING_MODE[1:0]` | 2 | the speed mode, set by a board jumper (Timing Architecture §5.1) |
+| A7–A5 | `MS_EFF` | the current major state ([Control Store Organization §5.1](../04-control/08-control-store-organization.md#51-major-state-and-timing-state-codes)) |
+| A4–A3 | TS code | the current timing state (TS − 1) |
+| A2 | `AUTO_INDEX_REQUIRED` | selects the slow DEFER (Timing Architecture §5.1) |
+| A1–A0 | `TIMING_MODE[1:0]` | the speed mode, set by a board jumper (Timing Architecture §5.1) |
+| A14–A8 | | tied low |
 
 `MS` changes only at a TP4, or at the console TP, so during each TS `MS_EFF` names the state whose TS is running.
 
-The ROM gives two values:
+Each TS is described by two lengths, in TSTEPs:
 
-| Value | Meaning | Stored as |
-|---|---|---|
-| N | the length of the TS, including its TP | the last setup step, N − W |
-| W | the width of its TP: 2 in a TS that can write memory, otherwise 1 | one bit |
+| Term | Meaning |
+|---|---|
+| TS length | the length of the TS, including its TP |
+| TP width | the length of its TP: 2 in a TS that can write memory, otherwise 1 |
+| setup length | TS length − TP width: the steps before the TP, and so the number of its last setup step |
 
-TSEQ counts the TSTEPs of the TS and sets TP after step N − W (section 4.4). After step N the count restarts at step 1 of the next TS.
+The ROM stores the setup length and the TP width (as one bit), not the TS length. TSEQ counts the TSTEPs of the TS and sets TP after the step equal to the setup length (section 4.4). After the last step of the TP, the count restarts at step 1 of the next TS.
+
+Each byte holds one TS's values:
+
+| Data bits | Content |
+|---|---|
+| D2–D0 | the setup length (4 to 7) |
+| D3 | TP width − 1: 0 for a one-step TP, 1 for a two-step TP |
+| D7–D4 | 0 |
+
+For example, EXECUTE TS3 (TS length 7, TP width 2) is `0D`: a setup length of 5, and a two-step TP.
+
+The values come from the tables of Timing Architecture §5.1. `AUTO_INDEX_REQUIRED` changes them only in DEFER. The addresses no running state reads hold safe values:
+
+- the reserved `TIMING_MODE` codes 2 and 3 repeat mode 1, the uniform slow timing, so a mis-set jumper still runs
+- `MS_EFF` codes 5 and 6, which `MS` never takes, and 7 (`HALTED`, while TSEQ is held and the console transaction timer runs instead) hold the slow TS lengths, 6/8/7/7, with one-step TPs
+
+The image is generated from those tables by the timing ROM generator (`tools/rom-generation/timing-rom-generator`).
 
 Every input of the ROM is registered state or a static jumper, so its outputs are stable through the whole TS. They settle before `CW_VALID` enables the comparison.
 
@@ -137,14 +156,14 @@ Like the control store, the timing ROM is an EEPROM shadowed in SRAM at power-on
 
 A Timing Pulse is the end of its timing state:
 
-TPn is the last W TSTEPs of TSn, steps N − W + 1 to N (section 3.5). W is 2 in a TS that can write memory, otherwise 1.
+TPn is the last TSTEPs of TSn, as many as its TP width (section 3.5): the step after the setup length, and in a TS that can write memory, the one after that.
 
 ---
 
 ### 4.2 Properties
 
 - Active-high.
-- Active for W TCLK cycles, one or two.
+- Active for as many TCLK cycles as the TP width, one or two.
 - Driven by a flip-flop, never decoded combinationally, so it cannot glitch (section 4.4).
 - TP1, TP2, TP3, TP4, and TP_FP are mutually exclusive: they are one signal, named by when it occurs.
 - Represents a discrete execution event.
@@ -170,11 +189,11 @@ Nothing visible changes during TP.
 TP, including TP_FP, is the output of one flip-flop clocked by TCLK:
 
 ```text
-set:    (TSTEP = N - W) AND CW_VALID
-clear:  W TCLK periods later, which also starts step 1 of the next TS
+set:    (TSTEP = setup length) AND CW_VALID
+clear:  TP width TCLK periods later, which also starts step 1 of the next TS
 ```
 
-While halted, the console transaction timer supplies the step, with N = 9 and W = 2.
+While halted, the console transaction timer supplies the step, with a TS length of 9 and a TP width of 2 (a setup length of 7).
 
 TP is the one commit clock:
 
@@ -197,7 +216,7 @@ TS1, TS2, TS3, TS4
 
 ### 5.2 Implementation
 
-Each TS is a run of N consecutive timing steps, N from the timing ROM (section 3.5). The current TS is held in a register as a 2-bit TS code (TS1 = 00, TS2 = 01, TS3 = 10, TS4 = 11) that advances as each TP ends, from TS4 back to TS1. The register drives the control store's `TS_CODE` directly and is decoded into the TS1 to TS4 signals.
+Each TS is a run of consecutive timing steps, as many as its TS length from the timing ROM (section 3.5). The current TS is held in a register as a 2-bit TS code (TS1 = 00, TS2 = 01, TS3 = 10, TS4 = 11) that advances as each TP ends, from TS4 back to TS1. The register drives the control store's `TS_CODE` directly and is decoded into the TS1 to TS4 signals.
 
 The lengths are defined in [Timing Architecture §5.1](./02-timing-architecture.md#51-structure): TS2 is the longest, to accommodate the memory access, following DEC's fast- and slow-cycle design (PDP-8/E Maintenance Manual, volume 1, §3.14, p. 3-48).
 

@@ -51,7 +51,7 @@ class Datapath(unittest.TestCase):
                         DS.select("v2"))
 
     def through_alu(self, op, b_src):
-        loads = self.run_word(AC_LOAD=1, AC_SRC=0, L_LOAD=1, L_OP=2, IDB_DRIVE=1, IDB_SRC=7,
+        loads = self.run_word(AC_LOAD=1, AC_SRC=0, L_LOAD=1, L_OP=2, IDB_DRIVE=1, IDB_SRC=E.field_code("v2", "IDB_SRC", "ALU"),
                               ALU_A_SRC=0, ALU_B_SRC=b_src, ALU_OP=op).loads
         return loads["AC"], loads["L"]
 
