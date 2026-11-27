@@ -1,260 +1,212 @@
-# Diagram Changes for Option 2 (running list)
+# Diagram Changes for `one-cycle-fetch`
 
-The user maintains the diagrams; Claude never edits them. This list records, per slice, what each affected diagram **currently contains** (read from its source file, with element ids) and the change the slice's docs require.
+The user maintains the diagrams; Claude never edits them. This list gives, for each diagram, the changes the current docs require. Each change names the element as it is in the source and the doc section that requires it.
 
-How the sources were read: draw.io files were decoded and every cell's label and every edge's endpoints listed. Where an edge end is not attached to a shape (a free point), the shape or bus it touches was computed from the stored coordinates; bus arrows are 25 px wide, so a free end within about 13 px of a bus's centre line lies on the bus. Arrowheads are read from each edge's `startArrow` / `endArrow` style. Nothing here is inferred from a rendered image.
+How the sources were read (2026-11-26):
+- **draw.io:** every cell's label and every edge's endpoints and arrowheads were decoded from the source file. Where an edge end is not attached to a shape, the bus or shape it touches was computed from the stored coordinates.
+- **WaveDrom:** the JSON was read directly.
+- Nothing here is inferred from a rendered image.
 
-Status: **open** (the diagram still needs the change) or **done** (the user has updated it).
+No diagram source has changed on this branch (`git diff main -- diagrams` is empty), so every change is open. The earlier slice-by-slice list (entries A1 to E3) is in git history up to 0e7334d; each change below names the entries it replaces.
+
+Changes marked **(also on main)** are differences between the diagram and the docs that predate the branch.
+
+Timing waveforms count lengths in TSTEPs (one WaveDrom step, 50 ns). A TS's TP is at its end: a one-step TP is the TS's last step, and a two-step TP its last two.
 
 ---
 
-## Slice A (phase 3): IR at TP2, PC increment at TP1, EA page from MA
+## 1. `microarchitecture/cpu-architecture/source/CPU_Architecture.xml`
 
-### `diagrams/microarchitecture/cpu-architecture/source/CPU_Architecture.xml`
+Linked from the [Microarchitecture README](../docs/03-microarchitecture/README.md).
 
-| # | Current content (source) | Required change | Doc | Status |
-|---|---|---|---|---|
-| A1 | IR's only connection to a data source is edge `2Ph0Qde3JH9-hkXoXRvS-128`: IR to the IDB's right leg (free end at (990, 1210); IDB vertical at x = 970), arrowheads at both ends, IDB colour `#9673a6`. No MB → IR or MDB → IR edge exists. | Add **MDB → IR** (IR's load input is MDB, at FETCH TP2). The IR–IDB edge should show only **IR → IDB** (IR is an IDB source, `IDB_SRC` = 6); IR no longer loads from the IDB. | `01-registers.md` IR; `02-dataflow-and-bus-model.md` §3; `02-micro-operations.md` `MDB_TO_IR` | open |
-| A2 | The EA unit's inputs: edge `cX9REWVKWh3u19Wi5yly-9` IR → EA_ADDR (enters EA_ADDR at the bottom centre). No edge from PC or MA to EA_ADDR; the page source is not drawn. | Add **MA → EA_ADDR** for the page bits (MA[11:7]); the IR → EA_ADDR edge carries IR[6:0] and the page bit. | `01-registers.md` MA, EA_ADDR; `02-micro-operations.md` `IR_ADDR_TO_EA_ADDR` | open |
+| # | Element (id) | Change | Doc |
+|---|---|---|---|
+| 1.1 | IR (`2Ph0Qde3JH9-hkXoXRvS-49`) | Add **MDB → IR**. IR loads only from MDB. | MCS `IR_LOAD`; [Registers](../docs/01-architecture/01-registers.md#ir--instruction-register) (was A1) |
+| 1.2 | IR – IDB edge `2Ph0Qde3JH9-hkXoXRvS-128` (arrowheads at both ends) | **Remove.** IR neither drives the IDB nor loads from it. | MCS `IDB_SRC` (was A1, E1) |
+| 1.3 | MQ – IDB edge `2Ph0Qde3JH9-hkXoXRvS-124` (arrowheads at both ends) | Keep only the arrowhead at MQ: **IDB → MQ** (`MQ_SRC` = IDB, used by `MQ_CLEAR`). MQ no longer drives the IDB. | MCS `IDB_SRC`, `MQ_SRC` (was E2) |
+| 1.4 | IR → EA_ADDR edge `cX9REWVKWh3u19Wi5yly-9`; PC (`2Ph0Qde3JH9-hkXoXRvS-47`) | Add the **address formation unit** between IR and EA_ADDR. Its inputs are IR[6:0], the page bit IR[7], and **MA[11:7]** (a new MA → unit edge). It has two outputs: **→ EA_ADDR** (`EA_ADDR_SRC` = 1) and **→ PC** (`PC_SRC` = 2, direct JMP). If you'd rather not draw the unit, add MA → EA_ADDR and EA formation → PC. | [Registers, EA_ADDR](../docs/01-architecture/01-registers.md); MCS `EA_ADDR_SRC`, `PC_SRC` (was A2, B6) |
+| 1.5 | (new) | Add the **OPR pass unit**. Inputs: AC, L, MQ (MQA), FP_SR (OSR), and the IR stage decodes. Outputs: **→ AC** (`AC_SRC` = 7), **→ L** (`L_OP` = 1), **→ MQ** (`MQ_SRC` = 1). The ALU paths stay: MRIs, ISZ, and the PC increment use them. | [OPR Pass Unit §2, §3](../docs/03-microarchitecture/07-opr/00-pass-unit.md) (was C1-1, C2-6, C3-1) |
+| 1.6 | (new), drawn like the other 1-bit registers | Add the 1-bit **SKIP** register. Input: the Group 2 skip logic (`OPR_SKIP_REQ`, from AC and L), beside the pass unit. Output: to Control. It loads at every main-sequence TP; no control-word field enables it. | [Registers, SKIP](../docs/01-architecture/01-registers.md#skip--skip); [OPR Pass Unit §2](../docs/03-microarchitecture/07-opr/00-pass-unit.md) (was C2-7) |
+| 1.7 | Control (`2Ph0Qde3JH9-hkXoXRvS-67`); DMA Grant (`-66`, edge `-168`) | Add an **Instruction End (INSTR_END)** output to the DMA arbiter, drawn like DMA Grant. It is decoded by gates, not stored in the control word. | [ACS §4.10](../docs/04-control/20-control-output-definitions/02-architectural-control-signals.md#410-instruction-end-instr_end) (was B7) |
+| 1.8 | FP_SR → ALU B `2Ph0Qde3JH9-hkXoXRvS-145`; MQ → ALU B `2Ph0Qde3JH9-hkXoXRvS-141`; MQ → AC `cX9REWVKWh3u19Wi5yly-27` | **Remove all three.** `ALU_B_SRC` is NONE or MB; `AC_SRC` has no MQ. | MCS `ALU_B_SRC`, `AC_SRC` (was P9-1) |
+| 1.9 | AC → ALU B `2Ph0Qde3JH9-hkXoXRvS-142`; PC → ALU B `2Ph0Qde3JH9-hkXoXRvS-144` | **Remove both (also on main).** ALU B's only source is MB (`2Ph0Qde3JH9-hkXoXRvS-146`). v1's sources were MB, MQ, and FP_SR, never AC or PC. | MCS `ALU_B_SRC` |
+| 1.10 | L → ALU A `2Ph0Qde3JH9-hkXoXRvS-136`; L → ALU B `2Ph0Qde3JH9-hkXoXRvS-143` | **Replace with one L → ALU edge (also on main).** L is the ALU's dedicated link input (LIN), not an A or B operand. The ALU → L edge (`-133`) stays. | [MCS §7.3.1](../docs/04-control/20-control-output-definitions/01-microarchitectural-control-signals.md#731-alu-evaluation) |
 
-Unchanged and verified: MB ↔ MDB (`2Ph0Qde3JH9-hkXoXRvS-151`, both arrowheads), MB ↔ IDB (`cX9REWVKWh3u19Wi5yly-25`), PC → MA (`…-158`), EA_ADDR → MA (`…-157`), PC → AB and MA → AB (`cX9REWVKWh3u19Wi5yly-1`, `2GY4jtORsDWkwOyoSZJb-18`, both ending on the AB arrow), PC → ALU A and B (`…-139`, `…-144`). The PC increment still goes through the ALU, so no PC-path change. The instruction fetch now addresses memory from MA (`AB_SRC = MA`, direct-control §4.3.1), which the existing MA → AB edge covers; PC → AB stays in use for console EXAMINE and DEPOSIT (§4.2), so neither AB edge changes.
+Checked, no change:
+- MB ↔ MDB (`-151`), MB ↔ IDB (`cX9REWVKWh3u19Wi5yly-25`).
+- FP_SR → IDB (`-132`), FP_SR → MDB (`-156`).
+- PC ↔ IDB (`-125`), PC → ALU A (`-139`), PC → MA (`-158`).
+- EA_ADDR → MA (`-157`), EA_ADDR ↔ IDB (`-127`).
+- PC → AB (`cX9REWVKWh3u19Wi5yly-1`), MA → AB (`2GY4jtORsDWkwOyoSZJb-18`).
+- AC ↔ IDB (`-129`), AC ↔ DB (`cX9REWVKWh3u19Wi5yly-15`).
+- AC and MB → ALU A (`cX9REWVKWh3u19Wi5yly-14`, `-138`), MB → ALU B (`-146`).
+- IF, DF, IB → AC (`-21`, `-19`, `-20`).
 
-### Checked, no slice A change
+The hardwired sources (AC zero, `AC_SRC` = 5; PC's constant 1; MA's zero) are not drawn, consistently, so none needs adding.
 
-| Diagram | What the source contains | Why unchanged |
+---
+
+## 2. `control/ms_next-flowchart/source/ms_next-flowchart.xml`
+
+Linked from [Sequencing Control Signals §5.2](../docs/04-control/20-control-output-definitions/03-sequencing-control-signals.md#52-major-state-transition).
+
+| # | Element (id) | Change | Doc |
+|---|---|---|---|
+| 2.1 | FETCH (`jyFapoluXV-c96oE9wt7-1`) → "Indirect Addressing?" (`-3`), edge `-4` | Add a decision after FETCH: **"Direct JMP or OPR?"** (`IR_NO_EXECUTE = 1` and not indirect). Yes → "Interrupt Request?" (`-10`). No → "Indirect Addressing?". | [FETCH and DEFER §3.4](../docs/03-microarchitecture/04-fetch-defer.md#34-ts4) (was B1, C1-2, C2-8, C3-2) |
+| 2.2 | DEFER (`-5`) → Execute (`-7`), edge `-9` | Add a decision after DEFER: **"JMP I?"** (`IR_NO_EXECUTE = 1`). Yes → "Interrupt Request?". No → Execute. | [FETCH and DEFER §4.5](../docs/03-microarchitecture/04-fetch-defer.md#45-ts4) (was B2) |
+| 2.3 | DMA (`-15`) – "DMA Request?" (`-16`), edge `-20` | **Move the arrowhead to the decision end (also on main).** It is at DMA (`startArrow`), so the edge reads as a second decision → DMA beside "Yes" (`-17`). After a DMA state, `/DMA_REQ` decides DMA again or FETCH. | Sequencing Control Signals §5.2 ("DMA → FETCH or DMA"); [DMA Interface §6.1](../docs/07-io/05-dma-interface.md#61-dma-timing-overview) |
+
+Checked, no change: Execute → "Interrupt Request?" (`-11`), Yes → INTERRUPT (`-13`), INTERRUPT → FETCH (`-14`), No → "DMA Request?" (`-19`), No → FETCH (`-18`). Interrupt before DMA matches [Sequencing and Internal Direct Control §3](../docs/04-control/30-direct-control-definitions/01-sequencing-and-internal-control.md#3-sequencing-control) ("The interrupt decision has priority over DMA entry").
+
+---
+
+## 3. `control/control-store-address-formation/source/control-store-address-formation.xml`
+
+Linked from [CSO §5](../docs/04-control/08-control-store-organization.md#5-address-formation).
+
+| # | Element (id) | Change | Doc |
+|---|---|---|---|
+| 3.1 | "Equals 'EXECUTE'?" (`LYyLKf4eL-EtFkzbuk0P-1`), fed from the `MS_EFF` MUX (edge `-2`) | **`MS_EFF_IS_EXECUTE` is registered.** During TP, a gate decodes `MS = EXECUTE AND RUN = 1` from MS and RUN. As TP ends, a flip-flop publishes the result. Redraw as MS and RUN → gate → flip-flop → `MS_EFF_IS_EXECUTE` (`NrHUXa51DNh2OocIjt24-38`), and remove the edge from the MUX. | [CSO §5.1](../docs/04-control/08-control-store-organization.md#51-major-state-and-timing-state-codes) (new; decision 11a) |
+
+Checked, no change:
+- The `MS_EFF` MUX with wired 7.
+- `/DMA_GRANT` = NOT (`MS_EFF` = DMA), and `IOT_ACTIVE` = `MS_EFF_IS_EXECUTE` AND `IR_IS_EXTERNAL_IOT`.
+- The `FP_CMD` priority encoder, and the `SEQ_OVL` MUX selected by RUN.
+
+---
+
+## 4. `control/control-store-mapping/source/control-store-mapping.xml`
+
+Linked from [CSO §5.3](../docs/04-control/08-control-store-organization.md#53-mapping-rom).
+
+| # | Element (id) | Change | Doc |
+|---|---|---|---|
+| 4.1 | "Wired 0 [5 Bits]" (`07B4lpnJHN1g52silYbh-50`) → "MUX [5 Bits]" (`-47`) | Relabel **"00·IR_CLASS [5 Bits]"**: `IR_CLASS` (3 bits, from predecode) with the two high bits 0. | [CSO §5.4.2](../docs/04-control/08-control-store-organization.md#542-execute-selection) (was B3) |
+
+Checked, no change: "Wired 01" → DP_OVL_SEL MUX (`-55`), `IR_INDIRECT` → IR_SEQ MUX (`-61`), MAPR clocked by TP1 to TP4.
+
+---
+
+## 5. `control/control-store-organization/source/control-store-organization.xml`
+
+Linked from [CSO §3](../docs/04-control/08-control-store-organization.md#3-overview).
+
+| # | Element (id) | Change | Doc |
+|---|---|---|---|
+| 5.1 | "Sequencer Slice ROM [7 Bits]" (`Smnm8CKmp2vPJFrs1iI9-13`) | Add two inputs, drawn like IR_SEQ (`-11`): **`IR_NO_EXECUTE` [1 Bit]** (address A2) and **`IR_OPR_HLT` [1 Bit]** (A1). | [CSO §5.6](../docs/04-control/08-control-store-organization.md#56-sequencer-slice-address) (was B4, C2-4) |
+| 5.2 | "Datapath SliceROM [45 Bits]" (`-14`) | Relabel **"[40 Bits]"** (five devices). | [CSO §4.2](../docs/04-control/08-control-store-organization.md#42-datapath-slice) (was B5, C2-5, P9-2, E3) |
+| 5.3 | (optional) | The slices are EEPROMs copied into shadow SRAMs at power-on. Draw it only if you want this diagram to show devices. | [CSO §8.1](../docs/04-control/08-control-store-organization.md#81-shadow-copy) (was D2) |
+
+---
+
+## 6. `control/control-store-overlay/source/control-store-overlay.xml`
+
+Linked from [CSO §6](../docs/04-control/08-control-store-organization.md#6-datapath-overlay).
+
+Each multiplexer's inputs are read top to bottom as groups 0 to 3. Every top input is the group 0 signal of CSO §6.2, which confirms the order.
+
+| # | Element (id) | Change | Doc |
+|---|---|---|---|
+| 6.1 | Group 1 inputs of DP_OVL[2], [1], [0]: `FP_CMD[2]` (`m7rejeYPD5JNTGzo8jMm-59`), `FP_CMD[1]` (`-76`), `FP_CMD[0]` (`-93`) | Put a **3-bit 2:1 multiplexer selected by RUN** in front of them. RUN = 0 selects `FP_CMD[2:0]`; RUN = 1 selects `SKIP`, 0, 0 (`SKIP` on DP_OVL[2]). | [CSO §6.2, §6.3](../docs/04-control/08-control-store-organization.md#63-state-group-run-multiplexer) (was C2-1) |
+| 6.2 | DP_OVL[4] group 3: `SKIP_TAKEN` (`-9`) | **Wired 0.** | CSO §6.2 (was C2-2) |
+| 6.3 | DP_OVL[3] group 3: `ISZ_SKIP_REQUIRED` (`-44`) | **Wired 0.** | CSO §6.2 (new) |
+| 6.4 | DP_OVL[2] group 3: `IF_CHANGE_PENDING` (`-61`) | Replace with **`ISZ_SKIP_REQ`**. | CSO §6.2 (replaces C2-3's rename) |
+| 6.5 | DP_OVL[0] group 2: `/INT_REQ` (`-94`) | Add a **gate with the SRQ decode** (`IR_IS_SRQ`) in front of it. It presents deasserted (1) to every other instruction. | CSO §6.2 (new) |
+
+Checked, no change:
+- Every group 0 and group 2 input, apart from 6.5's qualifier.
+- Group 1's DP_OVL[4:3] (`CIFP`, `AUTO_INDEX_REQUIRED`).
+- Group 3's DP_OVL[1:0] (`IE`, `CIFP`).
+
+---
+
+## 7. `timing/cpu-timing/source/cpu-timing-overview.json`
+
+Linked from [Timing Architecture](../docs/09-timing/02-timing-architecture.md) (top, and §5.1).
+
+The current waveform is one state of 30 steps: TS 6/9/7/6, every TP one step.
+
+| # | Change | Doc |
 |---|---|---|
-| `diagrams/timing/cpu-timing/source/cpu-timing-overview.json` | WaveDrom: 20 MHz clock, TS1 to TS4 = 6, 9, 7, 6 steps, TP1 to TP4 pulses; no register events | Shows no IR, PC, or EA events. Its TS lengths change in slice D |
-| `diagrams/isa/addressing-model/source/addressing-model.xml` | Flowchart: `EA_addr = PC[11:7] \|\| Address Offset` for P = 1 | ISA view: PC is the instruction's address, as in `docs/02-isa`, which is unchanged |
-| `diagrams/control/control-store-mapping/source/control-store-mapping.xml` | IR[12 bits] → Mapping ROM[8 bits] → MAPR (clocked by TP1 to TP4) → the three EXECUTE multiplexers | MAPR's clocking is unchanged; only the correctness argument in CSO §5.4.3 changed |
-| `diagrams/architecture/class-a-buses/source/class-a-buses.xml` | CPU, Memory, I/O Device, DMA Device blocks on AB, MFB, MDB, DB | System level; no register detail |
-| `diagrams/architecture/High-Level-Architecture/source/High-Level-Architecture.xml`, `control-store-address-formation.xml`, `control-store-organization.xml`, `control-store-overlay.xml`, `ms_next-flowchart.xml`, `io_subsystem.xml`, `io/*.json` | No IR source, PC increment, or EA page elements | Not touched by slice A |
+| 7.1 | Draw the two mode-0 state lengths. **Fast** (FETCH; DEFER without auto-index): TS 5/8/6/5 = 24 steps, every TP one step. **Slow**, drawn as EXECUTE: TS 6/8/7/7 = 28 steps, with TP1 and TP2 one step and **TP3 and TP4 two steps**. | [Timing Architecture §5.1](../docs/09-timing/02-timing-architecture.md#51-structure) (was D1) |
+| 7.2 | Optional: `/WR_PULSE` over the first step of each two-step TP. | [Timing Terminology §5.7](../docs/09-timing/01-terminology.md#57-write-pulse-wr_pulse) |
+| 7.3 | Optional: the console transaction, 9 steps with a two-step TP_FP. | [Major State Timing §8](../docs/09-timing/03-major-state-timing.md#8-halted-state-and-console-transactions) |
 
 ---
 
-## Slice B (phase 4): JMP completes in FETCH (direct) or DEFER (JMP I)
+## 8. `io/io_timing/source/io_timing.json`
 
-### `diagrams/control/ms_next-flowchart/source/ms_next-flowchart.xml`
+Linked from [I/O Timing §3.1](../docs/07-io/03-io-timing.md#31-external-iot-timing-overview).
 
-| # | Current content (source) | Required change | Doc | Status |
-|---|---|---|---|---|
-| B1 | FETCH → "Indirect Addressing?" (`jyFapoluXV-c96oE9wt7-4`); Yes → DEFER (`-6`), No → Execute (`-8`). | Before or within the FETCH decision, a direct JMP (`IR_NO_EXECUTE = 1`, not indirect) goes to the instruction-completion decision ("Interrupt Request?"), not to Execute. | `04-fetch-defer.md` §3.4; direct-control §3.2.2, §3.2.5 to §3.2.7 | open |
-| B2 | DEFER → Execute (`jyFapoluXV-c96oE9wt7-9`), unconditional. | A JMP I (`IR_NO_EXECUTE = 1`) goes from DEFER to the instruction-completion decision ("Interrupt Request?"); other instructions go to Execute. | `04-fetch-defer.md` §4.5; direct-control §3.2.4 | open |
-
-Unchanged and verified: Execute → "Interrupt Request?" (`-11`) and the INTERRUPT, DMA, and FETCH edges after it.
-
-### `diagrams/control/control-store-mapping/source/control-store-mapping.xml`
-
-| # | Current content (source) | Required change | Doc | Status |
-|---|---|---|---|---|
-| B3 | "Wired 0 [5 Bits]" (`07B4lpnJHN1g52silYbh-50`) → "MUX [5 Bits]" (`-51`), the input selected outside EXECUTE. | Replace the wired 0 with `00·IR_CLASS` (IR_CLASS, 3 bits, from predecode; the two high bits 0). | CSO §5.3, §5.4.2 | open |
-
-Unchanged and verified: "IR_INDIRECT [1 Bit]" → "MUX [1 Bit]" (`-61`); "Wired 01 [2 Bits]" → "MUX [2 Bits]" (`-55`).
-
-### `diagrams/control/control-store-organization/source/control-store-organization.xml`
-
-| # | Current content (source) | Required change | Doc | Status |
-|---|---|---|---|---|
-| B4 | Sequencer Slice ROM inputs: TS, IR_SEQ, HLT_REQ, FP_STOP, /DMA_REQ, SEQ_OVL, MS_EFF (`Smnm8CKmp2vPJFrs1iI9-30` to `-36`); no A2 input. | Add `IR_NO_EXECUTE [1 Bit]` → Sequencer Slice ROM (address A2). | CSO §5.6 | open |
-| B5 | Node `Smnm8CKmp2vPJFrs1iI9-14` is labelled "Datapath SliceROM [45 Bits]". The v1 packing was 44 bits, so the label already differed from the docs before slice B. | Change the label to 46 bits (the packer's slice B result, CSO §4.2, §7.2). It changes again in slice C. | CSO §4.2 | open |
-
-### `diagrams/microarchitecture/cpu-architecture/source/CPU_Architecture.xml`
-
-| # | Current content (source) | Required change | Doc | Status |
-|---|---|---|---|---|
-| B6 | PC's load inputs: PC ↔ IDB (`2Ph0Qde3JH9-hkXoXRvS-125`, arrowheads at both ends) and Control ↔ PC (`…-181`). No path from the address formation to PC. | Add the formed address (IR[6:0], with the page from MA, as in A2) as a PC input (`PC_SRC` = 2, direct JMP). JMP I's `PC ← MB` uses the existing MB ↔ IDB and PC ↔ IDB edges. | `02-micro-operations.md` `IR_ADDR_TO_PC`; MCS `PC_SRC` | open |
-| B7 | Control's architectural outputs include "DMA Grant" (`Control -> DMA Grant`, `…-168`), Read, Write, and IOA; no instruction-end output. | Add an "Instruction End (INSTR_END)" output to the DMA arbiter, drawn like DMA Grant. It is a gate decode of MS_EFF, TS, `IR_NO_EXECUTE`, and `IR_INDIRECT`, not a control-store output. | ACS §4.10 | open |
-
-### Checked, no slice B change
-
-| Diagram | What the source contains | Why unchanged |
+| # | Change | Doc |
 |---|---|---|
-| `diagrams/io/dma_timing/source/dma_timing.json` | WaveDrom: MS goes from FETCH to DMA at the first TP4 (`data: [' FETCH', 'DMA']`) | In v1, DMA could follow only EXECUTE; in v2 a DMA state can follow FETCH after a direct JMP, so the label is now possible. No change required; whether it should name a specific state is your call |
-| `diagrams/timing/cpu-timing/source/cpu-timing-overview.json` | TS and TP waveform only | No boundary events |
+| 8.1 | EXECUTE lengths **6/8/7/7**, with **TP3 and TP4 two steps** (TP1 and TP2 one step). Move every request signal with its TS: `IO_CLEAR_AC_REQ` in TS2, `IO_READ_REQ`/`IO_WRITE_REQ` in TS3, `IO_SKIP_REQ` in TS4. | Timing Architecture §5.1 |
+| 8.2 | `/DB_READ`, `/DB_WRITE`, and DB valid: from **two steps (100 ns) into TS4** through the end of TP4. They now start at TS4's first step. | [Timing Terminology §5.8](../docs/09-timing/01-terminology.md#58-db-transfer-window-db_valid); [ACS §3.2](../docs/04-control/20-control-output-definitions/02-architectural-control-signals.md#32-timing-model) |
+| 8.3 | **Also on main:** in the I/O Write group, `IOT_ACTIVE` (`01…1`) stays high at the end, where the read group's falls. Make it fall with the end of EXECUTE, as in the read group. | I/O Timing §3.1 ("valid throughout the external-IOT EXECUTE major state") |
 
 ---
 
-## Slice D (phase 5): state lengths (timing ROM), SRAM-shadowed control store
+## 9. `io/dma_timing/source/dma_timing.json`
 
-### `diagrams/timing/cpu-timing/source/cpu-timing-overview.json`
+Linked from [DMA Interface §6.1](../docs/07-io/05-dma-interface.md#61-dma-timing-overview).
 
-| # | Current content (source) | Required change | Doc | Status |
-|---|---|---|---|---|
-| D1 | WaveDrom, `CLK - 20MHz`, 30 steps: TS1 `01.....0…` (6 steps), TS2 9 steps, TS3 7 steps, TS4 6 steps, a TP pulse (`Hl`) at the end of each; one waveform, the slow lengths. | Show both lengths of Timing Architecture §5.1: the slow state (6/9/7/6, as drawn) and the fast state (5/8/6/5) for FETCH and non-autoindex DEFER, for example as a second group or a second diagram. The doc §5.1 links this diagram as "See:". | `09-timing/02-timing-architecture.md` §5.1 | open |
-
-### `diagrams/control/control-store-organization/source/control-store-organization.xml`
-
-| # | Current content (source) | Required change | Doc | Status |
-|---|---|---|---|---|
-| D2 | Nodes "Sequencer Slice ROM [7 Bits]" (`Smnm8CKmp2vPJFrs1iI9-13`) and "Datapath SliceROM [45 Bits]" (`-14`); no device technology shown. | Optional: if the diagram should show the devices, the slices are EEPROMs copied into shadow SRAMs at power-on (CSO §8.1). No change is required for the address formation it draws. | CSO §2, §8, §8.1 | open (optional) |
-
-No diagram exists for the timing ROM, the TSEQ counter, or the shadow-copy logic; the docs describe them in text (Timing Terminology §3.5, CSO §8.1). Whether to draw them is the user's call.
-
----
-
-## Slice C1 (phase 6): OPR Group 1 completes in FETCH through the OPR pass unit
-
-### `diagrams/microarchitecture/cpu-architecture/source/CPU_Architecture.xml`
-
-| # | Current content (source) | Required change | Doc | Status |
-|---|---|---|---|---|
-| C1-1 | AC's drawn connections: AC → ALU A (`cX9REWVKWh3u19Wi5yly-14`, ending at (530, 990) on "ALU A B"), AC → ALU B (`2Ph0Qde3JH9-hkXoXRvS-142`, (670, 990)), AC – IDB (`…-129`), AC → DB (`cX9REWVKWh3u19Wi5yly-15`), and DF, IB, IF, MQ → AC (`-19`, `-20`, `-21`, `-27`). L: L → ALU (`2Ph0Qde3JH9-hkXoXRvS-136`, `-143`), L – ALU top (`-133`). No OPR pass unit. | Add the OPR pass unit: inputs AC and L, stage controls from IR (the Group 1 bits, qualified by `IR_CLASS = 011`), outputs to AC (`AC_SRC` = 7) and to L (`L_OP` = 1). The ALU paths stay (MRIs, ISZ, PC increment). | `07-opr/01-group1-execution.md` §4; `02-micro-operations.md` `OPR_PASS`; MCS `AC_SRC`, `L_OP` | open |
-
-### `diagrams/control/ms_next-flowchart/source/ms_next-flowchart.xml`
-
-| # | Current content (source) | Required change | Doc | Status |
-|---|---|---|---|---|
-| C1-2 | As B1: FETCH → "Indirect Addressing?" → DEFER or Execute. | With B1's change, the FETCH completion path covers Group 1 OPR as well as direct JMP (`IR_NO_EXECUTE = 1`, not indirect). If B1 is drawn with a "JMP?" decision, it becomes "JMP or Group 1 OPR?" (or "IR_NO_EXECUTE?"). | `04-fetch-defer.md` §3.4 | open |
-
----
-
-## Slice C2 (phase 7): OPR Group 2 completes in FETCH (SKIP register, HLT at FETCH TP3, RUN multiplexer)
-
-### `diagrams/control/control-store-overlay/source/control-store-overlay.xml`
-
-The five 4:1 multiplexers, read from the edges: `m7rejeYPD5JNTGzo8jMm-1` → DP_OVL[4] (inputs `SKIP_TAKEN`, `IO_SKIP_REQ`, `CIFP`, `IO_WRITE_REQ`); `-40` → DP_OVL[3] (`ISZ_SKIP_REQUIRED`, `IO_CLEAR_AC_REQ`, `AUTO_INDEX_REQUIRED`, `IO_READ_REQ`); `-57` → DP_OVL[2] (`IF_CHANGE_PENDING`, `IOT_WRITE_PENDING`, `FP_CMD[2]`, `IO_CLEAR_AC_REQ`); `-74` → DP_OVL[1] (`IE`, `IOT_READ_PENDING`, `FP_CMD[1]`, `IOT_WRITE_PENDING`); `-91` → DP_OVL[0] (`CIFP`, `/INT_REQ`, `FP_CMD[0]`, `IOT_READ_PENDING`). Input edges `rYJyN2ecPjk_JY8LC9AR-1` to `-20`.
-
-| # | Current content (source) | Required change | Doc | Status |
-|---|---|---|---|---|
-| C2-1 | `FP_CMD[2]` (`-59`), `FP_CMD[1]` (`-76`), `FP_CMD[0]` (`-93`) drive the group 1 inputs of the DP_OVL[2], [1], [0] multiplexers directly (`rYJyN2ecPjk_JY8LC9AR-11`, `-15`, `-19`). | Put a 3-bit 2:1 multiplexer selected by `RUN` in front of those three inputs: `RUN = 0` → `FP_CMD[2:0]`; `RUN = 1` → `SKIP`, 0, 0 (SKIP on DP_OVL[2]). | CSO §6.2, §6.3 | open |
-| C2-2 | Node `-9` "SKIP_TAKEN" → DP_OVL[4] multiplexer (`rYJyN2ecPjk_JY8LC9AR-1`), group 3's input. | Group 3 no longer uses DP_OVL[4] (the skip decision is now the `SKIP` register, in group 1): the input becomes wired 0. | CSO §6.2 | open |
-| C2-3 | Node `-44` labelled "ISZ_SKIP_REQUIRED". | Rename to `ISZ_SKIP_REQ`. | Derived Flags; CSO §6.2 | open |
-
-### `diagrams/control/control-store-organization/source/control-store-organization.xml`
-
-| # | Current content (source) | Required change | Doc | Status |
-|---|---|---|---|---|
-| C2-4 | Sequencer Slice ROM inputs: TS, IR_SEQ, HLT_REQ, FP_STOP, /DMA_REQ, SEQ_OVL, MS_EFF (`Smnm8CKmp2vPJFrs1iI9-30` to `-36`); no A1 input (B4 adds A2). | Add `IR_OPR_HLT [1 Bit]` → Sequencer Slice ROM (address A1). | CSO §5.6 | open |
-| C2-5 | Node `-14` "Datapath SliceROM [45 Bits]" (45 matches slice C1's packing). | 46 bits (slice C2 adds `SKIP_LOAD`). Replaces B5. | CSO §4.2, §7.2 | open |
-
-### `diagrams/microarchitecture/cpu-architecture/source/CPU_Architecture.xml`
-
-| # | Current content (source) | Required change | Doc | Status |
-|---|---|---|---|---|
-| C2-6 | FP_SR → ALU B: edge `2Ph0Qde3JH9-hkXoXRvS-145`, free end at (670, 990) on "ALU A B" (v1's OSR path, `ALU_B_SRC = FP_SR`). No FP_SR input to an OPR pass unit (C1-1 adds the unit). | Add FP_SR → the OPR pass unit (stage B, OSR). The FP_SR → ALU B edge is no longer used in v2; remove it when the encoding goes (slice C3) or now, your call. | `07-opr/02-group2-execution.md` §4; `01-group1-execution.md` §4 | open |
-| C2-7 | Halt Request (HLT_REQ) node `2GY4jtORsDWkwOyoSZJb-3`, written by Control (`2Ph0Qde3JH9-hkXoXRvS-174`). No SKIP register. | Add the 1-bit `SKIP` register: loaded from the Group 2 skip logic (`OPR_SKIP_REQ`, from AC, L, IR) under `SKIP_LOAD`, read by Control (state overlay). Drawn like HLT_REQ. | `01-registers.md` SKIP; MCS `SKIP_LOAD` | open |
-
-### `diagrams/control/ms_next-flowchart/source/ms_next-flowchart.xml`
-
-| # | Current content (source) | Required change | Doc | Status |
-|---|---|---|---|---|
-| C2-8 | As B1 and C1-2: FETCH (`-1`) → "Indirect Addressing?" (`-3`) → DEFER or Execute. | The FETCH completion path covers Group 2 OPR too: "JMP, Group 1 or Group 2 OPR?" (or "IR_NO_EXECUTE?"). | `04-fetch-defer.md` §3.4 | open |
-
-### Checked, no slice C2 change
-
-| Diagram | What the source contains | Why unchanged |
+| # | Change | Doc |
 |---|---|---|
-| `control-store-mapping.xml` | IR → Mapping ROM → MAPR → MUX[5], MUX[2] (Wired 01), MUX[1] (IR_INDIRECT / MAPR[7]) | The diagram does not name the sequencer decode's per-TS contents (CSO §5.3 table), so dropping EXECUTE TS3's `IR_OPR_HLT` changes nothing drawn |
-| `control-store-address-formation.xml` | MS/RUN → MS_EFF; FP command priority encoder; SEQ_OVL MUX[3] by RUN | The new RUN multiplexer is on the datapath overlay (C2-1), not here |
+| 9.1 | The FETCH TS4 before the DMA state: **5 steps** (mode 0, fast), one-step TP4. The DMA state: **6/8/7/7**, with **TP2 two steps** and the other TPs one step. | Timing Architecture §5.1 |
+| 9.2 | DMA Write group: add **`/WR_PULSE`** over the first step of TP2. | Timing Terminology §5.7; [DMA Interface §5.2](../docs/07-io/05-dma-interface.md#52-dma-write) |
+
+Checked, no change: the controller's MFB, AB, MDB, `/RD`, and `/WR` are valid in TS2 only ([DMA Interface §3](../docs/07-io/05-dma-interface.md#3-dma-owned-interfaces)). The MS label FETCH → DMA is a valid sequence in v2.
 
 ---
 
-## Slice C3 (phase 8): OPR Group 3 completes in FETCH (MQ output of the pass unit)
+## 10. `memory/memory_timing/source/memory_timing.png`
 
-### `diagrams/microarchitecture/cpu-architecture/source/CPU_Architecture.xml`
+Linked from [Memory Interface §4](../docs/06-memory/02-memory-interface.md#4-memory-transaction-timing).
 
-| # | Current content (source) | Required change | Doc | Status |
-|---|---|---|---|---|
-| C3-1 | MQ (`cX9REWVKWh3u19Wi5yly-26`) has three edges: MQ → AC (`cX9REWVKWh3u19Wi5yly-27`, v1's `AC_SRC` = 5 for SWP), MQ → ALU B (`2Ph0Qde3JH9-hkXoXRvS-141`, free end at (670, 990) on "ALU A B", v1's MQA through the ALU), and MQ – IDB (`2Ph0Qde3JH9-hkXoXRvS-124`, free end at (210, 1070), at the same x as the AC – IDB edge `-129` and the MB – IDB edge `cX9REWVKWh3u19Wi5yly-25`). No AC → MQ edge and no pass-unit connection. | Add MQ → the OPR pass unit (stage B, MQA) and the pass unit's MQ output → MQ (`MQ_SRC` = 1; MQL, SWP). MQ → AC and MQ → ALU B are no longer used in v2; remove them with the encodings in phase 9, or now, your call. MQ – IDB stays (`MQ_CLEAR`, `IDB_SRC` = MQ). | `07-opr/03-group3-execution.md` §4; MCS `MQ_SRC`; `01-registers.md` MQ | open |
+| # | Change | Doc |
+|---|---|---|
+| 10.1 | The source is WaveDrom text with a `.png` name. **Rename it `memory_timing.json`.** The export stays `.png`. | — |
+| 10.2 | Read group: a fast state (5/8/6/5), read in TS2 with a one-step TP2, as in FETCH. | Timing Architecture §5.1 |
+| 10.3 | Write group: a CPU write is in a slow state with a **two-step TP**, and memory stores during **`/WR_PULSE`**, the TP's first step. Add a `/WR_PULSE` row. TS2 has a two-step TP only in DMA, so draw the CPU write in EXECUTE TS3 (DCA: TS 7 steps, TP3 two steps). I'll then change Memory Interface §4's "TS2 and TP2 as a representative transaction phase" to match what you draw. | [Memory Timing §4](../docs/06-memory/04-memory-timing.md#4-active-write-window); Timing Terminology §5.7 |
 
-### `diagrams/control/ms_next-flowchart/source/ms_next-flowchart.xml`
+---
 
-| # | Current content (source) | Required change | Doc | Status |
-|---|---|---|---|---|
-| C3-2 | As C1-2 and C2-8: FETCH (`jyFapoluXV-c96oE9wt7-1`) → "Indirect Addressing?" (`-3`) → DEFER or Execute. | The FETCH completion path covers every OPR: "JMP or OPR?" (or "IR_NO_EXECUTE?"). Supersedes C1-2 and C2-8. | `04-fetch-defer.md` §3.4 | open |
+## 11. `io/io_wait_timing/source/io_wait_timing.json`
 
-### Checked, no slice C3 change
+| # | Change | Doc |
+|---|---|---|
+| 11.1 | **Obsolete.** `/IO_WAIT` is removed and no document links this diagram. Delete the source and its export, or keep them as history. | [I/O Timing §5](../docs/07-io/03-io-timing.md#5-fixed-iot-timing) |
 
-| Diagram | Why unchanged |
+---
+
+## 12. `io/io_subsystem/source/io_subsystem.xml`
+
+Linked from [I/O Architecture §4](../docs/07-io/01-io-architecture.md#4-io-subsystem-context).
+
+| # | Element (id) | Change | Doc |
+|---|---|---|---|
+| 12.1 | "I/O Response & Interrupt" signals (`ld4gAUsl70I4UcyXSL3b-61`) | Remove **"IO_WAIT, "**. | I/O Timing §5 |
+| 12.2 | "DMA Authorization" signals (`-70`, "DMA_GRANT"; CPU → DMA Arbiter edge `-10`) | Add **INSTR_END**. The arbiter also takes MS[2:0], TS, and TP (also on main), which could go in the same cell. | [DMA Arbitration §3](../docs/07-io/06-dma-arbitration.md#3-major-state-visibility); ACS §4.10 |
+| 12.3 | "CPU Memory Access" signals (`-67`) | Add **WR_PULSE**. The CPU drives it for DMA writes too. | [Memory Interface](../docs/06-memory/02-memory-interface.md); Timing Terminology §5.7 |
+| 12.4 | "I/O Command & Timing" signals (`-35`, "IOT_ACTIVE, IOA[5:0], IOP[2:0], DB_WRITE, TS, TP") | **Add DB_READ (also on main).** | ACS §3.2 |
+
+---
+
+## 13. `isa/addressing-model/source/addressing-model.xml`
+
+Linked from [EA Generation §3](../docs/02-isa/06-ea-generation.md#3-overview).
+
+| # | Element (id) | Change | Doc |
+|---|---|---|---|
+| 13.1 | "EA_addr = PC[11:7] \|\| Address Offset" (`EGlYIu-c7P4GKegh5WQT-4`) | Relabel **"EA_addr = IA[11:7] \|\| Address Offset"**. IA is the instruction's own address (the PC before it is incremented), so an instruction in the last word of a page addresses its own page. | EA Generation §5; [Addressing Model §4.2](../docs/02-isa/05-addressing-model.md#42-current-page) (new; docs review A1.5) |
+
+---
+
+## 14. No Change
+
+| Diagram | Checked |
 |---|---|
-| `control-store-overlay.xml`, `control-store-organization.xml`, `control-store-mapping.xml`, `control-store-address-formation.xml` | The packing is unchanged from slice C2 (46 bits, the same overlay groups and pins); the class decode's new code is not drawn |
+| `architecture/class-a-buses/source/class-a-buses.xml` | CPU, Memory, I/O Device, DMA Device on AB, MFB, MDB, DB, matching [Class A Buses](../docs/05-buses-and-signals/01-class-a-buses.md) |
+| `architecture/High-Level-Architecture/source/High-Level-Architecture.xml` | Plane-level text only. Optionally, the timing plane could list the timing ROM, and the control plane the control store. |
 
----
-
-## Phase 9: ALU cleanup (decision 13, 2026-11-21)
-
-### `diagrams/microarchitecture/cpu-architecture/source/CPU_Architecture.xml`
-
-| # | Current content (source) | Required change | Doc | Status |
-|---|---|---|---|---|
-| P9-1 | FP_SR → ALU B (`2Ph0Qde3JH9-hkXoXRvS-145`), MQ → ALU B (`2Ph0Qde3JH9-hkXoXRvS-141`), MQ → AC (`cX9REWVKWh3u19Wi5yly-27`). | Remove all three edges. Settles the "your call" removals in C2-6 and C3-1. | MCS `ALU_B_SRC`, `AC_SRC` | open |
-
-### `diagrams/control/control-store-organization/source/control-store-organization.xml`
-
-| # | Current content (source) | Required change | Doc | Status |
-|---|---|---|---|---|
-| P9-2 | Node `Smnm8CKmp2vPJFrs1iI9-14` "Datapath SliceROM [45 Bits]". | 44 bits. Supersedes B5 and C2-5. | CSO §4.2, §7.2 | open |
-
----
-
-## Two ranks, wide write TP, 6/8/7/7 (applied 2026-11-22)
-
-Read from the WaveDrom sources. All of them already hold values through the end of TP. All of them draw the old slow lengths (6/9/7/6) and one-step TPs.
-
-| Diagram source | Change |
-|---|---|
-| `cpu-timing-overview.json` | Slow lengths 6/8/7/7; show a two-step TP (EXECUTE TS3 and TS4) |
-| `io_timing.json`, `io_wait_timing.json` | EXECUTE lengths 6/8/7/7; TP3 and TP4 two steps; `/DB_READ`, `/DB_WRITE` and DB from 100 ns into TS4 |
-| `dma_timing.json` | DMA lengths 6/8/7/7; TP2 two steps; add `/WR_PULSE` over its first step |
-| `memory_timing.png` in `memory_timing/source` (WaveDrom text with a `.png` name) | Show a write TS with a two-step TP and `/WR_PULSE` over its first step; give the source a `.json` name |
-
----
-
-## `/IO_WAIT` removed (review C2, applied 2026-11-22)
-
-Read from the sources.
-
-| Diagram source | Current content | Change |
-|---|---|---|
-| `diagrams/io/io_wait_timing/source/io_wait_timing.json` | the external-IOT timing with `/IO_WAIT` holding TS3 (title "External IOT Timing with WAIT") | Obsolete: no document references it now. Delete it, with its export, or keep it as history |
-| `diagrams/io/io_subsystem/source/io_subsystem.xml` | cell `ld4gAUsl70I4UcyXSL3b-61`, label "IO_READ_REQ, IO_WRITE_REQ, IO_SKIP_REQ, IO_CLEAR_AC_REQ, IO_WAIT, interrupt contribution" | Remove "IO_WAIT, " |
-
-Checked with no change for C2, C11, and D2: `CPU_Architecture.xml` (its FP_SR box, "Front Panel Switch Register (FP_SR) 12 bits", shows no capture detail; no AC input multiplexer is drawn) and every other source (no EXAMINE, DEPOSIT, CONTINUE, or burst labels).
-
----
-
-## TS code (decided 2026-11-22)
-
-`TS_CODE` comes straight from the TS code register; the two OR gates are gone from CSO §1.1, §5.1 and §8.
-
-| Diagram source | Current content | Change |
-|---|---|---|
-| `control-store-mapping.xml` | `07B4lpnJHN1g52silYbh-2`, "TS [2 Bits]" into the mapping ROM | None: already a 2-bit code |
-| `control-store-organization.xml` | `Smnm8CKmp2vPJFrs1iI9-9`, "TS [2 Bits]" into the slices | None: already a 2-bit code |
-| `control-store-address-formation.xml` | No TS element and no OR gate | None |
-
----
-
-## Bus sources, DB strobes, SKIP_LOAD (2026-11-25)
-
-`IDB_SRC` no longer has MQ or IR (it is AC, PC, MB, FP_SR, EA_ADDR, ALU); `MDB_SRC` has no DMA value; the `/DB_READ`, `/DB_WRITE`, and `SKIP_LOAD` control-word fields are gone, leaving the datapath slice 40 bits in five devices.
-
-### `diagrams/microarchitecture/cpu-architecture/source/CPU_Architecture.xml`
-
-| # | Current content (source) | Required change | Doc | Status |
-|---|---|---|---|---|
-| E1 | IR – IDB edge `2Ph0Qde3JH9-hkXoXRvS-128`: IR (`2Ph0Qde3JH9-hkXoXRvS-49`) to the IDB's right leg (free end at (990, 1210)), arrowheads at both ends, IDB colour `#9673a6`. | Remove the edge: IR neither drives the IDB nor loads from it. Supersedes A1's "IR → IDB only"; A1's MDB → IR stands. | MCS `IDB_SRC`; `01-registers.md` IR | open |
-| E2 | MQ – IDB edge `2Ph0Qde3JH9-hkXoXRvS-124`: from MQ (`cX9REWVKWh3u19Wi5yly-26`, source point (160, 1070)) to (210, 1070) on the IDB, arrowheads at both ends. | Make it IDB → MQ only (keep the arrowhead at MQ, remove the one at the IDB): `MQ_CLEAR` loads MQ from the IDB (`MQ_SRC` = IDB), and MQ no longer drives it. Supersedes C3-1's "MQ – IDB stays". | MCS `IDB_SRC`, `MQ_SRC` | open |
-
-### `diagrams/control/control-store-organization/source/control-store-organization.xml`
-
-| # | Current content (source) | Required change | Doc | Status |
-|---|---|---|---|---|
-| E3 | "Datapath Slice ROM [45 Bits]" (`Smnm8CKmp2vPJFrs1iI9-14`). | **40** bits (five devices). Supersedes P9-2's 44. | CSO §4.2, §7.2 | open |
-
----
-
-## Final list (phase 9, 2026-11-21)
-
-No diagram source has changed on this branch (`git diff main -- diagrams` is empty), so every entry above is still open. Superseded entries are folded into the entry that replaces them. Per diagram:
-
-| Diagram | Entries | Change |
-|---|---|---|
-| `CPU_Architecture.xml` | A1, A2, B6, B7, C1-1, C2-6, C2-7, C3-1, P9-1, E1, E2 | MDB → IR (A1); remove IR – IDB, and MQ – IDB becomes IDB → MQ only (E1, E2); MA → EA_ADDR for the page (A2); formed address → PC (B6); INSTR_END output to the DMA arbiter (B7); the OPR pass unit with AC, L, FP_SR, and MQ inputs and AC, L, and MQ outputs (C1-1, C2-6, C3-1); the SKIP register (C2-7). Remove FP_SR → ALU B, MQ → ALU B, and MQ → AC (P9-1). |
-| `ms_next-flowchart.xml` | B1 + C3-2 (C1-2, C2-8 superseded), B2 | FETCH: a direct JMP or any OPR (`IR_NO_EXECUTE = 1`, not indirect) goes to the instruction-completion decision; DEFER: a JMP I does too. |
-| `control-store-mapping.xml` | B3 | The wired 0 into the 5-bit MUX becomes `00·IR_CLASS`. |
-| `control-store-organization.xml` | B4, C2-4, E3 (B5, C2-5, P9-2 superseded), D2 (optional) | Sequencer ROM inputs `IR_NO_EXECUTE` (A2) and `IR_OPR_HLT` (A1); the datapath slice label "[45 Bits]" becomes **40**, in five devices (E3); optionally, EEPROMs shadowed into SRAM. |
-| `control-store-overlay.xml` | C2-1, C2-2, C2-3 | The `RUN` multiplexer on group 1 bits 2 to 0 (`SKIP`, 0, 0 when running); group 3's DP_OVL[4] input `SKIP_TAKEN` becomes wired 0; `ISZ_SKIP_REQUIRED` → `ISZ_SKIP_REQ`. |
-| `cpu-timing-overview.json` | D1 | Add the fast state (5/8/6/5) beside the slow state (6/9/7/6). |
-| Not drawn | D (note) | No diagram exists for the timing ROM, the TSEQ counter, or the shadow-copy logic; drawing them is your call. |
-
-Checked across all slices with no change: `control-store-address-formation.xml`, `addressing-model.xml`, `class-a-buses.xml`, `High-Level-Architecture.xml`, `io_subsystem.xml`, `io/*.json` (`dma_timing.json`'s FETCH → DMA label is now a possible sequence; optional). The spec §9 forecast is fully covered by the entries above.
+Not drawn anywhere: the timing ROM, TSEQ, the two register ranks, the shadow copy, and the inside of the OPR pass unit. The docs describe them in text and ASCII ([Timing Terminology §3.5](../docs/09-timing/01-terminology.md#35-timing-rom), [CSO §8.1](../docs/04-control/08-control-store-organization.md#81-shadow-copy), [OPR Pass Unit §2](../docs/03-microarchitecture/07-opr/00-pass-unit.md#2-structure)). Whether to draw them is the user's call.

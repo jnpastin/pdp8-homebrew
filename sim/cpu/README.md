@@ -6,15 +6,18 @@ Simulates the CPU from its packed control-store images, one timing state (TS) at
 
 The simulator reads the images; it never regenerates control words from the symbolic artifacts. Every behavior it models cites the document that defines it. Where the documents are silent or inconsistent, it raises `SpecGap` instead of choosing a behavior.
 
-Status: milestones M0 (images, address formation, power-on, console transactions), M1 (instruction execution, checked end to end by `sim/system/tests/test_instructions.py`), and M2 (lock-step comparison with the [reference model](../reference/README.md)) are complete. In M3, MAINDEC-8E-D0AB and D0BB pass in lock-step; the remaining phase-1 diagnostics follow.
+Status: the CPU runs every MAINDEC-8E diagnostic in [test_programs](../test_programs/README.md) except D2CA in lock-step with the [reference model](../reference/README.md), with DMA major states and the KL8E attached. The PC8E (D2CA) and RK8E are not yet modelled.
 
 ## 2. Inputs
 
 | Input | Source |
 |---|---|
-| Logical images `mapping.hex`, `datapath-0.hex` … `datapath-5.hex`, `sequencer.hex` | `build/simulation_outputs/rom-generation/control-store-packer/images/` (run the ROM-generation pipeline to create them) |
-| Packing description: datapath and sequencer bit layouts, overlay-group pin assignments | `build/simulation_outputs/rom-generation/control-store-packer/control-store-packing.json` |
-| Field encodings, checked at startup | `rom/microcode/v1/control-word-schema.json` |
+| Logical images `mapping.hex`, `datapath-0.hex` …, `sequencer.hex` (as many datapath images as the packing reports: five for v2, six for v1) | `<build>/control-store-packer/images/` (run the ROM-generation pipeline to create them) |
+| Packing description: datapath and sequencer bit layouts, overlay-group pin assignments, device count | `<build>/control-store-packer/control-store-packing.json` |
+| Timing ROM image: the duration of each timing state ([Timing Terminology §3.5](../../docs/09-timing/01-terminology.md#35-timing-rom)); v1 has none and uses the table in `design.py` | `<build>/timing-rom-generator/images/timing.hex` |
+| Field encodings, checked at startup | `rom/microcode/<design>/control-word-schema.json` |
+
+`<build>` is the selected design's build directory: `build/simulation_outputs/rom-generation-v2` for v2, `build/simulation_outputs/rom-generation` for v1 (`design.py`; `PDP8_DESIGN`).
 
 The packing description supplies only the physical wiring the packer chose. A field narrower than its shared bits occupies their low-order end ([Control Store Organization §7.2](../../docs/04-control/08-control-store-organization.md#72-physical-bit-sharing)). Address formation, mapping-register fields, and command codes are coded from the documentation and only cross-checked against the packing description.
 
@@ -63,7 +66,7 @@ Each error names the major state, TS, IR, PC, both slice addresses, and the rule
 
 ### 4.4 Not Modelled
 
-TSTEP-level timing (`T_CS`, `CW_VALID`, `DB_VALID`, `/WR_PULSE`, the two register ranks). DMA major states are modelled: with a DMA arbiter attached (`Cpu(dma=...)`, [sim/io](../io/README.md) §4), its aggregate `/DMA_REQ` addresses the sequencer, and during DMA the datapath word must release the memory interface (a `SpecViolation` otherwise) while the selected controller's transfer commits at TP2. Single Step halts inside a DMA burst are not yet tested. I/O controllers are separate models attached through the CPU's external-IOT interface ([sim/io](../io/README.md)).
+TSTEP-level timing (`T_CS`, `CW_VALID`, `DB_VALID`, `/WR_PULSE`, the two register ranks). DMA major states are modelled: with a DMA arbiter attached (`Cpu(dma=...)`, [sim/io](../io/README.md) §4), its aggregate `/DMA_REQ` addresses the sequencer, and during DMA the datapath word must release the memory interface (a `SpecViolation` otherwise) while the selected controller's transfer commits at TP2. Single Step halts inside a DMA burst are tested in `sim/system/tests/test_dma_halt.py` ([DMA Execution §4](../../docs/03-microarchitecture/10-dma-execution.md#4-halting-between-dma-cycles)). I/O controllers are separate models attached through the CPU's external-IOT interface ([sim/io](../io/README.md)).
 
 ## 5. Known Specification Gaps
 

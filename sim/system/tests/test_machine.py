@@ -17,7 +17,7 @@ class MachineTests(unittest.TestCase):
         m.deposit_block(0o0200, [0o1111, 0o2222, 0o3333], instruction_field=1)
         m.load_address(0o0200, instruction_field=1)
         self.assertEqual([m.examine() for _ in range(3)], [0o1111, 0o2222, 0o3333])
-        self.assertEqual(m.memory.write_log, [(1, 0o200, 0o1111), (1, 0o201, 0o2222), (1, 0o202, 0o3333)])
+        self.assertEqual(m.memory.write_count, 3)                    # one write per DEPOSIT
 
     def test_run_until_halt(self):
         m = Machine(keep_trace=True)

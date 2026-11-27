@@ -7,7 +7,7 @@ Models main memory at the memory-interface boundary: 32K 12-bit words in eight f
 ## 2. Behavior
 
 - A read returns the stored word and changes nothing.
-- A write changes exactly one word and is recorded in `write_log`, for comparison against a reference model.
+- A write changes exactly one word and is counted in `write_count`. No history is kept: lock-step compares each write's field, address, and value from the CPU's per-TS records.
 - The documents do not define the contents at power-on, so every word starts UNDEFINED (`None`) until written.
 - `preload` places words directly. It is for unit tests only: programs are loaded through console DEPOSIT so the console microcode is exercised.
 

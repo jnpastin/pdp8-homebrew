@@ -67,7 +67,7 @@ class LoadingThroughTheConsole(unittest.TestCase):
         self.assertEqual(load_tape(m, tape), len(tape.words))
         for f, a, v in tape.words:
             self.assertEqual(m.memory.read(f, a), v)
-        self.assertEqual(len(m.memory.write_log), len(tape.words))   # one DEPOSIT per word
+        self.assertEqual(m.memory.write_count, len(tape.words))      # one DEPOSIT per word
 
 
 if __name__ == "__main__":

@@ -15,7 +15,8 @@ WORDS = 4096
 class Memory:
     def __init__(self):
         self.words = [[None] * WORDS for _ in range(FIELDS)]
-        self.write_log: list[tuple] = []  # (field, address, value) in commit order
+        self.write_count = 0              # writes so far; lock-step compares each write from the
+                                          # CPU's per-TS records, so none are kept here
 
     @staticmethod
     def _check(field, address):
@@ -31,7 +32,7 @@ class Memory:
         if value is not None:
             value &= 0o7777
         self.words[field][address] = value
-        self.write_log.append((field, address, value))
+        self.write_count += 1
 
     def preload(self, field: int, address: int, values):
         """Place words directly, bypassing the CPU. For unit tests only: programs are loaded

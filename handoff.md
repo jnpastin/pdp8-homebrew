@@ -132,7 +132,7 @@ The equivalence analyzer's report (`build/simulation_outputs/rom-generation-v2/c
 
 ### 3.5 Diagrams
 
-The user updates the diagrams; **you never edit them.** As each one changes, read its source file, never a rendering, and validate it in full against the docs. Section 6 gives notes on what each probably needs. They are context only, written before some of the latest changes: verify every point against the current docs. Keep `option2/diagrams.md` current until it is removed.
+The user updates the diagrams; **you never edit them.** As each one changes, read its source file, never a rendering, and validate it in full against the docs. `option2/diagrams.md` lists, per diagram, every change the docs require, with element ids and the doc that requires each (section 6). Keep it current until it is removed.
 
 ### 3.6 Before the merge
 
@@ -201,28 +201,9 @@ If the repo has an unpromoted change, promote it in scratch *before* applying yo
 
 ---
 
-## 6. Diagram Notes (context only: validate against the docs)
+## 6. Diagram Changes
 
-Element ids and full detail are in `option2/diagrams.md`. Its "Final list" predates the timing work, and still shows 6/9/7/6; the notes below supersede it.
-
-| Diagram source | Probably needs |
-|---|---|
-| `microarchitecture/cpu-architecture/CPU_Architecture.xml` | MDB → IR, with IR no longer loaded from the IDB. MA → EA_ADDR as the page source. The formed address → PC. An `INSTR_END` output to the DMA arbiter. The OPR pass unit (inputs AC, L, MQ, FP_SR; outputs AC, L, MQ). The `SKIP` register. Remove FP_SR → ALU B, MQ → ALU B, and MQ → AC. The AC zero input (`AC_SRC` = 5) and the panel input register, only if the diagram shows that level. |
-| `control/ms_next-flowchart.xml` | FETCH goes to the instruction-completion decision for a direct JMP or any OPR; DEFER does for a JMP I. If console paths are drawn: START, EXAMINE, and DEPOSIT load FETCH; power-on ends with CLEAR. |
-| `control/control-store-mapping.xml` | The wired 0 into the 5-bit variant MUX becomes `00·IR_CLASS`. |
-| `control/control-store-organization.xml` | Sequencer slice inputs `IR_NO_EXECUTE` (A2) and `IR_OPR_HLT` (A1). The datapath slice is 43 bits. Optionally, the EEPROM-to-SRAM shadow with `LOADING`-driven output enables. |
-| `control/control-store-overlay.xml` | The RUN multiplexer on the group 1 low bits. Group 3's DP_OVL[4] (old `SKIP_TAKEN`) and DP_OVL[3] become wired 0; `ISZ_SKIP_REQUIRED` becomes `ISZ_SKIP_REQ` on DP_OVL[2]; `IF_CHANGE_PENDING` is removed (docs review C4.4). `/INT_REQ` qualified by the SRQ decode. |
-| `control/control-store-address-formation.xml` | `MS_EFF_IS_EXECUTE` is a registered bit (decision 11a), not a comparator on `MS_EFF`. Read the source to see what it shows. |
-| `timing/cpu-timing-overview.json` | Fast 5/8/6/5 and slow 6/8/7/7, two-step TPs where memory can be written, console 9. |
-| `io/io_timing.json` | EXECUTE 6/8/7/7, TP3 and TP4 two steps. The DB strobes and DB open 100 ns into the transfer TS. A transfer is in TS3 (requested in TS2) or TS4 (requested in TS3). |
-| `io/io_wait_timing.json` | Obsolete: `/IO_WAIT` is removed and no document links it. Delete it or keep it as history; the user decides. |
-| `io/io_subsystem.xml` | Remove "IO_WAIT" from the response label (cell `ld4gAUsl70I4UcyXSL3b-61`). |
-| `io/dma_timing.json` | DMA 6/8/7/7, TP2 two steps, `/WR_PULSE` over its first step. The controller drives only in TS2. |
-| `memory/memory_timing/source/memory_timing.png` | This is WaveDrom text with a `.png` name; rename it `.json`. Show a write TS with a two-step TP and `/WR_PULSE`. |
-| `isa/addressing-model.xml` | Not yet checked since A1.5. The docs now take the current page from the instruction's own address (IA). If the diagram says PC, it needs the same change. |
-| `architecture/High-Level-Architecture.xml`, `architecture/class-a-buses.xml` | No change found. Re-check against the bus docs (AB and DB names; `INSTR_END` on the CPU-to-arbiter interface). |
-
-No diagram exists for the timing ROM, TSEQ, the two register ranks, or the shadow copy. Whether to draw them is the user's call.
+The per-diagram list is [`option2/diagrams.md`](./option2/diagrams.md), read from every diagram source and checked against the docs on 2026-11-26. It replaces the notes that were here. Every change in it is open: no diagram source has changed on the branch.
 
 ---
 

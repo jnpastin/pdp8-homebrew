@@ -11,13 +11,13 @@ class MemoryTests(unittest.TestCase):
     def test_starts_undefined(self):
         self.assertIsNone(Memory().read(7, 0o7777))
 
-    def test_write_changes_one_word_and_logs(self):
+    def test_write_changes_one_word_and_counts(self):
         m = Memory()
         m.write(3, 0o0100, 0o17777)          # masked to 12 bits
         self.assertEqual(m.read(3, 0o0100), 0o7777)
         self.assertIsNone(m.read(3, 0o0101))
         self.assertIsNone(m.read(2, 0o0100))
-        self.assertEqual(m.write_log, [(3, 0o0100, 0o7777)])
+        self.assertEqual(m.write_count, 1)
 
     def test_range(self):
         with self.assertRaises(ValueError):
