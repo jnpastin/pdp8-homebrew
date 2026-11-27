@@ -146,6 +146,18 @@ class PassCriteria(unittest.TestCase):
         maindec._judge_line(d, self.chars("RELOCATION ERROR AT LOCATION 12345") + nl, out)
         self.assertTrue(out.error_text)
 
+    def test_unfinished_lines_judged_early(self):
+        # maindec.run judges an unfinished line after QUIET_LINE_STEPS without output only if it
+        # holds nothing but markers and line breaks: D1FB's and D1BC's "5", but never the start
+        # of an information line, which may contain a "5".
+        d, nl = maindec.DIAGNOSTICS["d1bc"], [maindec.CR, maindec.LF]
+        self.assertTrue(maindec.only_markers(d, self.chars("5")))
+        self.assertTrue(maindec.only_markers(d, nl + self.chars("5")))
+        for partial in ("5 STACKS", "STACKS SEL'D ARE 7 6 5", "8", ""):
+            with self.subTest(partial=partial):
+                self.assertFalse(maindec.only_markers(d, self.chars(partial)))
+        self.assertFalse(maindec.only_markers(d, nl))
+
     def test_halt_only_programs_do_not_judge_text(self):
         self.assertEqual(maindec.classify(maindec.DIAGNOSTICS["d0cc"], self.chars("PASS")), (0, []))
 

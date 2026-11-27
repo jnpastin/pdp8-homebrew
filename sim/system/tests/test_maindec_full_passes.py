@@ -10,7 +10,7 @@ one process, and about 12,000 per process with every core busy:
 
 - `short`: D0CC to D0JC (0.7 to 4.6 million instructions each) and D1EC (10.3 million). About
   15 minutes, bounded by D1EC.
-- `all`: also D1HA (92.5 million), D1FB to its first time tick (about 100 million), D1BC (125
+- `all`: also D1HA (92.5 million), D1FB to its first time tick (109.3 million), D1BC (125
   million), D1AA (127 million), and D2AB PRG0 (about 32 million), whose timing routines then run on
   the microcoded CPU rather than only on the reference model (test_d2ab_timing.py). About 2 to 3
   hours, bounded by D1AA and D1BC.
@@ -48,7 +48,7 @@ SHORT = (
 )
 LONG = (
     ("d1ha", 120_000_000, "marker"),        # first bell after 92,510,728 instructions
-    ("d1fb", 140_000_000, "marker"),        # first "5" (a time tick) after about 100 million
+    ("d1fb", 140_000_000, "marker"),        # first "5" (a time tick) after 109,305,776 instructions
     ("d1bc", 165_000_000, "marker"),        # first pass "5" after 125,006,147 instructions
     ("d1aa", 165_000_000, "marker"),        # first "5" after 127,159,300 instructions
     ("d2ab-prg0", 60_000_000, "end halt"),  # about 32 million

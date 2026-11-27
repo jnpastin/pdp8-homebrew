@@ -21,6 +21,11 @@ from .papertape import load_tape, read_tape
 
 PROGRAMS = Path(__file__).resolve().parents[3] / "test_programs"
 JUMP_TO_SELF_LIMIT = 10_000           # consecutive self-jumps that count as an error loop
+# Instructions with no new Teletype output after which an unfinished line of only markers and
+# line breaks is judged. A program types a line's characters within a few hundred instructions,
+# so a line still that short after this long is a marker (D1FB's and D1BC's "5" is followed by
+# millions of silent instructions), never the start of an information line such as "5 STACKS".
+QUIET_LINE_STEPS = 100_000
 BEL, NUL, RUBOUT, CR, LF = 0o207, 0o000, 0o377, 0o215, 0o212
 NEWLINE = frozenset({CR, LF})
 # Lines D1FB and D1BC type after setup, reporting the memory they found and will test.
@@ -104,7 +109,7 @@ DIAGNOSTICS = {
     # §4.1: start at 0200 (IF = DF = 0); it types a banner and "SETUP SR & CONT" and halts (at
     # 2634); then SR06-08 = 0 and SR09-11 = 7 select stacks 0-7, and CONTINUE. It reports the stacks
     # it found and selected (STACK_INFO; observed "8 STACKS IN THIS SYSTEM") and tests in silence.
-    # §7: a "5" about every five minutes of real run time (about 100 million instructions). It is a
+    # §7: a "5" about every five minutes of real run time (the first after 109,305,776 instructions). It is a
     # time tick, not an end of pass, though Outcome.markers counts it: a run is judged by its errors. §5: error typeouts ("PR LOC ADDR GOOD BAD TEST", "RELOCATION
     # ERROR") and the program continues.
     "d1fb": Diagnostic("maindec-8e-d1fb", "Extended Memory Address Test", markers=frozenset({ord("5") | 0o200}),
@@ -186,6 +191,7 @@ def run(name: str, max_steps: int, seed: int = 1, lockstep: bool = True, stop_af
     stepper = _LockstepStepper(m) if lockstep else _SimStepper(m)
     seen = 0
     pending = []                               # an incomplete line, for info_lines judging
+    quiet = 0                                  # instructions since the last character printed
     self_jumps = 0
     while outcome.steps < max_steps:
         halted, pc, ir = stepper.step()
@@ -205,6 +211,10 @@ def run(name: str, max_steps: int, seed: int = 1, lockstep: bool = True, stop_af
                     i = pending.index(LF)
                     _judge_line(d, pending[:i + 1], outcome)
                     pending = pending[i + 1:]
+                quiet = 0 if new else quiet + 1
+                if pending and quiet >= QUIET_LINE_STEPS and only_markers(d, pending):
+                    _judge_line(d, pending, outcome)   # a marker with no line break after it
+                    pending = []
             else:
                 markers, errors = classify(d, new)
                 outcome.markers += markers
@@ -230,6 +240,11 @@ def run(name: str, max_steps: int, seed: int = 1, lockstep: bool = True, stop_af
         _judge_line(d, pending, outcome)
     outcome.printed = list(kl.printed)
     return outcome
+
+
+def only_markers(d: Diagnostic, chars) -> bool:
+    """Whether an unfinished line holds a marker and nothing but markers and ignored characters."""
+    return any(c in d.markers for c in chars) and all(c in d.markers or c in d.ignored for c in chars)
 
 
 def _judge_line(d: Diagnostic, line, outcome: Outcome):
